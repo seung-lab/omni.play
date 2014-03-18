@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "common/common.h"
 #include "common/logging.h"
@@ -9,10 +10,6 @@
 #include "utility/omTimer.hpp"
 #include "threads/omTaskManager.hpp"
 #include "threads/omTaskManagerTypes.h"
-
-#include <QFile>
-#include <QFileInfoList>
-#include <QImage>
 
 template <typename VOL, typename T>
 class OmLoadImage {

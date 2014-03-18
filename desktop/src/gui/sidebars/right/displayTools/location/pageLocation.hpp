@@ -1,11 +1,10 @@
 #pragma once
+#include "precomp.h"
 
 #include "gui/sidebars/right/displayTools/location/sliceDepthSpinBoxX.hpp"
 #include "gui/sidebars/right/displayTools/location/sliceDepthSpinBoxY.hpp"
 #include "gui/sidebars/right/displayTools/location/sliceDepthSpinBoxZ.hpp"
 #include "gui/sidebars/right/displayTools/location/saveLocationButton.hpp"
-
-#include <QtGui>
 
 class OmViewGroupState;
 

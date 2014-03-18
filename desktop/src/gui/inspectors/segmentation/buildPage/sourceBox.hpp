@@ -1,12 +1,11 @@
 #pragma once
+#include "precomp.h"
 
 #include "system/omConnect.hpp"
 #include "utility/sortHelpers.h"
 #include "utility/segmentationDataWrapper.hpp"
 #include "volume/omSegmentation.h"
 #include "project/omProject.h"
-
-#include <QtGui>
 
 namespace om {
 namespace segmentationInspector {

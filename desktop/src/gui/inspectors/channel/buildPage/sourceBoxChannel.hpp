@@ -1,10 +1,9 @@
 #pragma once
+#include "precomp.h"
 
 #include "system/omConnect.hpp"
 #include "utility/sortHelpers.h"
 #include "utility/channelDataWrapper.hpp"
-
-#include <QtGui>
 
 namespace om {
 namespace channelInspector {

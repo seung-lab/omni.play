@@ -1,17 +1,11 @@
 #pragma once
+#include "precomp.h"
 
 // based on
 // http://www.boost.org/doc/libs/1_38_0/doc/html/interprocess/allocators_containers.html#interprocess.allocators_containers.additional_containers.unordered
 
 #include "utility/omUUID.hpp"
 #include "datalayer/fs/omOnDiskBoostUnorderedMap.hpp"
-
-#include <boost/interprocess/managed_mapped_file.hpp>
-#include <boost/interprocess/allocators/allocator.hpp>
-
-#include <boost/unordered_map.hpp>    //std::unordered_map
-#include <functional>                 //std::equal_to
-#include <boost/functional/hash.hpp>  //boost::hash
 
 namespace bi = boost::interprocess;
 

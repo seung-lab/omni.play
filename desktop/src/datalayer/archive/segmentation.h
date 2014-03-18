@@ -1,6 +1,5 @@
 #pragma once
-
-#include "yaml-cpp-old/yaml.h"
+#include "precomp.h"
 
 class OmSegmentationManager;
 class OmSegmentation;

@@ -1,6 +1,6 @@
 #pragma once
+#include "precomp.h"
 
-#include <QtGui>
 #include "system/omConnect.hpp"
 
 class OmLineEdit : public QLineEdit {
@@ -18,5 +18,4 @@ Q_SLOTS:
 
  private:
   virtual void doUpdateFromEditDoneSignel() = 0;
-
 };

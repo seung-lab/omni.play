@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "events/events.h"
 #include "segment/lists/omSegmentListForGUI.hpp"

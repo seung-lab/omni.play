@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "common/logging.h"
 #include "gui/widgets/omIntSpinBox.hpp"
@@ -18,7 +19,6 @@ class BrightnessSpinBox : public OmIntSpinBox {
   QString Label() const { return "Brightness"; }
 
  private:
-
   void actUponValueChange(const int val) {
     OmChannelTileFilter::SetBrightnessShift(val);
     OmTileCache::ClearChannel();

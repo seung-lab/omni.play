@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 /*
  * Preferences model adopted from:
@@ -12,8 +13,6 @@
 #include "system/omPreferenceDefinitions.h"
 #include "zi/omUtility.h"
 #include "datalayer/archive/project.h"
-
-#include <QHash>
 
 class OmProjectImpl;
 

@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "common/common.h"
 #include "mesh/io/v2/chunk/omMeshChunkAllocTable.hpp"
@@ -6,7 +7,6 @@
 #include "mesh/io/v2/chunk/omMeshChunkDataWriterV2.hpp"
 #include "mesh/io/v2/omRingBuffer.hpp"
 #include "threads/omTaskManager.hpp"
-#include "zi/omMutex.h"
 
 class OmMeshChunkAllocTableV2;
 class OmMeshChunkDataWriterV2;

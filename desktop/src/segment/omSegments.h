@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include <boost/optional.hpp>
 #include <zi/mutex.hpp>

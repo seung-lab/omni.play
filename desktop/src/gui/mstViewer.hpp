@@ -1,7 +1,7 @@
 #pragma once
+#include "precomp.h"
 
 #include "utility/segmentationDataWrapper.hpp"
-#include <QtGui>
 
 class MstViewerImpl : public QTableWidget {
  public:
@@ -17,7 +17,8 @@ class MstViewerImpl : public QTableWidget {
     setItem(rowNum, colNum++, makeTableItem(num));
   }
 
-  template <typename T> QTableWidgetItem* makeTableItem(const T num) {
+  template <typename T>
+  QTableWidgetItem* makeTableItem(const T num) {
     QTableWidgetItem* item = new QTableWidgetItem();
     item->setData(0, num);  // allows columns to be sorted numerically
     return item;

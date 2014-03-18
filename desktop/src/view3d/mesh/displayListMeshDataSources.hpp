@@ -1,10 +1,12 @@
 #pragma once
+#include "precomp.h"
 
 #include "datalayer/dataSource.hpp"
 
 namespace om {
 namespace datalayer {
-template <typename TKey, typename TValue> class DataSourceHierarchy;
+template <typename TKey, typename TValue>
+class DataSourceHierarchy;
 }
 namespace mesh {
 

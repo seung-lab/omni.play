@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "gui/tools.hpp"
 #include "common/common.h"

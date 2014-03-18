@@ -1,7 +1,8 @@
 #pragma once
+#include "precomp.h"
 
 #include "common/common.h"
-#include "yaml-cpp-old/yaml.h"
+
 #include "system/omGenericManager.hpp"
 #include "utility/yaml/omBaseTypes.hpp"
 

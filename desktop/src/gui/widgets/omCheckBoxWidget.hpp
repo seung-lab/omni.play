@@ -1,7 +1,7 @@
 #pragma once
+#include "precomp.h"
 
 #include "system/omConnect.hpp"
-#include <QtGui>
 
 class OmCheckBoxWidget : public QCheckBox {
   Q_OBJECT;

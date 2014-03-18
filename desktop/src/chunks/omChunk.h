@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 /**
  *  OmChunk encapsulates a 3D-matrix of image data (typically 128^3) and

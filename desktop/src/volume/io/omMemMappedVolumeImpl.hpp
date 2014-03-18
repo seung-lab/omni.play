@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "common/logging.h"
 #include "datalayer/fs/omFileNames.hpp"
@@ -11,9 +12,6 @@
 #include "volume/omChannel.h"
 #include "volume/omSegmentation.h"
 #include "volume/omVolumeTypes.hpp"
-
-#include <zi/mutex.hpp>
-#include <QFile>
 
 template <typename T>
 class OmIOnDiskFile;

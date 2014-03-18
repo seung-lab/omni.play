@@ -1,9 +1,7 @@
 #pragma once
+#include "precomp.h"
 
 #include "landmarks/omLandmarksTypes.h"
-
-#include <QDialog>
-#include <QVBoxLayout>
 
 class OmLandmarks;
 

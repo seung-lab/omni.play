@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "mesh/drawer/omMeshPlan.h"
 #include "mesh/drawer/omMeshDrawPlanner.hpp"
@@ -41,7 +42,6 @@ class OmMeshPlanCache {
   }
 
  private:
-
   /** cached segment list should be the same if
    *  1.) cullers are the same
    *  2.) same segments are selected (i.e. same global freshness)

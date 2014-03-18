@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "chunks/omChunk.h"
 #include "common/common.h"
@@ -10,10 +11,6 @@
 #include "utility/image/omImage.hpp"
 #include "utility/omSimpleProgress.hpp"
 #include "volume/omVolumeTypes.hpp"
-#include "zi/omThreads.h"
-
-#include <sstream>
-#include <QFileInfoList>
 
 template <typename VOL>
 class OmDataCopierHdf5Task : public zi::runnable {

@@ -1,16 +1,11 @@
 #pragma once
+#include "precomp.h"
 
 #include "utility/omTimer.hpp"
 #include "common/logging.h"
 #include "project/omProject.h"
 #include "actions/omActions.h"
 #include "utility/omStringHelpers.h"
-
-#include <QTextStream>
-#include <QImage>
-#include <QFileInfoList>
-#include <QString>
-#include <QThread>
 
 class OmBuildVolumes {
  public:

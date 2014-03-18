@@ -1,10 +1,10 @@
 #pragma once
+#include "precomp.h"
 
 #include "datalayer/omDataPath.h"
 #include "volume/build/omBuildVolumes.hpp"
 #include "volume/build/omVolumeBuilder.hpp"
 #include "volume/omChannel.h"
-#include "zi/omThreads.h"
 
 class OmBuildChannel : public OmBuildVolumes {
  private:

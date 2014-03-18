@@ -1,9 +1,7 @@
 #pragma once
+#include "precomp.h"
 
 #include "utility/dataWrappers.h"
-
-#include <QtGui>
-#include <QWidget>
 
 class SegmentInspector : public QWidget {
   Q_OBJECT;

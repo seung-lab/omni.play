@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "actions/omSelectSegmentParams.hpp"
 #include "common/logging.h"
@@ -15,9 +16,6 @@
 #include "segment/omSegmentUtils.hpp"
 #include "utility/dataWrappers.h"
 #include "viewGroup/omViewGroupState.h"
-
-#include <QtGui>
-#include <QWidget>
 
 class OmViewGroupState;
 

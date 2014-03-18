@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "chunks/omChunkDataInterface.hpp"
 #include "utility/dataWrappers.h"

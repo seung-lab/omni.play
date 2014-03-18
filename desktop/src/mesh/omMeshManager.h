@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "common/enums.hpp"
 #include "mesh/omMeshTypes.h"
@@ -10,8 +11,6 @@ class OmMeshMetadata;
 class OmMeshReaderV2;
 class OmMesh;
 class OmSegmentation;
-
-#include <QDataStream>
 
 class OmMeshManager {
  public:

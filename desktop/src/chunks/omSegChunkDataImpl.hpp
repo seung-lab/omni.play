@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "chunks/omRawChunk.hpp"
 #include "chunks/omProcessChunkVoxelBoundingData.hpp"

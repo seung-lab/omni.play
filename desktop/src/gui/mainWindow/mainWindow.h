@@ -1,11 +1,7 @@
 #pragma once
+#include "precomp.h"
 
 #include "common/common.h"
-
-#include <QMainWindow>
-#include <QFrame>
-#include <QUndoView>
-#include <QLabel>
 
 class CacheMonitorDialog;
 class InspectorWidget;

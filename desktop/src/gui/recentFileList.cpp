@@ -2,12 +2,6 @@
 #include "gui/recentFileList.h"
 #include "system/omLocalPreferences.hpp"
 
-#include <QFile>
-#include <QTextStream>
-#include <QFileInfo>
-
-#include <iostream>
-
 /********************************************
  * helper class to track recently created/opened files
  * BASED ON:

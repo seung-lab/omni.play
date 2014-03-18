@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "view3d/mesh/drawer/struct.hpp"
 #include "view3d/mesh/drawer/omMeshPlan.h"

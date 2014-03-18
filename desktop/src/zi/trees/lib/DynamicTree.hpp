@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 /*
  * AUTHORS:
  *   Aleksandar Zlateski <zlateski@mit.edu>
@@ -8,10 +9,6 @@
 
 #ifndef DYNAMIC_TREE_HPP
 #define DYNAMIC_TREE_HPP
-
-#include <assert.h>
-#include <string>
-#include <iostream>
 
 namespace Seung {
 

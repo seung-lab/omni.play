@@ -1,7 +1,6 @@
 #pragma once
+#include "precomp.h"
 
-#include <QDialog>
-#include <QtGui>
 #include "gui/widgets/omButton.hpp"
 #include "utility/color.hpp"
 #include "viewGroup/omViewGroupState.h"

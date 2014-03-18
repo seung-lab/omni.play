@@ -1,7 +1,7 @@
 #pragma once
+#include "precomp.h"
 
 #include "common/common.h"
-#include <QDataStream>
 
 template <class T>
 inline QDataStream& operator<<(QDataStream& out, const Vector3<T>& v) {
@@ -12,7 +12,7 @@ inline QDataStream& operator<<(QDataStream& out, const Vector3<T>& v) {
 }
 
 template <class T>
-    inline QDataStream& operator>>(QDataStream& in, Vector3<T>& v) {
+inline QDataStream& operator>>(QDataStream& in, Vector3<T>& v) {
   in >> v.array[0];
   in >> v.array[1];
   in >> v.array[2];
@@ -36,8 +36,7 @@ inline QDataStream& operator<<(QDataStream& out,
 }
 
 template <class T>
-    inline QDataStream& operator>>(QDataStream& in,
-                                   AxisAlignedBoundingBox<T>& d) {
+inline QDataStream& operator>>(QDataStream& in, AxisAlignedBoundingBox<T>& d) {
   vmml::Vector3<int> min;
   vmml::Vector3<int> max;
   bool dirty;
@@ -65,7 +64,7 @@ inline QDataStream& operator<<(QDataStream& out, const Matrix4<T>& m) {
 }
 
 template <class T>
-    inline QDataStream& operator>>(QDataStream& in, Matrix4<T>& m) {
+inline QDataStream& operator>>(QDataStream& in, Matrix4<T>& m) {
   for (int i = 0; i < 16; ++i) {
     in >> m.array[i];
   }

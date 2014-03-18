@@ -1,5 +1,6 @@
 
 #pragma once
+#include "precomp.h"
 
 #include "mesh/omMesh.h"
 #include "mesh/omMeshTypes.h"
@@ -9,10 +10,8 @@
 #include "utility/lockedObjects.hpp"
 #include "utility/omLockedPODs.hpp"
 #include "threads/omTaskManager.hpp"
-#include "zi/omMutex.h"
-#include "common/enums.hpp"
 
-#include <zi/system.hpp>
+#include "common/enums.hpp"
 
 /**
  *  Brett Warne - bwarne@mit.edu - 3/12/09

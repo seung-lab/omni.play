@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "chunks/omChunkUtils.hpp"
 #include "chunks/omSegChunk.h"
@@ -11,17 +12,6 @@
 #include "volume/io/omVolumeData.h"
 #include "volume/omSegmentation.h"
 #include "mesh/mesher/omMesherProgress.hpp"
-
-#include <zi/vl/vec.hpp>
-#include <zi/system.hpp>
-#include <zi/bits/cstdint.hpp>
-#include <zi/mesh/quadratic_simplifier.hpp>
-#include <zi/mesh/tri_mesh.hpp>
-#include <zi/mesh/tri_stripper.hpp>
-#include <zi/mesh/marching_cubes.hpp>
-#include <zi/shared_ptr.hpp>
-
-#include "zi/omThreads.h"
 
 class ziMesher {
  public:

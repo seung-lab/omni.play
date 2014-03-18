@@ -1,10 +1,10 @@
 #pragma once
+#include "precomp.h"
 
 #include "common/common.h"
 #include "utility/channelDataWrapper.hpp"
 #include "utility/segmentationDataWrapper.hpp"
 #include "utility/affinityGraphDataWrapper.hpp"
-#include <boost/optional.hpp>
 
 class DataWrapperContainer {
  private:

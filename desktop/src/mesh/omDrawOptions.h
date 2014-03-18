@@ -1,8 +1,9 @@
 #pragma once
+#include "precomp.h"
 
 /*
- *	DrawOptions for use with a Bitfield.  Primarily used to set options for
- *	the DrawCuller which then propogates through the draw tree.
+ *  DrawOptions for use with a Bitfield.  Primarily used to set options for
+ *  the DrawCuller which then propogates through the draw tree.
  */
 
 #define DRAWOP_RENDERMODE_MASK 0x000F0000
@@ -30,7 +31,7 @@
 #define DRAWOP_SEGMENT_COLOR_HIGHLIGHT 0x00002000
 
 /*
- *	gl Name Constants
+ *  gl Name Constants
  */
 
 #define OMGL_NAME_MESH 0

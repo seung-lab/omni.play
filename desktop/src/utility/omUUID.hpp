@@ -1,11 +1,5 @@
 #pragma once
-
-#include <boost/lexical_cast.hpp>
-#include <boost/uuid/uuid.hpp>
-#include <boost/uuid/uuid_generators.hpp>
-#include <boost/uuid/uuid_io.hpp>
-
-#include "zi/omMutex.h"
+#include "precomp.h"
 
 // based on http://www.boost.org/doc/libs/1_42_0/libs/uuid/uuid.html
 
@@ -28,7 +22,7 @@ struct idAndStr {
 
 inline idAndStr makePair() {
   const boost::uuids::uuid u = get();
-  idAndStr ret = { u, boost::lexical_cast<std::string>(u) };
+  idAndStr ret = {u, boost::lexical_cast<std::string>(u)};
   return ret;
 }
 

@@ -1,6 +1,5 @@
 #pragma once
-
-#include <QtGui>
+#include "precomp.h"
 
 #include "gui/cacheMonitorWidget.h"
 

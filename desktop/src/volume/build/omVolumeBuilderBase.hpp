@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "chunks/omChunkCache.hpp"
 #include "common/logging.h"
@@ -12,8 +13,6 @@
 #include "volume/io/omVolumeData.h"
 #include "volume/omMipVolume.h"
 #include "utility/dataWrappers.h"
-
-#include <QFileInfo>
 
 template <typename VOL>
 class OmVolumeBuilderBase {

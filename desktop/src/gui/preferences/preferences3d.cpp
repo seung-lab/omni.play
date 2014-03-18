@@ -5,8 +5,6 @@
 #include "system/omPreferenceDefinitions.h"
 #include "common/logging.h"
 
-#include <QtGui>
-
 Preferences3d::Preferences3d(QWidget *parent) : QWidget(parent) {
   setupUi(this);
 

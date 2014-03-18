@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "tiles/omTextureID.h"
 #include "tiles/omTile.h"
@@ -6,9 +7,6 @@
 #include "tiles/omTileTypes.hpp"
 #include "utility/omTimer.hpp"
 #include "zi/omUtility.h"
-
-#include <QGLContext>
-#include <tiles/omTileImplTypes.hpp>
 
 class OmOpenGLTileDrawer {
  private:

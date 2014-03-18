@@ -1,8 +1,10 @@
 #pragma once
+#include "precomp.h"
 
 #include "tiles/make_tile.hpp"
 
-template <typename T> class OmTileFilters {
+template <typename T>
+class OmTileFilters {
  private:
   const int chunkDim_;
   const int elementsPerTile_;
@@ -25,7 +27,8 @@ template <typename T> class OmTileFilters {
     zi::transform(tile, tile + elementsPerTile_, tile, ChangeGamma<T>(gamma));
   }
 
-  template <typename C> std::shared_ptr<C> recast(T* oldTile) const {
+  template <typename C>
+  std::shared_ptr<C> recast(T* oldTile) const {
     auto ret = om::tile::Make<C>();
 
     std::copy(oldTile, oldTile + elementsPerTile_, ret.get());
@@ -53,7 +56,8 @@ template <typename T> class OmTileFilters {
   }
 
  private:
-  template <typename U, typename C> class Rescale {
+  template <typename U, typename C>
+  class Rescale {
    private:
     const U rangeMin_, rangeMax_, absMax_;
 
@@ -62,7 +66,7 @@ template <typename T> class OmTileFilters {
         : rangeMin_(rangeMin), rangeMax_(rangeMax), absMax_(absMax) {}
 
     C operator()(U val) const {
-      return (val - rangeMin_) * ((double) absMax_ / (rangeMax_ - rangeMin_));
+      return (val - rangeMin_) * ((double)absMax_ / (rangeMax_ - rangeMin_));
     }
   };
 
@@ -71,7 +75,8 @@ template <typename T> class OmTileFilters {
 
   // TODO: clamp should not be needed
 
-  template <typename U> inline static T clamp(T absMax, U val) {
+  template <typename U>
+  inline static T clamp(T absMax, U val) {
     if (val > absMax) {
       return absMax;
     }
@@ -83,7 +88,8 @@ template <typename T> class OmTileFilters {
     return val;
   }
 
-  template <typename U> class ChangeBrightness {
+  template <typename U>
+  class ChangeBrightness {
    public:
     ChangeBrightness(const U absMax, const int32_t shift)
         : absMax_(absMax), shift_(shift) {}
@@ -101,7 +107,8 @@ template <typename T> class OmTileFilters {
     int32_t shift_;
   };
 
-  template <typename U> class ChangeContrast {
+  template <typename U>
+  class ChangeContrast {
    public:
     ChangeContrast(const double absMax, const double contrast)
         : absMax_(absMax), halfAbsMax_(absMax_ / 2.0), contrast_(contrast) {}
@@ -117,7 +124,8 @@ template <typename T> class OmTileFilters {
     const double contrast_;
   };
 
-  template <typename U> class ChangeGamma {
+  template <typename U>
+  class ChangeGamma {
    public:
     ChangeGamma(const double gamma) : gamma_(gamma) {}
 

@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "yaml-cpp/yaml.h"
 #include "common/logging.h"

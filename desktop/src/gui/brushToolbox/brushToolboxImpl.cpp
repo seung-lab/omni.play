@@ -13,8 +13,6 @@
 #include "viewGroup/omBrushSize.hpp"
 #include "viewGroup/omViewGroupState.h"
 
-#include <limits>
-
 class BrushColor : public OmButton<QWidget>,
                    public om::event::SegmentEventListener {
  public:
@@ -40,7 +38,7 @@ class BrushColor : public OmButton<QWidget>,
       pixmap = om::utils::color::ColorAsQPixmap(sdw.GetColorInt());
 
     } else {
-      om::common::Color black = { 0, 0, 0 };
+      om::common::Color black = {0, 0, 0};
       pixmap = om::utils::color::ColorAsQPixmap(black);
     }
 

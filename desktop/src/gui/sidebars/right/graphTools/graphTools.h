@@ -1,8 +1,7 @@
 #pragma once
+#include "precomp.h"
 
 #include "gui/widgets/omWidget.hpp"
-
-#include <QtGui>
 
 class MSTThresholdSpinBox;
 class SizeThresholdSpinBox;

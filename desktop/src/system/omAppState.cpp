@@ -6,8 +6,6 @@
 #include "project/omProject.h"
 #include "gui/taskSelector/taskSelector.h"
 
-#include <QApplication>
-
 QString OmAppState::GetPID() { return QString::number(qApp->applicationPid()); }
 
 QString OmAppState::GetHostname() {

@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 class OmSegment;
 
@@ -10,6 +11,5 @@ struct SegPtrAndColor {
   Vector3f color;
 };
 typedef std::deque<SegPtrAndColor> SegPtrAndColorList;
-
 }
 }  // namespace

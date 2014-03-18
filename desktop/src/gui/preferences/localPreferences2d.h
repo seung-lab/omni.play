@@ -1,6 +1,5 @@
 #pragma once
-
-#include <QtGui>
+#include "precomp.h"
 
 class LocalPreferences2d : public QWidget {
   Q_OBJECT;

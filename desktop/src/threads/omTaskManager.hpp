@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 //
 // Copyright (C) 2010  Aleksandar Zlateski <zlateski@mit.edu>
@@ -22,10 +23,8 @@
 #include "threads/omTaskManagerTypes.h"
 #include "utility/omSystemInformation.h"
 
-#include <zi/bits/type_traits.hpp>
-#include <zi/meta/enable_if.hpp>
-
-template <typename TaskContainer> class OmTaskManager {
+template <typename TaskContainer>
+class OmTaskManager {
  private:
   typedef std::shared_ptr<zi::concurrency_::runnable> task_t;
 
@@ -94,7 +93,7 @@ template <typename TaskContainer> class OmTaskManager {
 
   void remove_workers(std::size_t count) { manager_->remove_workers(count); }
 
-  //status
+  // status
   bool wasStarted() { return manager_; }
 
   inline int getTaskCount() const { return tasks_.size(); }
@@ -109,56 +108,63 @@ template <typename TaskContainer> class OmTaskManager {
     return getNumWorkerThreads();
   }
 
-  //push_front
+  // push_front
   void push_front(task_t task) {
     tasks_.push_front(task);
     wake_manager();
   }
 
-  template <typename Runnable> void push_front(std::shared_ptr<Runnable> task) {
+  template <typename Runnable>
+  void push_front(std::shared_ptr<Runnable> task) {
     tasks_.push_front(task);
     wake_manager();
   }
 
-  template <typename Function> void push_front(const Function& task) {
+  template <typename Function>
+  void push_front(const Function& task) {
     tasks_.push_front(task);
     wake_manager();
   }
 
-  //push_back
+  // push_back
   void push_back(task_t task) {
     tasks_.push_back(task);
     wake_manager();
   }
 
-  template <typename Runnable> void push_back(std::shared_ptr<Runnable> task) {
+  template <typename Runnable>
+  void push_back(std::shared_ptr<Runnable> task) {
     tasks_.push_back(task);
     wake_manager();
   }
 
-  template <typename Function> void push_back(const Function& task) {
+  template <typename Function>
+  void push_back(const Function& task) {
     tasks_.push_back(task);
     wake_manager();
   }
 
-  //insert
+  // insert
   void insert(task_t task) {
     tasks_.insert(task);
     wake_manager();
   }
 
-  template <typename Runnable> void insert(std::shared_ptr<Runnable> task) {
+  template <typename Runnable>
+  void insert(std::shared_ptr<Runnable> task) {
     tasks_.insert(task);
     wake_manager();
   }
 
-  template <typename Function> void insert(const Function& task) {
+  template <typename Function>
+  void insert(const Function& task) {
     tasks_.insert(task);
     wake_manager();
   }
 
-  //insert w/ arg
-  template <typename ARG> void insert(const ARG& arg, task_t task) {
+  // insert w/ arg
+  template <typename ARG>
+  void insert(const ARG& arg, task_t task) {
     tasks_.insert(arg, task);
     wake_manager();
   }

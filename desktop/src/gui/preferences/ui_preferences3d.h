@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 /********************************************************************************
 ** Form generated from reading ui file 'preferences3d.ui'
 **
@@ -12,21 +13,6 @@
 #define UI_PREFERENCES3D_H
 
 #include "system/omConnect.hpp"
-
-#include <QtCore/QVariant>
-#include <QtGui/QAction>
-#include <QtGui/QApplication>
-#include <QtGui/QButtonGroup>
-#include <QtGui/QCheckBox>
-#include <QtGui/QComboBox>
-#include <QtGui/QGridLayout>
-#include <QtGui/QGroupBox>
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QLabel>
-#include <QtGui/QPushButton>
-#include <QtGui/QSlider>
-#include <QtGui/QSpacerItem>
-#include <QtGui/QWidget>
 
 QT_BEGIN_NAMESPACE class Ui_preferences3d {
  public:
@@ -364,12 +350,10 @@ QT_BEGIN_NAMESPACE class Ui_preferences3d {
         "preferences3d", "0", 0, QApplication::UnicodeUTF8));
     Q_UNUSED(preferences3d);
   }  // retranslateUi
-
 };
 
 namespace Ui {
-class preferences3d : public Ui_preferences3d {
-};
+class preferences3d : public Ui_preferences3d {};
 }  // namespace Ui
 
 QT_END_NAMESPACE

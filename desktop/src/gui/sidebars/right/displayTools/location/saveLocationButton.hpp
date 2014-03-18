@@ -1,10 +1,10 @@
 #pragma once
+#include "precomp.h"
 
 #include "gui/widgets/omButton.hpp"
 #include "system/omAlphaVegasMode.hpp"
 #include "datalayer/fs/omFile.hpp"
-#include <QFile>
-#include <viewGroup/omViewGroupView2dState.hpp>
+#include "viewGroup/omViewGroupView2dState.hpp"
 
 namespace om {
 namespace displayTools {

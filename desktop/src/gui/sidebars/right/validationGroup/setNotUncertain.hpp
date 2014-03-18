@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "common/logging.h"
 #include "gui/sidebars/right/validationGroup/validationGroup.h"

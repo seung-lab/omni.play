@@ -1,8 +1,5 @@
 #pragma once
-
-#include <qapplication.h>
-#include <QObject>
-#include <QEvent>
+#include "precomp.h"
 
 #include "common/common.h"
 #include "events/details/event.h"

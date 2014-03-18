@@ -1,8 +1,7 @@
 #pragma once
+#include "precomp.h"
 
-#include "yaml-cpp-old/yaml.h"
 #include "datalayer/fs/omFile.hpp"
-#include <fstream>
 
 namespace om {
 namespace yaml {
@@ -11,7 +10,8 @@ class util {
  public:
   // based on
   // http://code.google.com/p/yaml-cpp/wiki/HowToParseADocument#A_Complete_Example
-  template <typename T> static std::vector<T> Parse(const std::string& fnp) {
+  template <typename T>
+  static std::vector<T> Parse(const std::string& fnp) {
     if (!om::file::old::exists(fnp)) {
       throw om::IoException("could not find file");
     }

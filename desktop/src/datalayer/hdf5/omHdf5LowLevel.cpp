@@ -4,7 +4,6 @@
 #include "datalayer/omDataPaths.h"
 #include "utility/omSystemInformation.h"
 
-#include <QStringList>
 #include "hdf5.h"
 
 OmHdf5LowLevel::OmHdf5LowLevel(const int id) : fileId(id) {}

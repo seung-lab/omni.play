@@ -61,7 +61,7 @@ COMMON_CFLAGS       =   -g -std=gnu99 -D_GNU_SOURCE=1 \
 
 THRIFT_CXXFLAGS    =    -DHAVE_CONFIG_H
 
-COMMON_CXXFLAGS    =    -g $(FPIC) $(CXXWARN) $(THRIFT_CXXFLAGS) -std=c++11
+COMMON_CXXFLAGS    =    -g $(FPIC) $(CXXWARN) $(THRIFT_CXXFLAGS) -std=c++11 -MMD -MP -MT "$(@)" -MF $(@:.o=.d)
 
 DBG_CFLAGS         =    $(COMMON_CFLAGS) -DDEBUG_MODE=1
 DBG_CXXFLAGS       =    $(COMMON_CXXFLAGS) -DDEBUG_MODE=1 -Og #-gstabs+
@@ -340,8 +340,8 @@ QTLIBS = -L$(EXTERNAL)/qt/lib \
 					     -lQtOpenGL
 endif
 
-DESKTOP_INCLUDES = $(INCLUDES) \
-				  -I$(HERE)/desktop/src \
+DESKTOP_INCLUDES = -I$(HERE)/desktop/src \
+					$(INCLUDES) \
 				  -I$(HERE)/desktop/include \
 				  -I$(HERE)/desktop/lib \
 				  -I$(HERE)/desktop \
@@ -355,10 +355,12 @@ DESKTOPLIBS = $(LIBS) \
 					$(QTLIBS)
 
 
-$(BUILDDIR)/desktop/%.d: desktop/src/%.cpp
+$(BUILDDIR)/desktop/%.d: desktop/src/%.cpp desktop/src/precomp.h.gch
 	$(call make_d, $(DESKTOP_INCLUDES))
-$(BUILDDIR)/desktop/%.o: desktop/src/%.cpp
+$(BUILDDIR)/desktop/%.o: desktop/src/%.cpp desktop/src/precomp.h.gch
 	$(call build_cpp, $(DESKTOP_INCLUDES))
+desktop/src/precomp.h.gch: desktop/src/precomp.h
+	$(call build_gch, $(DESKTOP_INCLUDES))
 
 %.moc.cpp: %.hpp
 	$(ECHO) "[MOC] Generating $<"
@@ -373,7 +375,7 @@ $(BUILDDIR)/desktop/%.o: desktop/src/%.cpp
 	$(MKDIR) -p $(dir $@)
 	$(RCC) -name $(basename $(notdir $<)) $< -o $@
 
-DESKTOPHEADERS = $(shell grep Q_OBJECT -R desktop/src | cut -f1 -d ':')
+DESKTOPHEADERS = $(shell grep Q_OBJECT -IR desktop/src | cut -f1 -d ':')
 MOC_SRC0 = $(DESKTOPHEADERS:.hpp=.moc.cpp)
 MOC_SRCS = $(MOC_SRC0:.h=.moc.cpp)
 MOC_DEPS = $(subst desktop/src,$(BUILDDIR)/desktop,$(MOC_SRCS:.cpp=.o))
@@ -385,9 +387,9 @@ $(BINDIR)/omni.desktop: $(DESKTOP_DEPS) $(DESKTOP_MAIN)
 
 DESKTOP_TEST_INCLUDES = -I$(HERE)/desktop/test/src
 
-$(BUILDDIR)/desktop/test/%.d: desktop/test/src/%.cpp
+$(BUILDDIR)/desktop/test/%.d: desktop/test/src/%.cpp desktop/src/precomp.h.gch
 	$(call make_d, $(DESKTOP_INCLUDES) $(TEST_INCLUDES) $(COMMON_TEST_INCLUDES) $(DESKTOP_TEST_INCLUDES))
-$(BUILDDIR)/desktop/test/%.o: desktop/test/src/%.cpp
+$(BUILDDIR)/desktop/test/%.o: desktop/test/src/%.cpp desktop/src/precomp.h.gch
 	$(call build_cpp, $(DESKTOP_INCLUDES) $(TEST_INCLUDES) $(COMMON_TEST_INCLUDES) $(DESKTOP_TEST_INCLUDES))
 
 $(eval $(call deps,DESKTOP_TEST,desktop/test,$(DESKTOP_DEPS) $(TEST_DEPS)))

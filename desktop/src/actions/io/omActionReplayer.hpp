@@ -1,9 +1,8 @@
 #pragma once
+#include "precomp.h"
 
 #include "common/common.h"
 #include "actions/io/omActionTypes.h"
-
-#include <QFileInfo>
 
 class OmActionReplayer {
  public:
@@ -17,7 +16,8 @@ class OmActionReplayer {
 
   void dispatchAction(const QString& actionName, QDataStream& in);
 
-  template <typename ACTION, typename IMPL> void doReplayFile(QDataStream& in) {
+  template <typename ACTION, typename IMPL>
+  void doReplayFile(QDataStream& in) {
     std::shared_ptr<IMPL> impl(new IMPL());
     in >> (*impl);
 

@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "common/logging.h"
 #include "datalayer/fs/omFile.hpp"
@@ -8,10 +9,6 @@
 #include "utility/omFileHelpers.h"
 #include "utility/omUUID.hpp"
 #include "volume/omSegmentation.h"
-#include "zi/omMutex.h"
-
-#include <QFile>
-#include <QDir>
 
 class OmFileNames {
  public:

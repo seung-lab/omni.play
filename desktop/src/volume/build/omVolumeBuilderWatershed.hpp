@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "datalayer/omDataWrapper.h"
 #include "utility/omFileHelpers.h"
@@ -42,7 +43,6 @@ class OmVolumeBuilderWatershed : public OmVolumeBuilderBase<VOL> {
   }
 
  private:
-
   void setDataType() {
     int colorDepth = metadata_.GetColorDepth();
     OmDataWrapperPtr nullData = makeNullDataWrapper(colorDepth);

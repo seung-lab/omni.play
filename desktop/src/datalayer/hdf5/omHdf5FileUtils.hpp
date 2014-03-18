@@ -1,6 +1,6 @@
 #pragma once
+#include "precomp.h"
 
-#include <string>
 #include "hdf5.h"
 
 class OmHdf5FileUtils {

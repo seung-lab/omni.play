@@ -1,10 +1,9 @@
 #pragma once
+#include "precomp.h"
 
 #include "volume/build/omDataCopierBase.hpp"
 #include "volume/build/omLoadImage.h"
 #include "volume/OmSimpleRawVol.hpp"
-
-#include <QImage>
 
 template <typename VOL>
 class OmDataCopierImages : public OmDataCopierBase<VOL> {
@@ -37,7 +36,6 @@ class OmDataCopierImages : public OmDataCopierBase<VOL> {
   }
 
  protected:
-
   virtual void doImport() {
     const int depth = QImage(files_[0].absoluteFilePath()).depth();
 

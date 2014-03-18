@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "common/common.h"
 #include "project/omProject.h"
@@ -50,7 +51,8 @@ class OmSegmentUncertainActionImpl {
   QString classNameForLogFile() const { return "OmSegmentUncertainAction"; }
 
  private:
-  template <typename T> friend class OmActionLoggerThread;
+  template <typename T>
+  friend class OmActionLoggerThread;
   friend QDataStream &operator<<(QDataStream &,
                                  const OmSegmentUncertainActionImpl &);
   friend QDataStream &operator>>(QDataStream &, OmSegmentUncertainActionImpl &);

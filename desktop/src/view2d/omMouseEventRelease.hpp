@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "view2d/omMouseEventUtils.hpp"
 #include "view2d/omView2d.h"

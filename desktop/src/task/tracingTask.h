@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "task/task.h"
 #include "common/common.h"

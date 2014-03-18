@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 struct OmMeshFilePart {
   uint64_t offsetIntoFile;
@@ -40,7 +41,7 @@ namespace om {
 namespace meshio_ {
 
 static OmMeshDataEntry MakeEmptyEntry(const om::common::SegID segID) {
-  static const OmMeshFilePart empty = { 0, 0, 0, 0 };
+  static const OmMeshFilePart empty = {0, 0, 0, 0};
 
   OmMeshDataEntry entry;
   entry.segID = segID;

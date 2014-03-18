@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "viewGroup/omViewGroupState.h"
 
@@ -41,5 +42,4 @@ class OmView2dWidgetBase : public QWidget {
  private:
   std::unique_ptr<QGLPixelBuffer> buffer_;
   OmViewGroupState* vgs_;
-
 };

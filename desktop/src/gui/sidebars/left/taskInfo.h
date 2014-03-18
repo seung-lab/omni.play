@@ -1,5 +1,5 @@
 #pragma once
-#include <QtGui>
+#include "precomp.h"
 #include "events/listeners.h"
 
 namespace om {

@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 class OmView2dWidgetBase : public QGLWidget {
  protected:

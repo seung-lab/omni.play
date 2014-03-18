@@ -1,5 +1,4 @@
 #include "utility/omSystemInformation.h"
-#include <zi/system.hpp>
 
 unsigned int OmSystemInformation::get_num_cores() {
   return zi::system::cpu_count;

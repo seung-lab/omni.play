@@ -1,6 +1,5 @@
 #pragma once
-
-#include "zi/omThreads.h"
+#include "precomp.h"
 
 class OmView2dState;
 class OmOnScreenTileCoords;

@@ -1,7 +1,6 @@
 #include "users/userSettings.h"
-#include "yaml-cpp-old/yaml.h"
+
 #include "datalayer/fs/omFile.hpp"
-#include <fstream>
 
 namespace om {
 

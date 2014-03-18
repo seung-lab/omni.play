@@ -5,9 +5,6 @@
 #include "users/omGuiUserChooserWidgetButtons.hpp"
 #include "users/omUsers.h"
 
-#include <QVBoxLayout>
-#include <QLabel>
-
 om::gui::userChooserWidget::userChooserWidget(OmGuiUserChooser* chooser)
     : QWidget(chooser), chooser_(chooser) {
   users_ = findUsers();

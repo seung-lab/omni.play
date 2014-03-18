@@ -1,11 +1,11 @@
 #pragma once
+#include "precomp.h"
 
 #include "threads/omTaskManager.hpp"
 #include "utility/omTimer.hpp"
 #include "volume/build/omDownsamplerTypes.hpp"
 #include "volume/build/omDownsamplerVoxelTask.hpp"
 #include "volume/omMipVolume.h"
-#include "zi/omThreads.h"
 
 template <typename T>
 class OmDownsampler {

@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "segment/lowLevel/graph.h"
 #include "segment/lowLevel/store.h"

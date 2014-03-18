@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 class OmProjectCloseActionImpl;
 class OmProjectSaveActionImpl;
@@ -11,8 +12,6 @@ class OmSegmentUncertainActionImpl;
 class OmSegmentValidateActionImpl;
 class OmSegmentationThresholdChangeActionImpl;
 class OmVoxelSetValueActionImpl;
-
-#include <QTextStream>
 
 QTextStream& operator<<(QTextStream& out, const OmVoxelSetValueActionImpl&);
 QTextStream& operator<<(QTextStream& out, const OmProjectCloseActionImpl&);

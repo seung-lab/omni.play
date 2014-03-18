@@ -1,5 +1,7 @@
 #pragma once
+#include "precomp.h"
 
+#include "annotation/annotation.h"
 #include "actions/omActions.h"
 #include "gui/widgets/omAskYesNoQuestion.hpp"
 #include "gui/widgets/omSegmentContextMenu.h"
@@ -11,7 +13,6 @@
 #include "view2d/omMouseEventUtils.hpp"
 #include "view2d/omView2d.h"
 #include "view2d/omView2dState.hpp"
-#include <annotation/annotation.h>
 
 class OmMouseEventPress {
  private:

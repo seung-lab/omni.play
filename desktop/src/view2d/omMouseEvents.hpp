@@ -1,12 +1,11 @@
 #pragma once
+#include "precomp.h"
 
 #include "view2d/omMouseEventMove.hpp"
 #include "view2d/omMouseEventPress.hpp"
 #include "view2d/omMouseEventRelease.hpp"
 #include "view2d/omMouseEventWheel.hpp"
 #include "view2d/omView2dZoom.hpp"
-
-#include <boost/make_shared.hpp>
 
 class OmMouseEvents {
  private:

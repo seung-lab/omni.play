@@ -1,5 +1,5 @@
-#include "common/logging.h"
 #include "utility/glInclude.h"
+#include "common/logging.h"
 #include "mesh/io/omMeshConvertV1toV2.hpp"
 #include "mesh/io/omMeshMetadata.hpp"
 #include "mesh/io/v2/omMeshReaderV2.hpp"

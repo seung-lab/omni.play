@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 class OmProjectCloseActionImpl;
 class OmProjectSaveActionImpl;
@@ -12,8 +13,6 @@ class OmSegmentUncertainActionImpl;
 class OmSegmentValidateActionImpl;
 class OmSegmentationThresholdChangeActionImpl;
 class OmVoxelSetValueActionImpl;
-
-#include <QDataStream>
 
 QDataStream& operator<<(QDataStream& out, const OmSegmentSplitActionImpl&);
 QDataStream& operator>>(QDataStream& in, OmSegmentSplitActionImpl&);

@@ -7,8 +7,6 @@
 #include "gui/preferences/scrollRateSpinBox.hpp"
 #include "gui/widgets/omLabelHBox.hpp"
 
-#include <QtGui>
-
 LocalPreferences2d::LocalPreferences2d(QWidget* parent) : QWidget(parent) {
   QVBoxLayout* overallContainer = new QVBoxLayout(this);
 

@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 namespace om {
 namespace fuzzymap_ {
@@ -15,9 +16,7 @@ struct CompareDoubles {
 
 template <typename T>
 class DoubleFuzzyStdMap
-    : public std::map<double, T, om::fuzzymap_::CompareDoubles> {
-};
+    : public std::map<double, T, om::fuzzymap_::CompareDoubles> {};
 
 class DoubleFuzzyStdSet
-    : public std::set<double, om::fuzzymap_::CompareDoubles> {
-};
+    : public std::set<double, om::fuzzymap_::CompareDoubles> {};

@@ -1,13 +1,11 @@
 #pragma once
+#include "precomp.h"
 
 #include "volume/omMipVolume.h"
 #include "system/cache/omGetSetCache.hpp"
 
-#include <boost/tuple/tuple.hpp>
-#include <boost/tuple/tuple_comparison.hpp>
-
 // mip, x, y, z, depth, plane
-typedef boost::tuple<int, int, int, int, int, om::common::ViewType>
+typedef std::tuple<int, int, int, int, int, om::common::ViewType>
     OmVolSliceKey_t;
 
 struct OmVolSliceKey : public OmVolSliceKey_t {

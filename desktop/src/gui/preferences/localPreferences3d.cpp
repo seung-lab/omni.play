@@ -6,8 +6,6 @@
 #include "events/events.h"
 #include "view3d.old/om3dPreferences.hpp"
 
-#include <QtGui>
-
 LocalPreferences3d::LocalPreferences3d(QWidget* parent) : QWidget(parent) {
   QVBoxLayout* overallContainer = new QVBoxLayout(this);
 
@@ -60,7 +58,7 @@ QGroupBox* LocalPreferences3d::makeGeneralPropBox() {
 
   crosshairValue = new QLabel(groupBox);
   unsigned int value = Om3dPreferences::getCrosshairValue();
-  crosshairValue->setNum(((float) value) / 20.0);
+  crosshairValue->setNum(((float)value) / 20.0);
   crosshairValue->setEnabled(crosshair);
   gridLayout->addWidget(crosshairValue, 4, 1, 1, 1);
 
@@ -89,7 +87,7 @@ QGroupBox* LocalPreferences3d::makeGeneralPropBox() {
 void LocalPreferences3d::on_crosshairSlider_valueChanged() {
   int value = crosshairSlider->value();
   Om3dPreferences::setCrosshairValue(value);
-  float distance = ((float) value) / 20.0;
+  float distance = ((float)value) / 20.0;
   crosshairValue->setNum(distance);
   om::event::Redraw3d();
 }

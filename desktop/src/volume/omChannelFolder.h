@@ -1,8 +1,7 @@
 #pragma once
+#include "precomp.h"
 
 class OmChannelImpl;
-
-#include <QString>
 
 namespace om {
 namespace channel {

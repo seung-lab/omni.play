@@ -1,14 +1,12 @@
 #pragma once
+#include "precomp.h"
 
 #include "datalayer/fs/omFileNames.hpp"
 #include "volume/omChannelFolder.h"
 #include "volume/omSegmentationFolder.h"
 #include "volume/omVolumeTypes.hpp"
-#include "yaml-cpp-old/yaml.h"
-#include "utility/yaml/coords.h"
 
-#include <QString>
-#include <QFile>
+#include "utility/yaml/coords.h"
 
 namespace YAMLold {
 

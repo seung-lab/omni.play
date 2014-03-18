@@ -15,7 +15,6 @@
 #include "viewGroup/omViewGroupState.h"
 #include "volume/omSegmentation.h"
 #include "widgets/widgets.hpp"
-#include <zi/zargs/zargs.hpp>
 
 DECLARE_ZiARG_bool(noView3dThrottle);
 

@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 /*
  *
@@ -34,7 +35,7 @@ class OmCameraArcBall : public OmCameraMovement {
   void MapPointToSphere(const Vector2<float> &point, Vector3<float> &vector);
 
   float mAdjustWidth, mAdjustHeight;
-  Vector3<float> mStartVector, mEndVector;  //click and drag vector
+  Vector3<float> mStartVector, mEndVector;  // click and drag vector
 
   Quaternion<float> mStartRotation;
 };

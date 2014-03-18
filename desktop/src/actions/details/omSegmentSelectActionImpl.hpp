@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "actions/omSelectSegmentParams.hpp"
 #include "common/common.h"
@@ -80,7 +81,8 @@ class OmSegmentSelectActionImpl {
   QString classNameForLogFile() const { return "OmSegmentSelectAction"; }
 
  private:
-  template <typename T> friend class OmActionLoggerThread;
+  template <typename T>
+  friend class OmActionLoggerThread;
   friend QDataStream& operator<<(QDataStream&,
                                  const OmSegmentSelectActionImpl&);
   friend QDataStream& operator>>(QDataStream&, OmSegmentSelectActionImpl&);

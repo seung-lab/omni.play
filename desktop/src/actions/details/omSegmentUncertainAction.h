@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "actions/details/omUndoCommand.hpp"
 #include "common/common.h"
@@ -26,5 +27,4 @@ class OmSegmentUncertainAction : public OmUndoCommand {
   void save(const std::string&);
 
   std::shared_ptr<OmSegmentUncertainActionImpl> impl_;
-
 };

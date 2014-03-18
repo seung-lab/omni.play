@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "gui/mainWindow/mainWindow.h"
 #include "gui/widgets/omButton.hpp"

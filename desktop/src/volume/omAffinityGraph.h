@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "coordinates/chunk.h"
 #include "common/enums.hpp"

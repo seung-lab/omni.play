@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "mesh/io/omMeshMetadata.hpp"
 #include "mesh/mesher/ziMesher.hpp"

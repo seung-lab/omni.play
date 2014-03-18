@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "volume/io/omMemMappedVolumeImpl.hpp"
 #include "volume/omMipVolume.h"

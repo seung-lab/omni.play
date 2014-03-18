@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "view3d.old/gl.h"
 #include "common/common.h"
@@ -18,8 +19,6 @@
 #include "view3d.old/om3dPreferences.hpp"
 #include "viewGroup/omViewGroupState.h"
 #include "chunks/omChunk.h"
-
-#include <QGLContext>
 
 class OmMeshDrawerImpl {
  private:

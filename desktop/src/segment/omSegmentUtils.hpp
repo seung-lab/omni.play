@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "segment/io/omValidGroupNum.hpp"
 #include "segment/lists/omSegmentLists.h"
@@ -9,8 +10,6 @@
 #include "segment/omSegmentSelected.hpp"
 #include "utility/color.hpp"
 #include "utility/segmentationDataWrapper.hpp"
-
-#include <QPixmap>
 
 class OmSegmentUtils {
  public:

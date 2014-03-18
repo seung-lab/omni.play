@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "view3d/mesh/drawer/struct.hpp"
 #include "common/common.h"
@@ -7,7 +8,6 @@
 #include "threads/taskManager.hpp"
 #include "segment/omSegment.h"
 #include "volume/omSegmentation.h"
-#include <map>
 
 namespace om {
 namespace v3d {

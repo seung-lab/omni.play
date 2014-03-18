@@ -1,7 +1,7 @@
 #pragma once
+#include "precomp.h"
 
 #include "../omView3dWidget.h"
-#include <QFont>
 
 class OmInfoWidget : public OmView3dWidget {
 

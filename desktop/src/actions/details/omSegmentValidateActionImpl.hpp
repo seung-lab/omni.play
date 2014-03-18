@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "common/common.h"
 #include "system/cache/omCacheManager.h"
@@ -55,7 +56,8 @@ class OmSegmentValidateActionImpl {
   QString classNameForLogFile() const { return "OmSegmentValidateAction"; }
 
  private:
-  template <typename T> friend class OmActionLoggerThread;
+  template <typename T>
+  friend class OmActionLoggerThread;
 
   friend QDataStream& operator<<(QDataStream&,
                                  const OmSegmentValidateActionImpl&);

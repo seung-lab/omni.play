@@ -24,7 +24,6 @@
 #include "widgets/omViewBoxWidget.h"
 #include "widgets/annotationsWidget.h"
 
-#include <zi/zargs/zargs.hpp>
 DECLARE_ZiARG_bool(noView3dThrottle);
 
 namespace om {

@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "volume/omSegmentation.h"
 #include "datalayer/fs/omVecInFile.hpp"

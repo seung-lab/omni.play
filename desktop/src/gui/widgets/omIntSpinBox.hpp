@@ -1,10 +1,9 @@
 #pragma once
+#include "precomp.h"
 
 #include "common/logging.h"
 #include "events/events.h"
 #include "system/omConnect.hpp"
-
-#include <QtGui>
 
 class OmIntSpinBox : public QSpinBox {
   Q_OBJECT;

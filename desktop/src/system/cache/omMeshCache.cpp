@@ -1,7 +1,6 @@
 #include "mesh/omMesh.h"
 #include "system/cache/omMeshCache.h"
 #include "mesh/omMeshManager.h"
-#include <zi/system.hpp>
 
 OmMeshCache::OmMeshCache(OmMeshManager* parent)
     : OmThreadedMeshCache(om::common::CacheGroup::MESH_CACHE, "Meshes"),

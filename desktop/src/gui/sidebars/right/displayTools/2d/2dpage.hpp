@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "events/events.h"
 #include "gui/sidebars/right/displayTools/2d/brightenSelected.hpp"
@@ -11,8 +12,6 @@
 #include "system/omConnect.hpp"
 #include "utility/dataWrappers.h"
 #include "viewGroup/omViewGroupState.h"
-
-#include <QtGui>
 
 namespace om {
 namespace displayTools {
@@ -44,7 +43,6 @@ Q_SLOTS:
   }
 
  private:
-
   QWidget* filterShowNonSelectedSegmentsBox() {
     QGroupBox* widget = new QGroupBox("Show Non-selected Segments", this);
 
@@ -80,7 +78,8 @@ Q_SLOTS:
     return widget;
   }
 
-  template <typename W> QWidget* makeWidget(W* w) {
+  template <typename W>
+  QWidget* makeWidget(W* w) {
     QWidget* ret = new QWidget(this);
     QHBoxLayout* box = new QHBoxLayout(ret);
 

@@ -1,6 +1,6 @@
 #pragma once
+#include "precomp.h"
 
-#include "zi/omThreads.h"
 #include "view2d/brush/omBrushPaintLine.hpp"
 
 class OmBrushPaintLineTask : public zi::runnable {

@@ -1,11 +1,11 @@
 #pragma once
-
-#include <QtGui>
+#include "precomp.h"
 
 namespace om {
 namespace gui {
 
-template <typename T> class progressBar : public QGroupBox {
+template <typename T>
+class progressBar : public QGroupBox {
  public:
   progressBar(QWidget* parent)
       : QGroupBox(parent), max_(0), min_(0), curPerc_(0) {

@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 //
 // TODO: GIVE CREDIT TO Eugene Hsu, this is mostly HIS CODE
 //       and based on 6.839 demo code for camera!
@@ -30,7 +31,7 @@ class OmCamera {
  public:
   OmCamera();
 
-  //state
+  // state
   Vector4<int> GetViewport() const;
   void SetViewport(const Vector4<int> &viewport);
   void ApplyViewport();
@@ -45,7 +46,7 @@ class OmCamera {
   void UpdateModelview();
   void ApplyModelview();
 
-  //accessors
+  // accessors
   Vector3f GetPosition();
 
   Vector3f GetFocus();
@@ -64,32 +65,32 @@ class OmCamera {
   const Matrix4<float> &GetProjectionMatrix() const;
   Matrix4<float> GetProjModelViewMatrix() const;
 
-  //draw
+  // draw
   void DrawFocusAxis();
 
-  //movement
+  // movement
   void MovementStart(CameraMovementType type, const Vector2<float> &point);
   void MovementUpdate(const Vector2<float> &point);
   void MovementEnd(const Vector2<float> &point);
 
  private:
-  //viewport props
-  Vector4<int> mViewport;  // lower left x, lower left y, width, height
-  Vector4<float>
-      mPerspective;  // field of view, aspect ratio, near clip, far clip
+  // viewport props
+  Vector4<int> mViewport;       // lower left x, lower left y, width, height
+  Vector4<float> mPerspective;  // field of view, aspect ratio, near clip, far
+                                // clip
 
-  //defines camera position
+  // defines camera position
   float mDistance;
   Quaternion<float> mOrbitRotation;
   Quaternion<float> mLookAtRotation;
 
-  //movement matricies
+  // movement matricies
   Matrix4<float> mLookAtMatrix;
   Matrix4<float> mZoomMatrix;
   Matrix4<float> mOrbitMatrix;
   Matrix4<float> mFocusMatrix;
 
-  //derived matricies
+  // derived matricies
   Matrix4<float> mModelViewMatrix;
   Matrix4<float> mProjectionMatrix;
 

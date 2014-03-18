@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "segment/omSegmentIterator.h"
 #include "datalayer/fs/omFile.hpp"
@@ -6,8 +7,6 @@
 #include "gui/widgets/omButton.hpp"
 #include "segment/omSegments.h"
 #include "utility/dataWrappers.h"
-
-#include <QTextStream>
 
 namespace om {
 namespace segmentationInspector {

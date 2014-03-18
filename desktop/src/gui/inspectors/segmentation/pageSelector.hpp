@@ -1,8 +1,7 @@
 #pragma once
+#include "precomp.h"
 
 #include "system/omConnect.hpp"
-
-#include <QListWidget>
 
 namespace om {
 namespace segmentationInspector {

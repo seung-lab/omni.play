@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "gui/segmentLists/details/segmentListBase.h"
 #include "gui/segmentLists/elementListBox.hpp"

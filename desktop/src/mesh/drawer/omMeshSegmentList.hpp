@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "chunks/omSegChunk.h"
 #include "common/common.h"
@@ -7,7 +8,7 @@
 #include "mesh/drawer/omMeshSegmentListTypes.hpp"
 #include "threads/omTaskManager.hpp"
 #include "volume/omMipVolume.h"
-#include "zi/omMutex.h"
+
 #include "segment/omSegment.h"
 #include "volume/omSegmentation.h"
 

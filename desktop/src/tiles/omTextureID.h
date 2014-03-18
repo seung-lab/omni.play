@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 /*
  * OmTextureIDs are a wrapper for GLuint texture IDs.
@@ -15,8 +16,6 @@
 #include "utility/glInclude.h"
 #include "common/common.h"
 #include "common/colors.h"
-
-#include <QImage>
 
 class QGLContext;
 

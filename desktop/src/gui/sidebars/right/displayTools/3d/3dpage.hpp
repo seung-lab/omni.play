@@ -1,9 +1,8 @@
 #pragma once
+#include "precomp.h"
 
 #include "gui/sidebars/right/displayTools/3d/dust3DthresholdGroup.hpp"
 #include "viewGroup/omViewGroupState.h"
-
-#include <QtGui>
 
 namespace om {
 namespace displayTools {
@@ -22,7 +21,6 @@ class Page3d : public QWidget {
   }
 
  private:
-
   QWidget* thresholdBox() {
     QGroupBox* widget = new QGroupBox("3D Dust Threshold", this);
     Dust3DThresholdGroup* thresholdBox = new Dust3DThresholdGroup(this, vgs_);

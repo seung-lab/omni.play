@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "segment/colorizer/omSegmentColors.hpp"
 #include "segment/colorizer/omSegmentColorizerColorCache.hpp"

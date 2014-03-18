@@ -1,7 +1,6 @@
 #include "datalayer/hdf5/omHdf5FileUtils.hpp"
 #include "common/logging.h"
 #include "common/exception.h"
-#include <QFile>
 
 void OmHdf5FileUtils::file_create(const std::string& fpath) {
   QFile file(QString::fromStdString(fpath));

@@ -1,7 +1,5 @@
 #pragma once
-
-#include <QString>
-#include "yaml-cpp-old/yaml.h"
+#include "precomp.h"
 
 class OmProjectImpl;
 class OmPreferences;

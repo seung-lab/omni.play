@@ -1,11 +1,10 @@
 #pragma once
+#include "precomp.h"
 
 #include "common/common.h"
 #include "mesh/drawer/omSegmentPointers.h"
 #include "gui/widgets/omSegmentContextMenu.h"
 #include "volume/omSegmentation.h"
-
-#include <QtGui>
 
 class GUIPageOfSegments;
 class SegmentDataWrapper;

@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "tiles/omTileTypes.hpp"
 #include "view2d/om2dPreferences.hpp"

@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "datalayer/compressedFile.h"
 #include "datalayer/fs/omIOnDiskFile.h"

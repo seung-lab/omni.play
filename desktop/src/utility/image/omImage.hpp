@@ -1,16 +1,13 @@
 #pragma once
+#include "precomp.h"
 
 #include "bits/omImage_traits.hpp"
 #include "common/common.h"
 #include "utility/malloc.hpp"
 #include "zi/omUtility.h"
 
-#include <algorithm>
-#include <functional>
-#include <boost/multi_array.hpp>
-#include <boost/shared_ptr.hpp>
-
-template <typename T, std::size_t D> class OmImageCopiedData {
+template <typename T, std::size_t D>
+class OmImageCopiedData {
  public:
   typedef typename boost::multi_array<T, D> container_t;
   typedef OmDimension<D> dimension_t;
@@ -37,7 +34,8 @@ template <typename T, std::size_t D> class OmImageCopiedData {
   std::shared_ptr<container_t> data_;
 };
 
-template <typename T, std::size_t D> class OmImageRefData {
+template <typename T, std::size_t D>
+class OmImageRefData {
  public:
   typedef typename boost::multi_array_ref<T, D> container_t;
   typedef OmDimension<D> dimension_t;
@@ -60,7 +58,8 @@ template <typename T, std::size_t D> class OmImageRefData {
   std::shared_ptr<container_t> data_;
 };
 
-template <typename T, std::size_t D> class OmImageConstRefData {
+template <typename T, std::size_t D>
+class OmImageConstRefData {
  public:
   typedef typename boost::const_multi_array_ref<T, D> container_t;
   typedef OmDimension<D> dimension_t;
@@ -89,7 +88,6 @@ template <typename T, std::size_t D,
               OmImageCopiedData>
 class OmImage {
  public:
-
   OmImage() {}
 
   OmImage(OmDimension<D> extent) : d_(container_t<T, D>(extent)) {}
@@ -132,7 +130,8 @@ class OmImage {
     }
   }
 
-  template <typename O> void import(O* data, size_t len) {
+  template <typename O>
+  void import(O* data, size_t len) {
     if (d_.data_) {
       d_.data_->assign(data, data + len);
     }
@@ -169,9 +168,9 @@ class OmImage {
     d_.data_->resize(boost::extents[dims.x][dims.y][dims.z]);
   }
 
-  template <
-      typename T1, std::size_t D1,
-      template <typename DATATYPE1, std::size_t DATASIZE1> class container_t1>
+  template <typename T1, std::size_t D1,
+            template <typename DATATYPE1, std::size_t DATASIZE1>
+            class container_t1>
   friend class OmImage;
 
  private:

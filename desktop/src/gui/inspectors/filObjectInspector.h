@@ -1,7 +1,6 @@
 #pragma once
+#include "precomp.h"
 
-#include <QtGui>
-#include <QWidget>
 #include "project/omProject.h"
 
 class FilterDataWrapper;

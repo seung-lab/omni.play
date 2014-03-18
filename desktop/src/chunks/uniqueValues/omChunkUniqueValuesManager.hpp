@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "chunks/uniqueValues/omChunkUniqueValuesPerThreshold.hpp"
 #include "chunks/uniqueValues/omThresholdsInChunk.hpp"

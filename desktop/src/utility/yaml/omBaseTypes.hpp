@@ -1,13 +1,8 @@
 #pragma once
+#include "precomp.h"
 
 #include "common/common.h"
 #include "common/colors.h"
-#include "yaml-cpp-old/yaml.h"
-
-#include <unordered_set>
-#include <unordered_map>
-#include <QHash>
-#include <zi/for_each.hpp>
 
 class QString;
 

@@ -1,11 +1,8 @@
 #pragma once
+#include "precomp.h"
 
 #include "common/exception.h"
 #include "utility/malloc.hpp"
-
-#include <vector>
-#include <QFile>
-#include <QTextStream>
 
 namespace om {
 namespace file {
@@ -41,28 +38,32 @@ bool exists(const std::string& fnp);
 
 std::string tempPath();
 
-template <class PTR> void openFileRO(PTR& file, const std::string& fnp) {
+template <class PTR>
+void openFileRO(PTR& file, const std::string& fnp) {
   file.reset(new QFile(QString::fromStdString(fnp)));
   if (!file->open(QIODevice::ReadOnly)) {
     throw om::IoException("could not open file read only", fnp);
   }
 }
 
-template <class PTR> void openFileAppend(PTR& file, const std::string& fnp) {
+template <class PTR>
+void openFileAppend(PTR& file, const std::string& fnp) {
   file.reset(new QFile(QString::fromStdString(fnp)));
   if (!file->open(QIODevice::Append)) {
     throw om::IoException("could not open file read/write append", fnp);
   }
 }
 
-template <class PTR> void openFileRW(PTR& file, const std::string& fnp) {
+template <class PTR>
+void openFileRW(PTR& file, const std::string& fnp) {
   file.reset(new QFile(QString::fromStdString(fnp)));
   if (!file->open(QIODevice::ReadWrite)) {
     throw om::IoException("could not open file read/write");
   }
 }
 
-template <class PTR> void openFileWO(PTR& file, const std::string& fnp) {
+template <class PTR>
+void openFileWO(PTR& file, const std::string& fnp) {
   file.reset(new QFile(QString::fromStdString(fnp)));
 
   if (!file->open(QIODevice::WriteOnly)) {
@@ -70,7 +71,8 @@ template <class PTR> void openFileWO(PTR& file, const std::string& fnp) {
   }
 }
 
-template <typename T> T* mapFile(QFile* file) {
+template <typename T>
+T* mapFile(QFile* file) {
   uchar* map = file->map(0, file->size());
 
   if (!map) {
@@ -82,7 +84,8 @@ template <typename T> T* mapFile(QFile* file) {
   return reinterpret_cast<T*>(map);
 }
 
-template <typename T, class PTR> T* mapFile(PTR& file) {
+template <typename T, class PTR>
+T* mapFile(PTR& file) {
   uchar* map = file->map(0, file->size());
 
   if (!map) {
@@ -94,7 +97,8 @@ template <typename T, class PTR> T* mapFile(PTR& file) {
   return reinterpret_cast<T*>(map);
 }
 
-template <typename T> std::shared_ptr<T> readAll(QFile* file) {
+template <typename T>
+std::shared_ptr<T> readAll(QFile* file) {
   const int64_t numBytes = file->size();
 
   if (0 != numBytes % sizeof(T)) {
@@ -115,11 +119,13 @@ template <typename T> std::shared_ptr<T> readAll(QFile* file) {
   return ret;
 }
 
-template <typename T> std::shared_ptr<T> readAll(QFile& file) {
+template <typename T>
+std::shared_ptr<T> readAll(QFile& file) {
   return readAll<T>(&file);
 }
 
-template <typename T> void writeVec(QFile& file, const std::vector<T>& vec) {
+template <typename T>
+void writeVec(QFile& file, const std::vector<T>& vec) {
   resizeFileNumElements<T>(file, vec.size());
 
   const char* data = reinterpret_cast<const char*>(&vec[0]);
@@ -171,7 +177,8 @@ void createFileFromData(const std::string& fnp, const std::shared_ptr<T> ptr,
   writeNumElements(file, ptr, numElements);
 }
 
-template <typename T> void writeStrings(QFile& file, const T& strings) {
+template <typename T>
+void writeStrings(QFile& file, const T& strings) {
   QTextStream out(&file);
 
   FOR_EACH(iter, strings) { out << QString::fromStdString(*iter) << "\n"; }

@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "gui/toolbars/mainToolbar/filterWidgetImpl.hpp"
 #include "zi/omUtility.h"

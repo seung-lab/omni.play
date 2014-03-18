@@ -1,7 +1,5 @@
 #pragma once
-
-#include <assert.h>
-#include <QEvent>
+#include "precomp.h"
 
 #include "events/details/enums.hpp"
 #include "events/listeners.h"

@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "gui/tools.hpp"
 #include "common/common.h"
@@ -6,8 +7,6 @@
 #include "events/events.h"
 #include "viewGroup/omBrushSize.hpp"
 #include "system/omUndoStack.hpp"
-
-#include <QSize>
 
 class OmStateManagerImpl {
  private:

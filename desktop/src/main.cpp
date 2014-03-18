@@ -1,4 +1,4 @@
-#include <zi/zargs/zargs.hpp>
+#include "precomp.h"
 ZiARG_bool(headless, false, "run Omni without GUI");
 ZiARG_string(cmdfile, "", "run automated script file");
 ZiARG_int64(psn, 0, "mac OSX proces ID");
@@ -18,9 +18,6 @@ ZiARG_bool(verbose, true, "Verbose Log output");
 #include "utility/segmentationDataWrapper.hpp"
 #include "headless/headless.h"
 #include "system/omQTApp.hpp"
-
-#include <QFileInfo>
-#include <QApplication>
 
 class Omni {
  private:

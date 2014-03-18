@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "utility/segmentDataWrapper.hpp"
 #include "common/common.h"

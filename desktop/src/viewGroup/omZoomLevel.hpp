@@ -1,6 +1,5 @@
 #pragma once
-#include <events/events.h>
-#include <cmath>
+#include "precomp.h"
 #include "view2d/om2dPreferences.hpp"
 
 class OmZoomLevel {

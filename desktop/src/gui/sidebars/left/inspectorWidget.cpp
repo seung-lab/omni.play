@@ -20,9 +20,6 @@
 #include "viewGroup/omViewGroupState.h"
 #include "task/taskManager.h"
 
-#include <QtGui>
-#include <QMessageBox>
-
 Q_DECLARE_METATYPE(DataWrapperContainer);
 Q_DECLARE_METATYPE(FilterDataWrapper);
 

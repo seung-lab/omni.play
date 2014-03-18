@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "tiles/cache/omTileCacheThreadPool.hpp"
 #include "common/common.h"
@@ -11,9 +12,6 @@
 #include "view2d/omTileDrawer.hpp"
 #include "view2d/omView2dState.hpp"
 
-#include <QApplication>
-
-#include <zi/zargs/zargs.hpp>
 DECLARE_ZiARG_bool(noTilePrefetch);
 
 /**

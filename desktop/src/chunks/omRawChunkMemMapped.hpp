@@ -1,11 +1,10 @@
 #pragma once
+#include "precomp.h"
 
 #include "common/common.h"
 #include "datalayer/fs/omFileNames.hpp"
 #include "volume/io/omVolumeData.h"
 #include "volume/omMipVolume.h"
-
-#include <QFile>
 
 template <typename T>
 class OmRawChunkMemMapped {

@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 /*
  * AUTHORS:
@@ -7,18 +8,13 @@
  * Do not share without authors permission.
  */
 
-#include <assert.h>
-#include <stdlib.h>
-#include <string.h>
-#include <utility>
-#include "common/exception.h"
-
 //#define DYNAMIC_FOREST_ASSERT(x) (assert(x))
 #define DYNAMIC_FOREST_ASSERT(x) (static_cast<void>(sizeof(x)))
 
 namespace zi {
 
-template <typename T> class DynamicForestPool {
+template <typename T>
+class DynamicForestPool {
  private:
   struct Node {
     T l_, r_, p_, pp_;
@@ -35,7 +31,6 @@ template <typename T> class DynamicForestPool {
   ~DynamicForestPool() { free(x_); }
 
  private:
-
   uint64_t numBytes() const { return numBytes(size_); }
 
   static uint64_t numBytes(const size_t s) { return s * sizeof(Node); }

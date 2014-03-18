@@ -1,8 +1,10 @@
 #pragma once
+#include "precomp.h"
 
 namespace om {
 
-template <typename T> struct point2d {
+template <typename T>
+struct point2d {
   T x;
   T y;
 

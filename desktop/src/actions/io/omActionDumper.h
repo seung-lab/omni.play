@@ -1,11 +1,8 @@
 #pragma once
+#include "precomp.h"
 
 #include "common/common.h"
 #include "actions/io/omActionTypes.h"
-
-#include <QFileInfo>
-#include <QTextStream>
-#include <QStringList>
 
 class OmActionDumper {
  private:

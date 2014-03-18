@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "common/common.h"
 #include "coordinates/data.h"
@@ -7,10 +8,6 @@
 #include "datalayer/fs/omFile.hpp"
 #include "system/manager.hpp"
 #include "events/events.h"
-
-#include <QDataStream>
-#include <QFile>
-#include <QVector>
 
 class OmSegmentation;
 

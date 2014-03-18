@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 /*
  * A FrustumCuller wrapper specifically used to cull objects in a volume.

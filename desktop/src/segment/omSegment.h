@@ -1,10 +1,10 @@
 #pragma once
+#include "precomp.h"
 
 #include "common/enums.hpp"
 #include "coordinates/coordinates.h"
 #include "segment/omSegmentTypes.h"
 #include "segment/types.hpp"
-#include <zi/mutex.hpp>
 
 class OmSegments;
 

@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 /*
  *  OmTile allows access to 2D image data from the source volume.

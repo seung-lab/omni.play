@@ -1,9 +1,7 @@
 #pragma once
+#include "precomp.h"
 
 #include "system/omLocalPreferences.hpp"
-
-#include <QApplication>
-#include <QFont>
 
 class OmQTApp {
  private:

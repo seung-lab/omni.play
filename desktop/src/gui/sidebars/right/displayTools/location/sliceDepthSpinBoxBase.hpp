@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "events/listeners.h"
 #include "gui/widgets/omIntSpinBox.hpp"
@@ -8,8 +9,6 @@
 #include "viewGroup/omViewGroupView2dState.hpp"
 #include "volume/omMipVolume.h"
 #include "volume/omSegmentation.h"
-
-#include <limits>
 
 class SliceDepthSpinBoxBase : public OmIntSpinBox,
                               public om::event::View2dEventListener {

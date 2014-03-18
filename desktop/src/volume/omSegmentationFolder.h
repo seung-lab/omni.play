@@ -1,10 +1,10 @@
 #pragma once
+#include "precomp.h"
 
 class OmSegmentation;
 
 #include "common/common.h"
 #include "coordinates/chunk.h"
-#include <QString>
 
 namespace om {
 namespace segmentation {

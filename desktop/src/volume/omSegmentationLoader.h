@@ -1,11 +1,10 @@
 #pragma once
+#include "precomp.h"
 
 #include "common/common.h"
 
 class OmSegmentation;
 class OmPagingPtrStore;
-
-#include <QSet>
 
 namespace om {
 namespace segmentation {

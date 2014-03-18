@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "volume/omAffinityGraph.h"
 #include "project/omProject.h"

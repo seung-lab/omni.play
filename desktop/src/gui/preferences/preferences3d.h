@@ -1,6 +1,6 @@
 #pragma once
+#include "precomp.h"
 
-#include <QWidget>
 #include "ui_preferences3d.h"
 
 class Preferences3d : public QWidget, public Ui::preferences3d {

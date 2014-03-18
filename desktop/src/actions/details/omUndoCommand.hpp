@@ -1,9 +1,8 @@
 #pragma once
+#include "precomp.h"
 
 #include "system/omStateManager.h"
 #include "system/omUndoStack.hpp"
-
-#include <QUndoCommand>
 
 class OmUndoCommand : public QUndoCommand {
  public:
@@ -18,7 +17,7 @@ class OmUndoCommand : public QUndoCommand {
     }
 
     if (mUndoable) {
-      //push string on undo stack (causing redo to be called)
+      // push string on undo stack (causing redo to be called)
       SetDescription();
       OmStateManager::UndoStack().Push(this);
 

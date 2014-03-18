@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "annotation/annotation.h"
 #include "common/common.h"
@@ -11,10 +12,6 @@
 #include "viewGroup/omViewGroupView2dState.hpp"
 #include "utility/segmentationDataWrapper.hpp"
 #include "utility/channelDataWrapper.hpp"
-
-#include <QtGui>
-#include <QDialog>
-#include <sstream>
 
 namespace om {
 namespace sidebars {

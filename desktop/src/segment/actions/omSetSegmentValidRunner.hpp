@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "segment/omSegmentUtils.hpp"
 #include "system/omLocalPreferences.hpp"

@@ -1,6 +1,5 @@
 #pragma once
-
-#include "yaml-cpp-old/yaml.h"
+#include "precomp.h"
 
 class OmFilter2dManager;
 class OmFilter2d;

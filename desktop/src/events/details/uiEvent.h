@@ -1,6 +1,6 @@
 #pragma once
+#include "precomp.h"
 
-#include <QWidget>
 #include "events/details/event.h"
 
 namespace om {

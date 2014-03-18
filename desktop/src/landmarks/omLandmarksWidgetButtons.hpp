@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "actions/omActions.h"
 #include "datalayer/fs/omFile.hpp"

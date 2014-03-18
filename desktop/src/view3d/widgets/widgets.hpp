@@ -1,6 +1,6 @@
 #pragma once
+#include "precomp.h"
 
-#include <array>
 #include "system/preferences3d.hpp"
 #include "system/omPreferences.h"
 #include "view3d/widgets/annotationsWidget.h"
@@ -28,13 +28,10 @@ class Widgets {
 
  public:
   Widgets(View3d& view3d, OmViewGroupState& vgs)
-      : widgets_({
-    {
-      new ViewBoxWidget(view3d, vgs), new InfoWidget(view3d),
-          new ChunkExtentWidget(view3d), new PercDoneWidget(view3d),
-          new AnnotationsWidget(view3d, vgs)
-    }
-  }) {}
+      : widgets_(
+            {{new ViewBoxWidget(view3d, vgs),    new InfoWidget(view3d),
+              new ChunkExtentWidget(view3d),     new PercDoneWidget(view3d),
+              new AnnotationsWidget(view3d, vgs)}}) {}
 
   ~Widgets() {
     for (auto* w : widgets_) {

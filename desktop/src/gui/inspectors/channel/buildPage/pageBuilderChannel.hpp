@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "gui/widgets/progressBarDialog.hpp"
 #include "gui/inspectors/channel/buildPage/chanVolBuilder.hpp"

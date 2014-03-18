@@ -1,11 +1,5 @@
 #pragma once
-
-#include <zi/bits/cstdint.hpp>
-#include <zi/vl/vec.hpp>
-#include <zi/concurrency/rwmutex.hpp>
-#include <zi/utility/container_utilities.hpp>
-
-#include <vector>
+#include "precomp.h"
 
 class TriStripCollector {
  private:
@@ -15,10 +9,10 @@ class TriStripCollector {
   std::size_t missing_;
   zi::rwmutex lock_;
 
-  template <typename T> friend class OmMeshWriterTaskV2;
+  template <typename T>
+  friend class OmMeshWriterTaskV2;
 
  public:
-
   TriStripCollector() : missing_(0), lock_() {}
 
   ~TriStripCollector() {}

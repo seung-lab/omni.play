@@ -1,6 +1,5 @@
 #pragma once
-
-#include <QWidget>
+#include "precomp.h"
 
 class OmGuiUserChooser;
 

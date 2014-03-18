@@ -6,9 +6,6 @@
 #include "utility/yaml/manager.hpp"
 #include "utility/yaml/coords.h"
 
-#include <fstream>
-#include <sstream>
-
 namespace om {
 namespace annotation {
 

@@ -1,8 +1,7 @@
 #pragma once
+#include "precomp.h"
 
 #include "view2d/omView2dState.hpp"
-
-#include <QMouseEvent>
 
 class OmView2dZoom {
  private:

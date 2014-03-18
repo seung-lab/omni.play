@@ -1,9 +1,8 @@
 #pragma once
+#include "precomp.h"
 
 #include "common/common.h"
 #include "common/enums.hpp"
-#include <QtGui>
-
 class CacheMonitorWidget : public QWidget {
   Q_OBJECT;
 

@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "events/events.h"
 #include "system/omPreferenceDefinitions.h"
@@ -9,8 +10,6 @@
 #include "view2d/omView2dState.hpp"
 #include "viewGroup/omBrushSize.hpp"
 #include "annotation/annotation.h"
-
-#include <QPainter>
 
 class OmScreenPainter {
  public:

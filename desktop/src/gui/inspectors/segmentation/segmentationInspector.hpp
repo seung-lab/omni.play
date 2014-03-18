@@ -1,11 +1,10 @@
 #pragma once
+#include "precomp.h"
 
 #include "utility/segmentationDataWrapper.hpp"
 #include "gui/inspectors/inspectorProperties.h"
 #include "gui/inspectors/segmentation/pageSelector.hpp"
 #include "gui/inspectors/segmentation/pagesWidget.h"
-
-#include <QDialog>
 
 // based off
 // http://doc.qt.nokia.com/latest/dialogs-configdialog-configdialog-cpp.html

@@ -1,9 +1,8 @@
 #pragma once
+#include "precomp.h"
 
 #include "gui/widgets/omSegmentContextMenu.h"
 #include "utility/segmentDataWrapper.hpp"
-
-#include <QtGui>
 
 namespace om {
 namespace landmarks {

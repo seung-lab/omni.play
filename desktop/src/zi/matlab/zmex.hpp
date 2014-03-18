@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 /*
  * AUTHORS:
  *   Aleksandar Zlateski <zlateski@mit.edu>
@@ -8,14 +9,6 @@
 
 #ifndef _ZI_MATLAB_ZMEX_
 #define _ZI_MATLAB_ZMEX_
-
-#include <string>
-#include <cmath>
-#include <boost/lexical_cast.hpp>
-
-#include <zi/utility/for_each.hpp>
-#include <zi/bits/cstdint.hpp>
-#include <zi/time.hpp>
 
 #include "mex.h"
 

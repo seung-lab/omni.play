@@ -1,4 +1,5 @@
 #pragma once
+#include "precomp.h"
 
 #include "actions/io/omActionLogger.hpp"
 #include "actions/io/omActionReplayer.hpp"
@@ -26,10 +27,6 @@
 #include "users/omGuiUserChooser.h"
 #include "utility/omFileHelpers.h"
 #include "utility/segmentationDataWrapper.hpp"
-
-#include <QDir>
-#include <QFile>
-#include <QFileInfo>
 
 class OmProjectImpl {
  private:

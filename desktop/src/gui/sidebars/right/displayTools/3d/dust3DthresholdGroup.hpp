@@ -1,10 +1,9 @@
 #pragma once
+#include "precomp.h"
 
 #include "gui/widgets/omIntSpinBox.hpp"
 #include "events/events.h"
 #include "viewGroup/omViewGroupState.h"
-
-#include <limits>
 
 class Dust3DThresholdGroup : public OmIntSpinBox {
   Q_OBJECT;

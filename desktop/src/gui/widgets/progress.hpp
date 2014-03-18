@@ -1,8 +1,7 @@
 #pragma once
+#include "precomp.h"
 
 #include "utility/omLockedPODs.hpp"
-
-#include <QObject>
 
 namespace om {
 namespace gui {

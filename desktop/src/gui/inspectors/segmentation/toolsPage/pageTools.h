@@ -1,7 +1,7 @@
 #pragma once
+#include "precomp.h"
 
 #include "utility/segmentationDataWrapper.hpp"
-#include <QtGui>
 
 namespace om {
 namespace segmentationInspector {
