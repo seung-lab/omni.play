@@ -1,15 +1,5 @@
+#include "precomp.h"
 #include "common/logging.h"
-#include <boost/log/common.hpp>
-#include <boost/log/core.hpp>
-#include <boost/log/sinks.hpp>
-#include <boost/log/utility/empty_deleter.hpp>
-#include <boost/log/utility/setup/common_attributes.hpp>
-#include <boost/log/attributes/clock.hpp>
-#include <boost/log/attributes/current_thread_id.hpp>
-#include <boost/log/expressions/attr.hpp>
-#include <boost/log/expressions/filter.hpp>
-#include <boost/log/expressions/predicates/is_in_range.hpp>
-#include <fstream>
 
 using namespace boost::log;
 

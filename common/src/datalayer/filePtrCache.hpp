@@ -1,12 +1,11 @@
 #pragma once
 
+#include "precomp.h"
 #include "common/common.h"
 #include "cache/lockedObjects.hpp"
 #include "datalayer/memMappedFile.hpp"
 #include "pipeline/stage.hpp"
 #include "pipeline/mapData.hpp"
-
-#include <sstream>
 
 namespace om {
 namespace datalayer {

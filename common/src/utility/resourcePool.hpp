@@ -1,17 +1,12 @@
 #pragma once
 
-#include <thread>
-#include <chrono>
-#include <mutex>
-#include <deque>
-#include <functional>
-#include <atomic>
-#include <memory>
+#include "precomp.h"
 
 namespace om {
 namespace utility {
 
-template <typename T> class ResourcePool {
+template <typename T>
+class ResourcePool {
  public:
   ResourcePool(int max,
                std::function<std::shared_ptr<T>()> generator = &default_create)
@@ -52,7 +47,7 @@ template <typename T> class ResourcePool {
     void swap(Lease&& other) { std::swap(ptr_, other.ptr_); }
 
     explicit operator T*() { return ptr_.get(); }
-    explicit operator bool() { return (bool) ptr_; }
+    explicit operator bool() { return (bool)ptr_; }
     T* get() { return ptr_.get(); }
     T* operator->() { return ptr_.get(); }
 
@@ -74,7 +69,7 @@ template <typename T> class ResourcePool {
         return std::shared_ptr<T>();
       }
       auto ret = generator_();
-      if ((bool) ret) {
+      if ((bool)ret) {
         num_++;
       }
       return ret;
@@ -85,7 +80,7 @@ template <typename T> class ResourcePool {
   }
 
   void release(std::shared_ptr<T> ptr) {
-    if ((bool) ptr) {
+    if ((bool)ptr) {
       std::lock_guard<std::mutex> g(m_);
       resources_.push_back(ptr);
     }

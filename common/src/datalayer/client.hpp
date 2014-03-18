@@ -1,13 +1,12 @@
 #pragma once
 
+#include "precomp.h"
 #include "common/macro.hpp"
 #include "common/logging.h"
 #include "utility/resourcePool.hpp"
 #include "datalayer/dataSource.hpp"
 #include "network/http/typedefs.hpp"
 #include "network/http/interface.hpp"
-
-#include <curl/curl.h>
 
 namespace om {
 namespace datalayer {

@@ -40,7 +40,7 @@ INT     =   $(AT)install_name_tool
 endif
 
 CC       =  $(AT)gcc
-CXX      =  $(AT)g++ -std=c++11
+CXX      =  $(AT)g++
 THRIFT   =  $(AT)$(EXTERNAL)/thrift/bin/thrift
 MOC      =  $(AT)$(EXTERNAL)/qt/bin/moc
 RCC      =  $(AT)$(EXTERNAL)/qt/bin/rcc
@@ -56,15 +56,12 @@ CWARN       =   -Wall -Wno-sign-compare -Wunused-variable -Wreturn-type -Wno-unu
 CXXWARN     =   $(CWARN) -Wno-deprecated -Woverloaded-virtual -Wunused-but-set-variable -Wno-switch -Wno-unused-value -Wno-comment
 
 CPP_DEPFLAGS        =   --std=c++11 -MM -MG -MP -MT "$(@:.d=.o)"
-CPP_INLINE_DEPFLAGS =   -MMD -MP -MT "$(@)" -MF $(@:.o=.T)
 COMMON_CFLAGS       =   -g -std=gnu99 -D_GNU_SOURCE=1 \
-				-D_REENTRANT $(CPP_INLINE_DEPFLAGS) \
-				$(FPIC) $(CWARN)
+				-D_REENTRANT $(FPIC) $(CWARN)
 
 THRIFT_CXXFLAGS    =    -DHAVE_CONFIG_H
 
-COMMON_CXXFLAGS    =    -g $(CPP_INLINE_DEPFLAGS) \
-						   $(FPIC) $(CXXWARN) $(THRIFT_CXXFLAGS) -std=c++11
+COMMON_CXXFLAGS    =    -g $(FPIC) $(CXXWARN) $(THRIFT_CXXFLAGS) -std=c++11
 
 DBG_CFLAGS         =    $(COMMON_CFLAGS) -DDEBUG_MODE=1
 DBG_CXXFLAGS       =    $(COMMON_CXXFLAGS) -DDEBUG_MODE=1 -Og #-gstabs+
@@ -111,8 +108,7 @@ endif
 define build_cpp
 	$(ECHO) "[CXX] compiling $<"
 	$(MKDIR) -p $(dir $@)
-	$(CXX) -c $(CXXFLAGS) -DBOOST_SPIRIT_USE_PHOENIX_V3 $1 -o $@ $<
-	$(MV) -f "$(@:.o=.T)" "$(@:.o=.d)"
+	$(CXX) -c $(CXXFLAGS) $1 -o $@ $<
 endef
 
 define build_c
@@ -121,9 +117,15 @@ define build_c
 	$(CC) -c $(CFLAGS) $1 -o $@ $<
 endef
 
+define build_gch
+	$(ECHO) "[CXX] compiling $<"
+	$(MKDIR) -p $(dir $@)
+	$(CXX) -c $(CXXFLAGS) $1 -o $@ $<
+endef
+
 define make_d
 	$(MKDIR) -p $(dir $@)
-	$(CXX) $(CPP_DEPFLAGS) -DBOOST_SPIRIT_USE_PHOENIX_V3 $1 -MF $@ $<
+	$(CXX) $(CPP_DEPFLAGS) $1 -MF $@ $<
 endef
 
 define deps
@@ -224,19 +226,21 @@ LIBS = $(EXTERNAL)/boost/lib/libboost_filesystem.a \
 	   -lpthread -lrt -lGLU -lGL -lz \
 	   $(CURL_LIBS)
 
-$(BUILDDIR)/common/%.d: common/src/%.cpp
+$(BUILDDIR)/common/%.d: common/src/%.cpp common/src/precomp.h.gch 
 	$(call make_d, $(INCLUDES))
-$(BUILDDIR)/common/%.o: common/src/%.cpp
+$(BUILDDIR)/common/%.o: common/src/%.cpp common/src/precomp.h.gch 
 	$(call build_cpp, $(INCLUDES))
+common/src/precomp.h.gch: common/src/precomp.h
+	$(call build_gch, $(INCLUDES))
 
 $(eval $(call deps,COMMON,common,$(YAML_DEPS)))
 
 
 COMMON_TEST_INCLUDES = -I$(HERE)/common/test/src
 
-$(BUILDDIR)/common/test/%.d: common/test/src/%.cpp
+$(BUILDDIR)/common/test/%.d: common/test/src/%.cpp common/src/precomp.h.gch 
 	$(call make_d, $(INCLUDES) $(TEST_INCLUDES) $(COMMON_TEST_INCLUDES))
-$(BUILDDIR)/common/test/%.o: common/test/src/%.cpp
+$(BUILDDIR)/common/test/%.o: common/test/src/%.cpp common/src/precomp.h.gch 
 	$(call build_cpp, $(INCLUDES) $(TEST_INCLUDES) $(COMMON_TEST_INCLUDES))
 
 $(eval $(call deps,COMMON_TEST,common/test,$(COMMON_DEPS) $(TEST_DEPS)))

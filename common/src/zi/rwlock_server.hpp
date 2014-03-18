@@ -2,11 +2,8 @@
 #ifndef ZI_RWLOCK_SERVER_HPP
 #define ZI_RWLOCK_SERVER_HPP
 
+#include "precomp.h"
 #include "rwlock_pool.hpp"
-
-#include <zi/unordered_map.hpp>
-#include <zi/array.hpp>
-#include <zi/bits/hash.hpp>
 
 namespace zi {
 

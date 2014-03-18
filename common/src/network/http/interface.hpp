@@ -1,14 +1,12 @@
 #pragma once
 
-#include <string>
-#include <memory>
+#include "precomp.h"
 #include "network/http/typedefs.hpp"
 
 namespace om {
 namespace network {
 namespace http {
-struct V1 {
-};
+struct V1 {};
 
 // Must implement om::network::http::partial_path for each key type.  Tag is
 // used to differentiate multiple API versions.
@@ -18,7 +16,8 @@ std::string path(Tag tag, const std::string& root, const TKey& key) {
 }
 
 // Boring default implementation.  Partially specialize for specific data types.
-template <typename T, typename VersionTag = V1> struct interface {
+template <typename T, typename VersionTag = V1>
+struct interface {
   static std::string mime_type() { return "application/octet-stream"; }
   static std::string serialize(std::shared_ptr<T> data) {
     return std::string();
@@ -30,7 +29,8 @@ template <typename T, typename VersionTag = V1> struct interface {
   }
 };
 
-template <> struct interface<std::string> {
+template <>
+struct interface<std::string> {
   static std::string mime_type() { return "text/plain"; }
   static std::string serialize(std::shared_ptr<std::string> data) {
     return *data;

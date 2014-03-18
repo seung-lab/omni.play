@@ -1,3 +1,4 @@
+#include "precomp.h"
 #include "datalayer/filePtrCache.hpp"
 #include "mesh/vertexIndex/dataSource.h"
 #include "mesh/vertexIndex/chunkTypes.hpp"
@@ -6,9 +7,6 @@
 #include "datalayer/vector.hpp"
 #include "utility/malloc.hpp"
 #include "datalayer/paths.hpp"
-
-#include <limits>
-#include <unordered_map>
 
 extern template class std::vector<uint32_t>;
 

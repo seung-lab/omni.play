@@ -1,6 +1,6 @@
 #pragma once
 
-#include <functional>
+#include "precomp.h"
 #include "vmmlib/vmmlib.h"
 #include "common/macro.hpp"
 

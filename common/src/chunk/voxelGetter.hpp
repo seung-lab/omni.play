@@ -1,9 +1,8 @@
 #pragma once
 
+#include "precomp.h"
 #include "chunk/cachedDataSource.hpp"
 #include "boost/multi_array.hpp"
-#include <mutex>
-#include <deque>
 
 namespace om {
 namespace chunk {

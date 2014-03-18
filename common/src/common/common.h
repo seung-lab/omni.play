@@ -1,14 +1,10 @@
 #pragma once
 
+#include "precomp.h"
 #include "core.hpp"
 #include "logging.h"
 
 #include "common/exception.h"
-#include <cassert>
-#include <unordered_set>
-#include <deque>
-#include <set>
-#include <iostream>
 
 #include "math.hpp"
 

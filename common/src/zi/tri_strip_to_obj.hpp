@@ -2,8 +2,7 @@
 #ifndef TRI_STRIP_TO_OBJ_HPP
 #define TRI_STRIP_TO_OBJ_HPP 1
 
-#include <iostream>
-#include <cstddef>
+#include "precomp.h"
 
 namespace zi {
 

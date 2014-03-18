@@ -1,17 +1,12 @@
 #pragma once
 
-#include <zi/bits/unordered_map.hpp>
-#include <zi/bits/unordered_set.hpp>
-#include <zi/concurrency.hpp>
-#include <zi/utility/non_copyable.hpp>
-#include <zi/utility/assert.hpp>
-
-#include <cstddef>
+#include "precomp.h"
 
 namespace zi {
 namespace detail {
 
-template <class T> class rwlock_impl : zi::non_copyable {
+template <class T>
+class rwlock_impl : zi::non_copyable {
  private:
   typedef T client_type;
   typedef zi::unordered_map<T, std::size_t> client_set;
@@ -119,61 +114,59 @@ template <class T> class rwlock_impl : zi::non_copyable {
     }
   }
 
-    writer_ = client;
-    has_writer_ = true;
-  }
+  writer_ = client;
+  has_writer_ = true;
+} inline void release_write(const T& client) const {
+  ZI_VERIFY(client == writer_);
 
-  inline void release_write(const T& client) const {
-    ZI_VERIFY(client == writer_);
+  has_writer_ = writer_waiting_ = false;
+  writer_cv_.notify_one();
+  reader_cv_.notify_all();
+}
 
-    has_writer_ = writer_waiting_ = false;
-    writer_cv_.notify_one();
-    reader_cv_.notify_all();
-  }
+bool is_writer(const T& client) const {
+  return has_writer_ && writer_ == client;
+}
 
-  bool is_writer(const T& client) const {
-    return has_writer_ && writer_ == client;
-  }
+bool is_reader(const T& client) const { return readers_.count(client) > 0; }
 
-  bool is_reader(const T& client) const { return readers_.count(client) > 0; }
-
-  inline bool timed_acquire_write(const T& client, const zi::mutex& m,
-                                  int64_t ttl) const {
-    while (readers_.size() || has_writer_) {
-      writer_waiting_ = true;
-      if (!writer_cv_.timed_wait(m, ttl)) {
-        if (readers_.size() || has_writer_) {
-          writer_waiting_ = false;
-          writer_cv_.notify_one();
-          return false;
-        }
-
-        writer_ = client;
-        has_writer_ = true;
-        return true;
+inline bool timed_acquire_write(const T& client, const zi::mutex& m,
+                                int64_t ttl) const {
+  while (readers_.size() || has_writer_) {
+    writer_waiting_ = true;
+    if (!writer_cv_.timed_wait(m, ttl)) {
+      if (readers_.size() || has_writer_) {
+        writer_waiting_ = false;
+        writer_cv_.notify_one();
+        return false;
       }
+
+      writer_ = client;
+      has_writer_ = true;
+      return true;
     }
   }
+}
 
-  template <int64_t I>
-  inline bool timed_acquire_write(
-      const T& client, const zi::mutex& m,
-      const zi::interval::detail::interval_tpl<I>& ttl) const {
-    while (readers_.size() || has_writer_) {
-      writer_waiting_ = true;
-      if (!writer_cv_.wait(m, ttl)) {
-        if (readers_.size() || has_writer_) {
-          writer_waiting_ = false;
-          writer_cv_.notify_one();
-          return false;
-        }
-
-        writer_ = client;
-        has_writer_ = true;
-        return true;
+template <int64_t I>
+inline bool timed_acquire_write(
+    const T& client, const zi::mutex& m,
+    const zi::interval::detail::interval_tpl<I>& ttl) const {
+  while (readers_.size() || has_writer_) {
+    writer_waiting_ = true;
+    if (!writer_cv_.wait(m, ttl)) {
+      if (readers_.size() || has_writer_) {
+        writer_waiting_ = false;
+        writer_cv_.notify_one();
+        return false;
       }
+
+      writer_ = client;
+      has_writer_ = true;
+      return true;
     }
   }
+}
 };
 
 template <class ClientType, class LockType>
@@ -184,8 +177,8 @@ class rwlock_pool : zi::non_copyable {
   mutable zi::mutex mutex_;
   mutable lock_map locks_;
 
-  inline rwlock_impl<ClientType>* find_or_insert_lock_nl(
-      const LockType& lid) const {
+  inline rwlock_impl<ClientType>* find_or_insert_lock_nl(const LockType& lid)
+      const {
     rwlock_impl<ClientType>* l;
     typename lock_map::iterator it = locks_.find(lid);
 
@@ -200,7 +193,6 @@ class rwlock_pool : zi::non_copyable {
   }
 
  public:
-
   rwlock_pool() : mutex_(), locks_() {}
 
   ~rwlock_pool() {

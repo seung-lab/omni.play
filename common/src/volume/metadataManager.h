@@ -1,8 +1,6 @@
 #pragma once
 
-#include <string>
-#include <zi/mutex.hpp>
-
+#include "precomp.h"
 #include "volume/metadata.hpp"
 #include "coordinates/coordinates.h"
 #include "datalayer/file.h"
@@ -25,7 +23,7 @@ class MetadataManager {
 
   bool HasMetadata() const {
     zi::guard g(lock_);
-    return (bool) meta_;
+    return (bool)meta_;
   }
 
   std::string& name() const {

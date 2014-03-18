@@ -1,15 +1,14 @@
 #pragma once
 
-#include <boost/scoped_ptr.hpp>
-#include <boost/variant.hpp>
-
+#include "precomp.h"
 #include "common/common.h"
 #include "coordinates/coordinates.h"
 
 namespace om {
 namespace tile {
 
-template <typename T> class Tile {
+template <typename T>
+class Tile {
  public:
   Tile(coords::Tile coord, coords::VolumeSystem vol)
       : coord_(coord), vol_(vol) {

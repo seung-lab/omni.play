@@ -1,6 +1,6 @@
 #pragma once
 
-#include <vmmlib/vmmlib.h>
+#include "precomp.h"
 using namespace vmml;
 
 #include "coordinates/data.h"

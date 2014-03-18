@@ -1,11 +1,10 @@
 #pragma once
 
+#include "precomp.h"
 #include "common/common.h"
 #include "yaml-cpp/yaml.h"
 #include "boost/filesystem.hpp"
 #include "boost/optional.hpp"
-
-#include <fstream>
 
 namespace om {
 namespace yaml {
@@ -14,7 +13,8 @@ class Util {
  public:
   // based on
   // http://code.google.com/p/yaml-cpp/wiki/HowToParseADocument#A_Complete_Example
-  template <typename T> static std::vector<T> Parse(const std::string& fnp) {
+  template <typename T>
+  static std::vector<T> Parse(const std::string& fnp) {
     YAML::Node doc;
     Read(fnp, doc);
 

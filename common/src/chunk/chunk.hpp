@@ -1,6 +1,6 @@
 #pragma once
 
-#include <boost/variant.hpp>
+#include "precomp.h"
 
 #include "common/common.h"
 #include "coordinates/coordinates.h"
@@ -9,7 +9,8 @@
 namespace om {
 namespace chunk {
 
-template <typename T> class Chunk {
+template <typename T>
+class Chunk {
  public:
   Chunk(coords::Chunk coord, coords::VolumeSystem vol)
       : coord_(coord),

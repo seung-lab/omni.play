@@ -1,9 +1,9 @@
 #pragma once
 
+#include "precomp.h"
 #include "boost/iostreams/device/mapped_file.hpp"
 #include "boost/filesystem.hpp"
 #include "boost/make_shared.hpp"
-#include <iosfwd>
 
 #include "datalayer/IOnDiskFile.h"
 #include "datalayer/file.h"
@@ -13,7 +13,8 @@ typedef boost::iostreams::mapped_file mapped_file;
 namespace om {
 namespace datalayer {
 
-template <typename T> class MemMappedFile : public IOnDiskFile<T> {
+template <typename T>
+class MemMappedFile : public IOnDiskFile<T> {
  public:
   static MemMappedFile<T> CreateNumElements(const std::string& fnp,
                                             const int64_t numElements) {
@@ -73,10 +74,11 @@ template <typename T> class MemMappedFile : public IOnDiskFile<T> {
 
   virtual file::path GetBaseFileName() const { return fnp_; }
 
-  virtual bool IsMapped() const { return (bool) file_; }
+  virtual bool IsMapped() const { return (bool)file_; }
 };
 
-template <typename T> class MemMappedFileRO {
+template <typename T>
+class MemMappedFileRO {
  public:
   // for boost::variant
   MemMappedFileRO() : fnp_("") {}
@@ -107,7 +109,7 @@ template <typename T> class MemMappedFileRO {
 
   virtual file::path GetBaseFileName() const { return fnp_; }
 
-  virtual bool IsMapped() const { return (bool) file_; }
+  virtual bool IsMapped() const { return (bool)file_; }
 
  private:
   file::path fnp_;

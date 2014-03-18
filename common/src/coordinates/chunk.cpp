@@ -1,8 +1,7 @@
+#include "precomp.h"
 #include "common/common.h"
 #include "common/logging.h"
 #include "coordinates/coordinates.h"
-
-#include <sstream>
 
 namespace om {
 namespace coords {

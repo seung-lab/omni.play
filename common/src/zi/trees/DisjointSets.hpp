@@ -1,14 +1,11 @@
 #pragma once
 
-#include <cstring>
-#include <cassert>
-#include <cstdlib>
-
-#include <iostream>
+#include "precomp.h"
 
 namespace zi {
 
-template <typename T> class DisjointSets {
+template <typename T>
+class DisjointSets {
 
  private:
   struct Node {
@@ -20,7 +17,6 @@ template <typename T> class DisjointSets {
   size_t nSets_;
 
  public:
-
   DisjointSets(size_t s) : size_(s), nSets_(s) {
     x_ = new Node[s];
     for (auto i = 0; i < s; ++i) x_[i].p = i;

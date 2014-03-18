@@ -1,6 +1,6 @@
 #pragma once
 
-#include <stdint.h>
+#include "precomp.h"
 #include "boost/scoped_array.hpp"
 #include "pipeline/stage.hpp"
 #include "tile/tileFilters.hpp"

@@ -1,19 +1,16 @@
 #pragma once
 
+#include "precomp.h"
 #include "utility/image_traits.hpp"
 #include "common/common.h"
 #include "utility/smartPtr.hpp"
 #include "zi/utility.h"
 
-#include <algorithm>
-#include <functional>
-#include <boost/multi_array.hpp>
-#include <boost/shared_ptr.hpp>
-
 namespace om {
 namespace utility {
 
-template <typename T, std::size_t D> class imageCopiedData {
+template <typename T, std::size_t D>
+class imageCopiedData {
  public:
   typedef typename boost::multi_array<T, D> container_t;
   typedef dimension<D> dimension_t;
@@ -40,7 +37,8 @@ template <typename T, std::size_t D> class imageCopiedData {
   std::shared_ptr<container_t> data_;
 };
 
-template <typename T, std::size_t D> class imageRefData {
+template <typename T, std::size_t D>
+class imageRefData {
  public:
   typedef typename boost::multi_array_ref<T, D> container_t;
   typedef dimension<D> dimension_t;
@@ -63,7 +61,8 @@ template <typename T, std::size_t D> class imageRefData {
   std::shared_ptr<container_t> data_;
 };
 
-template <typename T, std::size_t D> class imageConstRefData {
+template <typename T, std::size_t D>
+class imageConstRefData {
  public:
   typedef typename boost::const_multi_array_ref<T, D> container_t;
   typedef dimension<D> dimension_t;
@@ -91,7 +90,6 @@ template <typename T, std::size_t D,
               imageCopiedData>
 class image {
  public:
-
   image() {}
 
   image(dimension<D> extent) : d_(container_t<T, D>(extent)) {}
@@ -132,7 +130,8 @@ class image {
     }
   }
 
-  template <typename O> void import(O* data, size_t len) {
+  template <typename O>
+  void import(O* data, size_t len) {
     if (d_.data_) {
       d_.data_->assign(data, data + len);
     }

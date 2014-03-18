@@ -1,15 +1,15 @@
 #pragma once
 
+#include "precomp.h"
 #include "common/common.h"
-#include <zi/mutex.hpp>
 #include "zi/utility.h"
 #include "cache/objects.hpp"
-#include <map>
 
 namespace om {
 namespace cache {
 
-template <typename KEY, typename VAL> class LockedCacheMap {
+template <typename KEY, typename VAL>
+class LockedCacheMap {
  public:
   LockedCacheMap() {}
 
@@ -136,7 +136,8 @@ template <typename KEY, typename VAL> class LockedCacheMap {
   zi::spinlock lock_;
 };
 
-template <typename KEY> class LockedKeySet {
+template <typename KEY>
+class LockedKeySet {
  public:
   virtual ~LockedKeySet() {}
 
@@ -178,9 +179,9 @@ template <typename KEY> class LockedKeySet {
  *   --be added to front if key was not present in list_
  *   --not change order if key was present in list_
  **/
-template <typename KEY> class LockedKeyMultiIndex {
+template <typename KEY>
+class LockedKeyMultiIndex {
  public:
-
   virtual ~LockedKeyMultiIndex() {}
 
   inline boost::optional<KEY> remove_oldest() {

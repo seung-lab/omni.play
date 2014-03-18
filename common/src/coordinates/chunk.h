@@ -1,10 +1,8 @@
 #pragma once
 
-#include <iostream>
-#include <functional>
+#include "precomp.h"
 #include "common/macro.hpp"
 
-#include <vmmlib/vmmlib.h>
 using namespace vmml;
 #include "coordinates/global.h"
 
