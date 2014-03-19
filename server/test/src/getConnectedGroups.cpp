@@ -33,9 +33,9 @@ TEST(GetConnectedGroupsTest, Simple) {
   volume::Segmentation vol(p, 1);
 
   std::unordered_map<int, common::SegIDSet> groups;
-  groups[2].insert({1, 2, 3, 4, 5});
-  groups[3].insert({1, 3, 5, 7, 9});
-  groups[4].insert({1, 3, 5});
+  groups[2].insert({1, 2, 3, 4, 5, 6, 7});
+  groups[3].insert({1, 3, 5, 7, 9, 11});
+  groups[4].insert({1, 3});
 
   std::vector<server::group> _return;
   handler::get_connected_groups(_return, vol, groups);
@@ -43,22 +43,22 @@ TEST(GetConnectedGroupsTest, Simple) {
   EXPECT_EQ(7, _return.size());
   auto all = getByType(_return, om::server::groupType::ALL);
   EXPECT_EQ(1, all.groups.size());
-  EXPECT_EQ(7, all.groups.front().size());
+  EXPECT_EQ(9, all.groups.front().size());
 
   auto agreed = getByType(_return, om::server::groupType::AGREED);
   EXPECT_EQ(1, agreed.groups.size());
-  EXPECT_EQ(3, agreed.groups.front().size());
+  EXPECT_EQ(2, agreed.groups.front().size());
 
   auto partial = getByType(_return, om::server::groupType::PARTIAL);
   EXPECT_EQ(1, partial.groups.size());
-  EXPECT_EQ(0, partial.groups.front().size());
+  EXPECT_EQ(2, partial.groups.front().size());
 
   auto dust = getByType(_return, om::server::groupType::DUST);
   EXPECT_EQ(1, dust.groups.size());
   EXPECT_EQ(1, dust.groups.front().size());
 
   auto two = getByID(_return, 2);
-  EXPECT_EQ(1, two.groups.size());
+  EXPECT_EQ(2, two.groups.size());
   EXPECT_EQ(1, two.groups.front().size());
 
   auto three = getByID(_return, 3);

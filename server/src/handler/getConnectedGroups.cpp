@@ -20,7 +20,7 @@ typedef std::map<coords::DataBbox, std::pair<common::SegID, common::SegID>,
                  CompareBBox> pairwise_overlap_map;
 
 pairwise_overlap_map FindPairwiseOverlaps(
-    const common::SegIDSet& set, const volume::Segmentation& segmentation) {
+    const std::set<int>& set, const volume::Segmentation& segmentation) {
   pairwise_overlap_map pairwiseOverlaps;
   for (const auto& a : set) {
     auto segA = segmentation.SegData()[a];
@@ -43,7 +43,7 @@ pairwise_overlap_map FindPairwiseOverlaps(
 }
 
 std::vector<std::set<int>> ConnectedComponents(
-    const common::SegIDSet& idSet, const pairwise_overlap_map& map,
+    const std::set<int>& idSet, const pairwise_overlap_map& map,
     chunk::Voxels<uint32_t>& voxels, const volume::Segmentation& segmentation) {
   zi::disjoint_sets<uint32_t> sets(segmentation.SegData().size());
 
@@ -107,11 +107,11 @@ void get_connected_groups(
   size_t aggreedSize = 0;
   agreed.groups.emplace_back();
 
-  // partial is the group of all segments which are agreed on by some but not
+  // partial is the group of subgroups of segments which are agreed on by some
+  // but not
   // all of the users.
   server::group partial;
   partial.type = server::groupType::PARTIAL;
-  partial.groups.emplace_back();
 
   // dust is the group of all segments which are grouped into small groups.
   // Small is defined as a percentage (DUST_THRESHOLD) of the totalSize.
@@ -132,7 +132,7 @@ void get_connected_groups(
 
   // 2. Take segToFlag, and group those segments into one set for each
   // flag.
-  std::unordered_map<int, common::SegIDSet> flagToSet;
+  std::unordered_map<int, std::set<int>> flagToSet;
 
   // 3. Take flagToSet and we make one set for each connected component for a
   // given flag.  Go through all the resultant components.  The small ones are
@@ -176,7 +176,7 @@ void get_connected_groups(
   chunk::Voxels<uint32_t> voxels(vol.ChunkDS(), vol.Coords());
   for (const auto& iter : flagToSet) {
     const int& flag = iter.first;
-    const common::SegIDSet& set = iter.second;
+    const std::set<int>& set = iter.second;
 
     // agreed set is special. Calculate percent of total size and join all
     // together normally.
@@ -191,7 +191,7 @@ void get_connected_groups(
     auto flagUIDpair = flagToUserid.find(flag);
     // Check for partial agreement
     if (flagUIDpair == flagToUserid.end()) {
-      partial.groups.front().insert(set.begin(), set.end());
+      partial.groups.push_back(set);
       continue;
     }
 

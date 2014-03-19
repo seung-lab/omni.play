@@ -46,27 +46,38 @@ bool ComparisonTask::Start() {
   segmentation->ClearUserChangesAndSave();
   sdw.SegmentLists()->RefreshGUIlists();
 
-  auto allIter = std::find_if(
+  auto seedIter = std::find_if(
       namedGroups_.begin(), namedGroups_.end(),
-      [](const SegGroup& g) { return g.type == SegGroup::GroupType::ALL; });
-  if (allIter != namedGroups_.end()) {
-    common::SegIDSet allRoots;
-    for (const auto& id : allIter->segments) {
-      if (id <= 0 || id > segments->getMaxValue()) {
-        log_errors << "Invalid segment id " << id << " in 'All' segment group.";
-        continue;
-      }
-      auto rootID = segments->findRootID(id);
-      if (rootID) {
-        allRoots.insert(rootID);
+      [](const SegGroup& g) { return g.type == SegGroup::GroupType::SEED; });
+  auto agreedIter = std::find_if(
+      namedGroups_.begin(), namedGroups_.end(),
+      [](const SegGroup& g) { return g.type == SegGroup::GroupType::AGREED; });
+  std::map<SegGroup::GroupType, std::string> typeString{
+      {SegGroup::GroupType::SEED, "Seed"},
+      {SegGroup::GroupType::AGREED, "Agreed"}};
+  common::SegIDSet allRoots;
+  for (auto iter : {seedIter, agreedIter}) {
+    if (iter != namedGroups_.end()) {
+      for (const auto& id : iter->segments) {
+        if (id <= 0 || id > segments->getMaxValue()) {
+          log_errors << "Invalid segment id " << id << " in "
+                     << typeString[iter->type] << " segment group.";
+          continue;
+        }
+        auto rootID = segments->findRootID(id);
+        if (rootID) {
+          allRoots.insert(rootID);
+        }
       }
     }
+  }
+  if (allRoots.size() > 0) {
     segments->UpdateSegmentSelection(allRoots, true);
   } else {
     // clear any pre-existing selection (which could exist if the previous task
     // happened to be in the same volume)
     segments->UpdateSegmentSelection({}, true);
-    log_errors << "Missing All segments group.";
+    log_errors << "No segments in Seed segments group.";
   }
 
   om::event::Redraw2d();
