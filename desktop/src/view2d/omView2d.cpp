@@ -6,7 +6,7 @@
 #include "view2d/omView2dZoom.hpp"
 
 OmView2d::OmView2d(const om::common::ViewType viewtype, QWidget* parent,
-                   OmViewGroupState* vgs, OmMipVolume* vol,
+                   OmViewGroupState& vgs, OmMipVolume& vol,
                    const std::string& name)
     : OmView2dCore(parent, vol, vgs, viewtype, name),
       state_(State()),

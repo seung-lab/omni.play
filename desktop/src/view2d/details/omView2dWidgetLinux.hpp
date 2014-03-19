@@ -9,7 +9,7 @@ class OmView2dWidgetBase : public QGLWidget {
   virtual void Resize(int width, int height) = 0;
 
  public:
-  OmView2dWidgetBase(QWidget* parent, OmViewGroupState*) : QGLWidget(parent) {}
+  OmView2dWidgetBase(QWidget* parent, OmViewGroupState&) : QGLWidget(parent) {}
 
   inline void initializeGL() { Initialize(); }
 

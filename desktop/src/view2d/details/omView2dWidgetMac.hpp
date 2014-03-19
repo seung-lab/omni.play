@@ -11,7 +11,7 @@ class OmView2dWidgetBase : public QWidget {
   virtual void Resize(int width, int height) = 0;
 
  public:
-  OmView2dWidgetBase(QWidget* parent, OmViewGroupState* vgs)
+  OmView2dWidgetBase(QWidget* parent, OmViewGroupState& vgs)
       : QWidget(parent), vgs_(vgs) {
     Initialize();
     resetPbuffer(size());
@@ -19,7 +19,7 @@ class OmView2dWidgetBase : public QWidget {
 
   inline void resetPbuffer(const QSize& size) {
     buffer_.reset(new QGLPixelBuffer(size, QGLFormat::defaultFormat(),
-                                     vgs_->get3dContext()));
+                                     vgs_.get3dContext()));
   }
 
   inline void resizeEvent(QResizeEvent* event) {
@@ -41,5 +41,5 @@ class OmView2dWidgetBase : public QWidget {
 
  private:
   std::unique_ptr<QGLPixelBuffer> buffer_;
-  OmViewGroupState* vgs_;
+  OmViewGroupState& vgs_;
 };

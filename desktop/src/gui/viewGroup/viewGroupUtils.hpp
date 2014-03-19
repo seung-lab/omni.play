@@ -163,7 +163,7 @@ class ViewGroupUtils {
       return true;
     }
 
-    OmTellInfo("channel " + om::string::num(cdw.GetID()) + " is not built");
+    OmTellInfo("channel " + om::string::num(cdw.id()) + " is not built");
     return false;
   }
 

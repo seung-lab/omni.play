@@ -8,7 +8,7 @@
 #include "volume/omMipVolume.h"
 
 OmOnScreenTileCoords::OmOnScreenTileCoords(OmView2dState* state,
-                                           OmMipVolume* vol)
+                                           OmMipVolume& vol)
     : state_(state),
       vol_(vol),
       viewType_(state->getViewType()),
@@ -16,7 +16,7 @@ OmOnScreenTileCoords::OmOnScreenTileCoords(OmView2dState* state,
       mipLevel_(state->getMipLevel()),
       tileCoordsAndLocations_(std::make_shared<OmTileCoordsAndLocations>()) {
   freshness_ = 0;
-  if (om::common::SEGMENTATION == vol_->getVolumeType()) {
+  if (om::common::SEGMENTATION == vol_.getVolumeType()) {
     freshness_ = OmCacheManager::GetFreshness();
   }
 }
@@ -32,7 +32,7 @@ OmTileCoordsAndLocationsPtr OmOnScreenTileCoords::ComputeCoordsAndLocations() {
 
 OmTileCoordsAndLocationsPtr OmOnScreenTileCoords::ComputeCoordsAndLocations(
     const int depthOffset) {
-  if (vol_->IsBuilt()) {
+  if (vol_.IsBuilt()) {
     doComputeCoordsAndLocations(depthOffset);
   }
 
@@ -48,12 +48,11 @@ int numChunks(om::coords::Chunk min, om::coords::Chunk max) {
 
 void OmOnScreenTileCoords::doComputeCoordsAndLocations(const int depthOffset) {
 
-  om::coords::GlobalBbox bounds = vol_->Coords().Extent();
-  om::coords::DataBbox dataBounds =
-      bounds.ToDataBbox(vol_->Coords(), mipLevel_);
+  om::coords::GlobalBbox bounds = vol_.Coords().Extent();
+  om::coords::DataBbox dataBounds = bounds.ToDataBbox(vol_.Coords(), mipLevel_);
 
   int dataDepth = state_->getViewTypeDepth(
-      state_->Location().ToData(vol_->Coords(), mipLevel_));
+      state_->Location().ToData(vol_.Coords(), mipLevel_));
 
   // Make sure that we aren't trying to fetch outside of the bounds of the data.
   int targetDepth = dataDepth + depthOffset;
@@ -78,10 +77,10 @@ void OmOnScreenTileCoords::doComputeCoordsAndLocations(const int depthOffset) {
     return;
   }
 
-  om::coords::Chunk minChunk = om::coords::Global(viewBounds.getMin())
-                                   .ToChunk(vol_->Coords(), mipLevel_);
-  om::coords::Chunk maxChunk = om::coords::Global(viewBounds.getMax())
-                                   .ToChunk(vol_->Coords(), mipLevel_);
+  om::coords::Chunk minChunk =
+      om::coords::Global(viewBounds.getMin()).ToChunk(vol_.Coords(), mipLevel_);
+  om::coords::Chunk maxChunk =
+      om::coords::Global(viewBounds.getMax()).ToChunk(vol_.Coords(), mipLevel_);
 
   // iterate over all chunks on the screen
   for (int x = minChunk.x; x <= maxChunk.x; x++) {
@@ -96,13 +95,13 @@ void OmOnScreenTileCoords::doComputeCoordsAndLocations(const int depthOffset) {
 
 void OmOnScreenTileCoords::computeTile(const om::coords::Chunk& chunkCoord,
                                        const int depthOffset) {
-  if (!vol_->Coords().ContainsMipChunk(chunkCoord)) {
+  if (!vol_.Coords().ContainsMipChunk(chunkCoord)) {
     return;  // Rounding errors can cause bad chunk coords to slip through.
   }
 
   if (depthOffset)  // i.e. if we are pre-fetching
   {
-    if (om::common::CHANNEL == vol_->getVolumeType()) {
+    if (om::common::CHANNEL == vol_.getVolumeType()) {
       OmChannel* chan = reinterpret_cast<OmChannel*>(vol_);
 
       const std::vector<OmFilter2d*> filters = chan->GetFilters();
@@ -150,9 +149,9 @@ void OmOnScreenTileCoords::makeTileCoordFromFilter(
 
 OmTileCoord OmOnScreenTileCoords::makeTileCoord(const om::coords::Chunk& coord,
                                                 const int depthOffset,
-                                                OmMipVolume* vol,
+                                                OmMipVolume& vol,
                                                 int freshness) {
-  om::coords::Data loc = state_->Location().ToData(vol->Coords(), mipLevel_);
+  om::coords::Data loc = state_->Location().ToData(vol.Coords(), mipLevel_);
   int targetDepth = state_->getViewTypeDepth(loc) + depthOffset;
   state_->setViewTypeDepth(loc, targetDepth);
 
@@ -161,8 +160,8 @@ OmTileCoord OmOnScreenTileCoords::makeTileCoord(const om::coords::Chunk& coord,
 }
 
 GLfloatBox OmOnScreenTileCoords::computeVertices(const om::coords::Chunk& coord,
-                                                 const OmMipVolume* vol) {
-  auto bounds = coord.BoundingBox(vol->Coords());
+                                                 const OmMipVolume& vol) {
+  auto bounds = coord.BoundingBox(vol.Coords());
   auto min = bounds.getMin().ToGlobal().ToScreen(state_->Coords());
   auto max = bounds.getMax().ToGlobal().ToScreen(state_->Coords());
 

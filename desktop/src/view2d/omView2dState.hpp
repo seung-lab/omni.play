@@ -28,7 +28,7 @@ class OmBrushSize;
 
 class OmView2dState {
  private:
-  OmMipVolume* vol_;
+  OmMipVolume& vol_;
   const om::common::ObjectType objType_;
   OmViewGroupState* const vgs_;
   OmZoomLevel* const zoomLevel_;
@@ -54,11 +54,11 @@ class OmView2dState {
   om::coords::ScreenSystem coords_;
 
  public:
-  OmView2dState(OmMipVolume* vol, OmViewGroupState* vgs,
+  OmView2dState(OmMipVolume& vol, OmViewGroupState* vgs,
                 const om::common::ViewType viewType, const QSize& size,
                 const std::string name)
       : vol_(vol),
-        objType_(vol->getVolumeType()),
+        objType_(vol.getVolumeType()),
         vgs_(vgs),
         zoomLevel_(vgs->ZoomLevel()),
         viewType_(viewType),
@@ -132,9 +132,9 @@ class OmView2dState {
   }
 
   void ResetWindowState() {
-    static const om::coords::Norm midPoint(0.5, 0.5, 0.5, vol_->Coords());
+    static const om::coords::Norm midPoint(0.5, 0.5, 0.5, vol_.Coords());
 
-    log_infos << vol_->Coords().DataDimensions() << std::endl;
+    log_infos << vol_.Coords().DataDimensions() << std::endl;
 
     om::coords::Global loc = midPoint.ToGlobal();
     setLocation(loc);
@@ -150,7 +150,7 @@ class OmView2dState {
   inline void MoveUpStackCloserToViewer(int steps = 1) {
     const int numberOfSlicestoAdvance =
         om::math::pow2int(getMipLevel()) *
-        getViewTypeDepth(vol_->Coords().Resolution()) * steps;
+        getViewTypeDepth(vol_.Coords().Resolution()) * steps;
     const int depth = vgs_->View2dState()->GetScaledSliceDepth(viewType_);
     vgs_->View2dState()->SetScaledSliceDepth(viewType_,
                                              depth + numberOfSlicestoAdvance);
@@ -161,7 +161,7 @@ class OmView2dState {
   inline void MoveDownStackFartherFromViewer(int steps = 1) {
     const int numberOfSlicestoAdvance =
         om::math::pow2int(getMipLevel()) *
-        getViewTypeDepth(vol_->Coords().Resolution()) * steps;
+        getViewTypeDepth(vol_.Coords().Resolution()) * steps;
     const int depth = vgs_->View2dState()->GetScaledSliceDepth(viewType_);
     vgs_->View2dState()->SetScaledSliceDepth(viewType_,
                                              depth - numberOfSlicestoAdvance);
@@ -193,7 +193,7 @@ class OmView2dState {
   inline om::common::ViewType getViewType() const { return viewType_; }
 
   // volume
-  inline OmMipVolume* getVol() const { return vol_; }
+  inline OmMipVolume& getVol() const { return vol_; }
 
   // view group state
   inline OmViewGroupState* getViewGroupState() const { return vgs_; }
@@ -205,7 +205,7 @@ class OmView2dState {
   // zoom and mip level
   inline float getZoomScale() const { return zoomLevel_->GetZoomScale(); }
   inline int getMipLevel() const { return zoomLevel_->GetMipLevel(); }
-  inline int getMaxMipLevel() const { return vol_->Coords().RootMipLevel(); }
+  inline int getMaxMipLevel() const { return vol_.Coords().RootMipLevel(); }
 
   // depth-related computation helpers
   template <typename T>

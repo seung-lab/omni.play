@@ -23,49 +23,17 @@ class ToolBarManager;
 class ViewGroup;
 
 class OmViewGroupState : public OmManageableObject {
- private:
-  std::unique_ptr<ViewGroup> viewGroup_;
-  std::unique_ptr<OmViewGroupView2dState> view2dState_;
-  std::unique_ptr<OmColorizers> colorizers_;
-  std::unique_ptr<OmZoomLevel> zoomLevel_;
-  std::unique_ptr<OmSplitting> splitting_;
-  std::unique_ptr<OmLandmarks> landmarks_;
-
-  std::unique_ptr<ChannelDataWrapper> cdw_;
-  std::unique_ptr<SegmentationDataWrapper> sdw_;
-
-#ifdef ZI_OS_MACOS
-  std::unique_ptr<QGLWidget> context3d_;
-#endif
-
-  float mBreakThreshold;
-  uint64_t mDustThreshold;
-
-  // toolbar stuff
-  ToolBarManager* toolBarManager_;
-  bool mShatter;
-  bool mShowValid;
-  bool mShowValidInColor;
-  bool mShowFilterInColor;
-
-  bool brightenSelected_;
-
-  // annotation stuff
-  om::common::Color annotationColor_;
-  std::string annotationString_;
-  double annotationSize_;
-
  public:
   OmViewGroupState(MainWindow* mw);
 
   ~OmViewGroupState();
 
-  ViewGroup* GetViewGroup() { return viewGroup_.get(); }
+  ViewGroup& GetViewGroup() { return *viewGroup_; }
 
   // viewbox state
-  inline OmViewGroupView2dState* View2dState() { return view2dState_.get(); }
+  inline OmViewGroupView2dState& View2dState() { return *view2dState_; }
 
-  inline OmZoomLevel* ZoomLevel() { return zoomLevel_.get(); }
+  inline OmZoomLevel& ZoomLevel() { return *zoomLevel_; }
 
   void setBreakThreshold(float t) { mBreakThreshold = t; }
   float getBreakThreshold() { return mBreakThreshold; }
@@ -74,7 +42,7 @@ class OmViewGroupState : public OmManageableObject {
   uint64_t getDustThreshold() { return mDustThreshold; }
 
   void SetToolBarManager(ToolBarManager* tbm);
-  ToolBarManager* GetToolBarManager();
+  ToolBarManager& GetToolBarManager();
 
   inline bool GetShatterMode() const { return mShatter; }
 
@@ -85,7 +53,7 @@ class OmViewGroupState : public OmManageableObject {
 
   void setTool(const om::tool::mode tool);
 
-  inline OmSplitting* Splitting() { return splitting_.get(); }
+  inline OmSplitting& Splitting() { return *splitting_; }
 
   void SetHowNonSelectedSegmentsAreColoredInFilter(const bool);
 
@@ -130,4 +98,35 @@ class OmViewGroupState : public OmManageableObject {
 #ifdef ZI_OS_MACOS
   inline QGLWidget* get3dContext() { return context3d_.get(); }
 #endif
+ private:
+  std::unique_ptr<ViewGroup> viewGroup_;
+  std::unique_ptr<OmViewGroupView2dState> view2dState_;
+  std::unique_ptr<OmColorizers> colorizers_;
+  std::unique_ptr<OmZoomLevel> zoomLevel_;
+  std::unique_ptr<OmSplitting> splitting_;
+  std::unique_ptr<OmLandmarks> landmarks_;
+
+  std::unique_ptr<ChannelDataWrapper> cdw_;
+  std::unique_ptr<SegmentationDataWrapper> sdw_;
+
+#ifdef ZI_OS_MACOS
+  std::unique_ptr<QGLWidget> context3d_;
+#endif
+
+  float mBreakThreshold;
+  uint64_t mDustThreshold;
+
+  // toolbar stuff
+  ToolBarManager* toolBarManager_;
+  bool mShatter;
+  bool mShowValid;
+  bool mShowValidInColor;
+  bool mShowFilterInColor;
+
+  bool brightenSelected_;
+
+  // annotation stuff
+  om::common::Color annotationColor_;
+  std::string annotationString_;
+  double annotationSize_;
 };

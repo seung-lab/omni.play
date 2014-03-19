@@ -7,8 +7,8 @@
 #include "view2d/omView2dState.hpp"
 #include "viewGroup/omViewGroupState.h"
 
-OmView2dCore::OmView2dCore(QWidget* parent, OmMipVolume* vol,
-                           OmViewGroupState* vgs,
+OmView2dCore::OmView2dCore(QWidget* parent, OmMipVolume& vol,
+                           OmViewGroupState& vgs,
                            const om::common::ViewType viewType,
                            const std::string& name)
     : OmView2dWidgetBase(parent, vgs),

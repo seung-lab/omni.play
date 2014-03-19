@@ -9,14 +9,14 @@ class OmFilter2d;
 
 class OmOnScreenTileCoords {
  public:
-  OmOnScreenTileCoords(OmView2dState *, OmMipVolume *);
+  OmOnScreenTileCoords(OmView2dState *, OmMipVolume &);
 
   OmTileCoordsAndLocationsPtr ComputeCoordsAndLocations();
   OmTileCoordsAndLocationsPtr ComputeCoordsAndLocations(const int);
 
  private:
   OmView2dState *const state_;
-  OmMipVolume *const vol_;
+  OmMipVolume &vol_;
   const om::common::ViewType viewType_;
   OmViewGroupState *const vgs_;
 
@@ -27,11 +27,11 @@ class OmOnScreenTileCoords {
 
   void doComputeCoordsAndLocations(const int depthOffset);
   GLfloatBox computeVertices(const om::coords::Chunk &coord,
-                             const OmMipVolume *vol);
+                             const OmMipVolume &vol);
   void computeTile(const om::coords::Chunk &, const int);
   void makeTileCoordFromFilter(OmFilter2d *, const om::coords::Chunk &,
                                const int);
-  OmTileCoord makeTileCoord(const om::coords::Chunk &, const int, OmMipVolume *,
+  OmTileCoord makeTileCoord(const om::coords::Chunk &, const int, OmMipVolume &,
                             int);
 
   friend std::ostream &operator<<(std::ostream &out,
