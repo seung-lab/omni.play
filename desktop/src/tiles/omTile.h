@@ -41,7 +41,7 @@ class OmTile {
   int getDepth();
   void setVertices(const int x, const int y, const float zoomFactor);
 
-  inline OmMipVolume* getVol() const { return key_.getVolume(); }
+  inline OmMipVolume& getVol() const { return key_.getVolume(); }
 
   om::common::ObjectType getVolType() const;
 };

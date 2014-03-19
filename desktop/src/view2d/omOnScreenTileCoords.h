@@ -9,16 +9,16 @@ class OmFilter2d;
 
 class OmOnScreenTileCoords {
  public:
-  OmOnScreenTileCoords(OmView2dState *, OmMipVolume &);
+  OmOnScreenTileCoords(OmView2dState &, OmMipVolume &);
 
   OmTileCoordsAndLocationsPtr ComputeCoordsAndLocations();
   OmTileCoordsAndLocationsPtr ComputeCoordsAndLocations(const int);
 
  private:
-  OmView2dState *const state_;
+  OmView2dState &state_;
   OmMipVolume &vol_;
   const om::common::ViewType viewType_;
-  OmViewGroupState *const vgs_;
+  OmViewGroupState &vgs_;
 
   int mipLevel_;
   OmTileCoordsAndLocationsPtr tileCoordsAndLocations_;

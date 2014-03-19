@@ -19,7 +19,7 @@ class OmView3d : public QGLWidget,
   Q_OBJECT;
 
  public:
-  OmView3d(QWidget *, OmViewGroupState *);
+  OmView3d(QWidget *, OmViewGroupState &);
   ~OmView3d();
 
   OmCamera &GetCamera();
@@ -97,7 +97,7 @@ class OmView3d : public QGLWidget,
  private:
   bool gestureEvent(QGestureEvent *event);
   OmView3dUi mView3dUi;
-  OmViewGroupState *vgs_;
+  OmViewGroupState &vgs_;
   std::unique_ptr<QTime> mElapsed;
   QTimer mDrawTimer;
   OmCamera mCamera;

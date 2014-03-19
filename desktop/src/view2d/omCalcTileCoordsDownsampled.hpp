@@ -17,8 +17,8 @@ class OmCalcTileCoordsDownsampled {
 
   void TryDownsample(const OmTileCoordAndVertices& tcv,
                      std::deque<OmTileAndVertices>& tilesToDraw) {
-    OmMipVolume* vol = tcv.tileCoord.getVolume();
-    const int rootMipLevel = vol->Coords().RootMipLevel();
+    OmMipVolume& vol = tcv.tileCoord.getVolume();
+    const int rootMipLevel = vol.Coords().RootMipLevel();
     OmTileCoord tileCoord = tcv.tileCoord;
 
     while (tileCoord.getCoord().mipLevel() < rootMipLevel) {

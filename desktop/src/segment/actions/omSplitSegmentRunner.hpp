@@ -26,12 +26,11 @@ class OmSplitSegmentRunner {
       }
 
       if (seg1 == seg2) {
-        log_debugs(unknown) << "can't split--same segment";
+        log_debugs << "can't split--same segment";
         return;
       }
 
-      OmActions::FindAndSplitSegments(curSDW.MakeSegmentationDataWrapper(),
-                                      seg1, seg2);
+      OmActions::FindAndSplitSegments(seg1, seg2);
 
     } else {
       if (curSDW.IsSegmentValid()) {

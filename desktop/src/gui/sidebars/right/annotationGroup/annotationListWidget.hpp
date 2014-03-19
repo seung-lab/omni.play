@@ -200,7 +200,7 @@ Q_SLOTS:
       return;
     }
 
-    vgs_.View2dState()->SetScaledSliceDepth(
+    vgs_.View2dState().SetScaledSliceDepth(
         annotation->Object->coord.ToGlobal());
     om::event::ViewCenterChanged();
     om::event::View3dRecenter();

@@ -18,6 +18,7 @@
 #include "viewGroup/omViewGroupState.h"
 #include "volume/omSegmentation.h"
 #include "annotation/annotation.h"
+#include "viewGroup/omViewGroupView2dState.hpp"
 
 OmView3dUi::OmView3dUi(OmView3d* view3d, OmViewGroupState& vgs)
     : view3d_(view3d), vgs_(vgs), macGestures_(new OmMacOSXGestures(view3d)) {}
@@ -88,7 +89,7 @@ void OmView3dUi::shatterModeMouseReleased(QMouseEvent* event) {
 
   OmActions::ShatterSegment(pickPoint.sdw.GetSegment());
 
-  vgs_.GetToolBarManager()->SetShatteringOff();
+  vgs_.GetToolBarManager().SetShatteringOff();
   OmStateManager::SetOldToolModeAndSendEvent();
 }
 
@@ -358,7 +359,7 @@ void OmView3dUi::crosshair(QMouseEvent* event) {
     return;
   }
 
-  vgs_.View2dState()->SetScaledSliceDepth(pickPoint.coord);
+  vgs_.View2dState().SetScaledSliceDepth(pickPoint.coord);
 
   om::event::ViewCenterChanged();
 }

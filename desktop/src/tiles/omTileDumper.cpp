@@ -58,7 +58,7 @@ void OmTileDumper::saveTile(QDataStream& out, const int mipLevel, const int x,
   const int freshness = 0;
 
   const OmTileCoord tileCoord(chunk, viewType, data.ToTileOffset(viewType),
-                              vol_, freshness, vgs_, om::common::SEGMENTATION);
+                              *vol_, freshness, vgs_, om::common::SEGMENTATION);
 
   OmTilePtr tile;
   OmTileCache::Get(tile, tileCoord, om::common::Blocking::BLOCKING);

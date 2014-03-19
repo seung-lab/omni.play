@@ -13,7 +13,7 @@
 OmTile::OmTile(OmCacheBase* cache, const OmTileCoord& key)
     : cache_(cache),
       key_(key),
-      tileLength_(key.getVolume()->Coords().ChunkDimensions().x),
+      tileLength_(key.getVolume().Coords().ChunkDimensions().x),
       mipChunkCoord_(tileToMipCoord()) {}
 
 OmTile::~OmTile() {}
@@ -28,8 +28,8 @@ void OmTile::LoadData() {
 }
 
 void OmTile::load8bitChannelTile() {
-  OmChannel* chan = reinterpret_cast<OmChannel*>(getVol());
-  OmChunk* chunk = chan->GetChunk(mipChunkCoord_);
+  OmChannel& chan = reinterpret_cast<OmChannel&>(getVol());
+  OmChunk* chunk = chan.GetChunk(mipChunkCoord_);
 
   auto tileData =
       chunk->Data()->ExtractDataSlice8bit(key_.getViewType(), getDepth());
@@ -40,8 +40,8 @@ void OmTile::load8bitChannelTile() {
 }
 
 void OmTile::load32bitSegmentationTile() {
-  OmSegmentation* seg = reinterpret_cast<OmSegmentation*>(getVol());
-  OmSegChunk* chunk = seg->GetChunk(mipChunkCoord_);
+  OmSegmentation& seg = reinterpret_cast<OmSegmentation&>(getVol());
+  OmSegChunk* chunk = seg.GetChunk(mipChunkCoord_);
 
   auto imageData =
       chunk->SegData()->ExtractDataSlice32bit(key_.getViewType(), getDepth());
@@ -57,7 +57,7 @@ om::coords::Chunk OmTile::tileToMipCoord() { return key_.getCoord(); }
 int OmTile::getDepth() { return key_.getDepth(); }
 
 om::common::ObjectType OmTile::getVolType() const {
-  return getVol()->getVolumeType();
+  return getVol().getVolumeType();
 }
 
 uint32_t OmTile::NumBytes() const {

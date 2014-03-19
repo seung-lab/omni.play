@@ -12,7 +12,7 @@ class OmBuildChannel : public OmBuildVolumes {
   OmChannel* chan_;
 
  public:
-  OmBuildChannel() : OmBuildVolumes(), chan_(cdw_.Create()) {}
+  OmBuildChannel() : OmBuildVolumes(), chan_(&cdw_.Create()) {}
 
   OmBuildChannel(const ChannelDataWrapper cdw)
       : OmBuildVolumes(), cdw_(cdw), chan_(cdw_.GetChannel()) {}
@@ -24,7 +24,7 @@ class OmBuildChannel : public OmBuildVolumes {
   }
 
   void BuildEmptyChannel() {
-    OmVolumeBuilder<OmChannel> builder(&chan_);
+    OmVolumeBuilder<OmChannel> builder(chan_);
     builder.BuildEmptyChannel();
   }
 
@@ -38,8 +38,8 @@ class OmBuildChannel : public OmBuildVolumes {
     OmTimer build_timer;
     startTiming(type, build_timer);
 
-    OmVolumeBuilder<OmChannel> builder(&chan_, mFileNamesAndPaths,
-                                       chan_.GetDefaultHDF5DatasetName());
+    OmVolumeBuilder<OmChannel> builder(chan_, mFileNamesAndPaths,
+                                       chan_->GetDefaultHDF5DatasetName());
     builder.Build();
 
     stopTimingAndSave(type, build_timer);

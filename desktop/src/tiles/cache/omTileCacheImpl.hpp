@@ -142,7 +142,7 @@ class OmTileCacheImpl {
 
   void ClearSegmentation() {
     std::vector<OmSegmentation*> vols = SegmentationDataWrapper::GetPtrVec();
-    FOR_EACH(iter, vols) { (*iter)->TileCache()->Clear(); }
+    FOR_EACH(iter, vols) { (*iter)->TileCache().Clear(); }
   }
 
   void ClearFetchQueues() {
@@ -152,19 +152,19 @@ class OmTileCacheImpl {
 
   void ClearChannelFetchQueues() {
     std::vector<OmChannel*> vols = ChannelDataWrapper::GetPtrVec();
-    FOR_EACH(iter, vols) { (*iter)->TileCache()->ClearFetchQueue(); }
+    FOR_EACH(iter, vols) { (*iter)->TileCache().ClearFetchQueue(); }
   }
 
   void ClearSegmentationFetchQueues() {
     std::vector<OmSegmentation*> vols = SegmentationDataWrapper::GetPtrVec();
-    FOR_EACH(iter, vols) { (*iter)->TileCache()->ClearFetchQueue(); }
+    FOR_EACH(iter, vols) { (*iter)->TileCache().ClearFetchQueue(); }
   }
 
   OmTileCacheThreadPool& ThreadPool() { return threadPool_; }
 
  private:
   bool isChannel(const OmTileCoord& key) {
-    return om::common::CHANNEL == key.getVolume()->getVolumeType();
+    return om::common::CHANNEL == key.getVolume().getVolumeType();
   }
 
   void runIdleThreadTask() {
@@ -204,11 +204,11 @@ class OmTileCacheImpl {
   // TODO: refactor OmTile to contain real vol ptrs...
 
   inline OmTileCacheChannel* getChanVol(const OmTileCoord& key) const {
-    return reinterpret_cast<OmChannel*>(key.getVolume())->TileCache();
+    return reinterpret_cast<OmChannel*>(&key.getVolume())->TileCache();
   }
 
   inline OmTileCacheSegmentation* getSegVol(const OmTileCoord& key) const {
-    return reinterpret_cast<OmSegmentation*>(key.getVolume())->TileCache();
+    return reinterpret_cast<OmSegmentation*>(&key.getVolume())->TileCache();
   }
 
   friend class OmTileCache;

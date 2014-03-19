@@ -36,7 +36,7 @@ bool TracingTask::Start() {
   if (!sdw.IsValidWrapper()) {
     return false;
   }
-  sdw.Segments()->UpdateSegmentSelection(seed_, true);
+  sdw.Segments().UpdateSegmentSelection(seed_, true);
   return true;
 }
 
@@ -52,7 +52,7 @@ bool TracingTask::Submit() {
   }
   const auto& rootIDs = sdw.Segments()->Selection().GetSelectedSegmentIDs();
   const auto& segments =
-      OmSegmentUtils::GetAllChildrenSegments(sdw.Segments(), rootIDs);
+      OmSegmentUtils::GetAllChildrenSegments(*sdw.Segments(), rootIDs);
   for (OmSegment* seg : *segments) {
     segIDs[seg->value()] = 1;
   }

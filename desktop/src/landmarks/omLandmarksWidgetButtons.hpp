@@ -9,6 +9,7 @@
 #include "landmarks/omLandmarksWidget.h"
 #include "volume/omSegmentationFolder.h"
 #include "utility/segmentationDataWrapper.hpp"
+#include "volume/omSegmentation.h"
 
 namespace om {
 namespace landmarks {

@@ -9,6 +9,7 @@
 #include "view2d/omView2d.h"
 #include "view3d.old/omView3d.h"
 #include "viewGroup/omViewGroupState.h"
+#include "volume/omSegmentation.h"
 
 namespace om {
 namespace gui {
@@ -224,13 +225,17 @@ class ViewGroupUtils {
     }
 
     vgw.widget =
-        new OmView2d(viewType, mainWindow_, vgs_, &chan, name.toStdString());
+        new OmView2d(viewType, mainWindow_, vgs_, chan, name.toStdString());
 
     return vgw;
   }
 
   ViewGroupWidgetInfo CreateView2dSegmentation(
       const SegmentationDataWrapper& sdw, const om::common::ViewType viewType) {
+    if (!sdw.IsValidWrapper()) {
+      throw ArgException("Invalid SegmentationDataWrapper");
+    }
+
     const QString name = getViewName(sdw.GetName().toStdString(), viewType);
 
     ViewGroupWidgetInfo vgw(name, VIEW2D_SEG, viewType);

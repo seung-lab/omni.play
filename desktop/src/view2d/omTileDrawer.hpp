@@ -13,6 +13,7 @@
 #include "volume/omChannel.h"
 #include "volume/omSegmentation.h"
 #include "volume/omFilter2d.h"
+#include "segment/omSegments.h"
 
 class OmTileDrawer {
  public:
@@ -35,7 +36,7 @@ class OmTileDrawer {
 
     blockingRedraw_ = blockingRedraw;
 
-    OmMipVolume* vol = state_->getVol();
+    OmMipVolume* vol = &state_->getVol();
 
     if (om::common::CHANNEL == vol->getVolumeType()) {
       drawChannelAndFilters(vol);
@@ -151,7 +152,7 @@ class OmTileDrawer {
 
   OmTileCoordsAndLocationsPtr getTileCoordsAndLocationsForCurrentScene(
       OmMipVolume* vol) {
-    OmOnScreenTileCoords stc(state_, vol);
+    OmOnScreenTileCoords stc(*state_, *vol);
     return stc.ComputeCoordsAndLocations();
   }
 
@@ -205,7 +206,8 @@ class OmTileDrawer {
 
       draw(seg);
 
-      const bool shouldBrightenAlpha = seg->Segments()->AreSegmentsSelected();
+      const bool shouldBrightenAlpha =
+          seg->Segments().Selection().AreSegmentsSelected();
 
       om::opengl_::SetupGLblendColor(haveAlphaGoToBlack, filter->GetAlpha(),
                                      shouldBrightenAlpha);

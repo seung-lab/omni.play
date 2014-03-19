@@ -8,7 +8,7 @@
 
 static const float TEXT_COLOR[4] = {1, 1, 1, 0.8};
 
-AnnotationsWidget::AnnotationsWidget(OmView3d *view3d, OmViewGroupState *vgs)
+AnnotationsWidget::AnnotationsWidget(OmView3d *view3d, OmViewGroupState &vgs)
     : OmView3dWidget(view3d), vgs_(vgs) {
   // set font properties
   font_ = QFont("Helvetica", 12);

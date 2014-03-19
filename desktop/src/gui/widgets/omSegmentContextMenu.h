@@ -57,7 +57,7 @@ Q_SLOTS:
   SegmentDataWrapper sdw_;
   om::coords::Global coord_;
 
-  OmViewGroupState& vgs_;
+  OmViewGroupState* vgs_;
 
   bool isValid() const;
   bool isUncertain() const;

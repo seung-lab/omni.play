@@ -14,11 +14,11 @@ struct annotation {
 class AnnotationsWidget : public OmView3dWidget {
 
  public:
-  AnnotationsWidget(OmView3d *view3d, OmViewGroupState *vgs);
+  AnnotationsWidget(OmView3d *view3d, OmViewGroupState &vgs);
   virtual void Draw();
 
  private:
   QFont font_;
   constexpr static const float DIST_CUTOFF = 100.0f;
-  OmViewGroupState *vgs_;
+  OmViewGroupState &vgs_;
 };

@@ -11,9 +11,9 @@ OmOnScreenTileCoords::OmOnScreenTileCoords(OmView2dState* state,
                                            OmMipVolume& vol)
     : state_(state),
       vol_(vol),
-      viewType_(state->getViewType()),
-      vgs_(state->getViewGroupState()),
-      mipLevel_(state->getMipLevel()),
+      viewType_(state.getViewType()),
+      vgs_(state.getViewGroupState()),
+      mipLevel_(state.getMipLevel()),
       tileCoordsAndLocations_(std::make_shared<OmTileCoordsAndLocations>()) {
   freshness_ = 0;
   if (om::common::SEGMENTATION == vol_.getVolumeType()) {
@@ -51,23 +51,23 @@ void OmOnScreenTileCoords::doComputeCoordsAndLocations(const int depthOffset) {
   om::coords::GlobalBbox bounds = vol_.Coords().Extent();
   om::coords::DataBbox dataBounds = bounds.ToDataBbox(vol_.Coords(), mipLevel_);
 
-  int dataDepth = state_->getViewTypeDepth(
-      state_->Location().ToData(vol_.Coords(), mipLevel_));
+  int dataDepth = state_.getViewTypeDepth(
+      state_.Location().ToData(vol_.Coords(), mipLevel_));
 
   // Make sure that we aren't trying to fetch outside of the bounds of the data.
   int targetDepth = dataDepth + depthOffset;
 
-  if (targetDepth < state_->getViewTypeDepth(dataBounds.getMin()) ||
-      targetDepth > state_->getViewTypeDepth(dataBounds.getMax())) {
+  if (targetDepth < state_.getViewTypeDepth(dataBounds.getMin()) ||
+      targetDepth > state_.getViewTypeDepth(dataBounds.getMax())) {
     return;
   }
 
   // Make sure that the upper left and bottom right don't exceed the volume
-  Vector4i viewport = state_->Coords().totalViewport();
+  Vector4i viewport = state_.Coords().totalViewport();
   om::coords::Global min = om::coords::Screen(
-      viewport.lowerLeftX, viewport.lowerLeftY, state_->Coords()).ToGlobal();
+      viewport.lowerLeftX, viewport.lowerLeftY, state_.Coords()).ToGlobal();
   om::coords::Global max = om::coords::Screen(viewport.width, viewport.height,
-                                              state_->Coords()).ToGlobal();
+                                              state_.Coords()).ToGlobal();
 
   om::coords::GlobalBbox viewBounds(min, max);
 
@@ -151,19 +151,19 @@ OmTileCoord OmOnScreenTileCoords::makeTileCoord(const om::coords::Chunk& coord,
                                                 const int depthOffset,
                                                 OmMipVolume& vol,
                                                 int freshness) {
-  om::coords::Data loc = state_->Location().ToData(vol.Coords(), mipLevel_);
-  int targetDepth = state_->getViewTypeDepth(loc) + depthOffset;
-  state_->setViewTypeDepth(loc, targetDepth);
+  om::coords::Data loc = state_.Location().ToData(vol.Coords(), mipLevel_);
+  int targetDepth = state_.getViewTypeDepth(loc) + depthOffset;
+  state_.setViewTypeDepth(loc, targetDepth);
 
-  return OmTileCoord(coord, state_->getViewType(), loc.ToTileDepth(viewType_),
-                     vol, freshness, vgs_, state_->getObjectType());
+  return OmTileCoord(coord, state_.getViewType(), loc.ToTileDepth(viewType_),
+                     vol, freshness, vgs_, state_.getObjectType());
 }
 
 GLfloatBox OmOnScreenTileCoords::computeVertices(const om::coords::Chunk& coord,
                                                  const OmMipVolume& vol) {
   auto bounds = coord.BoundingBox(vol.Coords());
-  auto min = bounds.getMin().ToGlobal().ToScreen(state_->Coords());
-  auto max = bounds.getMax().ToGlobal().ToScreen(state_->Coords());
+  auto min = bounds.getMin().ToGlobal().ToScreen(state_.Coords());
+  auto max = bounds.getMax().ToGlobal().ToScreen(state_.Coords());
 
   GLfloatBox glBox;
   glBox.lowerLeft.y = min.y;

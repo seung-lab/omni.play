@@ -284,7 +284,7 @@ void OmView3d::View3dRecenter() {
   }
 
   mCamera.SetDistance(*distance);
-  const om::coords::Global coord = vgs_.View2dState()->GetScaledSliceDepth();
+  const om::coords::Global coord = vgs_.View2dState().GetScaledSliceDepth();
   mCamera.SetFocus(coord);
 
   updateGL();
@@ -503,10 +503,10 @@ void OmView3d::DrawVolumes(OmBitfield cullerOptions) {
     std::shared_ptr<OmVolumeCuller> newCuller = culler.GetTransformedCuller(
         vol->Coords().NormToGlobalMat(), vol->Coords().GlobalToNormMat());
 
-    OmMeshDrawer* meshDrawer = vol->MeshDrawer();
+    OmMeshDrawer& meshDrawer = vol->MeshDrawer();
 
     boost::optional<std::pair<float, float> > percVolDone =
-        meshDrawer->Draw(vgs_, newCuller, cullerOptions);
+        meshDrawer.Draw(vgs_, newCuller, cullerOptions);
 
     if (percVolDone) {
       percVolDone_.push_back(*percVolDone);
