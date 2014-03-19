@@ -1,74 +1,58 @@
 #include "actions/omActions.h"
 #include "common/common.h"
+#include "datalayer/fs/omFileNames.hpp"
 #include "project/details/omChannelManager.h"
 #include "project/details/omProjectVolumes.h"
 #include "project/details/omSegmentationManager.h"
-#include "users/omUsers.h"
-#include "utility/channelDataWrapper.hpp"
-#include "volume/metadataDataSource.hpp"
+#include "utility/dataWrappers.h"
 #include "volume/omFilter2d.h"
-#include "volume/omSegmentation.h"
-
-#include <boost/filesystem.hpp>
-
-template class om::common::GenericManager<OmSegmentation>;
-
-om::file::path OmSegmentationManager::path() {
-  return OmProject::Paths().Segmentations() / "segmentation";
-}
+#include "volume/omSegmentationFolder.h"
 
 OmSegmentation* OmSegmentationManager::GetSegmentation(
     const om::common::ID id) {
-  try {
-    return &manager_.Get(id);
-  }
-  catch (...) {
-    return nullptr;
-  }
+  return manager_.Get(id);
 }
 
 OmSegmentation& OmSegmentationManager::AddSegmentation() {
-  return manager_.Add(path());
-}
-
-void OmSegmentationManager::Load() {
-  for (auto& folder : om::fs::VolumeFolders::FindSegmentations()) {
-    om::file::path p = path();
-    p += std::to_string(folder.id);
-    if (om::volume::MetadataDataSource::GetStatic(p.string())) {
-      log_infos(io) << "Loading Segmentation " << folder.id;
-      manager_.Insert(folder.id, new OmSegmentation(folder.id, path()));
-    }
-  }
+  OmSegmentation& vol = manager_.Add();
+  vol.Folder().MakeVolFolder();
+  OmActions::Save();
+  return vol;
 }
 
 void OmSegmentationManager::RemoveSegmentation(const om::common::ID id) {
   auto seg = GetSegmentation(id);
-  if (seg) {
-    for (auto channelID : volumes_.Channels().GetValidChannelIds()) {
-      ChannelDataWrapper cdw(channelID);
+  if (!seg) {
+    return;
+  }
 
-      for (auto* filter : cdw.GetFilters()) {
-        if (om::OVERLAY_SEGMENTATION == filter->FilterType()) {
-          OmSegmentation* segmentation = filter->GetSegmentation();
+  FOR_EACH(channelID, volumes_->Channels().GetValidChannelIds()) {
+    ChannelDataWrapper cdw(*channelID);
 
-          if (segmentation->id() == id) {
-            filter->SetSegmentation(0);
-          }
+    const std::vector<OmFilter2d*> filters = cdw.GetFilters();
+
+    FOR_EACH(iter, filters) {
+      OmFilter2d* filter = *iter;
+
+      if (om::OVERLAY_SEGMENTATION == filter->FilterType()) {
+        OmSegmentation* segmentation = filter->GetSegmentation();
+
+        if (segmentation->getID() == id) {
+          filter->SetSegmentation(0);
         }
       }
     }
-
-    seg->CloseDownThreads();
-
-    // TODO: fixme
-    // OmDataPath path(GetSegmentation(id).GetDirectoryPath());
-    // OmProjectData::DeleteInternalData(path);
-
-    manager_.Remove(id);
-
-    OmActions::Save();
   }
+
+  seg->CloseDownThreads();
+
+  // TODO: fixme
+  // OmDataPath path(GetSegmentation(id).GetDirectoryPath());
+  // OmProjectData::DeleteInternalData(path);
+
+  manager_.Remove(id);
+
+  OmActions::Save();
 }
 
 bool OmSegmentationManager::IsSegmentationValid(const om::common::ID id) {

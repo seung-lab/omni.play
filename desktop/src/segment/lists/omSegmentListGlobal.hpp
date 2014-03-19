@@ -14,7 +14,7 @@ class OmSegmentListGlobal {
 
   inline int64_t GetSizeWithChildren(const om::common::SegID segID) {
     if (segID >= list_.size()) {
-      log_debugs(unknown) << "segment " << segID << "not found";
+      log_debugs << "segment " << segID << "not found";
       return 0;
     }
     return list_[segID].sizeIncludingChildren;
@@ -26,7 +26,7 @@ class OmSegmentListGlobal {
 
   inline int64_t GetNumChildren(const om::common::SegID segID) {
     if (segID >= list_.size()) {
-      log_debugs(unknown) << "segment " << segID << "not found";
+      log_debugs << "segment " << segID << "not found";
       return 0;
     }
     return list_[segID].numChildren;
@@ -38,7 +38,7 @@ class OmSegmentListGlobal {
 
   boost::optional<SegInfo> Get(const om::common::SegID segID) {
     if (segID >= list_.size()) {
-      log_debugs(unknown) << "segment " << segID << "not found";
+      log_debugs << "segment " << segID << "not found";
       return false;
     }
     return boost::optional<SegInfo>(list_[segID]);

@@ -60,17 +60,21 @@ class OmGenericManager {
     return *vec_[id];
   }
 
-  inline T& Get(const om::common::ID id) const {
+  inline T* Get(const om::common::ID id) const {
     zi::guard g(lock_);
 
-    throwIfInvalidID(id);
-    return *vec_[id];
+    if (isIDinvalid(id)) {
+      return nullptr;
+    }
+    return vec_[id];
   }
 
   void Remove(const om::common::ID id) {
     zi::guard g(lock_);
 
-    throwIfInvalidID(id);
+    if (isIDinvalid(id)) {
+      return;
+    }
 
     validSet_.erase(id);
     enabledSet_.erase(id);
@@ -100,13 +104,14 @@ class OmGenericManager {
   // enabled
   inline bool IsEnabled(const om::common::ID id) const {
     zi::guard g(lock_);
-    throwIfInvalidID(id);
-    return enabledSet_.count(id);
+    return !isIDinvalid(id) && enabledSet_.count(id);
   }
 
   inline void SetEnabled(const om::common::ID id, const bool enable) {
     zi::guard g(lock_);
-    throwIfInvalidID(id);
+    if (isIDinvalid(id)) {
+      return;
+    }
 
     if (enable) {
       enabledSet_.insert(id);
@@ -134,13 +139,6 @@ class OmGenericManager {
  private:
   inline bool isIDinvalid(const om::common::ID id) const {
     return id < 1 || id >= size_ || nullptr == vec_[id];
-  }
-
-  inline void throwIfInvalidID(const om::common::ID id) const {
-    if (isIDinvalid(id)) {
-      assert(0 && "invalid ID");
-      throw om::AccessException("Cannot get object with id: " + id);
-    }
   }
 
   void findAndSetNextValidID() {

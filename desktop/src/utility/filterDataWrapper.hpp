@@ -38,7 +38,7 @@ class FilterDataWrapper {
       return nullptr;
     }
 
-    return &GetChannel()->FilterManager().GetFilter(mID);
+    return GetChannel()->FilterManager().GetFilter(mID);
   }
 
   QString getName() const {

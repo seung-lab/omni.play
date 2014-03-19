@@ -10,8 +10,8 @@ class OmColorizers {
   OmViewGroupState& vgs_;
 
   zi::spinlock lock_;
-  std::array<OmSegmentColorizer*, om::segment::coloring::NUMBER_OF_ENUMS>
-      colorizers_;
+  std::array<OmSegmentColorizer*,
+             (size_t)om::segment::coloring::NUMBER_OF_ENUMS> colorizers_;
 
  public:
   OmColorizers(OmViewGroupState& vgs) : vgs_(vgs) {
@@ -30,24 +30,27 @@ class OmColorizers {
 
     {
       zi::guard g(lock_);
-      if (!colorizers_[sccType]) {
+      if (!colorizers_[(size_t)sccType]) {
         setupColorizer(tileDim, key, sccType);
       }
     }
 
-    return colorizers_[sccType]->ColorTile(imageData);
+    return colorizers_[(size_t)sccType]->ColorTile(imageData);
   }
 
  private:
   void setupColorizer(const int tileDim, const OmTileCoord& key,
                       const om::segment::coloring sccType) {
-    if (om::common::SEGMENTATION != key.getVolume()->getVolumeType()) {
+    if (om::common::SEGMENTATION != key.getVolume().getVolumeType()) {
       throw om::IoException("can only color segmentations");
     }
 
-    SegmentationDataWrapper sdw(key.getVolume()->getID());
+    SegmentationDataWrapper sdw(key.getVolume().getID());
+    if (!sdw.isValidWrapper()) {
+      return;
+    }
 
-    colorizers_[sccType] =
-        new OmSegmentColorizer(sdw.Segments(), sccType, tileDim, vgs_);
+    colorizers_[(size_t)sccType] =
+        new OmSegmentColorizer(*sdw.Segments(), sccType, tileDim, vgs_);
   }
 };

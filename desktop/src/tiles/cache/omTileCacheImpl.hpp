@@ -137,12 +137,16 @@ class OmTileCacheImpl {
 
   void ClearChannel() {
     std::vector<OmChannel*> vols = ChannelDataWrapper::GetPtrVec();
-    FOR_EACH(iter, vols) { (*iter)->TileCache()->Clear(); }
+    for (auto& iter : vols) {
+      iter->TileCache()->Clear();
+    }
   }
 
   void ClearSegmentation() {
     std::vector<OmSegmentation*> vols = SegmentationDataWrapper::GetPtrVec();
-    FOR_EACH(iter, vols) { (*iter)->TileCache().Clear(); }
+    for (auto& iter : vols) {
+      iter->TileCache().Clear();
+    }
   }
 
   void ClearFetchQueues() {
@@ -152,12 +156,16 @@ class OmTileCacheImpl {
 
   void ClearChannelFetchQueues() {
     std::vector<OmChannel*> vols = ChannelDataWrapper::GetPtrVec();
-    FOR_EACH(iter, vols) { (*iter)->TileCache().ClearFetchQueue(); }
+    for (auto& iter : vols) {
+      iter->TileCache().ClearFetchQueue();
+    }
   }
 
   void ClearSegmentationFetchQueues() {
     std::vector<OmSegmentation*> vols = SegmentationDataWrapper::GetPtrVec();
-    FOR_EACH(iter, vols) { (*iter)->TileCache().ClearFetchQueue(); }
+    for (auto& iter : vols) {
+      iter->TileCache().ClearFetchQueue();
+    }
   }
 
   OmTileCacheThreadPool& ThreadPool() { return threadPool_; }
@@ -177,7 +185,9 @@ class OmTileCacheImpl {
     }
 
     std::list<OmTileDrawer*> drawers;
-    FOR_EACH(iter, drawersActive_) { drawers.push_back(iter->first); }
+    for (auto& iter : drawersActive_) {
+      awers.sh_back(iter->first);
+    }
 
     preFetcher_->RunTasks(drawers);
   }

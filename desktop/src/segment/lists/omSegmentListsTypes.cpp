@@ -10,8 +10,8 @@ std::shared_ptr<GUIPageOfSegments> om::segLists::getPage(
   }
 
   if (startIndex > list.size()) {
-    log_debugs(unknown) << startIndex << " > " << list.size();
-    assert(0 && "illegal page request");
+    log_errors << startIndex << " > " << list.size();
+    return ret;
   }
 
   ret->pageNum = startIndex / numToGet;

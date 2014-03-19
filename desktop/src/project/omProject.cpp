@@ -7,15 +7,14 @@ OmProject::OmProject() {}
 OmProject::~OmProject() {}
 
 QString OmProject::New(const QString& fnp) {
-  instance().impl_.reset(new OmProjectImpl());
-
   try {
-    return instance().impl_->New(fnp);
+    instance().impl_ = std::make_unique<OmProjectImpl>(fnp);
   }
   catch (...) {
     instance().impl_.reset();
     throw;
   }
+  return instance().impl_->OmniFile();
 }
 
 void OmProject::Save() { instance().impl_->Save(); }
@@ -33,10 +32,10 @@ void OmProject::SafeLoad(const std::string& fileNameAndPath, QWidget* guiParent,
 
 void OmProject::Load(const QString& fileNameAndPath, QWidget* guiParent,
                      const std::string& username) {
-  instance().impl_ = std::make_unique<OmProjectImpl>();
 
   try {
-    instance().impl_->Load(fileNameAndPath, guiParent, username);
+    instance().impl_ =
+        std::make_unique<OmProjectImpl>(fileNameAndPath, guiParent, username);
   }
   catch (...) {
     instance().impl_.reset();

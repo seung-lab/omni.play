@@ -245,7 +245,7 @@ class ViewGroupUtils {
     }
 
     vgw.widget = new OmView2d(viewType, mainWindow_, vgs_,
-                              sdw.GetSegmentation(), name.toStdString());
+                              *sdw.GetSegmentation(), name.toStdString());
 
     return vgw;
   }

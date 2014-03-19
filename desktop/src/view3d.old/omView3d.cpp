@@ -17,6 +17,7 @@
 #include "system/omStateManager.h"
 #include "omView3d.h"
 #include "viewGroup/omViewGroupState.h"
+#include "viewGroup/omViewGroupView2dState.hpp"
 #include "widgets/omChunkExtentWidget.h"
 #include "widgets/omInfoWidget.h"
 #include "widgets/omPercDone.hpp"

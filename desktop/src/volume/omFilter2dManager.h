@@ -15,7 +15,7 @@ class OmFilter2dManager {
  public:
   OmFilter2dManager();
 
-  inline OmFilter2d& GetFilter(om::common::ID id) { return filters_.Get(id); }
+  inline OmFilter2d* GetFilter(om::common::ID id) { return filters_.Get(id); }
 
   inline const om::common::IDSet& GetValidFilterIds() const {
     return filters_.GetValidIds();

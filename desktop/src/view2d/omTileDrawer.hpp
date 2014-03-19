@@ -14,6 +14,7 @@
 #include "volume/omSegmentation.h"
 #include "volume/omFilter2d.h"
 #include "segment/omSegments.h"
+#include "segment/selection.hpp"
 
 class OmTileDrawer {
  public:

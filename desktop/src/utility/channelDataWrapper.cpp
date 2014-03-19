@@ -6,7 +6,7 @@ std::vector<OmFilter2d*> ChannelDataWrapper::GetFilters() const {
   if (c) {
     return c->FilterManager().GetFilters();
   } else {
-    log_debugs(unknown) << "Invalid Channel " << id_;
+    log_debugs << "Invalid Channel " << id_;
     return std::vector<OmFilter2d*>();
   }
 }

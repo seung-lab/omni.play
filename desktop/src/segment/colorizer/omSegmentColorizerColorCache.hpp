@@ -1,5 +1,6 @@
 #pragma once
 #include "precomp.h"
+#include "common/colors.h"
 
 class OmSegmentColorizerColorCache : public zi::rwmutex {
  private:

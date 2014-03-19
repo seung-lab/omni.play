@@ -62,7 +62,7 @@ class OmSegmentListsImpl {
 
   inline int64_t GetSizeWithChildren(const om::common::SegID segID) {
     // if (segID >= list_.size()) {
-    //   log_debugs(unknown) << "segment " << segID << "not found";
+    //   log_debugs << "segment " << segID << "not found";
     //   return 0;
     // }
     return list_[segID].sizeIncludingChildren;
@@ -99,7 +99,7 @@ class OmSegmentListsImpl {
       size = 1;  // for newly-added segment
     }
 
-    const SegInfo info = { seg, seg->value(), size, 0 };
+    const SegInfo info = {seg, seg->value(), size, 0};
     list_[seg->value()] = info;
   }
 
@@ -115,9 +115,9 @@ class OmSegmentListsImpl {
 
     // saftey check
     if (meta_.numSegments() != numSegs) {
-      log_debugs(unknown) << "number of segments found changed from "
-                          << om::string::humanizeNum(meta_.numSegments())
-                          << " to " << om::string::humanizeNum(numSegs);
+      log_debugs << "number of segments found changed from "
+                 << om::string::humanizeNum(meta_.numSegments()) << " to "
+                 << om::string::humanizeNum(numSegs);
       meta_.set_numSegments(numSegs);
     }
 

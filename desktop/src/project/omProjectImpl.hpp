@@ -33,7 +33,7 @@ class OmProjectImpl {
   QString projectMetadataFile_;
   QString oldHDF5projectFile_;
   OmHdf5* oldHDF5_;
-  om::file::Paths paths_;
+  om::file::Paths& paths_;
 
   int fileVersion_;
 
@@ -41,16 +41,35 @@ class OmProjectImpl {
   std::unique_ptr<OmProjectGlobals> globals_;
 
  public:
-  OmProjectImpl() : oldHDF5_(nullptr), fileVersion_(0) {}
+  OmProjectImpl(const QString& fileNameAndPathIn)
+      : oldHDF5_(nullptr),
+        paths_(fileNameAndPathIn.toStdString()),
+        fileVersion_(0) {
+    doNew();
+  }
+
+  OmProjectImpl(const QString& fileNameAndPath, QWidget* guiParent,
+                const std::string& username)
+      : oldHDF5_(nullptr),
+        paths_(fileNameAndPathIn.toStdString()),
+        fileVersion_(0) {
+    doLoad(guiParent, username);
+  }
 
   ~OmProjectImpl() {}
 
-  const QString& FilesFolder() {
-    return QString::fromStdString(paths_.FilesFolder());
+  QString FilesFolder() {
+    if (!paths_) {
+      return "";
+    }
+    return paths_->FilesFolder().c_str();
   }
 
-  const QString& OmniFile() {
-    return QString::fromStdString(paths_.OmniFile());
+  QString OmniFile() {
+    if (!paths_) {
+      return "";
+    }
+    return paths_->OmniFile().c_str();
   }
 
   const om::file::Paths& Paths() { return paths_; }
@@ -66,29 +85,6 @@ class OmProjectImpl {
 
   // volume management
   OmProjectVolumes& Volumes() { return volumes_; }
-
-  // project IO
-  QString New(const QString& fileNameAndPathIn) {
-    const QString fnp_rel =
-        OmFileNames::AddOmniExtensionIfNeeded(fileNameAndPathIn);
-    const QString fnp = QFileInfo(fnp_rel).absoluteFilePath();
-
-    doNew(fnp);
-
-    return fnp;
-  }
-
-  void Load(const QString& fileNameAndPath, QWidget* guiParent,
-            const std::string& username) {
-    try {
-      const QFileInfo projectFile(fileNameAndPath);
-      doLoad(projectFile.absoluteFilePath(), guiParent, username);
-    }
-    catch (...) {
-      globals_.reset();
-      throw;
-    }
-  }
 
   void Save() {
     if (IsReadOnly()) {
@@ -116,9 +112,7 @@ class OmProjectImpl {
   OmProjectGlobals& Globals() { return *globals_; }
 
  private:
-  void doNew(const QString& fnp) {
-    paths_ = om::file::Paths(fnp);
-
+  void doNew() {
     projectMetadataFile_ = OmFileNames::ProjectMetadataFile();
     oldHDF5projectFile_ = "";
 
@@ -148,13 +142,10 @@ class OmProjectImpl {
     }
   }
 
-  void doLoad(const QString& fnp, QWidget* guiParent,
-              const std::string& username) {
+  void doLoad(QWidget* guiParent, const std::string& username) {
     if (!om::file::Paths::IsValid(fnp.toStdString())) {
       throw om::IoException("Project file not found at" + fnp.toStdString());
     }
-
-    paths_ = om::file::Paths(fnp);
 
     oldHDF5projectFile_ = OmFileNames::OldHDF5projectFileName();
     projectMetadataFile_ = OmFileNames::ProjectMetadataFile();

@@ -1,4 +1,3 @@
-#include "tiles/pools/omPooledTile.hpp"
 #include "segment/colorizer/omSegmentColorizer.h"
 #include "segment/colorizer/omSegmentColorizerImpl.hpp"
 #include "segment/colorizer/omSegmentColors.hpp"
@@ -13,10 +12,9 @@ const std::vector<uint8_t> OmSegmentColorizer::SelectedColorLookupTable =
 OmSegmentColorizer::OmSegmentColorizer(OmSegments& segments,
                                        om::segment::coloring sccType,
                                        uint32_t tileDim, OmViewGroupState& vgs)
-    : params_ {
-  sccType, tileDim* tileDim, vgs, segments, segments.Selection()
+    : params_{sccType, tileDim * tileDim, vgs, segments, segments.Selection()} {
+  freshness_.store(0);
 }
-{ freshness_.store(0); }
 
 OmSegmentColorizer::~OmSegmentColorizer() {}
 
@@ -32,11 +30,11 @@ void OmSegmentColorizer::setup() {
   }
 }
 
-OmPooledTile<om::common::ColorARGB>* OmSegmentColorizer::ColorTile(
+std::shared_ptr<om::common::ColorARGB> OmSegmentColorizer::ColorTile(
     uint32_t const* imageData) {
   setup();
 
-  auto* colorMappedDataPtr = new OmPooledTile<om::common::ColorARGB>();
+  std::shared_ptr<om::common::ColorARGB> colorMappedDataPtr;
 
   // om::utility::timer timer;
 

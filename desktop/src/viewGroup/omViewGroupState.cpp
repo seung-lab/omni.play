@@ -24,9 +24,9 @@
 
 OmViewGroupState::OmViewGroupState(MainWindow* mainWindow)
     : OmManageableObject(),
-      viewGroup_(new ViewGroup(mainWindow, this)),
+      viewGroup_(new ViewGroup(mainWindow, *this)),
       view2dState_(new OmViewGroupView2dState()),
-      colorizers_(new OmColorizers(this)),
+      colorizers_(new OmColorizers(*this)),
       zoomLevel_(new OmZoomLevel()),
       splitting_(new OmSplitting()),
       landmarks_(new OmLandmarks(mainWindow)),
@@ -114,7 +114,7 @@ void OmViewGroupState::SetToolBarManager(ToolBarManager* tbm) {
   splitting_->SetToolBarManager(tbm);
 }
 
-ToolBarManager* OmViewGroupState::GetToolBarManager() {
+ToolBarManager& OmViewGroupState::GetToolBarManager() {
   return toolBarManager_;
 }
 

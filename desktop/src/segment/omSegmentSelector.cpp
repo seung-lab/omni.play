@@ -13,8 +13,9 @@ OmSegmentSelector::OmSegmentSelector(const SegmentationDataWrapper& sdw,
                                      void* sender, const std::string& cmt)
     : params_(std::make_shared<OmSelectSegmentsParams>()) {
   if (!sdw.IsSegmentationValid()) {
-    throw om::ArgException("Invalid SegmentationDataWrapper "
-                           "(OmSegmentSelector::OmSegmentSelector)");
+    throw om::ArgException(
+        "Invalid SegmentationDataWrapper "
+        "(OmSegmentSelector::OmSegmentSelector)");
   }
 
   segments_ = sdw.Segments();

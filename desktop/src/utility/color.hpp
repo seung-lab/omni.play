@@ -2,6 +2,7 @@
 #include "precomp.h"
 
 #include "common/common.h"
+#include "common/colors.h"
 #include "project/omProjectGlobals.h"
 #include "utility/omRandColorFile.hpp"
 

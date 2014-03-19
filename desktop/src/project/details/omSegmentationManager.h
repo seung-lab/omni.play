@@ -2,28 +2,19 @@
 #include "precomp.h"
 
 #include "common/common.h"
-#include "datalayer/file.h"
-#include "common/genericManager.hpp"
+#include "system/omGenericManager.hpp"
 #include "volume/omSegmentation.h"
-
-namespace om {
-namespace volume {
-class MetadataDataSource;
-}
-}
+#include "datalayer/archive/segmentation.h"
 
 class OmProjectVolumes;
 
-extern template class om::common::GenericManager<OmSegmentation>;
-
 class OmSegmentationManager {
  private:
-  OmProjectVolumes& volumes_;
+  OmProjectVolumes* const volumes_;
 
  public:
-  OmSegmentationManager(OmProjectVolumes& volumes) : volumes_(volumes) {}
+  OmSegmentationManager(OmProjectVolumes* volumes) : volumes_(volumes) {}
 
-  void Load();
   OmSegmentation* GetSegmentation(const om::common::ID id);
   OmSegmentation& AddSegmentation();
   void RemoveSegmentation(const om::common::ID id);
@@ -34,7 +25,13 @@ class OmSegmentationManager {
   const std::vector<OmSegmentation*> GetPtrVec() const;
 
  private:
-  static om::file::path path();
+  OmGenericManager<OmSegmentation> manager_;
 
-  om::common::GenericManager<OmSegmentation> manager_;
+  friend YAMLold::Emitter& YAMLold::operator<<(YAMLold::Emitter& out,
+                                               const OmSegmentationManager&);
+  friend void YAMLold::operator>>(const YAMLold::Node& in,
+                                  OmSegmentationManager&);
+  friend QDataStream& operator<<(QDataStream& out,
+                                 const OmSegmentationManager&);
+  friend QDataStream& operator>>(QDataStream& in, OmSegmentationManager&);
 };
