@@ -7,14 +7,14 @@ class OmViewGroupState;
 
 class OmColorizers {
  private:
-  OmViewGroupState* const vgs_;
+  OmViewGroupState& vgs_;
 
   zi::spinlock lock_;
   std::array<OmSegmentColorizer*, om::segment::coloring::NUMBER_OF_ENUMS>
       colorizers_;
 
  public:
-  OmColorizers(OmViewGroupState* vgs) : vgs_(vgs) {
+  OmColorizers(OmViewGroupState& vgs) : vgs_(vgs) {
     std::fill(colorizers_.begin(), colorizers_.end(),
               static_cast<OmSegmentColorizer*>(nullptr));
   }

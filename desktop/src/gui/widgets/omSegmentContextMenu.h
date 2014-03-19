@@ -19,11 +19,10 @@ class OmSegmentContextMenu : public QMenu {
   Q_OBJECT;
 
  public:
-  void Refresh(const SegmentDataWrapper& sdw, OmViewGroupState* vgs);
-  void Refresh(const SegmentDataWrapper& sdw, OmViewGroupState* vgs,
+  void Refresh(const SegmentDataWrapper& sdw, OmViewGroupState& vgs);
+  void Refresh(const SegmentDataWrapper& sdw, OmViewGroupState& vgs,
                const om::coords::Global coord);
-  void Refresh(const OmSegmentPickPoint& pickPoint, OmViewGroupState* vgs);
-  void Refresh(const om::landmarks::sdwAndPt& pickPoint, OmViewGroupState& vgs);
+  void Refresh(const OmSegmentPickPoint& pickPoint, OmViewGroupState& vgs);
 
  protected:
   void addSelectionNames();
@@ -57,7 +56,8 @@ Q_SLOTS:
  private:
   SegmentDataWrapper sdw_;
   om::coords::Global coord_;
-  OmViewGroupState* vgs_;
+
+  OmViewGroupState& vgs_;
 
   bool isValid() const;
   bool isUncertain() const;

@@ -21,13 +21,13 @@ class ValidationGroup : public OmWidget {
   Q_OBJECT;
 
  public:
-  ValidationGroup(om::sidebars::rightImpl*, OmViewGroupState* vgs);
+  ValidationGroup(om::sidebars::rightImpl*, OmViewGroupState& vgs);
   QString getGroupNameFromGUI();
   bool isShowValidChecked();
 
   QString getName() { return "Validation"; }
 
-  OmViewGroupState* GetViewGroupState() const;
+  OmViewGroupState& GetViewGroupState() const;
 
   SegmentationDataWrapper GetSDW() const;
 
@@ -36,7 +36,7 @@ Q_SLOTS:
   void changeMapColors();
 
  private:
-  OmViewGroupState* const vgs_;
+  OmViewGroupState& vgs_;
 
   QButtonGroup* validGroup;
   QRadioButton* showValid;

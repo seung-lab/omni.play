@@ -330,7 +330,8 @@ class OmMouseEventPress {
 
   void addAnnotation() {
     auto& manager = state_->GetSDW().GetSegmentation()->Annotations();
-    OmViewGroupState* vgs = state_->getViewGroupState();
+
+    OmViewGroupState& vgs = state_->getViewGroupState();
 
     manager.Add(dataClickPoint_, vgs->getAnnotationString(),
                 vgs->getAnnotationColor(), vgs->getAnnotationSize());

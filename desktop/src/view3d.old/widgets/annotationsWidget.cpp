@@ -18,7 +18,7 @@ AnnotationsWidget::AnnotationsWidget(OmView3d *view3d, OmViewGroupState *vgs)
 ///////          Draw Methods
 
 void AnnotationsWidget::Draw() {
-  if (!vgs_->getAnnotationVisible()) {
+  if (!vgs_.getAnnotationVisible()) {
     return;
   }
 

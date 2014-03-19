@@ -12,7 +12,8 @@ class OmMeshDrawPlanner {
  private:
   OmSegmentation* const segmentation_;
   OmSegments* const segments_;
-  OmViewGroupState* const vgs_;
+
+  OmViewGroupState& vgs_;
   const std::shared_ptr<OmVolumeCuller> culler_;
   const OmBitfield drawOptions_;
   OmMeshSegmentList* const rootSegList_;
@@ -24,7 +25,7 @@ class OmMeshDrawPlanner {
   bool notAllSegmentsFound_;
 
  public:
-  OmMeshDrawPlanner(OmSegmentation* segmentation, OmViewGroupState* vgs,
+  OmMeshDrawPlanner(OmSegmentation* segmentation, OmViewGroupState& vgs,
                     std::shared_ptr<OmVolumeCuller> culler,
                     const OmBitfield drawOptions,
                     OmMeshSegmentList* rootSegList)
@@ -105,7 +106,7 @@ class OmMeshDrawPlanner {
     FOR_EACH(iter, segmentsToDraw) {
       OmSegment* seg = *iter;
 
-      if (seg->size() < vgs_->getDustThreshold()) {
+      if (seg->size() < vgs_.getDustThreshold()) {
         continue;
       }
 

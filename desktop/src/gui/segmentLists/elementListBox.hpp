@@ -16,7 +16,7 @@ class ElementListBox : private om::singletonBase<ElementListBox> {
  public:
   static QWidget* Widget();
 
-  static void Create(OmViewGroupState* vgs);
+  static void Create(OmViewGroupState& vgs);
   static void Delete();
   static void Reset();
 

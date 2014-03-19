@@ -9,7 +9,7 @@ class ShowAnnotationsTools : public OmButton<QWidget> {
   om::gui::AnnotationToolbox* annotationToolbox_;
 
  public:
-  ShowAnnotationsTools(QWidget* parent, OmViewGroupState* vgs)
+  ShowAnnotationsTools(QWidget* parent, OmViewGroupState& vgs)
       : OmButton<QWidget>(parent, "", "Show annotation tools", true),
         annotationToolbox_(new om::gui::AnnotationToolbox(parent, vgs)) {
     SetIcon(":/toolbars/mainToolbar/icons/folder_documents.png");

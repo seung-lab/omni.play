@@ -23,7 +23,7 @@
 ///////          Context Menu Methods
 
 void OmSegmentContextMenu::Refresh(const SegmentDataWrapper& sdw,
-                                   OmViewGroupState* vgs) {
+                                   OmViewGroupState& vgs) {
   sdw_ = sdw;
   vgs_ = vgs;
 
@@ -31,7 +31,7 @@ void OmSegmentContextMenu::Refresh(const SegmentDataWrapper& sdw,
 }
 
 void OmSegmentContextMenu::Refresh(const SegmentDataWrapper& sdw,
-                                   OmViewGroupState* vgs,
+                                   OmViewGroupState& vgs,
                                    const om::coords::Global coord) {
   sdw_ = sdw;
   vgs_ = vgs;
@@ -41,19 +41,10 @@ void OmSegmentContextMenu::Refresh(const SegmentDataWrapper& sdw,
 }
 
 void OmSegmentContextMenu::Refresh(const OmSegmentPickPoint& pickPoint,
-                                   OmViewGroupState* vgs) {
-  sdw_ = pickPoint.sdw;
-  coord_ = pickPoint.coord;
-  vgs_ = vgs;
-
-  doRefresh();
-}
-
-void OmSegmentContextMenu::Refresh(const om::landmarks::sdwAndPt& pickPoint,
                                    OmViewGroupState& vgs) {
   sdw_ = pickPoint.sdw;
   coord_ = pickPoint.coord;
-  vgs_ = &vgs;
+  vgs_ = vgs;
 
   doRefresh();
 }
@@ -154,8 +145,10 @@ void OmSegmentContextMenu::mergeSegments() {
 }
 
 void OmSegmentContextMenu::splitSegments() {
-  vgs_->Splitting()->EnterSplitMode();
-  vgs_->Splitting()->SetFirstSplitPoint(sdw_, coord_);
+
+  vgs_.Splitting()->EnterSplitMode();
+
+  vgs_.Splitting()->SetFirstSplitPoint(sdw_, coord_);
 }
 
 void OmSegmentContextMenu::cutSegments() { OmActions::CutSegment(sdw_); }

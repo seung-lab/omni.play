@@ -24,7 +24,7 @@ Q_DECLARE_METATYPE(DataWrapperContainer);
 Q_DECLARE_METATYPE(FilterDataWrapper);
 
 InspectorWidget::InspectorWidget(QWidget* parent, MainWindow* mainWindow,
-                                 OmViewGroupState* vgs)
+                                 OmViewGroupState& vgs)
     : QWidget(parent), mainWindow_(mainWindow), vgs_(vgs) {
   QVBoxLayout* verticalLayout = new QVBoxLayout(this);
 
@@ -59,13 +59,15 @@ InspectorWidget::~InspectorWidget() {
 void InspectorWidget::openChannelView(om::common::ID chanID,
                                       om::common::ViewType vtype) {
   const ChannelDataWrapper cdw(chanID);
-  vgs_->GetViewGroup()->AddView2Dchannel(cdw, vtype);
+
+  vgs_.GetViewGroup()->AddView2Dchannel(cdw, vtype);
 }
 
 void InspectorWidget::openSegmentationView(om::common::ID segmentationID,
                                            om::common::ViewType vtype) {
   const SegmentationDataWrapper sdw(segmentationID);
-  vgs_->GetViewGroup()->AddView2Dsegmentation(sdw, vtype);
+
+  vgs_.GetViewGroup()->AddView2Dsegmentation(sdw, vtype);
 }
 
 QTreeWidget* InspectorWidget::setupFilterList() {

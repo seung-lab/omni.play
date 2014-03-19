@@ -15,7 +15,7 @@ class BreakThresholdGroup : public OmDoubleSpinBox {
   Q_OBJECT;
 
  public:
-  BreakThresholdGroup(GraphTools* d, OmViewGroupState* vgs)
+  BreakThresholdGroup(GraphTools* d, OmViewGroupState& vgs)
       : OmDoubleSpinBox(d, true), vgs_(vgs) {
     setSingleStep(0.002);
     setMaximum(1.0);
@@ -24,18 +24,19 @@ class BreakThresholdGroup : public OmDoubleSpinBox {
   }
 
  private:
-  OmViewGroupState* const vgs_;
+  OmViewGroupState& vgs_;
 
   void setInitialGUIThresholdValue() {
     static const double threshold = 1.;
 
     setGUIvalue(threshold);
 
-    vgs_->setBreakThreshold(threshold);
+    vgs_.setBreakThreshold(threshold);
   }
 
   void actUponValueChange(const double threshold) {
-    vgs_->setBreakThreshold(threshold);
+
+    vgs_.setBreakThreshold(threshold);
 
     // todo: don't use same freshness as normal tiles
     OmCacheManager::TouchFreshness();

@@ -11,10 +11,10 @@ class Page3d : public QWidget {
   Q_OBJECT;
 
  private:
-  OmViewGroupState* const vgs_;
+  OmViewGroupState& vgs_;
 
  public:
-  Page3d(QWidget* parent, OmViewGroupState* vgs) : QWidget(parent), vgs_(vgs) {
+  Page3d(QWidget* parent, OmViewGroupState& vgs) : QWidget(parent), vgs_(vgs) {
     QVBoxLayout* box = new QVBoxLayout(this);
     box->addWidget(thresholdBox());
     box->addStretch(1);

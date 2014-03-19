@@ -12,7 +12,7 @@
 #include "utility/dataWrappers.h"
 
 om::sidebars::rightImpl::rightImpl(MainWindow* mainWindow,
-                                   OmViewGroupState* vgs)
+                                   OmViewGroupState& vgs)
     : QWidget(mainWindow), mainWindow_(mainWindow), vgs_(vgs) {
   OmAppState::SetRightToolBar(this);
 
@@ -30,7 +30,7 @@ om::sidebars::rightImpl::rightImpl(MainWindow* mainWindow,
 }
 
 SegmentationDataWrapper om::sidebars::rightImpl::GetSDW() {
-  return vgs_->Segmentation();
+  return vgs_.Segmentation();
 }
 
 void om::sidebars::rightImpl::updateGui() { om::event::Redraw2d(); }

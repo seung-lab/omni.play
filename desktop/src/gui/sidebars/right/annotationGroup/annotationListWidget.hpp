@@ -22,7 +22,7 @@ class AnnotationListWidget : public QTreeWidget,
   Q_OBJECT;
 
  public:
-  AnnotationListWidget(QWidget* parent, OmViewGroupState* vgs)
+  AnnotationListWidget(QWidget* parent, OmViewGroupState& vgs)
       : QTreeWidget(parent), vgs_(vgs), editing_(false) {
     setSelectionMode(QAbstractItemView::SingleSelection);
     setAlternatingRowColors(true);
@@ -200,7 +200,7 @@ Q_SLOTS:
       return;
     }
 
-    vgs_->View2dState()->SetScaledSliceDepth(
+    vgs_.View2dState()->SetScaledSliceDepth(
         annotation->Object->coord.ToGlobal());
     om::event::ViewCenterChanged();
     om::event::View3dRecenter();
@@ -227,14 +227,14 @@ Q_SLOTS:
 
   OmMipVolume* getVol() {
     {
-      const ChannelDataWrapper cdw = vgs_->Channel();
+      const ChannelDataWrapper cdw = vgs_.Channel();
       if (cdw.IsValidWrapper()) {
         return cdw.GetChannel();
       }
     }
 
     {
-      const SegmentationDataWrapper sdw = vgs_->Segmentation();
+      const SegmentationDataWrapper sdw = vgs_.Segmentation();
       if (sdw.IsValidWrapper()) {
         return sdw.GetSegmentation();
       }
@@ -250,7 +250,7 @@ Q_SLOTS:
     row->setText(POSITION_COL, QString::fromStdString(ss.str()));
   }
 
-  OmViewGroupState* vgs_;
+  OmViewGroupState& vgs_;
   bool editing_;
 
   static const int ENABLE_COL = 0;

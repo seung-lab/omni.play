@@ -364,7 +364,7 @@ void MainWindow::open3dView() {
       return;
     }
 
-    vgs_->GetViewGroup()->AddView3D();
+    vgs_.GetViewGroup()->AddView3D();
   }
   catch (om::Exception& e) {
     spawnErrorDialog(e);

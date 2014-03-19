@@ -27,40 +27,14 @@ class OmBrushSize;
  */
 
 class OmView2dState {
- private:
-  OmMipVolume& vol_;
-  const om::common::ObjectType objType_;
-  OmViewGroupState* const vgs_;
-  OmZoomLevel* const zoomLevel_;
-
-  const om::common::ViewType viewType_;
-  const std::string name_;
-
-  bool scribbling_;
-  Vector2i mousePoint_;
-  bool isLevelLocked_;
-
-  boost::optional<om::coords::Screen> mousePanStartingPt_;
-
-  // (x,y) coordinates only (no depth); needed for Bresenham
-  om::coords::Global lastDataPoint_;
-
-  OmBrushSize* const brushSize_;
-
-  bool overrideToolModeForPan_;
-
-  om::common::SegID segIDforPainting_;
-
-  om::coords::ScreenSystem coords_;
-
  public:
-  OmView2dState(OmMipVolume& vol, OmViewGroupState* vgs,
+  OmView2dState(OmMipVolume& vol, OmViewGroupState& vgs,
                 const om::common::ViewType viewType, const QSize& size,
                 const std::string name)
       : vol_(vol),
         objType_(vol.getVolumeType()),
         vgs_(vgs),
-        zoomLevel_(vgs->ZoomLevel()),
+        zoomLevel_(vgs.ZoomLevel()),
         viewType_(viewType),
         name_(name),
         scribbling_(false),
@@ -72,7 +46,7 @@ class OmView2dState {
         segIDforPainting_(0),
         coords_(viewType) {
     coords_.set_totalViewport(Vector4i(0, 0, size.width(), size.height()));
-    zoomLevel_->Update(getMaxMipLevel());
+    zoomLevel_.Update(getMaxMipLevel());
 
     UpdateTransformationMatrices();
   }
@@ -82,7 +56,7 @@ class OmView2dState {
   inline const om::coords::ScreenSystem& Coords() const { return coords_; }
 
   inline void UpdateTransformationMatrices() {
-    coords_.set_zoomScale(zoomLevel_->GetZoomScale());
+    coords_.set_zoomScale(zoomLevel_.GetZoomScale());
     coords_.set_location(Location());
     coords_.UpdateTransformationMatrices();
   }
@@ -108,8 +82,8 @@ class OmView2dState {
     om::coords::Global max = om::coords::Screen(viewport.width, viewport.height,
                                                 Coords()).ToGlobal();
 
-    vgs_->View2dState()->SetViewSliceMax(viewType_, get2ptsInPlane(max));
-    vgs_->View2dState()->SetViewSliceMin(viewType_, get2ptsInPlane(min));
+    vgs_.View2dState().SetViewSliceMax(viewType_, get2ptsInPlane(max));
+    vgs_.View2dState().SetViewSliceMin(viewType_, get2ptsInPlane(min));
 
     om::event::Redraw3d();
   }
@@ -120,15 +94,15 @@ class OmView2dState {
   }
 
   void SetIntialWindowState() {
-    OmViewGroupView2dState* v2dstate = vgs_->View2dState();
+    OmViewGroupView2dState& v2dstate = vgs_.View2dState();
 
-    if (v2dstate->GetInitialized()) {
+    if (v2dstate.GetInitialized()) {
       OmTileCache::ClearAll();  // tile opengl contexts may have changed
       return;
     }
 
     ResetWindowState();
-    v2dstate->SetInitialized();
+    v2dstate.SetInitialized();
   }
 
   void ResetWindowState() {
@@ -139,7 +113,7 @@ class OmView2dState {
     om::coords::Global loc = midPoint.ToGlobal();
     setLocation(loc);
 
-    zoomLevel_->Reset(getMaxMipLevel());
+    zoomLevel_.Reset(getMaxMipLevel());
 
     UpdateTransformationMatrices();
 
@@ -151,9 +125,9 @@ class OmView2dState {
     const int numberOfSlicestoAdvance =
         om::math::pow2int(getMipLevel()) *
         getViewTypeDepth(vol_.Coords().Resolution()) * steps;
-    const int depth = vgs_->View2dState()->GetScaledSliceDepth(viewType_);
-    vgs_->View2dState()->SetScaledSliceDepth(viewType_,
-                                             depth + numberOfSlicestoAdvance);
+    const int depth = vgs_.View2dState().GetScaledSliceDepth(viewType_);
+    vgs_.View2dState().SetScaledSliceDepth(viewType_,
+                                           depth + numberOfSlicestoAdvance);
 
     UpdateTransformationMatrices();
   }
@@ -162,9 +136,9 @@ class OmView2dState {
     const int numberOfSlicestoAdvance =
         om::math::pow2int(getMipLevel()) *
         getViewTypeDepth(vol_.Coords().Resolution()) * steps;
-    const int depth = vgs_->View2dState()->GetScaledSliceDepth(viewType_);
-    vgs_->View2dState()->SetScaledSliceDepth(viewType_,
-                                             depth - numberOfSlicestoAdvance);
+    const int depth = vgs_.View2dState().GetScaledSliceDepth(viewType_);
+    vgs_.View2dState().SetScaledSliceDepth(viewType_,
+                                           depth - numberOfSlicestoAdvance);
 
     UpdateTransformationMatrices();
   }
@@ -196,15 +170,15 @@ class OmView2dState {
   inline OmMipVolume& getVol() const { return vol_; }
 
   // view group state
-  inline OmViewGroupState* getViewGroupState() const { return vgs_; }
+  inline OmViewGroupState& getViewGroupState() const { return vgs_; }
 
   // scribbling
   inline bool getScribbling() { return scribbling_; }
   void setScribbling(const bool s) { scribbling_ = s; }
 
   // zoom and mip level
-  inline float getZoomScale() const { return zoomLevel_->GetZoomScale(); }
-  inline int getMipLevel() const { return zoomLevel_->GetMipLevel(); }
+  inline float getZoomScale() const { return zoomLevel_.GetZoomScale(); }
+  inline int getMipLevel() const { return zoomLevel_.GetMipLevel(); }
   inline int getMaxMipLevel() const { return vol_.Coords().RootMipLevel(); }
 
   // depth-related computation helpers
@@ -286,19 +260,19 @@ class OmView2dState {
   inline om::common::ObjectType getObjectType() const { return objType_; }
 
   inline om::common::ID GetSegmentationID() const {
-    return vgs_->Segmentation().id();
+    return vgs_.Segmentation().id();
   }
 
-  inline SegmentationDataWrapper GetSDW() const { return vgs_->Segmentation(); }
+  inline SegmentationDataWrapper GetSDW() const { return vgs_.Segmentation(); }
 
-  inline OmZoomLevel* ZoomLevel() { return zoomLevel_; }
+  inline OmZoomLevel& ZoomLevel() { return zoomLevel_; }
 
   inline om::coords::Global Location() {
-    return vgs_->View2dState()->GetScaledSliceDepth();
+    return vgs_.View2dState().GetScaledSliceDepth();
   }
 
   inline void setLocation(om::coords::Global loc) {
-    vgs_->View2dState()->SetScaledSliceDepth(loc);
+    vgs_.View2dState().SetScaledSliceDepth(loc);
     UpdateTransformationMatrices();
   }
 
@@ -313,4 +287,30 @@ class OmView2dState {
   inline void SetSegIDForPainting(const om::common::SegID segID) {
     segIDforPainting_ = segID;
   }
+
+ private:
+  OmMipVolume& vol_;
+  const om::common::ObjectType objType_;
+  OmViewGroupState& vgs_;
+  OmZoomLevel& zoomLevel_;
+
+  const om::common::ViewType viewType_;
+  const std::string name_;
+
+  bool scribbling_;
+  Vector2i mousePoint_;
+  bool isLevelLocked_;
+
+  boost::optional<om::coords::Screen> mousePanStartingPt_;
+
+  // (x,y) coordinates only (no depth); needed for Bresenham
+  om::coords::Global lastDataPoint_;
+
+  OmBrushSize* const brushSize_;
+
+  bool overrideToolModeForPan_;
+
+  om::common::SegID segIDforPainting_;
+
+  om::coords::ScreenSystem coords_;
 };

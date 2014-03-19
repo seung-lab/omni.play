@@ -16,7 +16,7 @@ class OmSegmentListWidget : public QTreeWidget {
   Q_OBJECT;
 
  public:
-  OmSegmentListWidget(SegmentListBase*, OmViewGroupState*);
+  OmSegmentListWidget(SegmentListBase*, OmViewGroupState&);
 
   bool populate(const bool doScrollToSelectedSegment,
                 const SegmentDataWrapper segmentJustSelected,
@@ -29,7 +29,8 @@ class OmSegmentListWidget : public QTreeWidget {
   void keyPressEvent(QKeyEvent* event);
 
   SegmentListBase* segmentListBase;
-  OmViewGroupState* const vgs_;
+
+  OmViewGroupState& vgs_;
 
   SegmentDataWrapper getCurrentlySelectedSegment();
   bool isSegmentSelected();

@@ -20,14 +20,14 @@ class Page2d : public QWidget {
   Q_OBJECT;
 
  private:
-  OmViewGroupState* const vgs_;
+  OmViewGroupState& vgs_;
 
   QButtonGroup* validGroup_;
   QRadioButton* showValid_;
   QRadioButton* dontShowValid_;
 
  public:
-  Page2d(QWidget* parent, OmViewGroupState* vgs) : QWidget(parent), vgs_(vgs) {
+  Page2d(QWidget* parent, OmViewGroupState& vgs) : QWidget(parent), vgs_(vgs) {
     QVBoxLayout* box = new QVBoxLayout(this);
     box->addWidget(filterShowNonSelectedSegmentsBox());
     box->addWidget(new BrightenSelected(this, vgs_));
@@ -39,7 +39,8 @@ class Page2d : public QWidget {
 Q_SLOTS:
   void changeMapColorsSlot() {
     const bool val = showValid_->isChecked();
-    vgs_->SetHowNonSelectedSegmentsAreColoredInFilter(val);
+
+    vgs_.SetHowNonSelectedSegmentsAreColoredInFilter(val);
   }
 
  private:

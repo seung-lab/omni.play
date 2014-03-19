@@ -4,7 +4,7 @@
 namespace om {
 namespace gui {
 
-AnnotationToolbox::AnnotationToolbox(QWidget* parent, OmViewGroupState* vgs)
+AnnotationToolbox::AnnotationToolbox(QWidget* parent, OmViewGroupState& vgs)
     : QDialog(parent, Qt::Tool) {
   setAttribute(Qt::WA_ShowWithoutActivating);
 

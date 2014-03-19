@@ -3,7 +3,7 @@
 #include "gui/sidebars/right/displayTools/location/pageLocation.hpp"
 #include "gui/sidebars/right/rightImpl.h"
 
-DisplayTools::DisplayTools(om::sidebars::rightImpl* d, OmViewGroupState* vgs)
+DisplayTools::DisplayTools(om::sidebars::rightImpl* d, OmViewGroupState& vgs)
     : QWidget(d), vgs_(vgs) {
   QVBoxLayout* box = new QVBoxLayout(this);
 

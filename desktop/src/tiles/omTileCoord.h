@@ -9,16 +9,16 @@ class OmMipVolume;
 class OmViewGroupState;
 
 typedef std::tuple<om::coords::Chunk, om::common::ViewType, uint8_t,
-                   OmMipVolume*, uint32_t, OmViewGroupState*,
+                   OmMipVolume*, uint32_t, OmViewGroupState&,
                    om::segment::coloring> OmTileCoordKey;
 
 class OmTileCoord : public OmTileCoordKey {
  public:
   OmTileCoord(const om::coords::Chunk&, om::common::ViewType, uint8_t,
-              OmMipVolume*, uint32_t, OmViewGroupState*, om::segment::coloring);
+              OmMipVolume*, uint32_t, OmViewGroupState&, om::segment::coloring);
 
   OmTileCoord(const om::coords::Chunk&, om::common::ViewType, uint8_t,
-              OmMipVolume*, uint32_t, OmViewGroupState*,
+              OmMipVolume*, uint32_t, OmViewGroupState&,
               om::common::ObjectType);
 
   inline const om::coords::Chunk& getCoord() const {
@@ -28,7 +28,7 @@ class OmTileCoord : public OmTileCoordKey {
   inline uint8_t getDepth() const { return std::get<2>(*this); }
   inline OmMipVolume* getVolume() const { return std::get<3>(*this); }
   inline uint32_t getFreshness() const { return std::get<4>(*this); }
-  inline OmViewGroupState* getViewGroupState() const {
+  inline OmViewGroupState& getViewGroupState() const {
     return std::get<5>(*this);
   }
   inline om::segment::coloring getSegmentColorCacheType() const {

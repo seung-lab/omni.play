@@ -5,7 +5,7 @@ ElementListBox::ElementListBox() {}
 
 ElementListBox::~ElementListBox() {}
 
-void ElementListBox::Create(OmViewGroupState* vgs) {
+void ElementListBox::Create(OmViewGroupState& vgs) {
   instance().impl_.reset(new ElementListBoxImpl(vgs));
 }
 

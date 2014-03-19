@@ -19,7 +19,7 @@
 #include "volume/omSegmentation.h"
 #include "annotation/annotation.h"
 
-OmView3dUi::OmView3dUi(OmView3d* view3d, OmViewGroupState* vgs)
+OmView3dUi::OmView3dUi(OmView3d* view3d, OmViewGroupState& vgs)
     : view3d_(view3d), vgs_(vgs), macGestures_(new OmMacOSXGestures(view3d)) {}
 
 OmView3dUi::~OmView3dUi() {}
@@ -87,7 +87,8 @@ void OmView3dUi::shatterModeMouseReleased(QMouseEvent* event) {
   }
 
   OmActions::ShatterSegment(pickPoint.sdw.GetSegment());
-  vgs_->GetToolBarManager()->SetShatteringOff();
+
+  vgs_.GetToolBarManager()->SetShatteringOff();
   OmStateManager::SetOldToolModeAndSendEvent();
 }
 
@@ -113,8 +114,8 @@ bool OmView3dUi::annotate(QMouseEvent* event) {
 
   auto& manager = pickPoint.sdw.GetSegmentation()->Annotations();
 
-  manager.Add(pickPoint.coord, vgs_->getAnnotationString(),
-              vgs_->getAnnotationColor(), vgs_->getAnnotationSize());
+  manager.Add(pickPoint.coord, vgs_.getAnnotationString(),
+              vgs_.getAnnotationColor(), vgs_.getAnnotationSize());
   return true;
 }
 
@@ -147,7 +148,8 @@ void OmView3dUi::navigationModeMousePressed(QMouseEvent* event) {
   if (leftMouseButton) {
     if (om::tool::LANDMARK == OmStateManager::GetToolMode()) {
       const OmSegmentPickPoint pickPoint = pickVoxelMouseCrosshair(event);
-      vgs_->Landmarks().Add(pickPoint.sdw, pickPoint.coord);
+
+      vgs_.Landmarks().Add(pickPoint.sdw, pickPoint.coord);
       return;
     }
 
@@ -356,7 +358,7 @@ void OmView3dUi::crosshair(QMouseEvent* event) {
     return;
   }
 
-  vgs_->View2dState()->SetScaledSliceDepth(pickPoint.coord);
+  vgs_.View2dState()->SetScaledSliceDepth(pickPoint.coord);
 
   om::event::ViewCenterChanged();
 }

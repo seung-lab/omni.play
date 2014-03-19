@@ -5,7 +5,7 @@ class OmViewGroupState;
 
 class BrushToolboxImpl : public QDialog {
  public:
-  BrushToolboxImpl(QWidget* parent, OmViewGroupState* vgs);
+  BrushToolboxImpl(QWidget* parent, OmViewGroupState& vgs);
 
   virtual ~BrushToolboxImpl() {}
 };

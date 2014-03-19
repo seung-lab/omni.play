@@ -1,7 +1,7 @@
 #include "gui/viewGroup/viewGroup.h"
 #include "gui/viewGroup/viewGroupImpl.hpp"
 
-ViewGroup::ViewGroup(MainWindow* mainWindow, OmViewGroupState* vgs)
+ViewGroup::ViewGroup(MainWindow* mainWindow, OmViewGroupState& vgs)
     : mainWindow_(mainWindow),
       impl_(new om::gui::viewGroupImpl(mainWindow, vgs)) {}
 

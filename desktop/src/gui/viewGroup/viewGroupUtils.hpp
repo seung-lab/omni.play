@@ -21,10 +21,11 @@ struct DockWidgetPair {
 class ViewGroupUtils {
  private:
   MainWindow* const mainWindow_;
-  OmViewGroupState* const vgs_;
+
+  OmViewGroupState& vgs_;
 
  public:
-  ViewGroupUtils(MainWindow* mainWindow, OmViewGroupState* vgs)
+  ViewGroupUtils(MainWindow* mainWindow, OmViewGroupState& vgs)
       : mainWindow_(mainWindow), vgs_(vgs) {}
 
   ~ViewGroupUtils() {}

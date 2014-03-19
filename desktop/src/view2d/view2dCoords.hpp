@@ -13,7 +13,7 @@ namespace om {
 
 class view2dCoords {
  private:
-  OmViewGroupState* vgs_;
+  OmViewGroupState& vgs_;
   OmZoomLevel* zoomLevel_;
   om::common::ViewType viewType_;
   Vector4i totalViewport_;  // lower left x, lower left y, width, height
@@ -33,7 +33,7 @@ class view2dCoords {
   }
 
  public:
-  view2dCoords(OmViewGroupState* vgs, om::common::ViewType viewType)
+  view2dCoords(OmViewGroupState& vgs, om::common::ViewType viewType)
       : vgs_(vgs), zoomLevel_(vgs->ZoomLevel()), viewType_(viewType) {}
 
   // Update the Transformation Matricies based on changes to scale, location or
@@ -72,7 +72,7 @@ class view2dCoords {
     const Vector3f pan = makeViewTypeVector3(
         totalViewport_.width / 2.0f, totalViewport_.height / 2.0f, 0.0f);
 
-    om::coords::Global location = vgs_->View2dState()->GetScaledSliceDepth();
+    om::coords::Global location = vgs_.View2dState()->GetScaledSliceDepth();
 
     // g to s scaling and translation
     globalToScreenMat_.setTranslation(

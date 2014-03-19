@@ -19,10 +19,10 @@ class InspectorWidget : public QWidget {
 
  public:
   InspectorWidget(QWidget* parent, MainWindow* mainWindow,
-                  OmViewGroupState* vgs);
+                  OmViewGroupState& vgs);
   ~InspectorWidget();
 
-  OmViewGroupState* GetViewGroupState() { return vgs_; }
+  OmViewGroupState& GetViewGroupState() { return vgs_; }
 
   void addChannelToVolume();
   void addSegmentationToVolume();
@@ -65,7 +65,8 @@ Q_SLOTS:
 
  private:
   MainWindow* const mainWindow_;
-  OmViewGroupState* const vgs_;
+
+  OmViewGroupState& vgs_;
 
   QTreeWidget* dataSrcListWidget_;
   QTreeWidget* filterListWidget_;

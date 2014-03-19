@@ -10,7 +10,8 @@ namespace gui {
 class ViewGroupMainWindowUtils {
  private:
   MainWindow* const mainWindow_;
-  OmViewGroupState* const vgs_;
+
+  OmViewGroupState& vgs_;
   ViewGroupUtils* const utils_;
 
   static const om::common::ViewType upperLeft_ = om::common::XY_VIEW;
@@ -18,7 +19,7 @@ class ViewGroupMainWindowUtils {
   static const om::common::ViewType lowerLeft_ = om::common::XZ_VIEW;
 
  public:
-  ViewGroupMainWindowUtils(MainWindow* mainWindow, OmViewGroupState* vgs,
+  ViewGroupMainWindowUtils(MainWindow* mainWindow, OmViewGroupState& vgs,
                            ViewGroupUtils* utils)
       : mainWindow_(mainWindow), vgs_(vgs), utils_(utils) {}
 

@@ -15,7 +15,7 @@ class viewGroupImpl;
 
 class ViewGroup {
  public:
-  ViewGroup(MainWindow*, OmViewGroupState*);
+  ViewGroup(MainWindow*, OmViewGroupState&);
   ~ViewGroup();
 
   void AddView2Dchannel(const ChannelDataWrapper& cdw,

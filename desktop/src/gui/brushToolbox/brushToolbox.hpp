@@ -11,7 +11,8 @@ class BrushToolbox : public om::event::ToolModeEventListener,
  private:
   QWidget* const parent_;
   std::unique_ptr<BrushToolboxImpl> impl_;
-  OmViewGroupState* const vgs_;
+
+  OmViewGroupState& vgs_;
 
   bool alreadyPoppedMenu_;
 
@@ -44,7 +45,7 @@ class BrushToolbox : public om::event::ToolModeEventListener,
   }
 
  public:
-  BrushToolbox(QWidget* parent, OmViewGroupState* vgs)
+  BrushToolbox(QWidget* parent, OmViewGroupState& vgs)
       : parent_(parent),
         impl_(new BrushToolboxImpl(parent_, vgs)),
         vgs_(vgs),

@@ -13,7 +13,7 @@
 #include "viewGroup/omViewGroupState.h"
 
 ValidationGroup::ValidationGroup(om::sidebars::rightImpl* d,
-                                 OmViewGroupState* vgs)
+                                 OmViewGroupState& vgs)
     : OmWidget(d),
       vgs_(vgs),
       setSelectionValid(new SetValid(this)),
@@ -68,8 +68,8 @@ QString ValidationGroup::getGroupNameFromGUI() { return mGroupName->text(); }
 
 bool ValidationGroup::isShowValidChecked() { return showValid->isChecked(); }
 
-OmViewGroupState* ValidationGroup::GetViewGroupState() const { return vgs_; }
+OmViewGroupState& ValidationGroup::GetViewGroupState() const { return vgs_; }
 
 SegmentationDataWrapper ValidationGroup::GetSDW() const {
-  return vgs_->Segmentation();
+  return vgs_.Segmentation();
 }

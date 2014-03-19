@@ -11,7 +11,7 @@
 #include "utility/dataWrappers.h"
 #include "viewGroup/omViewGroupState.h"
 
-GraphTools::GraphTools(om::sidebars::rightImpl* d, OmViewGroupState* vgs)
+GraphTools::GraphTools(om::sidebars::rightImpl* d, OmViewGroupState& vgs)
     : OmWidget(d),
       mParent(d),
       vgs_(vgs),

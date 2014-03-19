@@ -10,17 +10,18 @@ namespace displayTools {
 
 class BrightenSelected : public OmCheckBoxWidget {
  private:
-  OmViewGroupState* vgs_;
+  OmViewGroupState& vgs_;
 
  public:
-  BrightenSelected(QWidget* parent, OmViewGroupState* vgs)
+  BrightenSelected(QWidget* parent, OmViewGroupState& vgs)
       : OmCheckBoxWidget(parent, "Brighten Selected Segments"), vgs_(vgs) {
     setChecked(true);
   }
 
  private:
   virtual void doAction(const bool isChecked) {
-    vgs_->BrightenSelected(isChecked);
+
+    vgs_.BrightenSelected(isChecked);
     OmCacheManager::TouchFreshness();
     om::event::Redraw2d();
   }

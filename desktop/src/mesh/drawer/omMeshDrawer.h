@@ -26,7 +26,7 @@ class OmMeshDrawer {
   virtual ~OmMeshDrawer() {}
 
   boost::optional<std::pair<float, float> > Draw(
-      OmViewGroupState*, std::shared_ptr<OmVolumeCuller>,
+      OmViewGroupState&, std::shared_ptr<OmVolumeCuller>,
       const OmBitfield drawOptions);
 
  private:

@@ -10,11 +10,11 @@ class OmViewGroupView2dState;
 
 class OmViewBoxWidget : public OmView3dWidget {
  public:
-  OmViewBoxWidget(OmView3d* view3d, OmViewGroupState* vgs);
+  OmViewBoxWidget(OmView3d* view3d, OmViewGroupState& vgs);
   virtual void Draw();
 
  private:
-  OmViewGroupState* vgs_;
+  OmViewGroupState& vgs_;
 
   void drawRectangle(const Vector3i& v0, const Vector3i& v1, const Vector3i& v2,
                      const Vector3i& v3);
@@ -37,6 +37,6 @@ class OmViewBoxWidget : public OmView3dWidget {
   //                        Vector2f & dataMin,
   //                        Vector2f & spaceMin);
 
-  void draw2dBoxWrapper(OmViewGroupView2dState* view2dState,
+  void draw2dBoxWrapper(OmViewGroupView2dState& view2dState,
                         const om::common::ViewType viewType);
 };

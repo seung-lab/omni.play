@@ -15,7 +15,7 @@ class SliceDepthSpinBoxBase : public OmIntSpinBox,
   Q_OBJECT;
 
  public:
-  SliceDepthSpinBoxBase(QWidget* d, OmViewGroupState* vgs)
+  SliceDepthSpinBoxBase(QWidget* d, OmViewGroupState& vgs)
       : OmIntSpinBox(d, true), vgs_(vgs) {
     setValue(0);
     setSingleStep(1);
@@ -27,20 +27,20 @@ class SliceDepthSpinBoxBase : public OmIntSpinBox,
   virtual QString Label() const = 0;
 
  private:
-  OmViewGroupState* const vgs_;
+  OmViewGroupState& vgs_;
 
   virtual om::common::ViewType viewType() const = 0;
 
   OmMipVolume* getVol() {
     {
-      const ChannelDataWrapper cdw = vgs_->Channel();
+      const ChannelDataWrapper cdw = vgs_.Channel();
       if (cdw.IsValidWrapper()) {
         return cdw.GetChannel();
       }
     }
 
     {
-      const SegmentationDataWrapper sdw = vgs_->Segmentation();
+      const SegmentationDataWrapper sdw = vgs_.Segmentation();
       if (sdw.IsValidWrapper()) {
         return sdw.GetSegmentation();
       }
@@ -50,11 +50,7 @@ class SliceDepthSpinBoxBase : public OmIntSpinBox,
   }
 
   void actUponValueChange(const int depth) {
-    if (nullptr == vg2ds()) {
-      return;
-    }
-
-    vg2ds()->SetScaledSliceDepth(viewType(), depth);
+    vg2ds().SetScaledSliceDepth(viewType(), depth);
     om::event::Redraw2d();
     om::event::ViewCenterChanged();
     om::event::View3dRecenter();
@@ -62,12 +58,12 @@ class SliceDepthSpinBoxBase : public OmIntSpinBox,
 
   void update() {
     blockSignals(true);
-    const int depth = vg2ds()->GetScaledSliceDepth(viewType());
+    const int depth = vg2ds().GetScaledSliceDepth(viewType());
     setValue(depth);
     blockSignals(false);
   }
 
-  inline OmViewGroupView2dState* vg2ds() const { return vgs_->View2dState(); }
+  inline OmViewGroupView2dState& vg2ds() const { return vgs_.View2dState(); }
 
   // OmViewEventListener
   void ViewBoxChangeEvent() { update(); }

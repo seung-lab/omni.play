@@ -7,7 +7,7 @@ class SliceDepthSpinBoxZ : public SliceDepthSpinBoxBase {
   Q_OBJECT;
 
  public:
-  SliceDepthSpinBoxZ(QWidget* d, OmViewGroupState* vgs)
+  SliceDepthSpinBoxZ(QWidget* d, OmViewGroupState& vgs)
       : SliceDepthSpinBoxBase(d, vgs) {}
 
   virtual QString Label() const { return "Z"; }

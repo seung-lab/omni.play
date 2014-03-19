@@ -29,7 +29,7 @@ class OmMeshPlanCache {
       : segmentation_(segmentation), rootSegLists_(rootSegLists) {}
 
   std::shared_ptr<OmMeshPlan> GetSegmentsToDraw(
-      OmViewGroupState* vgs, std::shared_ptr<OmVolumeCuller> culler,
+      OmViewGroupState& vgs, std::shared_ptr<OmVolumeCuller> culler,
       const OmBitfield drawOptions) {
     std::shared_ptr<OmMeshPlan> sortedSegments =
         getCachedSegments(vgs, culler, drawOptions);
@@ -50,7 +50,7 @@ class OmMeshPlanCache {
    *  a list gets cached ONLY once all segments have been added to the list
    **/
   std::shared_ptr<OmMeshPlan> getCachedSegments(
-      OmViewGroupState* vgs, std::shared_ptr<OmVolumeCuller> culler,
+      OmViewGroupState& vgs, std::shared_ptr<OmVolumeCuller> culler,
       const OmBitfield drawOptions) {
     if (!cachedData_.culler) {
       return std::shared_ptr<OmMeshPlan>();
@@ -76,7 +76,7 @@ class OmMeshPlanCache {
     return std::shared_ptr<OmMeshPlan>();
   }
 
-  std::shared_ptr<OmMeshPlan> buildPlan(OmViewGroupState* vgs,
+  std::shared_ptr<OmMeshPlan> buildPlan(OmViewGroupState& vgs,
                                         std::shared_ptr<OmVolumeCuller> culler,
                                         const OmBitfield drawOptions) {
     OmMeshDrawPlanner planner(segmentation_, vgs, culler, drawOptions,

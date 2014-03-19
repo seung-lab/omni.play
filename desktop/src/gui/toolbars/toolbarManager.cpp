@@ -24,7 +24,7 @@ void ToolBarManager::deleteMainBar() {
   }
 }
 
-void ToolBarManager::UpdateGuiFromProjectLoadOrOpen(OmViewGroupState* vgs) {
+void ToolBarManager::UpdateGuiFromProjectLoadOrOpen(OmViewGroupState& vgs) {
   deleteMainBar();
   mainToolBar_.reset(new MainToolBar(mainWindow_));
 

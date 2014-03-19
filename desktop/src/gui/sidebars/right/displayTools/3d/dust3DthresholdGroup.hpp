@@ -9,7 +9,7 @@ class Dust3DThresholdGroup : public OmIntSpinBox {
   Q_OBJECT;
 
  public:
-  Dust3DThresholdGroup(QWidget* parent, OmViewGroupState* vgs)
+  Dust3DThresholdGroup(QWidget* parent, OmViewGroupState& vgs)
       : OmIntSpinBox(parent, true), vgs_(vgs) {
     setSingleStep(5);
     setMaximum(std::numeric_limits<int32_t>::max());
@@ -17,15 +17,16 @@ class Dust3DThresholdGroup : public OmIntSpinBox {
   }
 
  private:
-  OmViewGroupState* const vgs_;
+  OmViewGroupState& vgs_;
 
   void actUponValueChange(const int threshold) {
-    vgs_->setDustThreshold(threshold);
+
+    vgs_.setDustThreshold(threshold);
     om::event::Redraw3d();
   }
 
   void setInitialGUIThresholdValue() {
-    int dThreshold = vgs_->getDustThreshold();
+    int dThreshold = vgs_.getDustThreshold();
     setValue(dThreshold);
   }
 };

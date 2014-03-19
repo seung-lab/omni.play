@@ -15,10 +15,10 @@ class PageLocation : public QWidget {
   Q_OBJECT;
 
  private:
-  OmViewGroupState* const vgs_;
+  OmViewGroupState& vgs_;
 
  public:
-  PageLocation(QWidget* parent, OmViewGroupState* vgs)
+  PageLocation(QWidget* parent, OmViewGroupState& vgs)
       : QWidget(parent), vgs_(vgs) {
     QVBoxLayout* box = new QVBoxLayout(this);
 

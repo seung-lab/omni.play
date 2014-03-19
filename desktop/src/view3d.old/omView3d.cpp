@@ -44,7 +44,7 @@ enum widgets {
 /*
  *  Constructs View3d widget that shares with the primary widget.
  */
-OmView3d::OmView3d(QWidget* parent, OmViewGroupState* vgs)
+OmView3d::OmView3d(QWidget* parent, OmViewGroupState& vgs)
 #ifdef ZI_OS_MACOS
     : QGLWidget(QGLFormat(QGL::DoubleBuffer | QGL::DepthBuffer), parent,
                 vgs->get3dContext())
@@ -284,7 +284,7 @@ void OmView3d::View3dRecenter() {
   }
 
   mCamera.SetDistance(*distance);
-  const om::coords::Global coord = vgs_->View2dState()->GetScaledSliceDepth();
+  const om::coords::Global coord = vgs_.View2dState()->GetScaledSliceDepth();
   mCamera.SetFocus(coord);
 
   updateGL();
@@ -478,7 +478,7 @@ void OmView3d::DrawVolumes(OmBitfield cullerOptions) {
   // draw focus axis
   mCamera.DrawFocusAxis();
 
-  const OmSegmentation* seg = vgs_->Segmentation().GetSegmentation();
+  const OmSegmentation* seg = vgs_.Segmentation().GetSegmentation();
   // setup culler to current projection-modelview matrix
   OmVolumeCuller culler(mCamera.GetProjModelViewMatrix(),
                         om::coords::Norm(mCamera.GetPosition(), seg->Coords()),

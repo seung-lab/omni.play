@@ -19,7 +19,8 @@ class ToggleAnnotationButton : public OmButton<QWidget> {
   OmViewGroupState *vgs_;
 
   void doAction() {
-    vgs_->setAnnotationVisible(!this->isChecked());
+
+    vgs_.setAnnotationVisible(!this->isChecked());
     om::event::Redraw2d();
     om::event::Redraw3d();
   }
@@ -33,7 +34,7 @@ AnnotationGroup::AnnotationGroup(om::sidebars::rightImpl *parent,
   ToggleAnnotationButton *toggleAnnotationsButton =
       new ToggleAnnotationButton(this, vgs_);
 
-  toggleAnnotationsButton->setChecked(vgs_->getAnnotationVisible());
+  toggleAnnotationsButton->setChecked(vgs_.getAnnotationVisible());
   layout->addWidget(toggleAnnotationsButton);
   layout->addWidget(new AnnotationListWidget(this, vgs_));
   this->setLayout(layout);

@@ -13,13 +13,14 @@ class viewGroupImpl : public QObject {
 
  private:
   MainWindow* const mainWindow_;
-  OmViewGroupState* const vgs_;
+
+  OmViewGroupState& vgs_;
 
   std::unique_ptr<ViewGroupUtils> utils_;
   std::unique_ptr<ViewGroupMainWindowUtils> mainWindowUtils_;
 
  public:
-  viewGroupImpl(MainWindow* mainWindow, OmViewGroupState* vgs)
+  viewGroupImpl(MainWindow* mainWindow, OmViewGroupState& vgs)
       : mainWindow_(mainWindow),
         vgs_(vgs),
         utils_(new ViewGroupUtils(mainWindow, vgs)),
@@ -131,12 +132,12 @@ Q_SIGNALS:
 
     static const om::common::ViewType viewType = om::common::XY_VIEW;
 
-    const ChannelDataWrapper cdw = vgs_->Channel();
+    const ChannelDataWrapper cdw = vgs_.Channel();
     if (utils_->canShowChannel(cdw)) {
       signalAddView2Dchannel(cdw, viewType);
     }
 
-    const SegmentationDataWrapper sdw = vgs_->Segmentation();
+    const SegmentationDataWrapper sdw = vgs_.Segmentation();
     if (utils_->canShowSegmentation(sdw)) {
       signalAddView2Dsegmentation(sdw, viewType);
     }
@@ -145,10 +146,10 @@ Q_SIGNALS:
   void AddAllViews() {
     deleteWidgets();
 
-    const ChannelDataWrapper cdw = vgs_->Channel();
+    const ChannelDataWrapper cdw = vgs_.Channel();
     const bool validChan = utils_->canShowChannel(cdw);
 
-    const SegmentationDataWrapper sdw = vgs_->Segmentation();
+    const SegmentationDataWrapper sdw = vgs_.Segmentation();
     const bool validSeg = utils_->canShowSegmentation(sdw);
 
     if (validChan && validSeg) {
@@ -174,14 +175,14 @@ Q_SIGNALS:
 
     static const om::common::ViewType viewType = om::common::XY_VIEW;
 
-    const ChannelDataWrapper cdw = vgs_->Channel();
+    const ChannelDataWrapper cdw = vgs_.Channel();
     const bool showChannel = utils_->canShowChannel(cdw);
 
     if (showChannel) {
       signalAddView2Dchannel(cdw, viewType);
     }
 
-    const SegmentationDataWrapper sdw = vgs_->Segmentation();
+    const SegmentationDataWrapper sdw = vgs_.Segmentation();
 
     if (!utils_->canShowSegmentation(sdw)) {
       return;

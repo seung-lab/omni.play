@@ -16,7 +16,7 @@
 Q_DECLARE_METATYPE(SegmentDataWrapper);
 
 OmSegmentListWidget::OmSegmentListWidget(SegmentListBase* slist,
-                                         OmViewGroupState* vgs)
+                                         OmViewGroupState& vgs)
     : QTreeWidget(slist), segmentListBase(slist), vgs_(vgs) {
   setSelectionMode(QAbstractItemView::ExtendedSelection);
   setAlternatingRowColors(true);

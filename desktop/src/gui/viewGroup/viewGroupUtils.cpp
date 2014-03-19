@@ -4,7 +4,7 @@
 #include "viewGroup/omViewGroupState.h"
 #include "view2d/omView2d.h"
 
-int om::gui::ViewGroupUtils::getID() { return vgs_->GetID(); }
+int om::gui::ViewGroupUtils::getID() { return vgs_.GetID(); }
 
 QList<QDockWidget*> om::gui::ViewGroupUtils::findDockWidgets(
     const QString& name) {

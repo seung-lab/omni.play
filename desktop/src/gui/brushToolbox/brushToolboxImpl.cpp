@@ -94,21 +94,21 @@ class OmBrushSizeSpinBox : public OmIntSpinBox {
 
 class SetBlackColorButton : public OmButton<QWidget> {
  public:
-  SetBlackColorButton(QWidget* d, OmViewGroupState* vgs)
+  SetBlackColorButton(QWidget* d, OmViewGroupState& vgs)
       : OmButton<QWidget>(d, "Set No Segment for Color",
                           "Set No Segment for Color", false),
         vgs_(vgs) {}
 
  private:
-  OmViewGroupState* const vgs_;
+  OmViewGroupState& vgs_;
 
   void doAction() {
-    SegmentDataWrapper sdw(vgs_->Segmentation().GetID(), 0);
+    SegmentDataWrapper sdw(vgs_.Segmentation().GetID(), 0);
     OmSegmentSelected::SetSegmentForPainting(sdw);
   }
 };
 
-BrushToolboxImpl::BrushToolboxImpl(QWidget* parent, OmViewGroupState* vgs)
+BrushToolboxImpl::BrushToolboxImpl(QWidget* parent, OmViewGroupState& vgs)
     : QDialog(parent, Qt::Tool) {
   setAttribute(Qt::WA_ShowWithoutActivating);
 

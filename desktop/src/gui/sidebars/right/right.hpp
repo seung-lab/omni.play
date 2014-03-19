@@ -14,7 +14,7 @@ class right {
   rightImpl* impl_;
 
  public:
-  right(MainWindow* mainWindow, OmViewGroupState* vgs) {
+  right(MainWindow* mainWindow, OmViewGroupState& vgs) {
     impl_ = new rightImpl(mainWindow, vgs);
 
     QDockWidget* dock = new QDockWidget("Tools", mainWindow);

@@ -13,7 +13,7 @@
 #include "viewGroup/omViewGroupView2dState.hpp"
 #include "zi/omUtility.h"
 
-OmViewBoxWidget::OmViewBoxWidget(OmView3d* view3d, OmViewGroupState* vgs)
+OmViewBoxWidget::OmViewBoxWidget(OmView3d* view3d, OmViewGroupState& vgs)
     : OmView3dWidget(view3d), vgs_(vgs) {}
 
 /**
@@ -27,7 +27,7 @@ void OmViewBoxWidget::Draw() {
   static const int RECT_WIREFRAME_LINE_WIDTH = 2;
   glLineWidth(RECT_WIREFRAME_LINE_WIDTH);
 
-  OmViewGroupView2dState* view2dState = vgs_->View2dState();
+  OmViewGroupView2dState& view2dState = vgs_.View2dState();
 
   if (Om3dPreferences::get2DViewFrameIn3D()) {
     draw2dBoxWrapper(view2dState, om::common::XY_VIEW);
@@ -36,18 +36,18 @@ void OmViewBoxWidget::Draw() {
   }
 
   if (Om3dPreferences::getDrawCrosshairsIn3D()) {
-    drawLines(view2dState->GetScaledSliceDepth());
+    drawLines(view2dState.GetScaledSliceDepth());
   }
 
   glPopAttrib();
 }
 
-void OmViewBoxWidget::draw2dBoxWrapper(OmViewGroupView2dState* view2dState,
+void OmViewBoxWidget::draw2dBoxWrapper(OmViewGroupView2dState& view2dState,
                                        const om::common::ViewType viewType) {
   //    drawChannelData(viewType, OmStateManager::GetViewDrawable(viewType));
-  draw2dBox(viewType, view2dState->GetViewSliceMin(viewType),
-            view2dState->GetViewSliceMax(viewType),
-            view2dState->GetScaledSliceDepth(viewType));
+  draw2dBox(viewType, view2dState.GetViewSliceMin(viewType),
+            view2dState.GetViewSliceMax(viewType),
+            view2dState.GetScaledSliceDepth(viewType));
 }
 
 /**
@@ -281,7 +281,8 @@ void OmViewBoxWidget::draw2dBox(const om::common::ViewType plane,
 //     OmChannel& channel = OmProject::Volumes().Channels().GetChannel( 1);
 //     Vector3f resolution = channel.Coords().GetDataResolution();
 //     Vector3f tileLength = resolution*128.0;
-//     Vector2f maxScreen = vgs_->View2dState()->GetViewSliceMax(plane);
+//     Vector2f maxScreen =
+vgs_.View2dState()->GetViewSliceMax(plane);
 //     DataCoord maxDataExt = channel.Coords().GetDataExtent().getMax();
 //     NormCoord maxNorm = channel.Coords().DataToNormCoord(maxDataExt);
 //     DataCoord maxData= channel.Coords().NormToDataCoord(maxNorm);
@@ -334,7 +335,8 @@ void OmViewBoxWidget::draw2dBox(const om::common::ViewType plane,
 //
 //     Vector3f resolution = channel.Coords().GetDataResolution();
 //     Vector3f tileLength = resolution*128.0;
-//     Vector2f minScreen = vgs_->View2dState()->GetViewSliceMin(plane);
+//     Vector2f minScreen =
+vgs_.View2dState()->GetViewSliceMin(plane);
 //     DataCoord minDataExt = channel.Coords().GetDataExtent().getMin();
 //     NormCoord minNorm = channel.Coords().DataToNormCoord(minDataExt);
 //     DataCoord minData= channel.Coords().NormToDataCoord(minNorm);

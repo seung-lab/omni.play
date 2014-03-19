@@ -5,7 +5,7 @@
 #include "gui/inspectors/segmentInspector.h"
 #include "viewGroup/omViewGroupState.h"
 
-InspectorProperties::InspectorProperties(QWidget* parent, OmViewGroupState* vgs)
+InspectorProperties::InspectorProperties(QWidget* parent, OmViewGroupState& vgs)
     : QDialog(parent), vgs_(vgs) {
   mainLayout_ = new QVBoxLayout();
   setLayout(mainLayout_);
@@ -54,5 +54,6 @@ void InspectorProperties::SegmentModificationEvent(
 
   SetOrReplaceWidget(new SegmentInspector(sdw, this),
                      QString("Segmentation %1: Segment %2")
-                         .arg(sdw.GetSegmentationID()).arg(sdw.GetSegmentID()));
+                         .arg(sdw.GetSegmentationID())
+                         .arg(sdw.GetSegmentID()));
 }

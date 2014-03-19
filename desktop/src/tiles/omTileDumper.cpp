@@ -8,7 +8,7 @@
 #include "volume/omMipVolume.h"
 
 OmTileDumper::OmTileDumper(OmMipVolume* vol, const QString& dumpfile,
-                           OmViewGroupState* vgs)
+                           OmViewGroupState& vgs)
     : vol_(vol), dumpfile_(dumpfile), vgs_(vgs) {}
 
 void OmTileDumper::DumpTiles() {

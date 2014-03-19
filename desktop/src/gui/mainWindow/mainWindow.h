@@ -29,7 +29,7 @@ class MainWindow : public QMainWindow {
                                 om::common::ID objectId);
   void updateStatusBar(QString msg);
 
-  inline OmViewGroupState* GetViewGroupState() { return vgs_.get(); }
+  inline OmViewGroupState& GetViewGroupState() { return *vgs_; }
 
   void addToolbarTop(QToolBar* b);
   void addToolbarRight(QToolBar* b);

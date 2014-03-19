@@ -306,7 +306,7 @@ void Headless::dumpSegTiles(const QString& line) {
 
   SegmentationDataWrapper sdw(segID);
 
-  OmViewGroupState* vgs = new OmViewGroupState(nullptr);
+  OmViewGroupState& vgs = new OmViewGroupState(nullptr);
   OmTileDumper dumper(sdw.GetSegmentation(), fileNameAndPath, vgs);
   dumper.DumpTiles();
 }
@@ -326,7 +326,7 @@ void Headless::dumpChannTiles(const QString& line) {
 
   ChannelDataWrapper cdw(chanID);
 
-  OmViewGroupState* vgs = new OmViewGroupState(nullptr);
+  OmViewGroupState& vgs = new OmViewGroupState(nullptr);
   OmTileDumper dumper(cdw.GetChannelPtr(), file, vgs);
   dumper.DumpTiles();
 }

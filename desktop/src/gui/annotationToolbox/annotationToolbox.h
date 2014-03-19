@@ -12,11 +12,11 @@ namespace gui {
 
 class ColorButton : public OmButton<QWidget> {
  private:
-  OmViewGroupState* vgs_;
+  OmViewGroupState& vgs_;
   QColor cur_;
 
  public:
-  ColorButton(QWidget* d, OmViewGroupState* vgs)
+  ColorButton(QWidget* d, OmViewGroupState& vgs)
       : OmButton<QWidget>(d, "", "Choose a Color", false),
         vgs_(vgs),
         cur_(QColor(255, 0, 0)) {
@@ -25,7 +25,8 @@ class ColorButton : public OmButton<QWidget> {
 
  private:
   void updateColor() {
-    vgs_->setAnnotationColor(om::utils::color::QColorToColor(cur_));
+
+    vgs_.setAnnotationColor(om::utils::color::QColorToColor(cur_));
 
     const QPixmap pixm = om::utils::color::MakeQPixmap(cur_);
     setIcon(QIcon(pixm));
@@ -49,16 +50,17 @@ class AnnotationLineEdit : public QLineEdit {
   Q_OBJECT;
 
  private:
-  OmViewGroupState* vgs_;
+  OmViewGroupState& vgs_;
 
  private
 Q_SLOTS:
   void update(const QString& text) {
-    vgs_->setAnnotationString(text.toStdString());
+
+    vgs_.setAnnotationString(text.toStdString());
   }
 
  public:
-  AnnotationLineEdit(QWidget* d, OmViewGroupState* vgs)
+  AnnotationLineEdit(QWidget* d, OmViewGroupState& vgs)
       : QLineEdit(d), vgs_(vgs) {
     setText("Annotation");
     om::connect(this, SIGNAL(textChanged(const QString&)), this,
@@ -68,25 +70,23 @@ Q_SLOTS:
 
 class AnnotationSizeSpinBox : public OmDoubleSpinBox {
  private:
-  OmViewGroupState* vgs_;
+  OmViewGroupState& vgs_;
 
-  void actUponValueChange(const double value) {
-    vgs_->setAnnotationSize(value);
-  }
+  void actUponValueChange(const double value) { vgs_.setAnnotationSize(value); }
 
  public:
-  AnnotationSizeSpinBox(QWidget* d, OmViewGroupState* vgs)
+  AnnotationSizeSpinBox(QWidget* d, OmViewGroupState& vgs)
       : OmDoubleSpinBox(d, true), vgs_(vgs) {
     setSingleStep(0.1);
     setMinimum(0);
     setMaximum(10);
-    setValue(vgs_->getAnnotationSize());
+    setValue(vgs_.getAnnotationSize());
   }
 };
 
 class AnnotationToolbox : public QDialog {
  public:
-  AnnotationToolbox(QWidget* parent, OmViewGroupState* vgs);
+  AnnotationToolbox(QWidget* parent, OmViewGroupState& vgs);
 
   virtual ~AnnotationToolbox() {}
 };

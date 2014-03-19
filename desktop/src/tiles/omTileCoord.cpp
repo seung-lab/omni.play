@@ -7,13 +7,13 @@
 
 OmTileCoord::OmTileCoord(const om::coords::Chunk& cc, om::common::ViewType view,
                          uint8_t depth, OmMipVolume* vol, uint32_t freshness,
-                         OmViewGroupState* vgs,
+                         OmViewGroupState& vgs,
                          om::segment::coloring segColorType)
     : OmTileCoordKey(cc, view, depth, vol, freshness, vgs, segColorType) {}
 
 OmTileCoord::OmTileCoord(const om::coords::Chunk& cc, om::common::ViewType view,
                          uint8_t depth, OmMipVolume* vol, uint32_t freshness,
-                         OmViewGroupState* vgs, om::common::ObjectType objType)
+                         OmViewGroupState& vgs, om::common::ObjectType objType)
     : OmTileCoordKey(cc, view, depth, vol, freshness, vgs,
                      vgs->determineColorizationType(objType)) {}
 

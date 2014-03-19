@@ -15,7 +15,7 @@ class OmMacOSXGestures;
 
 class OmView3dUi {
  public:
-  OmView3dUi(OmView3d* view3d, OmViewGroupState*);
+  OmView3dUi(OmView3d* view3d, OmViewGroupState&);
   ~OmView3dUi();
 
   // ui events
@@ -30,7 +30,8 @@ class OmView3dUi {
 
  private:
   OmView3d* const view3d_;
-  OmViewGroupState* vgs_;
+
+  OmViewGroupState& vgs_;
   std::unique_ptr<OmMacOSXGestures> macGestures_;
   OmSegmentContextMenu segmentContextMenu_;
   SegmentDataWrapper prevSDW_;

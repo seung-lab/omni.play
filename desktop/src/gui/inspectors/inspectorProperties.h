@@ -11,20 +11,20 @@ class InspectorProperties : public QDialog,
   Q_OBJECT;
 
  public:
-  InspectorProperties(QWidget* parent, OmViewGroupState* vgs);
+  InspectorProperties(QWidget* parent, OmViewGroupState& vgs);
 
   virtual ~InspectorProperties();
 
   void SetOrReplaceWidget(QWidget* incomingWidget, const QString& title);
 
-  OmViewGroupState* GetViewGroupState() { return vgs_; }
+  OmViewGroupState& GetViewGroupState() { return vgs_; }
 
  public
 Q_SLOTS:
   void CloseDialog();
 
  private:
-  OmViewGroupState* vgs_;
+  OmViewGroupState& vgs_;
 
   std::unique_ptr<QWidget> widget_;
 

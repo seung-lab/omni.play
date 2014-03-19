@@ -23,7 +23,8 @@
 class OmMeshDrawerImpl {
  private:
   OmSegmentation* const segmentation_;
-  OmViewGroupState* const vgs_;
+
+  OmViewGroupState& vgs_;
   OmSegments* const segments_;
   const OmBitfield drawOptions_;
   OmMeshPlan* const sortedSegments_;
@@ -38,7 +39,7 @@ class OmMeshDrawerImpl {
   QGLContext const* context_;
 
  public:
-  OmMeshDrawerImpl(OmSegmentation* seg, OmViewGroupState* vgs,
+  OmMeshDrawerImpl(OmSegmentation* seg, OmViewGroupState& vgs,
                    const OmBitfield drawOptions, OmMeshPlan* sortedSegments)
       : segmentation_(seg),
         vgs_(vgs),
@@ -186,7 +187,7 @@ class OmMeshDrawerImpl {
   inline void colorMesh(OmSegment* segment) {
     om::segment::coloring sccType;
 
-    if (vgs_->shouldVolumeBeShownBroken()) {
+    if (vgs_.shouldVolumeBeShownBroken()) {
       sccType = om::segment::coloring::SEGMENTATION_BREAK_BLACK;
     } else {
       sccType = om::segment::coloring::SEGMENTATION;
@@ -207,7 +208,7 @@ class OmMeshDrawerImpl {
       hyperColor = seg->GetColorFloat() * 2.;
     } else {
 
-      if (!qFuzzyCompare(1, vgs_->getBreakThreshold())) {
+      if (!qFuzzyCompare(1, vgs_.getBreakThreshold())) {
         if (OmSegmentUtils::UseParentColorBasedOnThreshold(seg,
                                                            breakThreshold_)) {
           // WARNING: recusive operation is O(depth of MST)

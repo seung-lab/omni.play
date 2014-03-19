@@ -15,7 +15,7 @@ class rightImpl : public QWidget {
   Q_OBJECT;
 
  public:
-  rightImpl(MainWindow* mw, OmViewGroupState* vgs);
+  rightImpl(MainWindow* mw, OmViewGroupState& vgs);
 
   void updateGui();
 
@@ -38,7 +38,8 @@ class rightImpl : public QWidget {
   }
 
   MainWindow* const mainWindow_;
-  OmViewGroupState* const vgs_;
+
+  OmViewGroupState& vgs_;
 
   GraphTools* graphTools_;
 };

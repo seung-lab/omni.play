@@ -20,12 +20,12 @@ class GraphTools : public OmWidget {
   Q_OBJECT;
 
  public:
-  GraphTools(om::sidebars::rightImpl*, OmViewGroupState* vgs);
+  GraphTools(om::sidebars::rightImpl*, OmViewGroupState& vgs);
 
   void SetSplittingOff();
   void SetShatteringOff();
 
-  OmViewGroupState* GetViewGroupState() const { return vgs_; }
+  OmViewGroupState& GetViewGroupState() const { return vgs_; }
 
   SegmentationDataWrapper GetSDW();
   void updateGui();
@@ -46,7 +46,8 @@ Q_SIGNALS:
 
  private:
   om::sidebars::rightImpl* const mParent;
-  OmViewGroupState* const vgs_;
+
+  OmViewGroupState& vgs_;
 
   SplitButton* splitButton;
   ShatterButton* shatterButton;
