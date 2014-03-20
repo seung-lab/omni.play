@@ -53,7 +53,7 @@ FPIC     =  -fPIC
 
 # Compile Flags ############################
 CWARN       =   -Wall -Wno-sign-compare -Wunused-variable -Wreturn-type -Wno-unused-local-typedefs
-CXXWARN     =   $(CWARN) -Wno-deprecated -Woverloaded-virtual -Wunused-but-set-variable -Wno-switch -Wno-unused-value -Wno-comment
+CXXWARN     =   $(CWARN) -Wno-deprecated -Woverloaded-virtual -Wunused-but-set-variable -Wno-switch -Wno-unused-value -Wno-comment -Winvalid-pch
 
 CPP_DEPFLAGS        =   --std=c++11 -MM -MG -MP -MT "$(@:.d=.o)"
 COMMON_CFLAGS       =   -g -std=gnu99 -D_GNU_SOURCE=1 \
@@ -226,10 +226,12 @@ LIBS = $(EXTERNAL)/boost/lib/libboost_filesystem.a \
 	   -lpthread -lrt -lGLU -lGL -lz \
 	   $(CURL_LIBS)
 
+COMMON_INCLUDES = $(INCLUDES) -include common/src/precomp.h
+
 $(BUILDDIR)/common/%.d: common/src/%.cpp common/src/precomp.h.gch 
-	$(call make_d, $(INCLUDES))
+	$(call make_d, $(COMMON_INCLUDES))
 $(BUILDDIR)/common/%.o: common/src/%.cpp common/src/precomp.h.gch 
-	$(call build_cpp, $(INCLUDES))
+	$(call build_cpp, $(COMMON_INCLUDES))
 common/src/precomp.h.gch: common/src/precomp.h
 	$(call build_gch, $(INCLUDES))
 
@@ -239,9 +241,9 @@ $(eval $(call deps,COMMON,common,$(YAML_DEPS)))
 COMMON_TEST_INCLUDES = -I$(HERE)/common/test/src
 
 $(BUILDDIR)/common/test/%.d: common/test/src/%.cpp common/src/precomp.h.gch 
-	$(call make_d, $(INCLUDES) $(TEST_INCLUDES) $(COMMON_TEST_INCLUDES))
+	$(call make_d, $(COMMON_INCLUDES) $(TEST_INCLUDES) $(COMMON_TEST_INCLUDES))
 $(BUILDDIR)/common/test/%.o: common/test/src/%.cpp common/src/precomp.h.gch 
-	$(call build_cpp, $(INCLUDES) $(TEST_INCLUDES) $(COMMON_TEST_INCLUDES))
+	$(call build_cpp, $(COMMON_INCLUDES) $(TEST_INCLUDES) $(COMMON_TEST_INCLUDES))
 
 $(eval $(call deps,COMMON_TEST,common/test,$(COMMON_DEPS) $(TEST_DEPS)))
 
@@ -252,7 +254,7 @@ $(BINDIR)/omni.common.test: $(COMMON_TEST_DEPS) $(COMMON_TEST_MAIN)
 common: $(BINDIR)/omni.common.test
 
 # Thrift  #################################################
-THRIFT_INCLUDES = $(INCLUDES) \
+THRIFT_INCLUDES = $(COMMON_INCLUDES) \
 				 -I$(GENDIR) \
 				 -I$(EXTERNAL)/thrift/include \
 				 -I$(EXTERNAL)/thrift/include/thrift \
@@ -348,7 +350,8 @@ DESKTOP_INCLUDES = -I$(HERE)/desktop/src \
 				  -I$(EXTERNAL)/qt/include \
 				  -I$(EXTERNAL)/hdf5/include \
 				  -I$(BASE64)/include \
-			    $(QTINCLUDES)
+			    $(QTINCLUDES) \
+			    -include desktop/src/precomp.h
 
 DESKTOPLIBS = $(LIBS) \
 					$(EXTERNAL)/hdf5/lib/libhdf5.a \
