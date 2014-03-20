@@ -30,8 +30,8 @@
 
 class OmProjectImpl {
  private:
-  QString projectMetadataFile_;
-  QString oldHDF5projectFile_;
+  om::file::path projectMetadataFile_;
+  om::file::path oldHDF5projectFile_;
   OmHdf5* oldHDF5_;
   om::file::Paths paths_;
 
@@ -81,7 +81,7 @@ class OmProjectImpl {
       seg->Flush();
     }
 
-    om::data::archive::project::Write(projectMetadataFile_, this);
+    om::data::archive::project::Write(projectMetadataFile_.c_str(), this);
 
     globals_->Users().UserSettings().Save();
 
@@ -99,7 +99,7 @@ class OmProjectImpl {
 
  private:
   void doNew() {
-    projectMetadataFile_ = OmFileNames::ProjectMetadataFile();
+    projectMetadataFile_ = paths_.ProjectMetadataYaml();
     oldHDF5projectFile_ = "";
 
     makeParentFolder();
@@ -129,8 +129,8 @@ class OmProjectImpl {
   }
 
   void doLoad(QWidget* guiParent, const std::string& username) {
-    oldHDF5projectFile_ = OmFileNames::OldHDF5projectFileName();
-    projectMetadataFile_ = OmFileNames::ProjectMetadataFile();
+    oldHDF5projectFile_ = paths_.FilesFolder() / "oldProjectFile.hdf5";
+    projectMetadataFile_ = paths_.ProjectMetadataYaml();
 
     if (!QFileInfo(OmniFile()).size())
       oldHDF5projectFile_ = "";
@@ -155,8 +155,8 @@ class OmProjectImpl {
     OmTileCache::Reset();
     OmActionLogger::Reset();
 
-    if (om::file::old::exists(projectMetadataFile_.toStdString()))
-      om::data::archive::project::Read(projectMetadataFile_, this);
+    if (om::file::exists(projectMetadataFile_))
+      om::data::archive::project::Read(projectMetadataFile_.c_str(), this);
     else
       OmDataArchiveProject::ArchiveRead(OmFileNames::ProjectMetadataFileOld(),
                                         this);
@@ -183,13 +183,13 @@ class OmProjectImpl {
   }
 
   void openHDF5() {
-    if (!QFile::exists(oldHDF5projectFile_)) {
+    if (!om::file::exists(oldHDF5projectFile_)) {
       return;
     }
 
     const bool isReadOnly = true;
 
-    oldHDF5_ = OmHdf5Manager::Get(oldHDF5projectFile_, isReadOnly);
+    oldHDF5_ = OmHdf5Manager::Get(oldHDF5projectFile_.string(), isReadOnly);
     oldHDF5_->open();
   }
 
@@ -203,7 +203,7 @@ class OmProjectImpl {
   void migrateFromHdf5() {
     OmFileNames::MakeFilesFolder();
 
-    OmFileHelpers::MoveFile(OmniFile(), oldHDF5projectFile_);
+    OmFileHelpers::MoveFile(OmniFile(), oldHDF5projectFile_.c_str());
 
     touchEmptyProjectFile();
 
