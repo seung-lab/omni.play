@@ -83,7 +83,8 @@ void Ui::shatterModeMouseReleased(QMouseEvent* event) {
     return;
   }
 
-  OmActions::ShatterSegment(pickPoint.sdw.GetSegment());
+  OmActions::ShatterSegment(pickPoint.sdw.MakeSegmentationDataWrapper(),
+                            pickPoint.sdw.GetSegment());
   vgs_.GetToolBarManager()->SetShatteringOff();
   OmStateManager::SetOldToolModeAndSendEvent();
 }

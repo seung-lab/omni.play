@@ -6,6 +6,7 @@
 #include "mesh/drawer/omMeshPlan.h"
 #include "mesh/drawer/omMeshSegmentList.hpp"
 #include "segment/omSegments.h"
+#include "segment/selection.hpp"
 #include "volume/omSegmentation.h"
 
 class OmMeshDrawPlanner {
@@ -72,11 +73,8 @@ class OmMeshDrawPlanner {
   void findRootSegments() {
     // check to filter for relevant data values
     if (checkDrawOption(DRAWOP_SEGMENT_FILTER_SELECTED)) {
-      const om::common::SegIDSet ids = segments_.GetSelectedSegmentIDs();
-      FOR_EACH(iter, ids) { rootSegs_.push_back(segments_.GetSegment(*iter)); }
-
-    } else if (checkDrawOption(DRAWOP_SEGMENT_FILTER_UNSELECTED)) {
-      const om::common::SegIDSet ids = segments_.GetEnabledSegmentIDs();
+      const om::common::SegIDSet ids =
+          segments_.Selection().GetSelectedSegmentIDs();
       FOR_EACH(iter, ids) { rootSegs_.push_back(segments_.GetSegment(*iter)); }
     }
   }

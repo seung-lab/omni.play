@@ -33,7 +33,6 @@ class MetadataDataSource;
 }
 namespace segmentation {
 class folder;
-class loader;
 }
 namespace annotation {
 class manager;

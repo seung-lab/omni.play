@@ -8,19 +8,13 @@
 #include "mesh/omMeshManagers.hpp"
 #include "project/omProject.h"
 #include "project/omProjectImpl.hpp"
-#include "segment/io/omUserEdges.hpp"
 #include "segment/io/omValidGroupNum.hpp"
-#include "segment/lowLevel/omEnabledSegments.hpp"
-#include "segment/lowLevel/omPagingPtrStore.h"
-#include "segment/lowLevel/omSegmentSelection.hpp"
 
 #include "segment/types.hpp"
 #include "segment/omSegments.h"
 #include "segment/omSegmentsImpl.h"
 #include "system/omGenericManager.hpp"
-#include "system/omGenericManager.hpp"
 #include "system/omPreferences.h"
-#include "volume/omSegmentationLoader.h"
 #include "datalayer/archive/dummy.hpp"
 
 QDataStream& operator>>(QDataStream& in, OmProjectImpl& p) {

@@ -1,5 +1,7 @@
 #pragma once
 #include "precomp.h"
+#include "common/exception.h"
+#include "common/logging.h"
 
 /*
  * AUTHORS:

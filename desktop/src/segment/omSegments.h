@@ -5,6 +5,7 @@
 #include <zi/mutex.hpp>
 
 #include "common/core.hpp"
+#include "datalayer/archive/segmentation.h"
 
 class OmSegment;
 class OmSegmentsImpl;
@@ -83,4 +84,11 @@ class OmSegments {
 
   om::volume::MetadataManager& meta_;
   std::unique_ptr<OmSegmentsImpl> impl_;
+
+  friend YAMLold::Emitter& YAMLold::operator<<(YAMLold::Emitter& out,
+                                               const OmSegments& sc);
+  friend void YAMLold::operator>>(const YAMLold::Node& in, OmSegments& sc);
+  friend YAMLold::Emitter& YAMLold::operator<<(YAMLold::Emitter& out,
+                                               const OmSegmentsImpl& sc);
+  friend void YAMLold::operator>>(const YAMLold::Node& in, OmSegmentsImpl& sc);
 };

@@ -15,7 +15,6 @@
 #include "volume/build/omVolumeAllocater.hpp"
 #include "volume/io/omVolumeData.h"
 #include "volume/omSegmentation.h"
-#include "volume/omSegmentationLoader.h"
 #include "volume/omUpdateBoundingBoxes.h"
 #include "actions/omActions.h"
 #include "volume/segmentation.h"
@@ -24,8 +23,7 @@ using namespace om;
 
 // used by OmDataArchiveProject
 OmSegmentation::OmSegmentation()
-    : loader_(new segmentation::loader(this)),
-      uniqueChunkValues_(new OmChunkUniqueValuesManager(this)),
+    : uniqueChunkValues_(new OmChunkUniqueValuesManager(this)),
       meshDrawer_(new OmMeshDrawer(this)),
       meshManagers_(new OmMeshManagers(this)),
       chunkCache_(new OmChunkCache<OmSegmentation, OmSegChunk>(this)),
@@ -39,7 +37,6 @@ OmSegmentation::OmSegmentation()
 // used by OmGenericManager
 OmSegmentation::OmSegmentation(common::ID id)
     : OmManageableObject(id),
-      loader_(new segmentation::loader(this)),
       uniqueChunkValues_(new OmChunkUniqueValuesManager(this)),
       meshDrawer_(new OmMeshDrawer(this)),
       meshManagers_(new OmMeshManagers(this)),

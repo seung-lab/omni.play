@@ -13,9 +13,9 @@ namespace segchunk {
 
 class dataFactory {
  public:
-  static dataInterface* Produce(OmSegmentation* vol, OmSegChunk* chunk,
+  static dataInterface* Produce(OmSegmentation& vol, OmSegChunk& chunk,
                                 const om::coords::Chunk& coord) {
-    switch (vol->getVolDataType().index()) {
+    switch (vol.getVolDataType().index()) {
       case OmVolDataType::INT8:
         return new dataImpl<int8_t>(vol, chunk, coord);
 

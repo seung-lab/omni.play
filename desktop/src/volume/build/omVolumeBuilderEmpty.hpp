@@ -6,10 +6,10 @@
 template <typename VOL>
 class OmVolumeBuilderEmpty : public OmVolumeBuilderBase<VOL> {
  private:
-  VOL* const vol_;
+  VOL& vol_;
 
  public:
-  OmVolumeBuilderEmpty(VOL* vol) : OmVolumeBuilderBase<VOL>(vol), vol_(vol) {}
+  OmVolumeBuilderEmpty(VOL& vol) : OmVolumeBuilderBase<VOL>(vol), vol_(vol) {}
 
  protected:
   virtual void importSourceData() {

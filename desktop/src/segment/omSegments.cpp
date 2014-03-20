@@ -10,10 +10,10 @@ using namespace om::segment;
 
 OmSegments::OmSegments(OmSegmentation* vol)
     : meta_(vol->Metadata()),
-      impl_(std::make_unique<OmSegmentsImpl>(vol->SegData(), vol->SegListData(),
-                                             vol->MST(), vol->Metadata(),
-                                             vol->ValidGroupNum(),
-                                             SegmentationDataWrapper(vol))) {}
+      impl_(new OmSegmentsImpl(vol->SegData(), vol->SegListData(), vol->MST(),
+                               vol->UserEdges(), vol->Metadata(),
+                               vol->ValidGroupNum(),
+                               SegmentationDataWrapper(vol))) {}
 
 OmSegments::~OmSegments() {}
 

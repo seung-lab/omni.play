@@ -74,8 +74,8 @@ bool SegmentDataWrapper::IsSegmentationValid() const {
     return false;
   }
 
-  return OmProject::Volumes().Segmentations()
-      .IsSegmentationValid(segmentationID_);
+  return OmProject::Volumes().Segmentations().IsSegmentationValid(
+      segmentationID_);
 }
 
 bool SegmentDataWrapper::IsSegmentValid() const {
@@ -91,7 +91,7 @@ bool SegmentDataWrapper::IsValidWrapper() const { return IsSegmentValid(); }
 QString SegmentDataWrapper::GetSegmentationName() const {
   auto seg = GetSegmentation();
   if (seg) {
-    return QString::fromStdString(GetSegmentation()->Name());
+    return QString::fromStdString(GetSegmentation()->GetName());
   } else {
     return "";
   }
@@ -191,8 +191,7 @@ OmSegment* SegmentDataWrapper::GetSegment() const {
   if (s) {
     return s->GetSegment(segmentID_);
   } else {
-    log_errors(DataWrappers) << "Invalid Segment: " << segmentationID_ << ":"
-                             << segmentID_;
+    log_errors << "Invalid Segment: " << segmentationID_ << ":" << segmentID_;
     return nullptr;
   }
 }
@@ -202,7 +201,7 @@ OmSegments* SegmentDataWrapper::Segments() const {
   if (seg) {
     return &seg->Segments();
   } else {
-    log_errors(DataWrappers) << "Invalid Segments: " << segmentationID_;
+    log_errors << "Invalid Segments: " << segmentationID_;
     return nullptr;
   }
 }
@@ -212,7 +211,7 @@ om::segment::Selection* SegmentDataWrapper::Selection() const {
   if (seg) {
     return &seg->Segments().Selection();
   } else {
-    log_errors(DataWrappers) << "Invalid Selection: " << segmentationID_;
+    log_errors << "Invalid Selection: " << segmentationID_;
     return nullptr;
   }
 }
@@ -284,7 +283,7 @@ OmSegmentLists* SegmentDataWrapper::SegmentLists() const {
   if (seg) {
     return &seg->Segments().SegmentLists();
   } else {
-    log_errors(DataWrappers) << "Invalid SegmentLists: " << segmentationID_;
+    log_errors << "Invalid SegmentLists: " << segmentationID_;
     return nullptr;
   }
 }

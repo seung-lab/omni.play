@@ -306,7 +306,7 @@ void Headless::dumpSegTiles(const QString& line) {
 
   SegmentationDataWrapper sdw(segID);
 
-  OmViewGroupState& vgs = new OmViewGroupState(nullptr);
+  OmViewGroupState vgs(nullptr);
   OmTileDumper dumper(sdw.GetSegmentation(), fileNameAndPath, vgs);
   dumper.DumpTiles();
 }
@@ -326,7 +326,7 @@ void Headless::dumpChannTiles(const QString& line) {
 
   ChannelDataWrapper cdw(chanID);
 
-  OmViewGroupState& vgs = new OmViewGroupState(nullptr);
+  OmViewGroupState vgs(nullptr);
   OmTileDumper dumper(cdw.GetChannel(), file, vgs);
   dumper.DumpTiles();
 }
@@ -503,7 +503,7 @@ void Headless::loadTIFFseg(const QString& line) {
   }
 
   OmBuildSegmentation bs;
-  segmentationID_ = bs.GetDataWrapper().GetID();
+  segmentationID_ = bs.GetDataWrapper().id();
 
   QDir dir(args[1]);
 
@@ -536,9 +536,14 @@ void Headless::loadChunk() {
   }
 
   SegmentationDataWrapper sdw(segmentationID_);
-  OmSegmentation& segmen = sdw.GetSegmentation();
+  if (!sdw.IsValidWrapper()) {
+    printf("Segmentation %i is not a valid segmentation.\n", segmentationID_);
+    return;
+  }
+
+  OmSegmentation* segmen = sdw.GetSegmentation();
   om::coords::Chunk chunk_coord(0, 0, 0, 0);
-  OmChunk* chunk = segmen.GetChunk(chunk_coord);
+  OmChunk* chunk = segmen->GetChunk(chunk_coord);
   assert(chunk);
 }
 
@@ -639,7 +644,7 @@ void Headless::setChanResolution(const QString& line) {
     return;
   }
 
-  HeadlessImpl::ChangeVolResolution(cdw.GetChannel(), xRes, yRes, zRes);
+  HeadlessImpl::ChangeVolResolution(*cdw.GetChannel(), xRes, yRes, zRes);
 }
 
 void Headless::setSegResolution(const QString& line) {
@@ -669,7 +674,7 @@ void Headless::setSegResolution(const QString& line) {
     return;
   }
 
-  HeadlessImpl::ChangeVolResolution(sdw.GetSegmentation(), xRes, yRes, zRes);
+  HeadlessImpl::ChangeVolResolution(*sdw.GetSegmentation(), xRes, yRes, zRes);
 }
 
 void Headless::setChanAbsOffset(const QString& line) {
@@ -699,7 +704,7 @@ void Headless::setChanAbsOffset(const QString& line) {
     return;
   }
 
-  HeadlessImpl::ChangeVolAbsOffset(cdw.GetChannel(), xRes, yRes, zRes);
+  HeadlessImpl::ChangeVolAbsOffset(*cdw.GetChannel(), xRes, yRes, zRes);
 }
 
 void Headless::setSegAbsOffset(const QString& line) {
@@ -729,7 +734,7 @@ void Headless::setSegAbsOffset(const QString& line) {
     return;
   }
 
-  HeadlessImpl::ChangeVolAbsOffset(sdw.GetSegmentation(), xRes, yRes, zRes);
+  HeadlessImpl::ChangeVolAbsOffset(*sdw.GetSegmentation(), xRes, yRes, zRes);
 }
 
 void Headless::setMeshDownScallingFactor(const QString& line) {

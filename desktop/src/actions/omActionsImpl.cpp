@@ -121,11 +121,15 @@ void OmActionsImpl::setUncertain(const SegmentDataWrapper& sdw,
 
 void OmActionsImpl::setUncertain(const SegmentationDataWrapper& sdw,
                                  const bool uncertain) {
+  if (!sdw.IsValidWrapper()) {
+    log_errors << "Unable to setUncertain.  Invalid SegmentationDataWrapper";
+    return;
+  }
   OmSegments* segments = sdw.Segments();
 
   std::shared_ptr<std::set<OmSegment*> > children =
       OmSegmentUtils::GetAllChildrenSegments(
-          segments, segments->Selection().GetSelectedSegmentIDs());
+          *segments, segments->Selection().GetSelectedSegmentIDs());
 
   (new OmSegmentUncertainAction(sdw, children, uncertain))->Run();
 }

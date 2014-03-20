@@ -15,7 +15,11 @@ class OmBuildChannel : public OmBuildVolumes {
   OmBuildChannel() : OmBuildVolumes(), chan_(&cdw_.Create()) {}
 
   OmBuildChannel(const ChannelDataWrapper cdw)
-      : OmBuildVolumes(), cdw_(cdw), chan_(cdw_.GetChannel()) {}
+      : OmBuildVolumes(), cdw_(cdw), chan_(cdw_.GetChannel()) {
+    if (!cdw_.IsValidWrapper()) {
+      throw om::ArgException("Invalid ChannelDataWrapper");
+    }
+  }
 
   void BuildNonBlocking() {
     zi::thread th(zi::run_fn(zi::bind(&OmBuildChannel::Build, this)));
@@ -24,7 +28,7 @@ class OmBuildChannel : public OmBuildVolumes {
   }
 
   void BuildEmptyChannel() {
-    OmVolumeBuilder<OmChannel> builder(chan_);
+    OmVolumeBuilder<OmChannel> builder(*chan_);
     builder.BuildEmptyChannel();
   }
 
@@ -38,7 +42,7 @@ class OmBuildChannel : public OmBuildVolumes {
     OmTimer build_timer;
     startTiming(type, build_timer);
 
-    OmVolumeBuilder<OmChannel> builder(chan_, mFileNamesAndPaths,
+    OmVolumeBuilder<OmChannel> builder(*chan_, mFileNamesAndPaths,
                                        chan_->GetDefaultHDF5DatasetName());
     builder.Build();
 

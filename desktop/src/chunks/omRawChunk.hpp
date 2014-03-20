@@ -11,7 +11,7 @@
 template <typename T>
 class OmRawChunk {
  private:
-  OmMipVolume* const vol_;
+  OmMipVolume& vol_;
   const om::coords::Chunk coord_;
   const uint64_t chunkOffset_;
   const QString memMapFileName_;
@@ -27,13 +27,13 @@ class OmRawChunk {
       mutex_guard_t;
 
  public:
-  OmRawChunk(OmMipVolume* vol, const om::coords::Chunk& coord)
+  OmRawChunk(OmMipVolume& vol, const om::coords::Chunk& coord)
       : vol_(vol),
         coord_(coord),
         chunkOffset_(OmChunkOffset::ComputeChunkPtrOffsetBytes(vol, coord)),
         memMapFileName_(OmFileNames::GetMemMapFileNameQT(vol,
                                                          coord.mipLevel())),
-        numBytes_(128 * 128 * 128 * vol_->GetBytesPerVoxel()),
+        numBytes_(128 * 128 * 128 * vol_.GetBytesPerVoxel()),
         dataRaw_(nullptr),
         dirty_(false) {
     readData();

@@ -69,7 +69,7 @@ class OmMeshPlanCache {
     const CachedDataEnry& entry = cachedData_.dataByBitfield[drawOptions];
 
     if (entry.freshness == OmCacheManager::GetFreshness() &&
-        entry.dustThreshold == vgs->getDustThreshold()) {
+        entry.dustThreshold == vgs.getDustThreshold()) {
       return entry.sortedSegments;
     }
 
@@ -89,7 +89,7 @@ class OmMeshPlanCache {
       CachedDataEnry data;
       data.sortedSegments = sortedSegments;
       data.freshness = OmCacheManager::GetFreshness();
-      data.dustThreshold = vgs->getDustThreshold();
+      data.dustThreshold = vgs.getDustThreshold();
 
       cachedData_.dataByBitfield[drawOptions] = data;
     }

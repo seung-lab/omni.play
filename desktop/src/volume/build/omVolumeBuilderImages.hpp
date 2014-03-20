@@ -8,11 +8,11 @@
 template <typename VOL>
 class OmVolumeBuilderImages : public OmVolumeBuilderBase<VOL> {
  private:
-  VOL* const vol_;
+  VOL& vol_;
   const std::vector<QFileInfo> files_;
 
  public:
-  OmVolumeBuilderImages(VOL* vol, const std::vector<QFileInfo> files)
+  OmVolumeBuilderImages(VOL& vol, const std::vector<QFileInfo> files)
       : OmVolumeBuilderBase<VOL>(vol), vol_(vol), files_(files) {}
 
  private:
@@ -28,7 +28,7 @@ class OmVolumeBuilderImages : public OmVolumeBuilderBase<VOL> {
     return dims;
   }
 
-  virtual void rewriteMip0Volume(OmSegmentation* vol) {
+  virtual void rewriteMip0Volume(OmSegmentation& vol) {
     log_infos << "rewriting segment IDs...";
 
     OmCompactVolValues rewriter(vol);

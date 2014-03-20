@@ -10,42 +10,42 @@
 class OmSegmentationChunkBuildTask : public zi::runnable {
  private:
   const om::coords::Chunk coord_;
-  OmSegmentation* const vol_;
-  OmSegments* const segments_;
+  OmSegmentation& vol_;
+  OmSegments& segments_;
 
  public:
   OmSegmentationChunkBuildTask(const om::coords::Chunk& coord,
-                               OmSegments* segments, OmSegmentation* vol)
+                               OmSegments& segments, OmSegmentation& vol)
       : coord_(coord), vol_(vol), segments_(segments) {}
 
   void run() {
-    OmSegChunk* chunk = vol_->GetChunk(coord_);
+    OmSegChunk* chunk = vol_.GetChunk(coord_);
 
     const bool isMIPzero = (0 == coord_.mipLevel());
 
     chunk->SegData()->ProcessChunk(isMIPzero, segments_);
 
-    const auto segIDs = vol_->UniqueValuesDS().RereadChunk(coord_, 1);
+    const auto segIDs = vol_.UniqueValuesDS().RereadChunk(coord_, 1);
 
     if (isMIPzero) {
-      // vol_->updateMinMax(chunk->GetMinValue(),
+      // vol_.updateMinMax(chunk->GetMinValue(),
       //                    chunk->GetMaxValue());
     }
   }
 };
 
-void OmVolumeProcessor::doBuildThreadedVolume(OmSegmentation* vol) {
+void OmVolumeProcessor::doBuildThreadedVolume(OmSegmentation& vol) {
   OmThreadPool threadPool;
   threadPool.start();
 
   std::shared_ptr<std::deque<om::coords::Chunk> > coordsPtr =
-      vol->GetMipChunkCoords();
+      vol.GetMipChunkCoords();
 
   FOR_EACH(iter, *coordsPtr) {
     const om::coords::Chunk& coord = *iter;
 
     std::shared_ptr<OmSegmentationChunkBuildTask> task =
-        std::make_shared<OmSegmentationChunkBuildTask>(coord, vol->Segments(),
+        std::make_shared<OmSegmentationChunkBuildTask>(coord, vol.Segments(),
                                                        vol);
     threadPool.push_back(task);
   }
@@ -53,6 +53,6 @@ void OmVolumeProcessor::doBuildThreadedVolume(OmSegmentation* vol) {
   threadPool.join();
 }
 
-void OmVolumeProcessor::doBuildThreadedVolume(OmChannel*) {}
+void OmVolumeProcessor::doBuildThreadedVolume(OmChannel&) {}
 
-void OmVolumeProcessor::doBuildThreadedVolume(OmAffinityChannel*) {}
+void OmVolumeProcessor::doBuildThreadedVolume(OmAffinityChannel&) {}

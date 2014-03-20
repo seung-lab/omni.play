@@ -71,7 +71,7 @@ class OmMemMappedVolumeImpl : public IDataVolume<T> {
   T* GetChunkPtr(const om::coords::Chunk& coord) const {
     const int level = coord.mipLevel();
     const uint64_t offset =
-        OmChunkOffset::ComputeChunkPtrOffsetBytes(vol_, coord);
+        OmChunkOffset::ComputeChunkPtrOffsetBytes(*vol_, coord);
     T* ret = maps_[level]->GetPtrWithOffset(offset);
     assert(ret);
     return ret;
@@ -83,6 +83,6 @@ class OmMemMappedVolumeImpl : public IDataVolume<T> {
   void resizeMapsVector() { maps_.resize(vol_->Coords().RootMipLevel() + 1); }
 
   std::string getFileName(const int level) const {
-    return OmFileNames::GetMemMapFileName(vol_, level);
+    return OmFileNames::GetMemMapFileName(*vol_, level);
   }
 };

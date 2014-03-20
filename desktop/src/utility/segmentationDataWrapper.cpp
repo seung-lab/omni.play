@@ -69,7 +69,7 @@ OmSegmentation& SegmentationDataWrapper::Create() {
   OmSegmentation& s = OmProject::Volumes().Segmentations().AddSegmentation();
   id_ = s.id();
   log_debugs << "create segmentation " << id_;
-  segmentation_ = boost::optional<OmSegmentation&>(s);
+  segmentation_ = &s;
   return s;
 }
 
@@ -105,9 +105,9 @@ OmSegmentation* SegmentationDataWrapper::GetSegmentation() const {
 QString SegmentationDataWrapper::GetName() const {
   auto s = GetSegmentation();
   if (s) {
-    return QString::fromStdString(s->Name());
+    return QString::fromStdString(s->GetName());
   } else {
-    log_errors(DataWrappers) << "Invalid Segmentation: " << id_;
+    log_errors << "Invalid Segmentation: " << id_;
     return "";
   }
 }
@@ -121,7 +121,7 @@ OmSegments* SegmentationDataWrapper::Segments() const {
   if (s) {
     return &s->Segments();
   } else {
-    log_errors(DataWrappers) << "Invalid Segmentation: " << id_;
+    log_errors << "Invalid Segmentation: " << id_;
     return nullptr;
   }
 }
@@ -131,7 +131,7 @@ uint32_t SegmentationDataWrapper::getMaxSegmentValue() const {
   if (s) {
     return s->Metadata().maxSegments();
   } else {
-    log_errors(DataWrappers) << "Invalid Segmentation: " << id_;
+    log_errors << "Invalid Segmentation: " << id_;
     return 0;
   }
 }
@@ -141,7 +141,7 @@ OmSegmentLists* SegmentationDataWrapper::SegmentLists() const {
   if (s) {
     return &s->SegmentLists();
   } else {
-    log_errors(DataWrappers) << "Invalid Segmentation: " << id_;
+    log_errors << "Invalid Segmentation: " << id_;
     return nullptr;
   }
 }
@@ -151,7 +151,7 @@ OmValidGroupNum* SegmentationDataWrapper::ValidGroupNum() const {
   if (s) {
     return &s->ValidGroupNum();
   } else {
-    log_errors(DataWrappers) << "Invalid Segmentation: " << id_;
+    log_errors << "Invalid Segmentation: " << id_;
     return nullptr;
   }
 }
@@ -161,7 +161,7 @@ const Vector3f SegmentationDataWrapper::GetDataResolution() const {
   if (s) {
     return s->Metadata().resolution();
   } else {
-    log_errors(DataWrappers) << "Invalid Segmentation: " << id_;
+    log_errors << "Invalid Segmentation: " << id_;
     return Vector3f::ZERO;
   }
 }
@@ -172,7 +172,7 @@ const om::common::SegIDSet SegmentationDataWrapper::GetSelectedSegmentIDs()
   if (s) {
     return s->Selection().GetSelectedSegmentIDs();
   } else {
-    log_errors(DataWrappers) << "Invalid Segmentation: " << id_;
+    log_errors << "Invalid Segmentation: " << id_;
     return om::common::SegIDSet();
   }
 }
@@ -182,7 +182,7 @@ bool SegmentationDataWrapper::IsBuilt() const {
   if (s) {
     return s->built();
   } else {
-    log_errors(DataWrappers) << "Invalid Segmentation: " << id_;
+    log_errors << "Invalid Segmentation: " << id_;
     return false;
   }
 }
@@ -192,7 +192,7 @@ uint32_t SegmentationDataWrapper::getNumberOfSegments() const {
   if (s) {
     return s->GetNumSegments();
   } else {
-    log_errors(DataWrappers) << "Invalid Segmentation: " << id_;
+    log_errors << "Invalid Segmentation: " << id_;
     return 0;
   }
 }
@@ -202,7 +202,7 @@ uint32_t SegmentationDataWrapper::getNumberOfTopSegments() const {
   if (s) {
     return s->SegmentLists().GetNumTopLevelSegs();
   } else {
-    log_errors(DataWrappers) << "Invalid Segmentation: " << id_;
+    log_errors << "Invalid Segmentation: " << id_;
     return 0;
   }
 }

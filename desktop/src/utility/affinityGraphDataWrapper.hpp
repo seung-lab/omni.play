@@ -14,7 +14,6 @@ class AffinityGraphDataWrapper {
 
  private:
   om::common::ID id_;
-  mutable boost::optional<OmAffinityGraph&> affGraph_;
 
  public:
   AffinityGraphDataWrapper() : id_(0) {}
@@ -23,16 +22,24 @@ class AffinityGraphDataWrapper {
 
   inline om::common::ID GetID() const { return id_; }
 
-  inline OmAffinityGraph& GetAffinityGraph() const {
-    if (!affGraph_) {
-      affGraph_ = boost::optional<OmAffinityGraph&>(
-          OmProject::Volumes().AffinityGraphs().Get(id_));
+  inline bool IsValidWrapper() const { return IsAffinityGraphValid(); }
+
+  inline bool IsAffinityGraphValid() const {
+    if (!id_) {
+      return false;
     }
-    return *affGraph_;
+    return OmProject::Volumes().AffinityGraphs().IsValid(id_);
+  }
+
+  inline OmAffinityGraph* GetAffinityGraph() const {
+    return OmProject::Volumes().AffinityGraphs().Get(id_);
   }
 
   inline QString GetName() const {
-    return QString::fromStdString(GetAffinityGraph().GetName());
+    if (!IsValidWrapper()) {
+      return "";
+    }
+    return QString::fromStdString(GetAffinityGraph()->GetName());
   }
 
   inline bool isEnabled() const {

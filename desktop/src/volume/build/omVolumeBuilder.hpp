@@ -10,7 +10,7 @@
 template <typename VOL>
 class OmVolumeBuilder {
  private:
-  VOL* const vol_;
+  VOL& vol_;
   std::vector<QFileInfo> files_;
   const QString hdf5path_;
 
@@ -23,18 +23,18 @@ class OmVolumeBuilder {
   ImportType importType_;
 
  public:
-  OmVolumeBuilder(VOL* vol, const std::vector<QFileInfo>& files,
+  OmVolumeBuilder(VOL& vol, const std::vector<QFileInfo>& files,
                   const QString& hdf5path)
       : vol_(vol), files_(files), hdf5path_(hdf5path), importType_(UNKNOWN) {
     setup();
   }
 
-  OmVolumeBuilder(VOL* vol, const std::vector<QFileInfo>& files)
+  OmVolumeBuilder(VOL& vol, const std::vector<QFileInfo>& files)
       : vol_(vol), files_(files), hdf5path_(""), importType_(UNKNOWN) {
     setup();
   }
 
-  OmVolumeBuilder(VOL* vol)
+  OmVolumeBuilder(VOL& vol)
       : vol_(vol), files_(), hdf5path_(""), importType_(UNKNOWN) {}
 
   void Build() {

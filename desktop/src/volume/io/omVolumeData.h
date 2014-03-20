@@ -31,12 +31,12 @@ class OmVolumeData {
   }
 
   template <typename VOL>
-  void downsample(VOL* vol) {
+  void downsample(VOL& vol) {
     memMapped_.downsample(vol);
   }
 
   template <typename VOL>
-  void SetDataType(VOL* vol) {
+  void SetDataType(VOL& vol) {
     memMapped_.SetDataType(vol);
   }
 };

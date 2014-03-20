@@ -12,7 +12,7 @@ class OmVolumeProcessor {
   OmVolumeProcessor() {}
 
   template <typename VOL>
-  void BuildThreadedVolume(VOL* vol) {
+  void BuildThreadedVolume(VOL& vol) {
     OmTimer timer;
 
     try {
@@ -27,7 +27,7 @@ class OmVolumeProcessor {
   }
 
  private:
-  void doBuildThreadedVolume(OmSegmentation*);
-  void doBuildThreadedVolume(OmChannel*);
-  void doBuildThreadedVolume(OmAffinityChannel*);
+  void doBuildThreadedVolume(OmSegmentation&);
+  void doBuildThreadedVolume(OmChannel&);
+  void doBuildThreadedVolume(OmAffinityChannel&);
 };

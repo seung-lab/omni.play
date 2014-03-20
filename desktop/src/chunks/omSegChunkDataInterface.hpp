@@ -16,9 +16,9 @@ namespace segchunk {
 
 class dataInterface {
  public:
-  virtual void ProcessChunk(const bool, OmSegments* segments) = 0;
+  virtual void ProcessChunk(const bool, OmSegments& segments) = 0;
 
-  virtual void RefreshBoundingData(OmSegments* segments) = 0;
+  virtual void RefreshBoundingData(OmSegments& segments) = 0;
 
   virtual std::shared_ptr<uint32_t> ExtractDataSlice32bit(
       const om::common::ViewType, const int) = 0;

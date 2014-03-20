@@ -1,16 +1,11 @@
 #include "utility/yaml/omBaseTypes.hpp"
 #include "datalayer/archive/segmentation.h"
 #include "utility/yaml/mipVolume.hpp"
-#include "segment/selection.hpp"
-#include "segment/io/omUserEdges.hpp"
-
-#include "segment/types.hpp"
 #include "segment/omSegment.h"
 #include "segment/omSegments.h"
 #include "segment/omSegmentsImpl.h"
 #include "segment/io/omValidGroupNum.hpp"
 #include "project/details/omSegmentationManager.h"
-#include "volume/omSegmentationLoader.h"
 #include "utility/yaml/genericManager.hpp"
 #include "datalayer/archive/dummy.hpp"
 
@@ -33,7 +28,7 @@ Emitter& operator<<(Emitter& out, const OmSegmentation& seg) {
   volArchive.Store(out);
 
   out << Key << "Segments" << Value << (*seg.segments_);
-  out << Key << "Num Edges" << Value << seg.mst_->numEdges_;
+  out << Key << "Num Edges" << Value << seg.mst_->size();
 
   DummyGroups dg;
   out << Key << "Groups" << Value << dg;
@@ -48,13 +43,13 @@ void operator>>(const Node& in, OmSegmentation& seg) {
   volArchive.Load(in);
 
   in["Segments"] >> (*seg.segments_);
-  in["Num Edges"] >> seg.mst_->numEdges_;
+  // in["Num Edges"] >> seg.mst_->size();
 
   seg.LoadVolDataIfFoldersExist();
 
-  seg.mst_->Read();
-  seg.validGroupNum_->Load();
-  seg.segments_->StartCaches();
+  // seg.mst_->Read();
+  // seg.validGroupNum_->Load();
+  // seg.segments_->StartCaches();
   seg.segments_->refreshTree();
 }
 

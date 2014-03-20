@@ -13,14 +13,14 @@
 template <typename VOL>
 class OmVolumeBuilderHdf5 : public OmVolumeBuilderBase<VOL> {
  private:
-  VOL* const vol_;
+  VOL& vol_;
   const om::common::AffinityGraph aff_;
 
   std::string fnp_;
   OmDataPath datasetName_;
 
  public:
-  OmVolumeBuilderHdf5(VOL* vol, const QFileInfo& file, const QString& hdf5path,
+  OmVolumeBuilderHdf5(VOL& vol, const QFileInfo& file, const QString& hdf5path,
                       const om::common::AffinityGraph aff =
                           om::common::AffinityGraph::NO_AFFINITY)
       : OmVolumeBuilderBase<VOL>(vol), vol_(vol), aff_(aff) {
@@ -47,7 +47,7 @@ class OmVolumeBuilderHdf5 : public OmVolumeBuilderBase<VOL> {
     return dims;
   }
 
-  virtual bool loadDendrogram(OmSegmentation* vol) {
+  virtual bool loadDendrogram(OmSegmentation& vol) {
     OmMSTImportHdf5 mstImport(vol);
     return mstImport.Import(fnp_);
   }

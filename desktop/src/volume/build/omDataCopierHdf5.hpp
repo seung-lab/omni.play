@@ -16,7 +16,7 @@
 template <typename VOL>
 class OmDataCopierHdf5 : public OmDataCopierBase<VOL> {
  private:
-  VOL* const vol_;
+  VOL& vol_;
   const OmDataPath path_;
   const om::common::AffinityGraph aff_;
 
@@ -25,7 +25,7 @@ class OmDataCopierHdf5 : public OmDataCopierBase<VOL> {
   QString mip0fnp_;
 
  public:
-  OmDataCopierHdf5(VOL* vol, const OmDataPath& path, const std::string fnp,
+  OmDataCopierHdf5(VOL& vol, const OmDataPath& path, const std::string fnp,
                    const om::common::AffinityGraph aff)
       : OmDataCopierBase<VOL>(vol), vol_(vol), path_(path), aff_(aff) {
     hdf5reader_ = OmHdf5Manager::Get(fnp, true);
@@ -50,7 +50,7 @@ class OmDataCopierHdf5 : public OmDataCopierBase<VOL> {
     threadPool.start(3);
 
     std::shared_ptr<std::deque<om::coords::Chunk> > coordsPtr =
-        vol_->GetMipChunkCoords(0);
+        vol_.GetMipChunkCoords(0);
 
     OmSimpleProgress prog(coordsPtr->size(), "HDF5 chunk copy");
 

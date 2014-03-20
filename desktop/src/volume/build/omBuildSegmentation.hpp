@@ -80,7 +80,7 @@ class OmBuildSegmentation : public OmBuildVolumes {
     OmTimer build_timer;
     startTiming(type, build_timer);
 
-    OmVolumeBuilder<OmSegmentation> builder(seg_, mFileNamesAndPaths, "main");
+    OmVolumeBuilder<OmSegmentation> builder(*seg_, mFileNamesAndPaths, "main");
     builder.Build();
 
     stopTimingAndSave(type, build_timer);

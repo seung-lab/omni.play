@@ -19,14 +19,14 @@ class dataInterface;
 
 class OmSegChunk : public OmChunk {
  private:
-  OmSegmentation* const vol_;
+  OmSegmentation& vol_;
   const std::unique_ptr<om::segchunk::dataInterface> segChunkData_;
 
   std::set<om::common::SegID> modifiedSegIDs_;
   zi::spinlock modifiedSegIDsLock_;
 
  public:
-  OmSegChunk(OmSegmentation* vol, const om::coords::Chunk& coord);
+  OmSegChunk(OmSegmentation& vol, const om::coords::Chunk& coord);
   virtual ~OmSegChunk();
 
   uint32_t GetVoxelValue(const om::coords::Data& vox);

@@ -26,7 +26,7 @@ void OmAffinityGraph::ImportSingleChannel(const QString& hdf5fnp,
 
   OmAffinityChannel* affChan = channels_[aff].get();
 
-  OmBuildAffinityChannel bc(affChan, aff);
+  OmBuildAffinityChannel bc(*affChan, aff);
   bc.addFileNameAndPath(hdf5fnp);
   bc.BuildBlocking();
 }

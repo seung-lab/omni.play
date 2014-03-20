@@ -9,11 +9,11 @@
 
 class OmBuildAffinityChannel : public OmBuildVolumes {
  private:
-  OmAffinityChannel* const affChan_;
+  OmAffinityChannel& affChan_;
   const om::common::AffinityGraph aff_;
 
  public:
-  OmBuildAffinityChannel(OmAffinityChannel* chan,
+  OmBuildAffinityChannel(OmAffinityChannel& chan,
                          const om::common::AffinityGraph aff)
       : OmBuildVolumes(), affChan_(chan), aff_(aff) {}
 
@@ -36,7 +36,7 @@ class OmBuildAffinityChannel : public OmBuildVolumes {
     startTiming(type, build_timer);
 
     OmVolumeBuilder<OmChannel> builder(affChan_, mFileNamesAndPaths,
-                                       affChan_->GetDefaultHDF5DatasetName());
+                                       affChan_.GetDefaultHDF5DatasetName());
     builder.Build(aff_);
 
     stopTimingAndSave(type, build_timer);

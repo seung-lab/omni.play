@@ -4,6 +4,7 @@
 #include "utility/dataWrappers.h"
 #include "volume/omSegmentation.h"
 #include "datalayer/archive/old/omDataArchiveWrappers.h"
+#include "datalayer/archive/segmentEdge.hpp"
 
 #include "actions/details/omSegmentJoinActionImpl.hpp"
 #include "actions/details/omSegmentSelectActionImpl.hpp"

@@ -112,7 +112,8 @@ class OmMouseEventPress {
       return;
     }
 
-    OmActions::ShatterSegment(sdw->GetSegment());
+    OmActions::ShatterSegment(sdw->MakeSegmentationDataWrapper(),
+                              sdw->GetSegment());
     state_->getViewGroupState()->GetToolBarManager()->SetShatteringOff();
     OmStateManager::SetOldToolModeAndSendEvent();
   }

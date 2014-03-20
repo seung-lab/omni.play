@@ -17,6 +17,7 @@ class Selection;
 class GraphThresholder;
 class Children;
 struct UserEdge;
+struct UserEdgeVector;
 }
 namespace volume {
 class MetadataManager;

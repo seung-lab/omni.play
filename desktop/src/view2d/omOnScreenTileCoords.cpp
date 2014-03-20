@@ -6,8 +6,9 @@
 #include "volume/omChannel.h"
 #include "volume/omFilter2d.h"
 #include "volume/omMipVolume.h"
+#include "volume/omSegmentation.h"
 
-OmOnScreenTileCoords::OmOnScreenTileCoords(OmView2dState* state,
+OmOnScreenTileCoords::OmOnScreenTileCoords(OmView2dState& state,
                                            OmMipVolume& vol)
     : state_(state),
       vol_(vol),
@@ -102,7 +103,7 @@ void OmOnScreenTileCoords::computeTile(const om::coords::Chunk& chunkCoord,
   if (depthOffset)  // i.e. if we are pre-fetching
   {
     if (om::common::CHANNEL == vol_.getVolumeType()) {
-      OmChannel* chan = reinterpret_cast<OmChannel*>(vol_);
+      OmChannel* chan = reinterpret_cast<OmChannel*>(&vol_);
 
       const std::vector<OmFilter2d*> filters = chan->GetFilters();
 

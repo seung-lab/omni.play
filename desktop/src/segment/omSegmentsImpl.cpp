@@ -5,6 +5,7 @@
 #include "segment/lowLevel/store.h"
 #include "segment/omSegmentsImpl.h"
 #include "segment/selection.hpp"
+#include "segment/userEdgeVector.hpp"
 #include "system/cache/omCacheManager.h"
 #include "utility/omRandColorFile.hpp"
 #include "utility/segmentationDataWrapper.hpp"
@@ -151,8 +152,8 @@ om::segment::UserEdge OmSegmentsImpl::splitChildFromParentNoTest(
   }
 
   if (child->getCustomMergeEdge().valid) {
-    mst_.erase(
-        std::find(mst_.cbegin(), mst_.cend(), child->getCustomMergeEdge()));
+    userEdges_.erase(std::find(userEdges_.cbegin(), userEdges_.cend(),
+                               child->getCustomMergeEdge()));
     child->setCustomMergeEdge(om::segment::UserEdge());
   }
 
@@ -174,7 +175,7 @@ std::pair<bool, om::segment::UserEdge> OmSegmentsImpl::JoinFromUserAction(
 
   std::pair<bool, om::segment::UserEdge> edge = JoinEdgeFromUser(e);
   if (edge.first) {
-    mst_.push_back(edge.second);
+    userEdges_.push_back(edge.second);
   }
   return edge;
 }
@@ -187,18 +188,17 @@ std::pair<bool, om::segment::UserEdge> OmSegmentsImpl::JoinEdgeFromUser(
   OmSegment* parentRoot = FindRoot(parent);
 
   if (childRoot == parentRoot) {
-    log_debug(unknown,
-              "cycle found in user manual edge; skipping edge %d, %d, %f",
+    log_debug("cycle found in user manual edge; skipping edge %d, %d, %f",
               e.childID, e.parentID, e.threshold);
     return std::make_pair(false, om::segment::UserEdge());
   }
 
   if (childRoot->IsValidListType() != parent->IsValidListType()) {
-    log_debug(unknown,
-              "not joining child %d to parent %d: child "
-              "immutability is %d, but parent's is %d",
-              childRoot->value(), parent->value(), childRoot->IsValidListType(),
-              parent->IsValidListType());
+    log_debug(
+        "not joining child %d to parent %d: child "
+        "immutability is %d, but parent's is %d",
+        childRoot->value(), parent->value(), childRoot->IsValidListType(),
+        parent->IsValidListType());
     return std::make_pair(false, om::segment::UserEdge());
   }
 
@@ -323,9 +323,9 @@ void OmSegmentsImpl::refreshTree() {
 }
 
 void OmSegmentsImpl::setGlobalThreshold() {
-  log_info(unknown, "setting global threshold to %f...",
+  log_info("setting global threshold to %f...",
            OmProject::Globals().Users().UserSettings().getThreshold());
-  log_info(unknown, "setting size threshold to %f...",
+  log_info("setting size threshold to %f...",
            OmProject::Globals().Users().UserSettings().getSizeThreshold());
 
   thresholder_->SetGlobalThreshold();
@@ -333,9 +333,9 @@ void OmSegmentsImpl::setGlobalThreshold() {
 }
 
 void OmSegmentsImpl::resetGlobalThreshold() {
-  log_info(unknown, "resetting global threshold to %f...",
+  log_info("resetting global threshold to %f...",
            OmProject::Globals().Users().UserSettings().getThreshold());
-  log_info(unknown, "resetting size threshold to %f...",
+  log_info("resetting size threshold to %f...",
            OmProject::Globals().Users().UserSettings().getSizeThreshold());
 
   thresholder_->ResetGlobalThreshold();

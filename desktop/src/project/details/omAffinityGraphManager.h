@@ -2,14 +2,12 @@
 #include "precomp.h"
 
 #include "common/common.h"
-#include "common/genericManager.hpp"
+#include "system/omGenericManager.hpp"
 #include "volume/omAffinityGraph.h"
-
-extern template class om::common::GenericManager<OmAffinityGraph>;
 
 class OmAffinityGraphManager {
  public:
-  OmAffinityGraph& Get(const om::common::ID id);
+  OmAffinityGraph* Get(const om::common::ID id);
   OmAffinityGraph& Add();
   void Remove(const om::common::ID id);
   bool IsValid(const om::common::ID id);
@@ -18,7 +16,13 @@ class OmAffinityGraphManager {
   void SetEnabled(const om::common::ID id, const bool enable);
 
  private:
-  om::common::GenericManager<OmAffinityGraph> graphs_;
+  OmGenericManager<OmAffinityGraph> graphs_;
 
-  friend class YAML::convert<OmAffinityGraphManager>;
+  friend QDataStream& operator<<(QDataStream& out,
+                                 const OmAffinityGraphManager&);
+  friend QDataStream& operator>>(QDataStream& in, OmAffinityGraphManager&);
+  friend YAMLold::Emitter& YAMLold::operator<<(YAMLold::Emitter& out,
+                                               const OmAffinityGraphManager&);
+  friend void YAMLold::operator>>(const YAMLold::Node& in,
+                                  OmAffinityGraphManager&);
 };

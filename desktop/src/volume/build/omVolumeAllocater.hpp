@@ -61,7 +61,7 @@ class OmVolumeAllocater {
               << ": size is: " << om::string::humanizeNum(size) << " ("
               << dims.x << "," << dims.y << "," << dims.z << ")";
 
-    const std::string fnpStr = OmFileNames::GetMemMapFileName(vol, level);
+    const std::string fnpStr = OmFileNames::GetMemMapFileName(*vol, level);
     const QString fnp = QString::fromStdString(fnpStr);
     QFile::remove(fnp);
     std::shared_ptr<QFile> file(std::make_shared<QFile>(fnp));

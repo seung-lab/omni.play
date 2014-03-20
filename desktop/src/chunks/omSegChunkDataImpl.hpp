@@ -21,8 +21,8 @@ using om::chunk::ptrToChunkDataMemMapVol;
 template <typename DATA>
 class dataImpl : public dataInterface {
  private:
-  OmSegmentation* const vol_;
-  OmSegChunk* const chunk_;
+  OmSegmentation& vol_;
+  OmSegChunk& chunk_;
   const om::coords::Chunk coord_;
 
   ptrToChunkDataBase* const ptrToChunkData_;
@@ -31,7 +31,7 @@ class dataImpl : public dataInterface {
   const int elementsPerSlice_;
 
  public:
-  dataImpl(OmSegmentation* vol, OmSegChunk* chunk,
+  dataImpl(OmSegmentation& vol, OmSegChunk& chunk,
            const om::coords::Chunk& coord)
       : vol_(vol),
         chunk_(chunk),
@@ -51,7 +51,7 @@ class dataImpl : public dataInterface {
     return extractor.Extract(data);
   }
 
-  void ProcessChunk(const bool computeSizes, OmSegments* segments) {
+  void ProcessChunk(const bool computeSizes, OmSegments& segments) {
     OmProcessSegmentationChunk p(chunk_, computeSizes, segments);
 
     dataAccessor<DATA> dataWrapper(ptrToChunkData_);
@@ -103,12 +103,12 @@ class dataImpl : public dataInterface {
   }
 
   void RewriteChunk(const std::unordered_map<uint32_t, uint32_t>& vals) {
-    OmRawChunk<DATA> rawChunk(vol_, chunk_->GetCoordinate());
+    OmRawChunk<DATA> rawChunk(vol_, chunk_.GetCoordinate());
     rawChunk.SetDirty();
 
     DATA* d = rawChunk.Data();
 
-    const int numVoxelsInChunk = chunk_->Mipping().NumVoxels();
+    const int numVoxelsInChunk = chunk_.Mipping().NumVoxels();
 
     for (int i = 0; i < numVoxelsInChunk; ++i) {
       d[i] = vals.at(d[i]);
@@ -125,12 +125,12 @@ class dataImpl : public dataInterface {
  private:
   template <typename T>
   std::shared_ptr<uint32_t> getChunkAs32bit(T*) const {
-    OmRawChunk<T> rawChunk(vol_, chunk_->GetCoordinate());
+    OmRawChunk<T> rawChunk(vol_, chunk_.GetCoordinate());
 
     std::shared_ptr<T> data = rawChunk.SharedPtr();
     T* dataRaw = data.get();
 
-    const int numVoxelsInChunk = chunk_->Mipping().NumVoxels();
+    const int numVoxelsInChunk = chunk_.Mipping().NumVoxels();
 
     auto ret = om::mem::Malloc<uint32_t>::NumElements(numVoxelsInChunk,
                                                       om::mem::ZeroFill::DONT);
@@ -140,7 +140,7 @@ class dataImpl : public dataInterface {
   }
 
   std::shared_ptr<uint32_t> getChunkAs32bit(uint32_t*) const {
-    OmRawChunk<uint32_t> rawChunk(vol_, chunk_->GetCoordinate());
+    OmRawChunk<uint32_t> rawChunk(vol_, chunk_.GetCoordinate());
     return rawChunk.SharedPtr();
   }
 

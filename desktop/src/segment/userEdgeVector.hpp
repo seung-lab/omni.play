@@ -2,6 +2,7 @@
 
 #include "segment/types.hpp"
 #include "datalayer/QFileVector.hpp"
+#include "datalayer/archive/segmentEdge.hpp"
 
 namespace om {
 namespace segment {

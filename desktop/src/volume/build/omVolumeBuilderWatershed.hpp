@@ -13,13 +13,13 @@
 template <typename VOL>
 class OmVolumeBuilderWatershed : public OmVolumeBuilderBase<VOL> {
  private:
-  VOL* const vol_;
+  VOL& vol_;
   const QString fnp_;
 
   OmWatershedMetadata metadata_;
 
  public:
-  OmVolumeBuilderWatershed(VOL* vol, const QFileInfo& file)
+  OmVolumeBuilderWatershed(VOL& vol, const QFileInfo& file)
       : OmVolumeBuilderBase<VOL>(vol), vol_(vol), fnp_(file.filePath()) {
     metadata_.ReadMetata(fnp_);
   }
@@ -35,7 +35,7 @@ class OmVolumeBuilderWatershed : public OmVolumeBuilderBase<VOL> {
 
   virtual Vector3i getMip0Dims() { return metadata_.GetMip0Dims(); }
 
-  virtual bool loadDendrogram(OmSegmentation* vol) {
+  virtual bool loadDendrogram(OmSegmentation& vol) {
     OmMSTImportWatershed mstImport(vol);
 
     return mstImport.Import(metadata_.MstFileName(), metadata_.MstBitsPerNode(),
@@ -46,7 +46,7 @@ class OmVolumeBuilderWatershed : public OmVolumeBuilderBase<VOL> {
   void setDataType() {
     int colorDepth = metadata_.GetColorDepth();
     OmDataWrapperPtr nullData = makeNullDataWrapper(colorDepth);
-    vol_->SetVolDataType(nullData->getVolDataType());
+    vol_.SetVolDataType(nullData->getVolDataType());
   }
 
   OmDataWrapperPtr makeNullDataWrapper(const int bpp) {

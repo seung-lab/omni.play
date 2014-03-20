@@ -55,15 +55,15 @@ class OmFileNames {
   // ex:
   /// home/projectName.files/segmentations/segmentation1/0/volume.int32_t.raw
   template <typename T>
-  static std::string GetMemMapFileName(T* vol, const int level) {
+  static std::string GetMemMapFileName(T& vol, const int level) {
     return GetMemMapFileNameQT(vol, level).toStdString();
   }
 
   template <typename T>
-  static QString GetVolDataFolderPath(T* vol, const int level) {
+  static QString GetVolDataFolderPath(T& vol, const int level) {
     const QString subPath =
         QString("%1/%2/")
-            .arg(QString::fromStdString(vol->GetDirectoryPath()))
+            .arg(QString::fromStdString(vol.GetDirectoryPath()))
             .arg(level);
 
     if (subPath.startsWith("/")) {
@@ -74,7 +74,7 @@ class OmFileNames {
   }
 
   template <typename T>
-  static QString GetMemMapFileNameQT(T* vol, const int level) {
+  static QString GetMemMapFileNameQT(T& vol, const int level) {
     static zi::rwmutex lock;
     zi::rwmutex::write_guard g(lock);
 
@@ -86,7 +86,7 @@ class OmFileNames {
       }
     }
 
-    const std::string volType = vol->getVolDataTypeAsStr();
+    const std::string volType = vol.getVolDataTypeAsStr();
 
     const QString fnp = QString("/%1/volume.%2.raw").arg(fullPath).arg(
         QString::fromStdString(volType));

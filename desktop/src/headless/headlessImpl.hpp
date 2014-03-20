@@ -242,7 +242,7 @@ class HeadlessImpl {
 
       OmTimer timer;
       if (useMeshChunk) {
-        OmRawChunk<uint32_t> chunk(&vol, coords[i]);
+        OmRawChunk<uint32_t> chunk(vol, coords[i]);
       } else {
         assert(0 && "fixme!");
       }
@@ -281,7 +281,7 @@ class HeadlessImpl {
     std::vector<QFileInfo> files;
     files.push_back(QFileInfo(fnp));
 
-    OmVolumeBuilder<OmSegmentation> builder(&segmentation, files);
+    OmVolumeBuilder<OmSegmentation> builder(segmentation, files);
     builder.BuildWatershed();
 
     OmActions::Save();
