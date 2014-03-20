@@ -26,8 +26,9 @@ class MetadataManager;
 class OmSegmentsImpl {
  public:
   OmSegmentsImpl(om::segment::SegDataVector&, om::segment::SegListDataVector&,
-                 om::segment::EdgeVector&, om::volume::MetadataManager&,
-                 OmValidGroupNum&, SegmentationDataWrapper sdw);
+                 om::segment::EdgeVector&, om::segment::UserEdgeVector&,
+                 om::volume::MetadataManager&, OmValidGroupNum&,
+                 SegmentationDataWrapper sdw);
   virtual ~OmSegmentsImpl();
 
   void Flush();
@@ -97,6 +98,7 @@ class OmSegmentsImpl {
 
  private:
   om::segment::EdgeVector& mst_;
+  om::segment::UserEdgeVector& userEdges_;
   om::volume::MetadataManager& meta_;
 
   std::unique_ptr<om::segment::Store> store_;

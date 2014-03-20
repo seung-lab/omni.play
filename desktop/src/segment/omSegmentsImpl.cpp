@@ -15,11 +15,12 @@ using namespace om::segment;
 // entry into this class via OmSegments hopefully guarantees proper locking...
 
 OmSegmentsImpl::OmSegmentsImpl(SegDataVector& data, SegListDataVector& listData,
-                               EdgeVector& mst,
+                               EdgeVector& mst, UserEdgeVector& userEdges,
                                om::volume::MetadataManager& meta,
                                OmValidGroupNum& valid,
                                SegmentationDataWrapper sdw)
     : mst_(mst),
+      userEdges_(userEdges),
       meta_(meta),
       store_(new Store(data, listData, meta.coordSystem(), meta.maxSegments())),
       graph_(new Graph(meta.maxSegments())),

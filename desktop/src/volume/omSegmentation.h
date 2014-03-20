@@ -41,6 +41,7 @@ class manager;
 namespace segment {
 class FileDataSource;
 class ListTypeFileDataSource;
+class UserEdgeVector;
 }
 }
 
@@ -119,6 +120,7 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
   om::segment::SegDataVector& SegData() const { return *segData_; }
   om::segment::SegListDataVector& SegListData() const { return *segListData_; }
   om::segment::EdgeVector& MST() { return *mst_; }
+  om::segment::UserEdgeVector& UserEdges() { return *userEdges_; }
   om::volume::MetadataManager& Metadata() const { return *metaManager_; }
 
   void ClearUserChangesAndSave();
@@ -143,6 +145,7 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
   std::unique_ptr<om::segment::ListTypeFileDataSource> segListDataDS_;
   std::unique_ptr<om::segment::SegListDataVector> segListData_;
   std::unique_ptr<om::segment::EdgeVector> mst_;
+  std::unique_ptr<om::segment::UserEdgeVector> userEdges_;
 
   template <class T>
   friend class OmVolumeBuilder;

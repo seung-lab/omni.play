@@ -29,7 +29,6 @@ OmSegmentation::OmSegmentation()
       meshDrawer_(new OmMeshDrawer(this)),
       meshManagers_(new OmMeshManagers(this)),
       chunkCache_(new OmChunkCache<OmSegmentation, OmSegChunk>(this)),
-      segments_(new OmSegments(this)),
       segmentLists_(new OmSegmentLists()),
       validGroupNum_(new OmValidGroupNum(this)),
       volData_(new OmVolumeData()),
@@ -45,7 +44,6 @@ OmSegmentation::OmSegmentation(common::ID id)
       meshDrawer_(new OmMeshDrawer(this)),
       meshManagers_(new OmMeshManagers(this)),
       chunkCache_(new OmChunkCache<OmSegmentation, OmSegChunk>(this)),
-      segments_(new OmSegments(this)),
       segmentLists_(new OmSegmentLists()),
       validGroupNum_(new OmValidGroupNum(this)),
       volData_(new OmVolumeData()),
@@ -81,6 +79,8 @@ void OmSegmentation::LoadPath() {
       *segListDataDS_.reset, segment::PageSize, Metadata().numSegments() + 1));
 
   mst_.reset(new segment::EdgeVector(p.UserMST(username, id)));
+  userEdges_.reset(new segment::UserEdgeVector(p.UserUserEdges(username, id)));
+  segments_.reset(new OmSegments(this));
 }
 
 bool OmSegmentation::LoadVolData() {
