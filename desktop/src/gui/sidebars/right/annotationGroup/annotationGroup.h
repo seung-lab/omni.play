@@ -15,12 +15,12 @@ class AnnotationGroup : public OmWidget {
   Q_OBJECT;
 
  public:
-  AnnotationGroup(rightImpl *, OmViewGroupState *);
+  AnnotationGroup(rightImpl *, OmViewGroupState &);
 
   QString getName() { return "Annotations"; }
 
  private:
-  OmViewGroupState *const vgs_;
+  OmViewGroupState &vgs_;
 };
 
 }  // namespace sidebars

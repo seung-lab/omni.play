@@ -45,7 +45,7 @@ class OmColorizers {
       throw om::IoException("can only color segmentations");
     }
 
-    SegmentationDataWrapper sdw(key.getVolume().getID());
+    SegmentationDataWrapper sdw(key.getVolume().GetID());
     if (!sdw.IsValidWrapper()) {
       return;
     }

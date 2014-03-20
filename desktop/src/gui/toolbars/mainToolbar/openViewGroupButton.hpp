@@ -16,7 +16,5 @@ class OpenViewGroupButton : public OmButton<MainWindow> {
   }
 
  private:
-  void doAction() {
-    mParent->GetViewGroupState()->GetViewGroup()->AddAllViews();
-  }
+  void doAction() { mParent->GetViewGroupState().GetViewGroup().AddAllViews(); }
 };

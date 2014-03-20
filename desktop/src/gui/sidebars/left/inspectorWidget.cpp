@@ -19,6 +19,7 @@
 #include "utility/dataWrappers.h"
 #include "viewGroup/omViewGroupState.h"
 #include "task/taskManager.h"
+#include "volume/omSegmentation.h"
 
 Q_DECLARE_METATYPE(DataWrapperContainer);
 Q_DECLARE_METATYPE(FilterDataWrapper);
@@ -60,14 +61,14 @@ void InspectorWidget::openChannelView(om::common::ID chanID,
                                       om::common::ViewType vtype) {
   const ChannelDataWrapper cdw(chanID);
 
-  vgs_.GetViewGroup()->AddView2Dchannel(cdw, vtype);
+  vgs_.GetViewGroup().AddView2Dchannel(cdw, vtype);
 }
 
 void InspectorWidget::openSegmentationView(om::common::ID segmentationID,
                                            om::common::ViewType vtype) {
   const SegmentationDataWrapper sdw(segmentationID);
 
-  vgs_.GetViewGroup()->AddView2Dsegmentation(sdw, vtype);
+  vgs_.GetViewGroup().AddView2Dsegmentation(sdw, vtype);
 }
 
 QTreeWidget* InspectorWidget::setupFilterList() {
@@ -99,8 +100,8 @@ void InspectorWidget::populateDataSrcListWidget() {
     ChannelDataWrapper cdw = dwc.getChannelDataWrapper();
     QTreeWidgetItem* row = new QTreeWidgetItem(dataSrcListWidget_);
     row->setText(NAME_COL, cdw.GetName());
-    row->setText(ID_COL, QString("%1").arg(cdw.GetID()));
-    row->setText(NOTE_COL, cdw.getNote());
+    row->setText(ID_COL, QString("%1").arg(cdw.id()));
+    // row->setText(NOTE_COL, cdw.getNote());
     row->setData(USER_DATA_COL, Qt::UserRole, qVariantFromValue(dwc));
     setRowFlagsAndCheckState(row, GuiUtils::getCheckState(cdw.isEnabled()));
   }
@@ -112,8 +113,8 @@ void InspectorWidget::populateDataSrcListWidget() {
     SegmentationDataWrapper sdw = dwc.GetSDW();
     QTreeWidgetItem* row = new QTreeWidgetItem(dataSrcListWidget_);
     row->setText(NAME_COL, sdw.GetName());
-    row->setText(ID_COL, QString("%1").arg(sdw.GetID()));
-    row->setText(NOTE_COL, sdw.getNote());
+    row->setText(ID_COL, QString("%1").arg(sdw.id()));
+    // row->setText(NOTE_COL, sdw.getNote());
     row->setData(USER_DATA_COL, Qt::UserRole, qVariantFromValue(dwc));
     setRowFlagsAndCheckState(row, GuiUtils::getCheckState(sdw.isEnabled()));
   }
@@ -143,7 +144,7 @@ void InspectorWidget::populateDataSrcListWidget() {
 
 void InspectorWidget::populateFilterListWidget(ChannelDataWrapper cdw) {
   ElementListBox::Reset();
-  ElementListBox::SetTitle(QString("Channel %1").arg(cdw.GetID()));
+  ElementListBox::SetTitle(QString("Channel %1").arg(cdw.id()));
   ElementListBox::AddTab(0, setupFilterList(), "Filters");
 
   filterListWidget_->clear();
@@ -155,7 +156,7 @@ void InspectorWidget::populateFilterListWidget(ChannelDataWrapper cdw) {
 
   FOR_EACH(iter, filters) {
     OmFilter2d* filterPtr = *iter;
-    FilterDataWrapper filter(cdw.GetID(), filterPtr->GetID());
+    FilterDataWrapper filter(cdw.id(), filterPtr->GetID());
     QTreeWidgetItem* row = new QTreeWidgetItem(filterListWidget_);
     row->setText(NAME_COL, filter.getName());
     row->setText(ID_COL, QString("%1").arg(filter.GetID()));
@@ -443,7 +444,7 @@ void InspectorWidget::selectChannelView(QAction* act) {
     deleteChannel(cdw);
 
   } else {
-    triggerChannelView(cdw.GetID(), getViewType(act));
+    triggerChannelView(cdw.id(), getViewType(act));
   }
 }
 
@@ -497,7 +498,7 @@ void InspectorWidget::selectSegmentationView(QAction* act) {
     showNewView3d();
 
   } else {
-    triggerSegmentationView(sdw.GetID(), getViewType(act));
+    triggerSegmentationView(sdw.id(), getViewType(act));
   }
 }
 
@@ -521,7 +522,7 @@ void InspectorWidget::deleteSegmentation(SegmentationDataWrapper sdw) {
 
   ElementListBox::Reset();
 
-  const om::common::ID segmentationID = sdw.GetID();
+  const om::common::ID segmentationID = sdw.id();
 
   mainWindow_->cleanViewsOnVolumeChange(om::common::CHANNEL, segmentationID);
 
@@ -561,7 +562,7 @@ void InspectorWidget::deleteChannel(ChannelDataWrapper cdw) {
   if (confirmDelete.Ask()) {
     inspectorProperties_->CloseDialog();
     ElementListBox::Reset();
-    mainWindow_->cleanViewsOnVolumeChange(om::common::CHANNEL, cdw.GetID());
+    mainWindow_->cleanViewsOnVolumeChange(om::common::CHANNEL, cdw.id());
     cdw.Remove();
     populateDataSrcListWidget();
   }
@@ -590,4 +591,4 @@ class NewView3d : public QDialog {
   }
 };
 
-void InspectorWidget::showNewView3d() { new NewView3d(this, *vgs_); }
+void InspectorWidget::showNewView3d() { new NewView3d(this, vgs_); }

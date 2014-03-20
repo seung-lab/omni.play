@@ -15,7 +15,7 @@
 
 class OmChunkUniqueValuesPerThreshold {
  private:
-  OmSegmentation* const segmentation_;
+  OmSegmentation& segmentation_;
   const om::coords::Chunk coord_;
   const double threshold_;
   const QString fnp_;
@@ -26,7 +26,7 @@ class OmChunkUniqueValuesPerThreshold {
   zi::rwmutex mutex_;
 
  public:
-  OmChunkUniqueValuesPerThreshold(OmSegmentation* segmentation,
+  OmChunkUniqueValuesPerThreshold(OmSegmentation& segmentation,
                                   const om::coords::Chunk& coord,
                                   const double threshold)
       : segmentation_(segmentation),
@@ -76,7 +76,7 @@ class OmChunkUniqueValuesPerThreshold {
   }
 
   void findValues() {
-    OmSegChunk* chunk = segmentation_->GetChunk(coord_);
+    OmSegChunk* chunk = segmentation_.GetChunk(coord_);
 
     std::shared_ptr<uint32_t> rawDataPtr =
         chunk->SegData()->GetCopyOfChunkDataAsUint32();
@@ -86,8 +86,8 @@ class OmChunkUniqueValuesPerThreshold {
     std::unordered_set<uint32_t> segIDs;
 
     if (!qFuzzyCompare(1, threshold_)) {
-      auto& segments = segmentation_->Segments();
-      segmentation_->SetDendThreshold(threshold_);
+      auto& segments = segmentation_.Segments();
+      segmentation_.SetDendThreshold(threshold_);
 
       for (size_t i = 0; i < chunk->Mipping().NumVoxels(); ++i) {
         if (0 != rawData[i]) {
@@ -132,10 +132,10 @@ class OmChunkUniqueValuesPerThreshold {
   }
 
   QString filePath() {
-    const QString volPath = segmentation_->Folder().GetChunkFolderPath(coord_);
+    const QString volPath = segmentation_.Folder().GetChunkFolderPath(coord_);
 
     if (!QDir(volPath).exists()) {
-      segmentation_->Folder().MakeChunkFolderPath(coord_);
+      segmentation_.Folder().MakeChunkFolderPath(coord_);
     }
 
     const QString fullPath = QString("%1uniqeValues.%2.ver1").arg(volPath).arg(

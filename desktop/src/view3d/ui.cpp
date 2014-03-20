@@ -85,7 +85,7 @@ void Ui::shatterModeMouseReleased(QMouseEvent* event) {
 
   OmActions::ShatterSegment(pickPoint.sdw.MakeSegmentationDataWrapper(),
                             pickPoint.sdw.GetSegment());
-  vgs_.GetToolBarManager()->SetShatteringOff();
+  vgs_.GetToolBarManager().SetShatteringOff();
   OmStateManager::SetOldToolModeAndSendEvent();
 }
 
@@ -187,7 +187,7 @@ void Ui::deselectSegment(const SegmentDataWrapper& sdw) {
     return;
   }
 
-  const om::common::ID segmentID = sdw.getID();
+  const om::common::ID segmentID = sdw.GetID();
 
   OmSegmentSelector sel(sdw.MakeSegmentationDataWrapper(), this, "view3d");
   sel.augmentSelectedSet(segmentID, false);
@@ -201,7 +201,7 @@ void Ui::doSelectSegment(const SegmentDataWrapper& sdw,
     return;
   }
 
-  const om::common::ID segmentID = sdw.getID();
+  const om::common::ID segmentID = sdw.GetID();
 
   OmSegmentSelected::Set(sdw);
 
@@ -351,7 +351,7 @@ void Ui::crosshair(QMouseEvent* event) {
     return;
   }
 
-  vgs_.View2dState()->SetScaledSliceDepth(pickPoint.coord);
+  vgs_.View2dState().SetScaledSliceDepth(pickPoint.coord);
 
   om::event::ViewCenterChanged();
 }

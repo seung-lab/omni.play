@@ -7,6 +7,7 @@
 #include "gui/widgets/omButton.hpp"
 #include "segment/omSegments.h"
 #include "utility/dataWrappers.h"
+#include "segment/omSegment.h"
 
 namespace om {
 namespace segmentationInspector {
@@ -34,7 +35,7 @@ class ExportDescendantList : public OmButton<PageExport> {
 
     QTextStream out(&file);
 
-    for (om::common::SegID i = 1; i <= segments->getMaxValue(); ++i) {
+    for (om::common::SegID i = 1; i <= segments->maxValue(); ++i) {
       OmSegment* seg = segments->GetSegment(i);
 
       if (!seg) {
@@ -57,7 +58,7 @@ class ExportDescendantList : public OmButton<PageExport> {
 
  private:
   QString getIds(const om::common::SegID segID, OmSegments* segments) {
-    OmSegmentIterator iter(segments);
+    OmSegmentIterator iter(*segments);
     iter.iterOverSegmentID(segID);
 
     OmSegment* seg = iter.getNextSegment();

@@ -11,7 +11,7 @@ OmChannel* OmChannelManager::GetChannel(const om::common::ID id) {
 
 OmChannel& OmChannelManager::AddChannel() {
   OmChannel& vol = manager_.Add();
-  vol.Folder()->MakeVolFolder();
+  vol.Folder().MakeVolFolder();
   OmActions::Save();
   return vol;
 }

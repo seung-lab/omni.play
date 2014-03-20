@@ -16,5 +16,5 @@ class OpenSingleViewButton : public OmButton<MainWindow> {
   }
 
  private:
-  void doAction() { mParent->GetViewGroupState()->GetViewGroup()->AddXYView(); }
+  void doAction() { mParent->GetViewGroupState().GetViewGroup().AddXYView(); }
 };

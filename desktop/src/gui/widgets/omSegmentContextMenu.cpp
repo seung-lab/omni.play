@@ -86,7 +86,7 @@ bool OmSegmentContextMenu::isUncertain() const {
 
 void OmSegmentContextMenu::addSelectionNames() {
   const QString segStr =
-      QString("Segment %1 (Root %2)").arg(sdw_.getID()).arg(sdw_.FindRootID());
+      QString("Segment %1 (Root %2)").arg(sdw_.GetID()).arg(sdw_.FindRootID());
   addAction(segStr);
 
   QString validStr;
@@ -129,14 +129,14 @@ void OmSegmentContextMenu::select() {
 
 void OmSegmentContextMenu::unselect() {
   OmSegmentSelector sel(sdw_.MakeSegmentationDataWrapper(), this, "view3d");
-  sel.augmentSelectedSet(sdw_.getID(), false);
+  sel.augmentSelectedSet(sdw_.GetID(), false);
   sel.sendEvent();
 }
 
 void OmSegmentContextMenu::unselectOthers() {
   OmSegmentSelector sel(sdw_.MakeSegmentationDataWrapper(), this, "view3d");
   sel.selectNoSegments();
-  sel.selectJustThisSegment(sdw_.getID(), true);
+  sel.selectJustThisSegment(sdw_.GetID(), true);
   sel.sendEvent();
 }
 
@@ -146,9 +146,9 @@ void OmSegmentContextMenu::mergeSegments() {
 
 void OmSegmentContextMenu::splitSegments() {
 
-  vgs_->Splitting()->EnterSplitMode();
+  vgs_->Splitting().EnterSplitMode();
 
-  vgs_->Splitting()->SetFirstSplitPoint(sdw_, coord_);
+  vgs_->Splitting().SetFirstSplitPoint(sdw_, coord_);
 }
 
 void OmSegmentContextMenu::cutSegments() { OmActions::CutSegment(sdw_); }
@@ -253,18 +253,6 @@ void OmSegmentContextMenu::writeChildrenFile(
   }
 }
 
-void OmSegmentContextMenu::addDisableAction() {
-  const om::common::SegID segid = sdw_.FindRootID();
-  OmSegments* segments = sdw_.Segments();
+void OmSegmentContextMenu::addDisableAction() {}
 
-  if (segments->isSegmentEnabled(segid)) {
-    addAction("Disable Segment", this, SLOT(disableSegment()));
-  }
-}
-
-void OmSegmentContextMenu::disableSegment() {
-  const auto segid = sdw_.FindRootID();
-  auto* segments = sdw_.Segments();
-
-  segments->setSegmentEnabled(segid, false);
-}
+void OmSegmentContextMenu::disableSegment() {}

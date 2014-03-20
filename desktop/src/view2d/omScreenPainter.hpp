@@ -10,6 +10,7 @@
 #include "view2d/omView2dState.hpp"
 #include "viewGroup/omBrushSize.hpp"
 #include "annotation/annotation.h"
+#include "volume/omSegmentation.h"
 
 class OmScreenPainter {
  public:
@@ -58,7 +59,7 @@ class OmScreenPainter {
       drawCursors(painter);
     }
 
-    if (state_->getViewGroupState()->getAnnotationVisible()) {
+    if (state_->getViewGroupState().getAnnotationVisible()) {
       drawAnnotations(painter);
     }
   }
@@ -133,7 +134,7 @@ class OmScreenPainter {
   QString depthString() {
     const om::coords::Global global = state_->Location();
     const om::coords::Data data =
-        global.ToData(state_->getVol()->Coords(), state_->getMipLevel());
+        global.ToData(state_->getVol().Coords(), state_->getMipLevel());
 
     const int globalDepth = state_->getViewTypeDepth(global);
     const int dataDepth = state_->getViewTypeDepth(data);
@@ -217,8 +218,8 @@ class OmScreenPainter {
     for (auto& seg : SegmentationDataWrapper::GetPtrVec()) {
       auto& annotations = seg->Annotations();
 
-      FOR_EACH(it, annotations.Enabled()) {
-        om::annotation::data& a = *it->Object;
+      for (auto& it : annotations.Enabled()) {
+        om::annotation::data& a = *it.Object;
 
         if (!closeInDepth(a.coord.ToGlobal())) continue;
 

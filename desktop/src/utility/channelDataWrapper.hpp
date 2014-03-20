@@ -37,7 +37,7 @@ class ChannelDataWrapper {
 
   OmChannel& Create() {
     OmChannel& c = OmProject::Volumes().Channels().AddChannel();
-    id_ = c.getID();
+    id_ = c.GetID();
     log_debugs << "create channel " << id_;
     return c;
   }

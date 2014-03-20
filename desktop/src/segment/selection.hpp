@@ -70,6 +70,21 @@ class Selection {
     OmCacheManager::TouchFreshness();
   }
 
+  void ToggleSegmentSelection(const om::common::SegIDSet& ids) {
+    bool toggle = false;
+    for (auto& id : ids) {
+      if (!IsSegmentSelected(id)) {
+        toggle = true;
+        break;
+      }
+    }
+    for (auto& id : ids) {
+      setSegmentSelectedBatch(id, toggle, true);
+    }
+
+    OmCacheManager::TouchFreshness();
+  }
+
   void RemoveFromSegmentSelection(const common::SegIDSet& ids) {
     zi::guard g(mutex_);
     for (auto id : ids) {
@@ -128,6 +143,10 @@ class Selection {
     OmSegment* seg = store_.GetSegment(segID);
     lists_.TouchRecent(seg);
   }
+
+  friend YAMLold::Emitter& YAMLold::operator<<(YAMLold::Emitter& out,
+                                               const OmSegmentsImpl& sc);
+  friend void YAMLold::operator>>(const YAMLold::Node& in, OmSegmentsImpl& sc);
 };
 }
 }

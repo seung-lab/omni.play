@@ -102,8 +102,8 @@ class MeshTest {
     FOR_EACH(cc, *coords) {
       FOR_EACH(id, segmentation_->UniqueValuesDS().Values(*cc, 1)) {
         OmMeshPtr mesh;
-        segmentation_->MeshManagers()->GetMesh(mesh, *cc, *id, 1,
-                                               om::common::Blocking::BLOCKING);
+        segmentation_->MeshManagers().GetMesh(mesh, *cc, *id, 1,
+                                              om::common::Blocking::BLOCKING);
         if (!mesh) {
           throw om::IoException("no mesh found");
         }

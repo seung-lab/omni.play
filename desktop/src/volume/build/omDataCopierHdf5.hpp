@@ -27,7 +27,7 @@ class OmDataCopierHdf5 : public OmDataCopierBase<VOL> {
  public:
   OmDataCopierHdf5(VOL& vol, const OmDataPath& path, const std::string fnp,
                    const om::common::AffinityGraph aff)
-      : OmDataCopierBase<VOL>(vol), vol_(vol), path_(path), aff_(aff) {
+      : OmDataCopierBase<VOL>(&vol), vol_(vol), path_(path), aff_(aff) {
     hdf5reader_ = OmHdf5Manager::Get(fnp, true);
     hdf5reader_->open();
 
@@ -58,8 +58,9 @@ class OmDataCopierHdf5 : public OmDataCopierBase<VOL> {
       const om::coords::Chunk& coord = *iter;
 
       std::shared_ptr<OmDataCopierHdf5Task<VOL> > task =
-          std::make_shared<OmDataCopierHdf5Task<VOL> >(
-              vol_, path_, aff_, volSize_, hdf5reader_, mip0fnp_, coord, &prog);
+          std::make_shared<OmDataCopierHdf5Task<VOL> >(&vol_, path_, aff_,
+                                                       volSize_, hdf5reader_,
+                                                       mip0fnp_, coord, &prog);
       threadPool.push_back(task);
     }
 
@@ -70,7 +71,7 @@ class OmDataCopierHdf5 : public OmDataCopierBase<VOL> {
 
   void allocateData(const OmVolDataType type) {
     std::vector<std::shared_ptr<QFile> > volFiles =
-        OmVolumeAllocater::AllocateData(vol_, type);
+        OmVolumeAllocater::AllocateData(&vol_, type);
 
     mip0fnp_ = QFileInfo(*volFiles[0]).absoluteFilePath();
   }

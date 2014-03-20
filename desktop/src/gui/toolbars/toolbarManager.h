@@ -22,7 +22,7 @@ class ToolBarManager : public QWidget {
   ~ToolBarManager();
 
   void UpdateReadOnlyRelatedWidgets();
-  void UpdateGuiFromProjectLoadOrOpen(OmViewGroupState *);
+  void UpdateGuiFromProjectLoadOrOpen(OmViewGroupState &);
   void UpdateGuiFromProjectClose();
 
   void SetSplittingOff();

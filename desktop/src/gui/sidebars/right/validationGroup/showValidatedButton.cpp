@@ -10,6 +10,6 @@ ShowValidatedButton::ShowValidatedButton(ValidationGroup* d)
 
 void ShowValidatedButton::doAction() {
   // Using !(not) because check happens after this fuction.
-  mParent->GetViewGroupState()->SetShowValidMode(!isChecked(),
-                                                 mParent->isShowValidChecked());
+  mParent->GetViewGroupState().SetShowValidMode(!isChecked(),
+                                                mParent->isShowValidChecked());
 }

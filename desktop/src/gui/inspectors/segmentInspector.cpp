@@ -25,18 +25,18 @@ SegmentInspector::SegmentInspector(const SegmentDataWrapper& sdw,
 void SegmentInspector::set_initial_values() {
   segmentIDEdit->setReadOnly(true);
 
-  nameEdit->setText(sdw_.getName());
+  nameEdit->setText(sdw_.GetName());
   nameEdit->setMinimumWidth(200);
 
-  segmentIDEdit->setText(sdw_.getIDstr());
+  segmentIDEdit->setText(QString::number(sdw_.GetID()));
   segmentIDEdit->setMinimumWidth(200);
 
-  notesEdit->setPlainText(sdw_.getNote());
+  notesEdit->setPlainText(sdw_.GetNote());
 
   const QPixmap pixm = om::utils::color::ColorAsQPixmap(sdw_.GetColorInt());
   colorButton->setIcon(QIcon(pixm));
 
-  sizeNoChildren->setText(OmStringHelpers::HumanizeNumQT(sdw_.getSize()));
+  sizeNoChildren->setText(OmStringHelpers::HumanizeNumQT(sdw_.GetSize()));
   sizeWithChildren->setText(
       OmStringHelpers::HumanizeNumQT(sdw_.GetSizeWithChildren()));
 
@@ -44,12 +44,12 @@ void SegmentInspector::set_initial_values() {
       OmSegmentUtils::ListTypeAsStr(sdw_.GetSegment()->GetListType());
   listType_->setText(QString::fromStdString(listType));
 
-  origDataValueList->setText(sdw_.getIDstr());
+  origDataValueList->setText(QString::number(sdw_.GetID()));
   chunkList->setText("disabled");
 }
 
 void SegmentInspector::nameEditChanged() {
-  sdw_.setName(nameEdit->text());
+  sdw_.SetName(nameEdit->text());
   om::event::SegmentModified();
 }
 

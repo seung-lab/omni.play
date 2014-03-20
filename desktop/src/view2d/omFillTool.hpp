@@ -11,16 +11,16 @@ class OmFillTool {
   const om::common::ViewType viewType_;
   OmSegmentation& vol_;
   const om::coords::GlobalBbox segDataExtent_;
-  OmSegments* const segments_;
+  OmSegments& segments_;
 
   zi::semaphore semaphore_;
 
  public:
   OmFillTool(const SegmentDataWrapper& sdw, const om::common::ViewType viewType)
       : sdw_(sdw),
-        newSegID_(sdw.getID()),
+        newSegID_(sdw.GetID()),
         viewType_(viewType),
-        vol_(sdw.GetSegmentation()),
+        vol_(*sdw.GetSegmentation()),
         segDataExtent_(vol_.Coords().Extent()),
         segments_(vol_.Segments()) {}
 
@@ -32,7 +32,7 @@ class OmFillTool {
     }
 
     const om::common::SegID segIDtoReplace =
-        segments_->findRootID(vol_.GetVoxelValue(v));
+        segments_.FindRootID(vol_.GetVoxelValue(v));
 
     vol_.SetVoxelValue(v, newSegID_);
 
@@ -80,7 +80,7 @@ class OmFillTool {
       }
 
       if (segIDtoReplace != curSegID &&
-          segIDtoReplace != segments_->findRootID(curSegID)) {
+          segIDtoReplace != segments_.FindRootID(curSegID)) {
         continue;
       }
 
@@ -97,7 +97,7 @@ class OmFillTool {
   }
 
   void clearCaches() {
-    vol_.SliceCache()->Clear();
+    vol_.SliceCache().Clear();
     OmTileCache::ClearSegmentation();
   }
 };

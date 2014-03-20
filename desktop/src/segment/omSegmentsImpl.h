@@ -120,4 +120,8 @@ class OmSegmentsImpl {
 
   void setGlobalThreshold();
   void resetGlobalThreshold();
+
+  friend YAMLold::Emitter& YAMLold::operator<<(YAMLold::Emitter& out,
+                                               const OmSegmentsImpl& sc);
+  friend void YAMLold::operator>>(const YAMLold::Node& in, OmSegmentsImpl& sc);
 };

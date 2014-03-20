@@ -37,7 +37,7 @@ void OmSegmentationManager::RemoveSegmentation(const om::common::ID id) {
       if (om::OVERLAY_SEGMENTATION == filter->FilterType()) {
         OmSegmentation* segmentation = filter->GetSegmentation();
 
-        if (segmentation->getID() == id) {
+        if (segmentation->GetID() == id) {
           filter->SetSegmentation(0);
         }
       }

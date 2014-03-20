@@ -114,7 +114,7 @@ class OmMouseEventPress {
 
     OmActions::ShatterSegment(sdw->MakeSegmentationDataWrapper(),
                               sdw->GetSegment());
-    state_->getViewGroupState()->GetToolBarManager()->SetShatteringOff();
+    state_->getViewGroupState().GetToolBarManager().SetShatteringOff();
     OmStateManager::SetOldToolModeAndSendEvent();
   }
 
@@ -131,7 +131,7 @@ class OmMouseEventPress {
   void mouseSetCrosshair() {
     v2d_->Redraw();
     setDepth();
-    state_->getViewGroupState()->setTool(om::tool::PAN);
+    state_->getViewGroupState().setTool(om::tool::PAN);
   }
 
   void setDepth() {
@@ -168,8 +168,8 @@ class OmMouseEventPress {
         fill();
         break;
       case om::tool::LANDMARK:
-        state_->getViewGroupState()->Landmarks().Add(getSelectedSegment(),
-                                                     dataClickPoint_);
+        state_->getViewGroupState().Landmarks().Add(getSelectedSegment(),
+                                                    dataClickPoint_);
         break;
       case om::tool::CUT:
         doFindAndCutSegment();
@@ -207,9 +207,9 @@ class OmMouseEventPress {
       return;
     }
 
-    state_->SetSegIDForPainting(sdw.getID());
+    state_->SetSegIDForPainting(sdw.GetID());
 
-    OmBrushPaint::PaintByClick(state_, dataClickPoint_, sdw.getID());
+    OmBrushPaint::PaintByClick(state_, dataClickPoint_, sdw.GetID());
   }
 
   void mouseSelectSegment() {
@@ -229,7 +229,7 @@ class OmMouseEventPress {
       return;
     }
 
-    const om::common::ID segmentID = sdw.getID();
+    const om::common::ID segmentID = sdw.GetID();
 
     OmSegmentSelected::Set(sdw);
 
@@ -256,7 +256,7 @@ class OmMouseEventPress {
   }
 
   boost::optional<SegmentDataWrapper> getSelectedSegment() {
-    OmMipVolume* vol = state_->getVol();
+    OmMipVolume* vol = &state_->getVol();
 
     if (om::common::SEGMENTATION == vol->getVolumeType()) {
       OmSegmentation* seg = reinterpret_cast<OmSegmentation*>(vol);
@@ -303,7 +303,7 @@ class OmMouseEventPress {
     SegmentDataWrapper sdw;
 
     if (sdwUnknownDepth.IsValidWrapper()) {
-      sdw = SegmentDataWrapper(sdwUnknownDepth.FindRoot());
+      sdw = sdwUnknownDepth.FindRootSDW();
 
     } else {
       OmAskYesNoQuestion q("Are you sure you wish to fill using black?");
@@ -334,8 +334,8 @@ class OmMouseEventPress {
 
     OmViewGroupState& vgs = state_->getViewGroupState();
 
-    manager.Add(dataClickPoint_, vgs->getAnnotationString(),
-                vgs->getAnnotationColor(), vgs->getAnnotationSize());
+    manager.Add(dataClickPoint_, vgs.getAnnotationString(),
+                vgs.getAnnotationColor(), vgs.getAnnotationSize());
   }
 
   void kalina() {

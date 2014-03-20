@@ -17,7 +17,12 @@
 #include "volume/omSegmentation.h"
 #include "volume/omUpdateBoundingBoxes.h"
 #include "actions/omActions.h"
-#include "volume/segmentation.h"
+#include "volume/metadataDataSource.hpp"
+#include "volume/metadataManager.h"
+#include "segment/fileDataSource.hpp"
+#include "segment/dataSources.hpp"
+#include "segment/userEdgeVector.hpp"
+#include "segment/selection.hpp"
 
 using namespace om;
 
@@ -27,8 +32,7 @@ OmSegmentation::OmSegmentation()
       meshDrawer_(new OmMeshDrawer(this)),
       meshManagers_(new OmMeshManagers(this)),
       chunkCache_(new OmChunkCache<OmSegmentation, OmSegChunk>(this)),
-      segmentLists_(new OmSegmentLists()),
-      validGroupNum_(new OmValidGroupNum(this)),
+      validGroupNum_(new OmValidGroupNum(*this)),
       volData_(new OmVolumeData()),
       volSliceCache_(new OmRawSegTileCache(this)),
       tileCache_(new OmTileCacheSegmentation()),
@@ -41,16 +45,13 @@ OmSegmentation::OmSegmentation(common::ID id)
       meshDrawer_(new OmMeshDrawer(this)),
       meshManagers_(new OmMeshManagers(this)),
       chunkCache_(new OmChunkCache<OmSegmentation, OmSegChunk>(this)),
-      segmentLists_(new OmSegmentLists()),
-      validGroupNum_(new OmValidGroupNum(this)),
+      validGroupNum_(new OmValidGroupNum(*this)),
       volData_(new OmVolumeData()),
       volSliceCache_(new OmRawSegTileCache(this)),
       tileCache_(new OmTileCacheSegmentation()),
-      annotations_(new annotation::manager(this)),
-{
+      annotations_(new annotation::manager(this)) {
   LoadPath();
 
-  segments_->StartCaches();
   segments_->refreshTree();
 }
 
@@ -63,8 +64,9 @@ void OmSegmentation::LoadPath() {
   const auto& username = OmProject::Globals().Users().CurrentUser();
   auto id = GetID();
 
-  metaDS_.reset(new MetadataDataSource());
-  metaManager_.reset(new MetadataManager(*metaDS_, uri));
+  metaDS_.reset(new om::volume::MetadataDataSource());
+  metaManager_.reset(
+      new om::volume::MetadataManager(*metaDS_, p.Segmentation(id)));
 
   segDataDS_.reset(new segment::FileDataSource(p.UserSegments(username, id)));
   segData_.reset(new segment::SegDataVector(*segDataDS_, segment::PageSize,
@@ -73,7 +75,7 @@ void OmSegmentation::LoadPath() {
   segListDataDS_.reset(
       new segment::ListTypeFileDataSource(p.UserSegments(username, id)));
   segListData_.reset(new segment::SegListDataVector(
-      *segListDataDS_.reset, segment::PageSize, Metadata().numSegments() + 1));
+      *segListDataDS_, segment::PageSize, Metadata().numSegments() + 1));
 
   mst_.reset(new segment::EdgeVector(p.UserMST(username, id)));
   userEdges_.reset(new segment::UserEdgeVector(p.UserUserEdges(username, id)));
@@ -102,18 +104,30 @@ std::string OmSegmentation::GetNameHyphen() {
 }
 
 void OmSegmentation::SetDendThreshold(const double t) {
-  mst_->SetUserThreshold(t);
+  // TODO: lock
+  OmProject::Globals().Users().UserSettings().setThreshold(t);
+  segments_->refreshTree();
 }
 
 void OmSegmentation::SetSizeThreshold(const double t) {
-  mst_->SetUserSizeThreshold(t);
+  // TODO: lock
+  OmProject::Globals().Users().UserSettings().setSizeThreshold(t);
+  segments_->refreshTree();
+}
+
+double OmSegmentation::GetDendThreshold() {
+  return OmProject::Globals().Users().UserSettings().getThreshold();
+}
+
+double OmSegmentation::GetSizeThreshold() {
+  return OmProject::Globals().Users().UserSettings().getSizeThreshold();
 }
 
 void OmSegmentation::CloseDownThreads() { meshManagers_->CloseDownThreads(); }
 
 bool OmSegmentation::LoadVolDataIfFoldersExist() {
   // assume level 0 data always present
-  const QString path = OmFileNames::GetVolDataFolderPath(this, 0);
+  const QString path = OmFileNames::GetVolDataFolderPath(*this, 0);
 
   if (QDir(path).exists()) {
     return LoadVolData();
@@ -121,10 +135,6 @@ bool OmSegmentation::LoadVolDataIfFoldersExist() {
 
   return false;
 }
-
-double OmSegmentation::GetDendThreshold() { return mst_->UserThreshold(); }
-
-double OmSegmentation::GetSizeThreshold() { return mst_->UserSizeThreshold(); }
 
 void OmSegmentation::UpdateVoxelBoundingData() {
   OmUpdateBoundingBoxes updater(this);
@@ -153,9 +163,9 @@ void OmSegmentation::Flush() {
   folder_->MakeUserSegmentsFolder();
 
   segments_->Flush();
-  mst_->Flush();
+  mst_->flush();
   validGroupNum_->Save();
-  mstUserEdges_->Save();
+  userEdges_->flush();
   annotations_->Save();
 }
 
@@ -202,12 +212,13 @@ void OmSegmentation::SetVoxelValue(const coords::Global& vox,
 
 bool OmSegmentation::SetVoxelValueIfSelected(const coords::Global& vox,
                                              const uint32_t val) {
-  const common::SegIDSet selection = Segments()->GetSelectedSegmentIDs();
+  const common::SegIDSet selection =
+      Segments().Selection().GetSelectedSegmentIDs();
   if (selection.size() > 0) {
     coords::Chunk leaf_mip_coord = vox.ToChunk(Coords(), 0);
     OmSegChunk* chunk = GetChunk(leaf_mip_coord);
     common::SegID target =
-        Segments()->findRootID(chunk->GetVoxelValue(vox.ToData(Coords(), 0)));
+        Segments().FindRootID(chunk->GetVoxelValue(vox.ToData(Coords(), 0)));
 
     if (selection.count(target) == 0) {
       return false;
@@ -232,26 +243,24 @@ std::string OmSegmentation::GetDirectoryPath() const {
 }
 
 void OmSegmentation::ClearUserChangesAndSave() {
-  OmMSTEdge* edges = MST()->Edges();
-  for (uint32_t i = 0; i < MST()->NumEdges(); ++i) {
-    edges[i].userSplit = 0;
-    edges[i].userJoin = 0;
+  for (uint32_t i = 0; i < MST().size(); ++i) {
+    MST()[i].userSplit = 0;
+    MST()[i].userJoin = 0;
   }
 
-  segments_->ClearUserEdges();
+  UserEdges().clear();
 
-  OmSegments* segments = Segments();
-  for (common::SegID i = 1; i <= segments->getMaxValue(); ++i) {
-    OmSegment* seg = segments->GetSegment(i);
+  for (common::SegID i = 1; i <= Segments().maxValue(); ++i) {
+    OmSegment* seg = Segments().GetSegment(i);
     if (!seg) {
       continue;
     }
     seg->RandomizeColor();
     seg->SetListType(common::SegListType::WORKING);
   }
-  ValidGroupNum()->Clear();
+  ValidGroupNum().Clear();
 
-  SetDendThreshold(OmMST::DefaultThreshold);
+  SetDendThreshold(1);
   event::RefreshMSTthreshold();
   event::SegmentModified();
 

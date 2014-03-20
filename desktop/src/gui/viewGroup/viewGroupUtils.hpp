@@ -31,12 +31,12 @@ class ViewGroupUtils {
 
   ~ViewGroupUtils() {}
 
-  int getID();
+  int GetID();
 
   QList<QDockWidget*> findDockWidgets(const QString& name);
   QList<QDockWidget*> findDockWidgets(const QRegExp& regExp);
 
-  QString viewGroupName() { return "ViewGroup" + QString::number(getID()); }
+  QString viewGroupName() { return "ViewGroup" + QString::number(GetID()); }
 
   QString makeObjectName() { return "3d_" + viewGroupName(); }
 

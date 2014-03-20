@@ -47,12 +47,12 @@ class dataImpl : public dataInterface {
     dataAccessor<DATA> dataWrapper(ptrToChunkData_);
     DATA* data = dataWrapper.Data();
 
-    OmExtractSegTile extractor(vol_, coord_, plane, depth);
+    OmExtractSegTile extractor(&vol_, coord_, plane, depth);
     return extractor.Extract(data);
   }
 
   void ProcessChunk(const bool computeSizes, OmSegments& segments) {
-    OmProcessSegmentationChunk p(chunk_, computeSizes, segments);
+    OmProcessSegmentationChunk p(&chunk_, computeSizes, &segments);
 
     dataAccessor<DATA> dataWrapper(ptrToChunkData_);
     DATA* data = dataWrapper.Data();

@@ -31,8 +31,6 @@ class ExportMST : public OmButton<PageExport> {
 
     const SegmentationDataWrapper& sdw = mParent->GetSDW();
     OmSegments* segments = sdw.Segments();
-    OmMST* mst = sdw.MST();
-    OmMSTEdge* edges = mst->Edges();
 
     QStringList headerLabels;
     headerLabels << "Edge"
@@ -46,7 +44,8 @@ class ExportMST : public OmButton<PageExport> {
     out << headerLabels.join(",");
     out << "\n";
 
-    for (uint32_t i = 0; i < mst->NumEdges(); ++i) {
+    auto& edges = sdw.GetSegmentation()->MST();
+    for (uint32_t i = 0; i < edges.size(); ++i) {
       OmSegment* node1 = segments->GetSegment(edges[i].node1ID);
       OmSegment* node2 = segments->GetSegment(edges[i].node2ID);
 

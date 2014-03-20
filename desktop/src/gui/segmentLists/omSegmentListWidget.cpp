@@ -7,6 +7,7 @@
 #include "segment/lists/omSegmentListsTypes.hpp"
 #include "segment/omSegmentSelector.h"
 #include "segment/omSegmentUtils.hpp"
+#include "segment/selection.hpp"
 #include "events/events.h"
 #include "utility/dataWrappers.h"
 #include "utility/omStringHelpers.h"
@@ -35,6 +36,8 @@ bool OmSegmentListWidget::populate(const bool doScrollToSelectedSegment,
   bool makeTabActive = false;
   const om::common::SegID segIDjustSelected =
       segmentJustSelected.GetSegmentID();
+  auto sdw = segmentJustSelected.MakeSegmentationDataWrapper();
+  auto& selection = sdw.Segments()->Selection();
 
   setUpdatesEnabled(false);
   clear();
@@ -53,7 +56,7 @@ bool OmSegmentListWidget::populate(const bool doScrollToSelectedSegment,
 
     row->setText(ID_COL, OmStringHelpers::HumanizeNumQT(seg->value(), '-'));
 
-    SegmentDataWrapper segDW(seg);
+    SegmentDataWrapper segDW(sdw, seg->value());
     row->setData(USER_DATA_COL, Qt::UserRole, qVariantFromValue(segDW));
 
     const uint32_t numPieces = iter->numChildren + 1;
@@ -64,7 +67,7 @@ bool OmSegmentListWidget::populate(const bool doScrollToSelectedSegment,
     row->setText(SIZE_COL, OmStringHelpers::HumanizeNumQT(sizeWithChildren));
     row->setTextAlignment(SIZE_COL, Qt::AlignHCenter);
 
-    row->setSelected(seg->IsSelected());
+    row->setSelected(selection.IsSegmentSelected(seg));
 
     if (doScrollToSelectedSegment) {
       if (seg->value() == segIDjustSelected) {
@@ -113,17 +116,17 @@ void OmSegmentListWidget::segmentLeftClick() {
 
     if (QApplication::keyboardModifiers() & Qt::ControlModifier ||
         QApplication::keyboardModifiers() & Qt::ShiftModifier) {
-      sel.augmentSelectedSet(item_sdw.getID(), true);
+      sel.augmentSelectedSet(item_sdw.GetID(), true);
 
     } else {
       if (selectedItems().size() > 1) {
-        if (item_sdw.getID() == sdw.getID()) {
-          sel.augmentSelectedSet(item_sdw.getID(), true);
+        if (item_sdw.GetID() == sdw.GetID()) {
+          sel.augmentSelectedSet(item_sdw.GetID(), true);
         } else {
-          sel.augmentSelectedSet(item_sdw.getID(), false);
+          sel.augmentSelectedSet(item_sdw.GetID(), false);
         }
       } else {
-        sel.augmentSelectedSet(item_sdw.getID(), !item_sdw.isSelected());
+        sel.augmentSelectedSet(item_sdw.GetID(), !item_sdw.isSelected());
       }
     }
   }
@@ -187,7 +190,7 @@ void OmSegmentListWidget::keyPressEvent(QKeyEvent* event) {
 
       OmSegmentSelector sel(sdw.MakeSegmentationDataWrapper(), this,
                             eventSenderName());
-      sel.selectJustThisSegment(sdw.getID(), true);
+      sel.selectJustThisSegment(sdw.GetID(), true);
       break;
   }
 }

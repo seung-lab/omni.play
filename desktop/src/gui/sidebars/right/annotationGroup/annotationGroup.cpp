@@ -11,12 +11,12 @@ namespace sidebars {
 
 class ToggleAnnotationButton : public OmButton<QWidget> {
  public:
-  ToggleAnnotationButton(QWidget *widget, OmViewGroupState *vgs)
+  ToggleAnnotationButton(QWidget *widget, OmViewGroupState &vgs)
       : OmButton<QWidget>(widget, "show annotations", "show annotations", true),
         vgs_(vgs) {}
 
  private:
-  OmViewGroupState *vgs_;
+  OmViewGroupState &vgs_;
 
   void doAction() {
 
@@ -27,7 +27,7 @@ class ToggleAnnotationButton : public OmButton<QWidget> {
 };
 
 AnnotationGroup::AnnotationGroup(om::sidebars::rightImpl *parent,
-                                 OmViewGroupState *vgs)
+                                 OmViewGroupState &vgs)
     : OmWidget(parent), vgs_(vgs) {
   QVBoxLayout *layout = new QVBoxLayout(this);
 

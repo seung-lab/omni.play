@@ -14,7 +14,7 @@ OmView2d::OmView2d(const om::common::ViewType viewtype, QWidget* parent,
       mouseEvents_(new OmMouseEvents(this, state_)),
       keyEvents_(new OmKeyEvents(this, state_)),
       events_(new OmView2dEvents(this, state_)),
-      zoom_(new OmView2dZoom(state_)) {
+      zoom_(new OmView2dZoom(*state_)) {
   setFocusPolicy(Qt::ClickFocus);  // necessary for receiving keyboard events
   setMouseTracking(true);          // necessary for mouse-centered zooming
   setAutoFillBackground(false);  // necessary for proper QPainter functionality

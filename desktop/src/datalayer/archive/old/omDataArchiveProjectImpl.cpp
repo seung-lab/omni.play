@@ -8,6 +8,7 @@
 #include "mesh/omMeshManagers.hpp"
 #include "project/omProject.h"
 #include "project/omProjectImpl.hpp"
+#include "project/details/omChannelManager.h"
 #include "segment/io/omValidGroupNum.hpp"
 
 #include "segment/types.hpp"
@@ -144,8 +145,8 @@ void OmDataArchiveProjectImpl::LoadOldSegmentation(QDataStream& in,
     in >> dead;
     in >> dead;
   }
-
-  in >> seg.mst_->numEdges_;
+  uint32_t dead_u32;
+  in >> dead_u32;
 
   double dead;
   in >> dead;
@@ -158,12 +159,9 @@ void OmDataArchiveProjectImpl::LoadOldSegmentation(QDataStream& in,
   }
 
   if (OmProject::GetFileVersion() < 18) {
-    seg.mst_->convert();
+    // seg.mst_->convert();
   }
 
-  seg.mst_->Read();
-  seg.validGroupNum_->Load();
-  seg.segments_->StartCaches();
   seg.segments_->refreshTree();
 
   if (OmProject::GetFileVersion() < 23) {
@@ -188,7 +186,8 @@ void OmDataArchiveProjectImpl::LoadNewSegmentation(QDataStream& in,
 
   in >> (*seg.segments_);
 
-  in >> seg.mst_->numEdges_;
+  uint32_t dead_u32;
+  in >> dead_u32;
 
   double dead;
   in >> dead;
@@ -198,9 +197,6 @@ void OmDataArchiveProjectImpl::LoadNewSegmentation(QDataStream& in,
 
   seg.LoadVolDataIfFoldersExist();
 
-  seg.mst_->Read();
-  seg.validGroupNum_->Load();
-  seg.segments_->StartCaches();
   seg.segments_->refreshTree();
 }
 
@@ -211,29 +207,29 @@ QDataStream& operator>>(QDataStream& in, OmSegments& sc) {
 }
 
 QDataStream& operator>>(QDataStream& in, OmSegmentsImpl& sc) {
-  OmPagingPtrStore* segmentPages = sc.store_->segmentPages_;
-  in >> (*segmentPages);
+  // TODO: Fix antique mode.
+  // OmPagingPtrStore* segmentPages = sc.store_->segmentPages_;
+  // in >> (*segmentPages);
 
-  bool dead;
-  in >> dead;
-  in >> dead;
+  // bool dead;
+  // in >> dead;
+  // in >> dead;
 
-  uint32_t maxValue;
-  in >> maxValue;
-  sc.maxValue_.set(maxValue);
+  // uint32_t dead_u32;
+  // in >> dead_u32;
 
-  in >> sc.enabledSegments_->enabled_;
-  in >> sc.segmentSelection_->selected_;
+  // in >> sc.enabledSegments_->enabled_;
+  // in >> sc.segmentSelection_->selected_;
 
-  in >> sc.segmentCustomNames;
-  in >> sc.segmentNotes;
+  // in >> sc.segmentCustomNames;
+  // in >> sc.segmentNotes;
 
-  in >> sc.mNumSegs;
+  // in >> sc.mNumSegs;
 
-  if (OmProject::GetFileVersion() < 12) {
-    quint32 dead;
-    in >> dead;
-  }
+  // if (OmProject::GetFileVersion() < 12) {
+  //   quint32 dead;
+  //   in >> dead;
+  // }
 
   // OmUserEdges* userEdges = sc.segmentation_->MSTUserEdges();
 
@@ -255,17 +251,17 @@ QDataStream& operator>>(QDataStream& in, OmSegmentsImpl& sc) {
   return in;
 }
 
-QDataStream& operator>>(QDataStream& in, OmPagingPtrStore& ps) {
-  QSet<om::common::PageNum> validPageNumbers;
-  quint32 size;
+// QDataStream& operator>>(QDataStream& in, OmPagingPtrStore& ps) {
+//   QSet<om::common::PageNum> validPageNumbers;
+//   quint32 size;
 
-  in >> validPageNumbers;
-  in >> size;
+//   in >> validPageNumbers;
+//   in >> size;
 
-  ps.Vol()->Loader()->LoadSegmentPages(ps, validPageNumbers, size);
+//   ps.Vol()->Loader()->LoadSegmentPages(ps, validPageNumbers, size);
 
-  return in;
-}
+//   return in;
+// }
 
 QDataStream& operator>>(QDataStream& in, om::segment::UserEdge& se) {
   in >> se.parentID;

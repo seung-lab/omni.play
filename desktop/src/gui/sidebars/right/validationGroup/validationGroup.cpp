@@ -60,8 +60,8 @@ QWidget* ValidationGroup::addSelectedSegmentButtons() {
 }
 
 void ValidationGroup::changeMapColors() {
-  GetViewGroupState()->SetShowValidMode(showValidatedButton->isChecked(),
-                                        showValid->isChecked());
+  GetViewGroupState().SetShowValidMode(showValidatedButton->isChecked(),
+                                       showValid->isChecked());
 }
 
 QString ValidationGroup::getGroupNameFromGUI() { return mGroupName->text(); }

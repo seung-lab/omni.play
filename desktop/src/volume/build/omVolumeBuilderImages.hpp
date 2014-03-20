@@ -17,7 +17,7 @@ class OmVolumeBuilderImages : public OmVolumeBuilderBase<VOL> {
 
  private:
   virtual void importSourceData() {
-    OmDataCopierImages<VOL> importer(vol_, files_);
+    OmDataCopierImages<VOL> importer(&vol_, files_);
     importer.Import();
   }
 
@@ -31,7 +31,7 @@ class OmVolumeBuilderImages : public OmVolumeBuilderBase<VOL> {
   virtual void rewriteMip0Volume(OmSegmentation& vol) {
     log_infos << "rewriting segment IDs...";
 
-    OmCompactVolValues rewriter(vol);
+    OmCompactVolValues rewriter(&vol);
     rewriter.Rewrite();
 
     log_infos << "done!";

@@ -90,7 +90,7 @@ class OmVolumeBuilderBase {
 
   virtual void rewriteMip0Volume(OmSegmentation&) {}
 
-  virtual void downsample() { vol_.VolData().downsample(vol_); }
+  virtual void downsample() { vol_.VolData().downsample(&vol_); }
 
   virtual void processVol() {
     OmVolumeProcessor processor;

@@ -4,6 +4,7 @@
 #include "segment/omSegment.h"
 #include "segment/omSegments.h"
 #include "segment/omSegmentsImpl.h"
+#include "segment/selection.hpp"
 #include "segment/io/omValidGroupNum.hpp"
 #include "project/details/omSegmentationManager.h"
 #include "utility/yaml/genericManager.hpp"
@@ -54,44 +55,38 @@ void operator>>(const Node& in, OmSegmentation& seg) {
 }
 
 Emitter& operator<<(Emitter& out, const OmSegments& sc) {
+  out << BeginMap;
+
+  out << Key << "Num Segments" << Value << sc.GetNumSegments();
+  out << Key << "Max Value" << Value << sc.maxValue();
   out << (*sc.impl_);
 
+  out << EndMap;
   return out;
 }
 
 void operator>>(const Node& in, OmSegments& sc) { in >> (*sc.impl_); }
 
 Emitter& operator<<(Emitter& out, const OmSegmentsImpl& sc) {
-  out << BeginMap;
-  out << Key << "Num Segments" << Value << sc.mNumSegs;
-  out << Key << "Max Value" << Value << sc.maxValue_.get();
+  out << Key << "Enabled Segments" << Value << std::set<om::common::SegID>();
+  out << Key << "Selected Segments" << Value << sc.Selection().selected_;
 
-  out << Key << "Enabled Segments" << Value << sc.enabledSegments_->enabled_;
-  out << Key << "Selected Segments" << Value << sc.segmentSelection_->selected_;
-
-  out << Key << "Segment Custom Names" << Value << sc.segmentCustomNames;
-  out << Key << "Segment Notes" << Value << sc.segmentNotes;
-  out << EndMap;
+  out << Key << "Segment Custom Names" << Value << sc.segmentCustomNames_;
+  out << Key << "Segment Notes" << Value << sc.segmentNotes_;
   return out;
 }
 
 void operator>>(const Node& in, OmSegmentsImpl& sc) {
-  uint32_t maxValue;
-  in["Num Segments"] >> sc.mNumSegs;
-  in["Max Value"] >> maxValue;
-  sc.maxValue_.set(maxValue);
+  // uint32_t maxValue;
+  // in["Num Segments"] >> sc.mNumSegs;
+  // in["Max Value"] >> maxValue;
+  // sc.maxValue_.set(maxValue);
 
-  in["Enabled Segments"] >> sc.enabledSegments_->enabled_;
-  in["Selected Segments"] >> sc.segmentSelection_->selected_;
+  // in["Enabled Segments"] >> sc.enabledSegments_->enabled_;
+  in["Selected Segments"] >> sc.Selection().selected_;
 
-  in["Segment Custom Names"] >> sc.segmentCustomNames;
-  in["Segment Notes"] >> sc.segmentNotes;
-
-  OmPagingPtrStore& segmentPages = *sc.store_->segmentPages_;
-  segmentPages.Vol()->Loader()->LoadSegmentPages(segmentPages);
-
-  OmUserEdges* userEdges = sc.segmentation_->MSTUserEdges();
-  userEdges->Load();
+  in["Segment Custom Names"] >> sc.segmentCustomNames_;
+  in["Segment Notes"] >> sc.segmentNotes_;
 }
 
 Emitter& operator<<(Emitter& out, const DummyGroups& g) {

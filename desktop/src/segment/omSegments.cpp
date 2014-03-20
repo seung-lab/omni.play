@@ -49,7 +49,7 @@ OmSegment* OmSegments::GetSegment(const common::SegID value) const {
   return impl_->GetSegment(value);
 }
 
-int OmSegments::GetNumSegments() {
+int OmSegments::GetNumSegments() const {
   // locked internally
   return meta_.numSegments();
 }
@@ -115,7 +115,7 @@ common::SegIDSet OmSegments::UnJoinTheseSegments(
   return impl_->UnJoinTheseSegments(segmentList);
 }
 
-uint32_t OmSegments::maxValue() {
+uint32_t OmSegments::maxValue() const {
   // locked internally
   return meta_.maxSegments();
 }

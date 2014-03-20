@@ -130,10 +130,6 @@ void SegmentDataWrapper::SetNote(const QString& str) const {
   }
 }
 
-QString SegmentDataWrapper::getIDstr() const {
-  return QString("%1").arg(getID());
-}
-
 om::common::Color SegmentDataWrapper::GetColorInt() const {
   auto s = GetSegment();
   if (s) {
@@ -216,13 +212,13 @@ om::segment::Selection* SegmentDataWrapper::Selection() const {
   }
 }
 
-uint64_t SegmentDataWrapper::getSize() const { return GetSegment()->size(); }
+uint64_t SegmentDataWrapper::GetSize() const { return GetSegment()->size(); }
 
 om::common::ID SegmentDataWrapper::GetSegmentationID() const {
   return segmentationID_;
 }
 
-om::common::SegID SegmentDataWrapper::getID() const { return segmentID_; }
+om::common::SegID SegmentDataWrapper::GetID() const { return segmentID_; }
 
 om::common::SegID SegmentDataWrapper::GetVoxelValue(
     const om::coords::Global& dataClickPoint) const {

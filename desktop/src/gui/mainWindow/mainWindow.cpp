@@ -309,7 +309,7 @@ void MainWindow::openInspector() {
     }
 
     inspectorDock_ = std::make_unique<QDockWidget>(tr("Inspector"), this);
-    inspector_ = new InspectorWidget(inspectorDock_.get(), this, vgs_.get());
+    inspector_ = new InspectorWidget(inspectorDock_.get(), this, *vgs_);
 
     inspector_->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Expanding);
 
@@ -364,7 +364,7 @@ void MainWindow::open3dView() {
       return;
     }
 
-    vgs_.GetViewGroup()->AddView3D();
+    vgs_->GetViewGroup().AddView3D();
   }
   catch (om::Exception& e) {
     spawnErrorDialog(e);
@@ -434,7 +434,7 @@ void MainWindow::updateGuiFromProjectCreateOrOpen(QString fileName) {
 
   mMenuBar->AddRecentFile(fileName);
 
-  toolBarManager_->UpdateGuiFromProjectLoadOrOpen(vgs_.get());
+  toolBarManager_->UpdateGuiFromProjectLoadOrOpen(*vgs_);
   // Make the login toolbar always the last one
   addToolBar(loginToolBar_);
 

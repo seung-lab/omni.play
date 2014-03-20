@@ -142,8 +142,8 @@ void OmOnScreenTileCoords::makeTileCoordFromFilter(
   }
 
   OmTileCoordAndVertices pair = {
-      makeTileCoord(chunkCoord, depthOffset, vol, freshness),
-      computeVertices(chunkCoord, vol)};
+      makeTileCoord(chunkCoord, depthOffset, *vol, freshness),
+      computeVertices(chunkCoord, *vol)};
 
   tileCoordsAndLocations_->push_back(pair);
 }

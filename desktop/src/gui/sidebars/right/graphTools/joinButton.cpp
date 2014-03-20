@@ -3,6 +3,7 @@
 #include "gui/sidebars/right/graphTools/graphTools.h"
 #include "gui/sidebars/right/graphTools/joinButton.h"
 #include "segment/omSegments.h"
+#include "segment/selection.hpp"
 #include "utility/dataWrappers.h"
 #include "volume/omSegmentation.h"
 
@@ -15,8 +16,9 @@ void JoinButton::doAction() {
     return;
   }
 
-  OmSegmentation& seg = sdw.GetSegmentation();
-  const om::common::SegIDSet ids = seg.Segments()->GetSelectedSegmentIDs();
+  auto seg = sdw.GetSegmentation();
+  const om::common::SegIDSet ids =
+      seg->Segments().Selection().GetSelectedSegmentIDs();
   OmActions::JoinSegments(sdw, ids);
 
   mParent->updateGui();

@@ -54,13 +54,11 @@ class OmFileNames {
   // TODO: cleanup!
   // ex:
   /// home/projectName.files/segmentations/segmentation1/0/volume.int32_t.raw
-  template <typename T>
-  static std::string GetMemMapFileName(T& vol, const int level) {
+  static std::string GetMemMapFileName(OmMipVolume& vol, const int level) {
     return GetMemMapFileNameQT(vol, level).toStdString();
   }
 
-  template <typename T>
-  static QString GetVolDataFolderPath(T& vol, const int level) {
+  static QString GetVolDataFolderPath(OmMipVolume& vol, const int level) {
     const QString subPath =
         QString("%1/%2/")
             .arg(QString::fromStdString(vol.GetDirectoryPath()))
@@ -73,8 +71,7 @@ class OmFileNames {
     return FilesFolder() + QLatin1String("/") + subPath;
   }
 
-  template <typename T>
-  static QString GetMemMapFileNameQT(T& vol, const int level) {
+  static QString GetMemMapFileNameQT(OmMipVolume& vol, const int level) {
     static zi::rwmutex lock;
     zi::rwmutex::write_guard g(lock);
 

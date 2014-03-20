@@ -40,7 +40,7 @@ class MeshSegmentList {
     }
 
     // remove from cache if freshness is too old
-    auto* rootSeg = vol_.Segments()->GetSegment(segID);
+    auto* rootSeg = vol_.Segments().GetSegment(segID);
     if (!rootSeg) {
       return boost::optional<SegPtrAndColorList>();
     }
@@ -55,7 +55,7 @@ class MeshSegmentList {
       spList = SegPtrAndColorListValid(true);
 
       auto task = std::make_shared<MeshSegmentListTask>(
-          *this, vol_.UniqueValuesDS(), *vol_.Segments(), coord, *rootSeg, key);
+          *this, vol_.UniqueValuesDS(), vol_.Segments(), coord, *rootSeg, key);
 
       threadPool_.push_back(task);
       return boost::optional<SegPtrAndColorList>();

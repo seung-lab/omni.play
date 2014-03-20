@@ -46,7 +46,7 @@ class OmChunkItemContainerMatrix {
     }
 
     if (!array_[x][y][z]) {
-      return array_[x][y][z] = new T(vol_, coord);
+      return array_[x][y][z] = new T(*vol_, coord);
     }
 
     return array_[x][y][z];

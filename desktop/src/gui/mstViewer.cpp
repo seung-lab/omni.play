@@ -2,6 +2,7 @@
 #include "gui/mstViewer.hpp"
 #include "volume/omSegmentation.h"
 #include "segment/omSegments.h"
+#include "segment/omSegment.h"
 
 MstViewerImpl::MstViewerImpl(QWidget* parent, SegmentationDataWrapper sdw)
     : QTableWidget(parent), sdw_(sdw) {
@@ -9,11 +10,10 @@ MstViewerImpl::MstViewerImpl(QWidget* parent, SegmentationDataWrapper sdw)
 }
 
 void MstViewerImpl::populate() {
-  OmSegmentation& segmentation = sdw_.GetSegmentation();
-  OmMST* mst = segmentation.MST();
-
-  const int numEdges = mst->NumEdges();
-  OmMSTEdge* edges = mst->Edges();
+  if (!sdw_.IsValidWrapper()) {
+    throw om::ArgException("Invalid SegmentationDataWrapper");
+  }
+  auto& edges = sdw_.GetSegmentation()->MST();
 
   QStringList headerLabels;
   headerLabels << "Edge"
@@ -25,15 +25,15 @@ void MstViewerImpl::populate() {
   setColumnCount(headerLabels.size());
   setHorizontalHeaderLabels(headerLabels);
 
-  setRowCount(numEdges);
+  setRowCount(edges.size());
 
-  for (int i = 0; i < numEdges; ++i) {
+  for (int i = 0; i < edges.size(); ++i) {
     const om::common::SegID node1ID = edges[i].node1ID;
     const om::common::SegID node2ID = edges[i].node2ID;
     const float threshold = edges[i].threshold;
 
-    OmSegment* node1 = segmentation.Segments()->GetSegment(node1ID);
-    OmSegment* node2 = segmentation.Segments()->GetSegment(node2ID);
+    OmSegment* node1 = sdw_.Segments()->GetSegment(node1ID);
+    OmSegment* node2 = sdw_.Segments()->GetSegment(node2ID);
 
     int colNum = 0;
     setCell(i, colNum, i);

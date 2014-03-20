@@ -18,6 +18,6 @@ class OpenDualViewButton : public OmButton<MainWindow> {
 
  private:
   void doAction() {
-    mParent->GetViewGroupState()->GetViewGroup()->AddXYViewAndView3d();
+    mParent->GetViewGroupState().GetViewGroup().AddXYViewAndView3d();
   }
 };

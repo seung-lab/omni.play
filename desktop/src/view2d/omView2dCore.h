@@ -33,7 +33,7 @@ Q_SLOTS:
   void dockVisibilityChanged(const bool visible);
 
  protected:
-  OmView2dCore(QWidget*, OmMipVolume*, OmViewGroupState&,
+  OmView2dCore(QWidget*, OmMipVolume&, OmViewGroupState&,
                const om::common::ViewType, const std::string& name);
 
   virtual ~OmView2dCore();

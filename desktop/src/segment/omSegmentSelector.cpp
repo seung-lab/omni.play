@@ -61,18 +61,16 @@ void OmSegmentSelector::setSelectedSegment(const om::common::SegID segID) {
   OmSegmentSelected::Set(params_->sdw);
 }
 
-void OmSegmentSelector::InsertSegments(
-    const std::unordered_set<om::common::SegID>* segIDs) {
-  for (auto id : *segIDs) {
+void OmSegmentSelector::InsertSegments(const om::common::SegIDSet& segIDs) {
+  for (auto id : segIDs) {
     params_->newSelectedIDs.insert(segments_->FindRootID(id));
   }
 }
 
-void OmSegmentSelector::RemoveSegments(
-    const std::unordered_set<om::common::SegID>* segIDs) {
+void OmSegmentSelector::RemoveSegments(const om::common::SegIDSet& segIDs) {
   params_->newSelectedIDs.clear();
 
-  for (auto id : *segIDs) {
+  for (auto id : segIDs) {
     params_->newSelectedIDs.insert(segments_->FindRootID(id));
   }
 }

@@ -9,7 +9,6 @@ template <typename VOL, typename T>
 class OmChunkItemContainer {
  private:
   VOL* const vol_;
-  ;
 
   zi::spinlock lock_;
 

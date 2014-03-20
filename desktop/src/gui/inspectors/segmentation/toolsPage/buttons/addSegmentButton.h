@@ -5,6 +5,7 @@
 #include "gui/widgets/omButton.hpp"
 #include "segment/omSegmentSelector.h"
 #include "segment/omSegments.h"
+#include "segment/omSegment.h"
 #include "utility/dataWrappers.h"
 
 namespace om {
@@ -21,7 +22,7 @@ class AddSegmentButton : public OmButton<PageTools> {
 
     OmSegment* newSeg = sdw.Segments()->AddSegment();
 
-    ElementListBox::RebuildLists(SegmentDataWrapper(newSeg));
+    ElementListBox::RebuildLists(SegmentDataWrapper(sdw, newSeg->value()));
 
     OmSegmentSelector sel(sdw, this, "addSegmentButton");
     sel.selectJustThisSegment(newSeg->value(), true);

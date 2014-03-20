@@ -36,7 +36,7 @@ class OmVolumeBuilderWatershed : public OmVolumeBuilderBase<VOL> {
   virtual Vector3i getMip0Dims() { return metadata_.GetMip0Dims(); }
 
   virtual bool loadDendrogram(OmSegmentation& vol) {
-    OmMSTImportWatershed mstImport(vol);
+    OmMSTImportWatershed mstImport(&vol);
 
     return mstImport.Import(metadata_.MstFileName(), metadata_.MstBitsPerNode(),
                             metadata_.MstNumEdges());

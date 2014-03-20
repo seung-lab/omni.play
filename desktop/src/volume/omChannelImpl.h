@@ -44,7 +44,7 @@ class OmChannelImpl : public OmMipVolume, public OmManageableObject {
 
   om::common::ObjectType getVolumeType() const { return om::common::CHANNEL; }
 
-  om::common::ID getID() const { return GetID(); }
+  om::common::ID GetID() const { return GetID(); }
 
   virtual int GetBytesPerVoxel() const;
   virtual int GetBytesPerSlice() const;
@@ -67,7 +67,7 @@ class OmChannelImpl : public OmMipVolume, public OmManageableObject {
 
   inline OmTileCacheChannel& TileCache() { return *tileCache_; }
 
-  inline om::channel::folder* Folder() const { return folder_.get(); }
+  inline om::channel::folder& Folder() const { return *folder_; }
 
  protected:
   // protected copy constructor and assignment operator to prevent copy

@@ -48,7 +48,7 @@ class OmVolumeBuilderHdf5 : public OmVolumeBuilderBase<VOL> {
   }
 
   virtual bool loadDendrogram(OmSegmentation& vol) {
-    OmMSTImportHdf5 mstImport(vol);
+    OmMSTImportHdf5 mstImport(&vol);
     return mstImport.Import(fnp_);
   }
 

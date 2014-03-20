@@ -30,7 +30,7 @@ void ToolBarManager::UpdateGuiFromProjectLoadOrOpen(OmViewGroupState& vgs) {
 
   rightSideBar_.reset(new om::sidebars::right(mainWindow_, vgs));
 
-  vgs->SetToolBarManager(this);
+  vgs.SetToolBarManager(this);
 }
 
 void ToolBarManager::UpdateGuiFromProjectClose() { deleteMainBar(); }

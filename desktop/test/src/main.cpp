@@ -20,7 +20,7 @@ void Create(const std::string& fnp) {
   OmSegmentation& seg = sdw.Create();
   seg.BuildBlankVolume(Vector3i(SIDE_SIZE, SIDE_SIZE, SIDE_SIZE));
   seg.LoadVolData();
-  seg.Segments()->refreshTree();
+  seg.Segments().refreshTree();
   OmProject::Save();
 
   // fill it (sutpidly)
@@ -50,7 +50,7 @@ void TestMesh(const std::string& fnp) {
   OmProject::Load(QString::fromStdString(fnp));
 
   SegmentationDataWrapper sdw(1);
-  MeshTest mt(sdw.GetSegmentationPtr(), 1.0);
+  MeshTest mt(sdw.GetSegmentation(), 1.0);
   mt.MeshFullVolume();
 
   OmProject::Save();

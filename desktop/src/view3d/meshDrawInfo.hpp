@@ -21,7 +21,7 @@ class MeshDrawInfo {
   MeshDrawInfo(OmSegmentation& vol, OmViewGroupState& vgs)
       : vol_(vol),
         rootSegLists_(vol),
-        cache_(vol.Coords(), *vol.Segments(), rootSegLists_, vgs),
+        cache_(vol.Coords(), vol.Segments(), rootSegLists_, vgs),
         drawer_(vol.Coords(), vol.id()),
         numPrevRedraws_(0) {}
 

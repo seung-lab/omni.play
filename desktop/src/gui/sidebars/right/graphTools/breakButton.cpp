@@ -12,7 +12,7 @@ BreakButton::BreakButton(GraphTools* d)
 }
 
 void BreakButton::doAction() {
-  mParent->GetViewGroupState()->ToggleShatterMode();
+  mParent->GetViewGroupState().ToggleShatterMode();
   mParent->updateGui();
 }
 

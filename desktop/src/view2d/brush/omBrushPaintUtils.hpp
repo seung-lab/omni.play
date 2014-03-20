@@ -62,13 +62,8 @@ class OmBrushPaintUtils {
     //     ptsInChunks[chunkCoord].insert(chunkPos);
     // }
 
-    const auto& segset = SegmentationDataWrapper::ValidIDs();
-
-    FOR_EACH(iter, segset) {
-      SegmentationDataWrapper sdw(*iter);
-      OmSegmentation& seg = sdw.GetSegmentation();
-      OmRawSegTileCache* sliceCache = seg.SliceCache();
-      sliceCache->Clear();
+    for (auto& seg : SegmentationDataWrapper::GetPtrVec()) {
+      seg->SliceCache().Clear();
     }
 
     OmTileCache::ClearSegmentation();

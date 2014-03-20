@@ -10,13 +10,9 @@ class OmVolumeData {
  public:
   OmVolumeData() {}
 
-  template <typename VOL>
-  void load(VOL* vol) {
-    memMapped_.load(vol);
-  }
+  void load(OmMipVolume* vol) { memMapped_.load(vol); }
 
-  template <typename VOL>
-  void create(VOL* vol, const std::map<int, Vector3i>& levDims) {
+  void create(OmMipVolume* vol, const std::map<int, Vector3i>& levDims) {
     memMapped_.create(vol, levDims);
   }
 
@@ -30,13 +26,6 @@ class OmVolumeData {
     return memMapped_.getChunkPtrRaw(coord);
   }
 
-  template <typename VOL>
-  void downsample(VOL& vol) {
-    memMapped_.downsample(vol);
-  }
-
-  template <typename VOL>
-  void SetDataType(VOL& vol) {
-    memMapped_.SetDataType(vol);
-  }
+  void downsample(OmMipVolume* vol) { memMapped_.downsample(vol); }
+  void SetDataType(OmMipVolume* vol) { memMapped_.SetDataType(vol); }
 };

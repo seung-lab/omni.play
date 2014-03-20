@@ -41,7 +41,7 @@ std::shared_ptr<OmRawChunk<float> > OmAffinityGraph::RawChunk(
     const om::common::AffinityGraph aff, const om::coords::Chunk& coord) {
   OmAffinityChannel* affChan = channels_[aff].get();
 
-  return std::make_shared<OmRawChunk<float> >(affChan, coord);
+  return std::make_shared<OmRawChunk<float> >(*affChan, coord);
 }
 
 OmChunk* OmAffinityGraph::MipChunk(const om::common::AffinityGraph aff,

@@ -6,6 +6,9 @@
 #include "system/omConnect.hpp"
 #include "utility/segmentationDataWrapper.hpp"
 #include "events/events.h"
+#include "segment/omSegments.h"
+#include "segment/selection.hpp"
+#include "common/string.hpp"
 
 namespace om {
 namespace gui {
@@ -25,7 +28,7 @@ class SegListToggleButton : public OmButton<QWidget> {
       return;
     }
     common::SegIDSet IDs(segIDs_);
-    auto maxID = sdw.Segments()->getMaxValue();
+    auto maxID = sdw.Segments()->maxValue();
     for (const auto& id : segIDs_) {
       if (id <= 0 || id > maxID) {
         log_errors << "Invalid segment id " << id << " in group \""
@@ -34,7 +37,7 @@ class SegListToggleButton : public OmButton<QWidget> {
       }
     }
 
-    sdw.Segments()->ToggleSegmentSelection(IDs);
+    sdw.Segments()->Selection().ToggleSegmentSelection(IDs);
 
     om::event::Redraw2d();
     om::event::Redraw3d();

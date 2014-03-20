@@ -33,7 +33,7 @@ class ExportSegmentList : public OmButton<PageExport> {
     out << "segID, 1 == working, 2 == valid, 3 == uncertain\n";
     out << "example: 100,2,0\n";
 
-    for (om::common::SegID i = 1; i <= segments->getMaxValue(); ++i) {
+    for (om::common::SegID i = 1; i <= segments->maxValue(); ++i) {
       OmSegment* seg = segments->GetSegment(i);
       if (!seg) {
         continue;

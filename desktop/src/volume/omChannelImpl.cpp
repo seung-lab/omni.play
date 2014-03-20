@@ -61,7 +61,7 @@ bool OmChannelImpl::LoadVolData() {
 
 bool OmChannelImpl::LoadVolDataIfFoldersExist() {
   // assume level 0 data always present
-  const QString path = OmFileNames::GetVolDataFolderPath(this, 0);
+  const QString path = OmFileNames::GetVolDataFolderPath(*this, 0);
 
   if (QDir(path).exists()) {
     return LoadVolData();

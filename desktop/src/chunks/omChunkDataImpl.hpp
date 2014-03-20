@@ -26,7 +26,7 @@ class dataImpl : public dataInterface {
         coord_(coord),
         numElementsPerSlice_(128 * 128),
         numElementsPerChunk_(numElementsPerSlice_ * 128),
-        ptrToChunkData_(new ptrToChunkDataMemMapVol<DATA>(vol, coord)) {}
+        ptrToChunkData_(new ptrToChunkDataMemMapVol<DATA>(*vol, coord)) {}
 
   ~dataImpl() { delete ptrToChunkData_; }
 
@@ -83,7 +83,7 @@ class dataImpl : public dataInterface {
   }
 
   OmDataWrapperPtr CopyOutChunkData() {
-    OmRawChunk<DATA> rawChunk(vol_, coord_);
+    OmRawChunk<DATA> rawChunk(*vol_, coord_);
     return om::ptrs::Wrap(rawChunk.SharedPtr());
   }
 

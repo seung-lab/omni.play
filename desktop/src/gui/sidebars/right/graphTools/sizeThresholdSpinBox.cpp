@@ -9,8 +9,7 @@ boost::optional<double> SizeThresholdSpinBox::getCurVolThreshold() {
     return boost::optional<double>();
   }
 
-  OmSegmentation& seg = sdw.GetSegmentation();
-  return seg.GetSizeThreshold();
+  return sdw.GetSegmentation()->GetSizeThreshold();
 }
 
 void SizeThresholdSpinBox::actUponValueChange(const double newThreshold) {

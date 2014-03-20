@@ -53,7 +53,7 @@ class OmMipVolumeArchive {
 
  private:
   QString filePathV1() const {
-    return vol_.Folder()->GetVolPath() + "abs_coord.ver1";
+    return vol_.Folder().GetVolPath() + "abs_coord.ver1";
   }
 
   void load() {

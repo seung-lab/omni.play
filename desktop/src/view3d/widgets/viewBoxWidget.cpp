@@ -27,7 +27,7 @@ void ViewBoxWidget::Draw() {
   static const int RECT_WIREFRAME_LINE_WIDTH = 2;
   glLineWidth(RECT_WIREFRAME_LINE_WIDTH);
 
-  auto& view2dState = *vgs_.View2dState();
+  auto& view2dState = vgs_.View2dState();
 
   if (Om3dPreferences::get2DViewFrameIn3D()) {
     draw2dBoxWrapper(view2dState, om::common::ViewType::XY_VIEW);
@@ -67,7 +67,7 @@ void ViewBoxWidget::drawRectangle(const Vector3i& v0, const Vector3i& v1,
 void ViewBoxWidget::drawLines(Vector3i depth) {
   Vector3i v0, v1;
 
-  float distance = ((float) Om3dPreferences::getCrosshairValue()) / 10.0;
+  float distance = ((float)Om3dPreferences::getCrosshairValue()) / 10.0;
 
   glColor3fv(om::gl::OMGL_BLUE);
   v0 = Vector3i(depth.x, depth.y, depth.z - distance);

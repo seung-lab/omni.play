@@ -37,7 +37,7 @@ class OmSegments {
 
   bool IsSegmentValid(om::common::SegID seg);
 
-  int GetNumSegments();
+  int GetNumSegments() const;
   void SetNumSegments(int);
 
   om::segment::Children& Children() const;
@@ -73,7 +73,7 @@ class OmSegments {
 
   uint32_t getPageSize();
 
-  uint32_t maxValue();
+  uint32_t maxValue() const;
 
   void refreshTree();
 
@@ -91,4 +91,6 @@ class OmSegments {
   friend YAMLold::Emitter& YAMLold::operator<<(YAMLold::Emitter& out,
                                                const OmSegmentsImpl& sc);
   friend void YAMLold::operator>>(const YAMLold::Node& in, OmSegmentsImpl& sc);
+  friend QDataStream& operator<<(QDataStream& out, const OmSegments& sc);
+  friend QDataStream& operator>>(QDataStream& in, OmSegments& sc);
 };

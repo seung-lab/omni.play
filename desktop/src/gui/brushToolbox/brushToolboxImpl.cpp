@@ -34,7 +34,7 @@ class BrushColor : public OmButton<QWidget>,
     QPixmap pixmap;
 
     if (sdwUnknownDepth.IsValidWrapper()) {
-      SegmentDataWrapper sdw = SegmentDataWrapper(sdwUnknownDepth.FindRoot());
+      SegmentDataWrapper sdw = sdwUnknownDepth.FindRootSDW();
       pixmap = om::utils::color::ColorAsQPixmap(sdw.GetColorInt());
 
     } else {
@@ -61,7 +61,7 @@ class AddSegmentButton : public OmButton<QWidget> {
     //  the segment metadata will be out of sync with the data on disk...
     OmActions::Save();
 
-    ElementListBox::RebuildLists(SegmentDataWrapper(newSeg));
+    ElementListBox::RebuildLists(SegmentDataWrapper(sdw, newSeg->value()));
 
     OmSegmentSelector sel(sdw, this, "addSegmentButton");
     sel.selectJustThisSegment(newSeg->value(), true);
@@ -103,7 +103,7 @@ class SetBlackColorButton : public OmButton<QWidget> {
   OmViewGroupState& vgs_;
 
   void doAction() {
-    SegmentDataWrapper sdw(vgs_.Segmentation().GetID(), 0);
+    SegmentDataWrapper sdw(vgs_.Segmentation(), 0);
     OmSegmentSelected::SetSegmentForPainting(sdw);
   }
 };

@@ -5,12 +5,12 @@
 
 class OmView2dZoom {
  private:
-  OmView2dState* const state_;
-  OmZoomLevel* const zoomLevel_;
+  OmView2dState& state_;
+  OmZoomLevel& zoomLevel_;
 
  public:
-  OmView2dZoom(OmView2dState* state)
-      : state_(state), zoomLevel_(state->ZoomLevel()) {}
+  OmView2dZoom(OmView2dState& state)
+      : state_(state), zoomLevel_(state.ZoomLevel()) {}
 
   void MouseLeftButtonClick(QMouseEvent* event) {
     const bool zoomOut = event->modifiers() & Qt::ControlModifier;
@@ -30,10 +30,10 @@ class OmView2dZoom {
 
  private:
   void doMouseZoom(const int numSteps) {
-    zoomLevel_->MouseWheelZoom(numSteps, state_->IsLevelLocked());
+    zoomLevel_.MouseWheelZoom(numSteps, state_.IsLevelLocked());
 
     om::event::ViewPosChanged();
-    state_->SetViewSliceOnPan();
+    state_.SetViewSliceOnPan();
     om::event::ViewCenterChanged();
   }
 };

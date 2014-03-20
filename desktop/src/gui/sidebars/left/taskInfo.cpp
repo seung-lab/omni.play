@@ -6,6 +6,7 @@
 #include "system/omConnect.hpp"
 #include "utility/segmentationDataWrapper.hpp"
 #include "actions/omActions.h"
+#include "segment/omSegment.h"
 
 using namespace om::task;
 

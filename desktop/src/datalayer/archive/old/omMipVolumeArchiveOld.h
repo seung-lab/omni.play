@@ -3,6 +3,7 @@
 
 #include "volume/omSegmentation.h"
 #include "volume/omChannel.h"
+#include "volume/omFilter2d.h"
 
 class OmMipVolumeArchiveOld {
  public:

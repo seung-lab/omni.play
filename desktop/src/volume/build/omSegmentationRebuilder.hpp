@@ -51,7 +51,7 @@ class segmentation {
 
   virtual void processVol() {
     OmVolumeProcessor processor;
-    processor.BuildThreadedVolume(vol_);
+    processor.BuildThreadedVolume(*vol_);
   }
 
   void setVolAsBuilding() { vol_->SetBuildState(MIPVOL_BUILDING); }

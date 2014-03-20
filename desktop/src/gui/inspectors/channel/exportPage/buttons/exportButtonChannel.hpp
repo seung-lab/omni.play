@@ -22,7 +22,7 @@ class ExportButton : public OmButton<PageExport> {
 
     const ChannelDataWrapper& cdw = mParent->GetCDW();
 
-    OmExportVolToHdf5::Export(cdw.GetChannel(), fileName);
+    OmExportVolToHdf5::Export(*cdw.GetChannel(), fileName);
   }
 };
 

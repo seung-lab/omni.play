@@ -39,7 +39,7 @@ class DownsampleVoxelTask : public zi::runnable {
   }
 
   void run() {
-    OmRawChunk<T> mip0chunk(vol_, coord_);
+    OmRawChunk<T> mip0chunk(*vol_, coord_);
 
     const int sliceSize = 128 * 128;
 

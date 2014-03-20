@@ -19,13 +19,13 @@ class OmUpgradeTo14 {
     FOR_EACH(iter, ChannelDataWrapper::ValidIDs()) {
       log_infos << "converting channel " << *iter;
       ChannelDataWrapper cdw(*iter);
-      convertVolume(cdw.GetChannel());
+      convertVolume(*cdw.GetChannel());
     }
 
     FOR_EACH(iter, SegmentationDataWrapper::ValidIDs()) {
       log_infos << "converting segmentation " << *iter;
       SegmentationDataWrapper sdw(*iter);
-      OmSegmentation& seg = sdw.GetSegmentation();
+      OmSegmentation& seg = *sdw.GetSegmentation();
       convertVolume(seg);
       seg.LoadVolData();
     }
@@ -46,7 +46,7 @@ class OmUpgradeTo14 {
     }
 
     // allocate mem-mapped files...
-    vol.VolData()->create(&vol, levelsAndDims);
+    vol.VolData().create(&vol, levelsAndDims);
 
     vol.UpdateFromVolResize();
   }

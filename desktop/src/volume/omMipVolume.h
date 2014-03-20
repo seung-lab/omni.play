@@ -46,7 +46,7 @@ class OmMipVolume {
   virtual bool LoadVolData() = 0;
   virtual OmVolumeData& VolData() = 0;
   virtual om::common::ObjectType getVolumeType() const = 0;
-  virtual om::common::ID getID() const = 0;
+  virtual om::common::ID GetID() const = 0;
 
   inline bool IsBuilt() { return MIPVOL_BUILT == mBuildState; }
   inline bool built() { return MIPVOL_BUILT == mBuildState; }

@@ -63,13 +63,13 @@ class SegmentDataWrapper {
   OmSegment* FindRoot() const;
   SegmentDataWrapper FindRootSDW() const;
 
-  om::common::SegID getID() const;
+  om::common::SegID GetID() const;
   om::common::SegID GetVoxelValue(const om::coords::Global& clickPoint) const;
 
   QString GetName() const;
   void SetName(const QString& str) const;
 
-  uint64_t getSize() const;
+  uint64_t GetSize() const;
   int64_t GetSizeWithChildren() const;
 
   bool isSelected() const;
@@ -77,8 +77,6 @@ class SegmentDataWrapper {
 
   QString GetNote() const;
   void SetNote(const QString& str) const;
-
-  QString getIDstr() const;
 
   om::common::Color GetColorInt() const;
   Vector3f GetColorFloat() const;
