@@ -82,46 +82,46 @@ class OmTileCacheImpl {
   void Get(OmTilePtr& tile, const OmTileCoord& key,
            const om::common::Blocking blocking) {
     if (isChannel(key)) {
-      getChanVol(key)->Get(tile, key, blocking);
+      getChanVol(key).Get(tile, key, blocking);
 
     } else {
-      getSegVol(key)->Get(tile, key, blocking);
+      getSegVol(key).Get(tile, key, blocking);
     }
   }
 
   void GetDontQueue(OmTilePtr& tile, const OmTileCoord& key) {
     if (isChannel(key)) {
-      getChanVol(key)->GetDontQueue(tile, key);
+      getChanVol(key).GetDontQueue(tile, key);
 
     } else {
-      getSegVol(key)->GetDontQueue(tile, key);
+      getSegVol(key).GetDontQueue(tile, key);
     }
   }
 
   void QueueUp(const OmTileCoord& key) {
     if (isChannel(key)) {
-      getChanVol(key)->QueueUp(key);
+      getChanVol(key).QueueUp(key);
 
     } else {
-      getSegVol(key)->QueueUp(key);
+      getSegVol(key).QueueUp(key);
     }
   }
 
   void BlockingCreate(OmTilePtr& tile, const OmTileCoord& key) {
     if (isChannel(key)) {
-      getChanVol(key)->BlockingCreate(tile, key);
+      getChanVol(key).BlockingCreate(tile, key);
 
     } else {
-      getSegVol(key)->BlockingCreate(tile, key);
+      getSegVol(key).BlockingCreate(tile, key);
     }
   }
 
   void Prefetch(const OmTileCoord& key, const int depthOffset) {
     if (isChannel(key)) {
-      getChanVol(key)->Prefetch(key, depthOffset);
+      getChanVol(key).Prefetch(key, depthOffset);
 
     } else {
-      getSegVol(key)->Prefetch(key, depthOffset);
+      getSegVol(key).Prefetch(key, depthOffset);
     }
   }
 
@@ -138,7 +138,7 @@ class OmTileCacheImpl {
   void ClearChannel() {
     std::vector<OmChannel*> vols = ChannelDataWrapper::GetPtrVec();
     for (auto& iter : vols) {
-      iter->TileCache()->Clear();
+      iter->TileCache().Clear();
     }
   }
 
@@ -186,7 +186,7 @@ class OmTileCacheImpl {
 
     std::list<OmTileDrawer*> drawers;
     for (auto& iter : drawersActive_) {
-      awers.sh_back(iter->first);
+      drawers.push_back(iter.first);
     }
 
     preFetcher_->RunTasks(drawers);
@@ -213,11 +213,11 @@ class OmTileCacheImpl {
 
   // TODO: refactor OmTile to contain real vol ptrs...
 
-  inline OmTileCacheChannel* getChanVol(const OmTileCoord& key) const {
+  inline OmTileCacheChannel& getChanVol(const OmTileCoord& key) const {
     return reinterpret_cast<OmChannel*>(&key.getVolume())->TileCache();
   }
 
-  inline OmTileCacheSegmentation* getSegVol(const OmTileCoord& key) const {
+  inline OmTileCacheSegmentation& getSegVol(const OmTileCoord& key) const {
     return reinterpret_cast<OmSegmentation*>(&key.getVolume())->TileCache();
   }
 

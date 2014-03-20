@@ -43,13 +43,11 @@ void OmProject::Load(const QString& fileNameAndPath, QWidget* guiParent,
   }
 }
 
-const QString& OmProject::FilesFolder() {
-  return instance().impl_->FilesFolder();
-}
+QString OmProject::FilesFolder() { return instance().impl_->FilesFolder(); }
 
 const om::file::Paths& OmProject::Paths() { return instance().impl_->Paths(); }
 
-const QString& OmProject::OmniFile() { return instance().impl_->OmniFile(); }
+QString OmProject::OmniFile() { return instance().impl_->OmniFile(); }
 
 bool OmProject::HasOldHDF5() { return instance().impl_->HasOldHDF5(); }
 

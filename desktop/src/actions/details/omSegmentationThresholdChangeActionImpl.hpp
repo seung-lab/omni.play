@@ -29,7 +29,7 @@ class OmSegmentationThresholdChangeActionImpl {
           "Invalid SegmentationDataWrapper "
           "(OmSegmentationThresholdChangeActionImpl::Execute)");
     }
-    OmSegmentation& seg = sdw_.GetSegmentation();
+    OmSegmentation& seg = *sdw_.GetSegmentation();
     oldThreshold_ = seg.GetDendThreshold();
     seg.SetDendThreshold(threshold_);
 
@@ -43,7 +43,7 @@ class OmSegmentationThresholdChangeActionImpl {
           "Invalid SegmentationDataWrapper "
           "(OmSegmentationThresholdChangeActionImpl::Undo)");
     }
-    OmSegmentation& seg = sdw_.GetSegmentation();
+    OmSegmentation& seg = *sdw_.GetSegmentation();
 
     seg.SetDendThreshold(oldThreshold_);
 

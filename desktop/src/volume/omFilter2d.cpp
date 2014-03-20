@@ -52,7 +52,7 @@ void OmFilter2d::SetChannel(const om::common::ID id) {
     return;
   }
 
-  channVolPtr_ = boost::optional<OmChannel*>(cdw.GetChannelPtr());
+  channVolPtr_ = boost::optional<OmChannel*>(cdw.GetChannel());
   filterType_ = om::OVERLAY_CHANNEL;
   chanID_ = id;
 }

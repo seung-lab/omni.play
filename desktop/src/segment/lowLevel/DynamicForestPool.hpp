@@ -193,9 +193,8 @@ class DynamicForestPool {
       print(x_[d].l_, o + 2);
     }
 
-    log_debugs(unknown) << std::string(o, ' ') << d << " (" << x_[d].l_ << ", "
-                        << x_[d].r_ << ", " << x_[d].p_ << ", " << x_[d].pp_
-                        << ")";
+    log_debugs << std::string(o, ' ') << d << " (" << x_[d].l_ << ", "
+               << x_[d].r_ << ", " << x_[d].p_ << ", " << x_[d].pp_ << ")";
 
     if (x_[d].r_) {
       print(x_[d].r_, o + 2);
@@ -205,7 +204,7 @@ class DynamicForestPool {
  public:
   void Print(const int d) {
     print(d + 1, 0);
-    log_debugs(unknown) << "---";
+    log_debugs << "---";
   }
 
   void Clear() { clear(); }

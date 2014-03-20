@@ -30,7 +30,7 @@ class OmSplitSegmentRunner {
         return;
       }
 
-      OmActions::FindAndSplitSegments(seg1, seg2);
+      OmActions::FindAndSplitSegments(vgs.Segmentation(), seg1, seg2);
 
     } else {
       if (curSDW.IsSegmentValid()) {

@@ -9,7 +9,7 @@ class OmSegments;
 class OmUpdateBoundingBoxes {
  private:
   OmSegmentation* const vol_;
-  OmSegments* const segments_;
+  OmSegments& segments_;
 
  public:
   OmUpdateBoundingBoxes(OmSegmentation* vol);

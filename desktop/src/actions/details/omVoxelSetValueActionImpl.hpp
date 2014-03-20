@@ -2,11 +2,11 @@
 #include "precomp.h"
 
 #include "common/common.h"
-#include "common/common.h"
 #include "omVoxelSetValueAction.h"
 #include "segment/omSegmentSelected.hpp"
 #include "system/omStateManager.h"
 #include "volume/omSegmentation.h"
+#include "utility/segmentationDataWrapper.hpp"
 
 class OmVoxelSetValueActionImpl {
  private:
@@ -51,8 +51,11 @@ class OmVoxelSetValueActionImpl {
 
   void Execute() {
     // set voxel
-    OmSegmentation& r_segmentation =
-        OmProject::Volumes().Segmentations().GetSegmentation(mSegmentationId);
+    SegmentationDataWrapper sdw(mSegmentationId);
+    if (!sdw.IsValidWrapper()) {
+      log_errors << "Unable to execute OmVolxelSetvalueAction";
+      return;
+    }
 
     // modified voxels
     std::set<om::coords::Global> edited_voxels;
@@ -61,11 +64,12 @@ class OmVoxelSetValueActionImpl {
       // set voxel to new value
       if (mNewValue == 0)  // erasing
       {
-        if (r_segmentation.SetVoxelValueIfSelected(itr->first, mNewValue)) {
+        if (sdw.GetSegmentation()->SetVoxelValueIfSelected(itr->first,
+                                                           mNewValue)) {
           edited_voxels.insert(itr->first);
         }
       } else {
-        r_segmentation.SetVoxelValue(itr->first, mNewValue);
+        sdw.GetSegmentation()->SetVoxelValue(itr->first, mNewValue);
         edited_voxels.insert(itr->first);
       }
     }
@@ -73,15 +77,18 @@ class OmVoxelSetValueActionImpl {
 
   void Undo() {
     // set voxel
-    OmSegmentation& r_segmentation =
-        OmProject::Volumes().Segmentations().GetSegmentation(mSegmentationId);
+    SegmentationDataWrapper sdw(mSegmentationId);
+    if (!sdw.IsValidWrapper()) {
+      log_errors << "Unable to execute OmVolxelSetvalueAction";
+      return;
+    }
 
     // modified voxels
     std::set<om::coords::Global> edited_voxels;
 
     FOR_EACH(itr, mOldVoxelValues) {
       // set voxel to prev value
-      r_segmentation.SetVoxelValue(itr->first, itr->second);
+      sdw.GetSegmentation()->SetVoxelValue(itr->first, itr->second);
       edited_voxels.insert(itr->first);
     }
   }

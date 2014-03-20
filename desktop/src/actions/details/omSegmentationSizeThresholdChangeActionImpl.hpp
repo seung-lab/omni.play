@@ -28,7 +28,7 @@ class OmSegmentationSizeThresholdChangeActionImpl {
           "Invalid SegmentationDataWrapper "
           "(OmSegmentationSizeThresholdChangeActionImpl::Execute)");
     }
-    OmSegmentation& seg = sdw_.GetSegmentation();
+    OmSegmentation& seg = *sdw_.GetSegmentation();
     oldThreshold_ = seg.GetSizeThreshold();
     seg.SetSizeThreshold(threshold_);
 
@@ -42,7 +42,7 @@ class OmSegmentationSizeThresholdChangeActionImpl {
           "Invalid SegmentationDataWrapper "
           "(OmSegmentationSizeThresholdChangeActionImpl::Undo)");
     }
-    OmSegmentation& seg = sdw_.GetSegmentation();
+    OmSegmentation& seg = *sdw_.GetSegmentation();
     seg.SetSizeThreshold(oldThreshold_);
 
     om::event::RefreshMSTthreshold();

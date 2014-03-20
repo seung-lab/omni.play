@@ -9,9 +9,9 @@ namespace segchunk {
 
 class ProcessChunkVoxelBoundingData {
  public:
-  ProcessChunkVoxelBoundingData(OmSegChunk* chunk, OmSegments* segments)
+  ProcessChunkVoxelBoundingData(OmSegChunk& chunk, OmSegments& segments)
       : chunk_(chunk),
-        minVertexOfChunk_(chunk_->Mipping().Extent().getMin()),
+        minVertexOfChunk_(chunk_.Mipping().Extent().getMin()),
         segments_(segments) {}
 
   ~ProcessChunkVoxelBoundingData() {
@@ -30,9 +30,9 @@ class ProcessChunkVoxelBoundingData {
   }
 
  private:
-  OmSegChunk* const chunk_;
+  OmSegChunk& chunk_;
   const om::coords::Data minVertexOfChunk_;
-  OmSegments* const segments_;
+  OmSegments& segments_;
 
   std::unordered_map<om::common::SegID, OmSegment*> cacheSegments_;
   typedef std::unordered_map<om::common::SegID, om::coords::DataBbox> bbox_map;
@@ -40,7 +40,7 @@ class ProcessChunkVoxelBoundingData {
 
   OmSegment* getOrAddSegment(const om::common::SegID val) {
     if (!cacheSegments_.count(val)) {
-      return cacheSegments_[val] = segments_->GetOrAddSegment(val);
+      return cacheSegments_[val] = segments_.GetOrAddSegment(val);
     }
     return cacheSegments_[val];
   }

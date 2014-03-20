@@ -5,6 +5,7 @@
 #include "events/events.h"
 #include "project/omProject.h"
 #include "segment/lists/omSegmentLists.h"
+#include "segment/omSegments.h"
 #include "system/cache/omCacheManager.h"
 #include "utility/dataWrappers.h"
 #include "viewGroup/omViewGroupState.h"
@@ -12,7 +13,7 @@
 class OmSegmentShatterActionImpl {
  private:
   SegmentDataWrapper sdw_;
-  std::vector<OmSegmentEdge> removed_;
+  std::vector<om::segment::UserEdge> removed_;
   QString desc;
 
  public:

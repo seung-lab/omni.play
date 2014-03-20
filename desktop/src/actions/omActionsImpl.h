@@ -56,8 +56,9 @@ class OmActionsImpl {
   void JoinSegmentsSet(const SegmentationDataWrapper sdw,
                        const om::common::SegIDSet ids);
 
-  void FindAndSplitSegments(OmSegment* seg1, OmSegment* seg2);
-  void ShatterSegment(OmSegment* seg);
+  void FindAndSplitSegments(const SegmentationDataWrapper sdw, OmSegment* seg1,
+                            OmSegment* seg2);
+  void ShatterSegment(const SegmentationDataWrapper sdw, OmSegment* seg);
 
   void CutSegment(const SegmentDataWrapper sdw);
 

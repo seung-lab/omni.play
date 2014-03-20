@@ -45,8 +45,8 @@ class OmProject : private om::SingletonBase<OmProject> {
   static bool IsOpen(const om::file::path& fileNameAndPath,
                      const std::string& username);
 
-  static const QString& FilesFolder();
-  static const QString& OmniFile();
+  static QString FilesFolder();
+  static QString OmniFile();
   static const om::file::Paths& Paths();
 
   static bool HasOldHDF5();

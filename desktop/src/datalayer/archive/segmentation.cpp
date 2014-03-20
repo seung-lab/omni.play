@@ -1,11 +1,10 @@
 #include "utility/yaml/omBaseTypes.hpp"
 #include "datalayer/archive/segmentation.h"
 #include "utility/yaml/mipVolume.hpp"
-#include "segment/lowLevel/omPagingPtrStore.h"
-#include "segment/lowLevel/omEnabledSegments.hpp"
-#include "segment/lowLevel/omSegmentSelection.hpp"
+#include "segment/selection.hpp"
 #include "segment/io/omUserEdges.hpp"
-#include "segment/omSegmentEdge.h"
+
+#include "segment/types.hpp"
 #include "segment/omSegment.h"
 #include "segment/omSegments.h"
 #include "segment/omSegmentsImpl.h"
@@ -98,21 +97,6 @@ void operator>>(const Node& in, OmSegmentsImpl& sc) {
 
   OmUserEdges* userEdges = sc.segmentation_->MSTUserEdges();
   userEdges->Load();
-}
-
-Emitter& operator<<(Emitter& out, const OmSegmentEdge& se) {
-  out << BeginMap;
-  out << Key << "Parent Id" << Value << se.parentID;
-  out << Key << "Child Id" << Value << se.childID;
-  out << Key << "Threshold" << Value << se.threshold;
-  out << EndMap;
-  return out;
-}
-
-void operator>>(const Node& in, OmSegmentEdge& se) {
-  in["Parent Id"] >> se.parentID;
-  in["Child Id"] >> se.childID;
-  in["Threshold"] >> se.threshold;
 }
 
 Emitter& operator<<(Emitter& out, const DummyGroups& g) {

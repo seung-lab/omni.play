@@ -17,12 +17,17 @@ class OmProject;
 class OmProjectImpl;
 class OmProjectVolumes;
 class OmSegment;
-class OmSegmentEdge;
 class OmSegmentation;
 class OmSegmentationManager;
 class OmSegments;
 class OmSegmentsImpl;
 class OmVolume;
+
+namespace om {
+namespace segment {
+struct UserEdge;
+}
+}
 
 class OmDataArchiveProjectImpl {
  public:
@@ -52,6 +57,6 @@ QDataStream& operator>>(QDataStream& in, OmMeshManager& mm);
 QDataStream& operator>>(QDataStream& in, OmSegments& sc);
 QDataStream& operator>>(QDataStream& in, OmSegmentsImpl& sc);
 QDataStream& operator>>(QDataStream& in, OmPagingPtrStore& ps);
-QDataStream& operator<<(QDataStream& out, const OmSegmentEdge& sc);
-QDataStream& operator>>(QDataStream& in, OmSegmentEdge& sc);
+QDataStream& operator<<(QDataStream& out, const om::segment::UserEdge& sc);
+QDataStream& operator>>(QDataStream& in, om::segment::UserEdge& sc);
 QDataStream& operator>>(QDataStream& in, DummyGroups& g);

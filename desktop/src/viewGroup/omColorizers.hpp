@@ -46,7 +46,7 @@ class OmColorizers {
     }
 
     SegmentationDataWrapper sdw(key.getVolume().getID());
-    if (!sdw.isValidWrapper()) {
+    if (!sdw.IsValidWrapper()) {
       return;
     }
 

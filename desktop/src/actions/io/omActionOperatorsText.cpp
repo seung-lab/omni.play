@@ -22,7 +22,7 @@ QTextStream& operator<<(QTextStream& out, const om::common::SegIDSet& set) {
   return out;
 }
 
-QTextStream& operator<<(QTextStream& out, const OmSegmentEdge& e) {
+QTextStream& operator<<(QTextStream& out, const om::segment::UserEdge& e) {
   out << e.parentID << ", " << e.childID << ", " << e.threshold;
   return out;
 }

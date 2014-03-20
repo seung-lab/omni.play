@@ -14,12 +14,12 @@ class OmFindCommonEdge {
     }
 
     if (segments->FindRoot(seg1) != segments->FindRoot(seg2)) {
-      log_debugs(unknown) << "can't split disconnected objects";
+      log_debugs << "can't split disconnected objects";
       return om::segment::UserEdge();
     }
 
     if (seg1 == seg2) {
-      log_debugs(unknown) << "can't split object from self";
+      log_debugs << "can't split object from self";
       return om::segment::UserEdge();
     }
 
@@ -27,8 +27,8 @@ class OmFindCommonEdge {
     while (0 != s1->getParent()) {
       if (s1->getParent() == seg2) {
         // log_debugs(split) << "splitting child from a direct parent";
-        return om::segment::UserEdge { s1->getParent()->value(), s1->value(),
-                                       s1->getThreshold(), true };
+        return om::segment::UserEdge{s1->getParent()->value(), s1->value(),
+                                     s1->getThreshold(),       true};
       }
       s1 = s1->getParent();
     }
@@ -37,8 +37,8 @@ class OmFindCommonEdge {
     while (0 != s2->getParent()) {
       if (s2->getParent() == seg1) {
         // log_debugs(split) << "splitting child from a direct parent";
-        return om::segment::UserEdge { s2->getParent()->value(), s2->value(),
-                                       s2->getThreshold(), true };
+        return om::segment::UserEdge{s2->getParent()->value(), s2->value(),
+                                     s2->getThreshold(),       true};
       }
       s2 = s2->getParent();
     }
@@ -77,8 +77,8 @@ class OmFindCommonEdge {
     }
 
     assert(minChild != 0);
-    return om::segment::UserEdge { minChild->getParent()->value(),
-                                   minChild->value(), minChild->getThreshold(),
-                                   true };
+    return om::segment::UserEdge{
+        minChild->getParent()->value(), minChild->value(),
+        minChild->getThreshold(),       true};
   }
 };

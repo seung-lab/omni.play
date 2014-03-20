@@ -112,12 +112,12 @@ OmSegmentCenter::ComputeCameraDistanceForSelectedSegments() {
 void OmSegmentCenter::RebuildCenterOfSegmentData(
     const SegmentationDataWrapper& sdw) {
   if (!sdw.IsSegmentationValid()) {
-    log_debugs(unknown) << "Invalid SegmentationDataWrapper "
-                           "(OmSegmentCenter::RebuildCenterOfSegmentData)";
+    log_debugs << "Invalid SegmentationDataWrapper "
+                  "(OmSegmentCenter::RebuildCenterOfSegmentData)";
     return;
   }
 
-  log_debugs(unknown) << "rebuilding segment bounding box data...";
+  log_debugs << "rebuilding segment bounding box data...";
 
   OmSegments* segments = sdw.Segments();
 

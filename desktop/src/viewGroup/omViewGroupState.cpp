@@ -115,7 +115,7 @@ void OmViewGroupState::SetToolBarManager(ToolBarManager* tbm) {
 }
 
 ToolBarManager& OmViewGroupState::GetToolBarManager() {
-  return toolBarManager_;
+  return *toolBarManager_;
 }
 
 void OmViewGroupState::SetShowValidMode(bool mode, bool inColor) {

@@ -2,7 +2,7 @@
 #include "precomp.h"
 
 #include "actions/details/omUndoCommand.hpp"
-#include "segment/omSegmentEdge.h"
+#include "segment/types.hpp"
 
 class SegmentDataWrapper;
 class SegmentationDataWrapper;
@@ -18,7 +18,7 @@ class OmSegmentSplitAction : public OmUndoCommand {
       : impl_(impl) {}
 
   OmSegmentSplitAction(const SegmentationDataWrapper& sdw,
-                       const OmSegmentEdge& edge);
+                       const om::segment::UserEdge& edge);
 
  private:
   void Action();

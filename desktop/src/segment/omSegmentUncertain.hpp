@@ -35,11 +35,11 @@ class OmSegmentUncertain {
     om::utility::timer timer;
 
     if (uncertain_) {
-      log_debugs(unknown) << "setting " << selectedSegments_->size()
-                          << " segments as uncertain...";
+      log_debugs << "setting " << selectedSegments_->size()
+                 << " segments as uncertain...";
     } else {
-      log_debugs(unknown) << "setting " << selectedSegments_->size()
-                          << " segments as NOT uncertain...";
+      log_debugs << "setting " << selectedSegments_->size()
+                 << " segments as NOT uncertain...";
     }
 
     for (OmSegment* seg : *selectedSegments_) {

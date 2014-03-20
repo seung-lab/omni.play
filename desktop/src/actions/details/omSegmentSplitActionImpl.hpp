@@ -5,13 +5,14 @@
 #include "events/events.h"
 #include "project/omProject.h"
 #include "segment/lists/omSegmentLists.h"
+#include "segment/omSegments.h"
 #include "system/cache/omCacheManager.h"
 #include "utility/dataWrappers.h"
 #include "viewGroup/omViewGroupState.h"
 
 class OmSegmentSplitActionImpl {
  private:
-  OmSegmentEdge mEdge;
+  om::segment::UserEdge mEdge;
   om::common::ID mSegmentationID;
   QString desc;
 
@@ -19,7 +20,7 @@ class OmSegmentSplitActionImpl {
   OmSegmentSplitActionImpl() {}
 
   OmSegmentSplitActionImpl(const SegmentationDataWrapper& sdw,
-                           const OmSegmentEdge& edge)
+                           const om::segment::UserEdge& edge)
       : mEdge(edge),
         mSegmentationID(sdw.GetSegmentationID()),
         desc("Splitting: ") {}
@@ -46,7 +47,8 @@ class OmSegmentSplitActionImpl {
   void Undo() {
     SegmentationDataWrapper sdw(mSegmentationID);
 
-    std::pair<bool, OmSegmentEdge> edge = sdw.Segments()->JoinEdge(mEdge);
+    std::pair<bool, om::segment::UserEdge> edge =
+        sdw.Segments()->JoinEdge(mEdge);
 
     if (!mEdge.childID || !mEdge.parentID) {
       log_infos << "Can't undo a join that probably failed.";

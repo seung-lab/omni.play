@@ -75,7 +75,7 @@ class HeadlessImpl {
     bs.addFileNameAndPath(file);
     bs.BuildImage();
 
-    segmentationID_ = bs.GetDataWrapper().GetID();
+    segmentationID_ = bs.GetDataWrapper().id();
   }
 
   static void ClearMST(const om::common::ID segmentationID) {
@@ -92,7 +92,7 @@ class HeadlessImpl {
 
     OmSegments* segments = sdw.Segments();
 
-    for (om::common::SegID i = 1; i <= segments->getMaxValue(); ++i) {
+    for (om::common::SegID i = 1; i <= segments->maxValue(); ++i) {
       OmSegment* seg = segments->GetSegment(i);
       if (!seg) {
         continue;
@@ -178,13 +178,13 @@ class HeadlessImpl {
               << " colors\n";
 
     OmSegments* segments = sdw.Segments();
-    for (om::common::SegID i = 1; i <= segments->getMaxValue(); ++i) {
+    for (om::common::SegID i = 1; i <= segments->maxValue(); ++i) {
       OmSegment* seg = segments->GetSegment(i);
       if (!seg) {
         continue;
       }
       if (findRoot) {
-        seg = segments->findRoot(seg);
+        seg = segments->FindRoot(seg);
       }
       const om::common::Color color = seg->GetColorInt();
 
@@ -217,7 +217,11 @@ class HeadlessImpl {
   static void TimeSegChunkReads(const om::common::ID segmentationID,
                                 const bool randomize, const bool useMeshChunk) {
     SegmentationDataWrapper sdw(segmentationID);
-    OmSegmentation& vol = sdw.GetSegmentation();
+    if (!sdw.IsValidWrapper()) {
+      log_errors << "Invalid Segmentation ID";
+      return;
+    }
+    OmSegmentation& vol = *sdw.GetSegmentation();
 
     assert(4 == vol.GetBytesPerVoxel());
 
@@ -291,18 +295,18 @@ class HeadlessImpl {
   }
 
   static void DownsampleChannel(const ChannelDataWrapper& cdw) {
-    OmChannel* vol = cdw.GetChannelPtr();
+    OmChannel* vol = cdw.GetChannel();
     vol->VolData().downsample(vol);
   }
 
   static void CheckMeshes(const SegmentationDataWrapper& sdw) {
     if (!sdw.IsValidWrapper()) {
-      printf("Invalid segmentationID: %d\n", segmentationID);
+      printf("Invalid segmentationID: %d\n", sdw.id());
       return;
     }
 
-    OmMeshManagers* meshManagers = sdw.GetSegmentation()->MeshManagers();
-    OmMeshManager* meshManager = meshManagers->GetManager(1);
+    OmMeshManagers& meshManagers = sdw.GetSegmentation()->MeshManagers();
+    OmMeshManager* meshManager = meshManagers.GetManager(1);
 
     std::unique_ptr<OmMeshWriterV2> meshWriter(new OmMeshWriterV2(meshManager));
 

@@ -327,7 +327,7 @@ void Headless::dumpChannTiles(const QString& line) {
   ChannelDataWrapper cdw(chanID);
 
   OmViewGroupState& vgs = new OmViewGroupState(nullptr);
-  OmTileDumper dumper(cdw.GetChannelPtr(), file, vgs);
+  OmTileDumper dumper(cdw.GetChannel(), file, vgs);
   dumper.DumpTiles();
 }
 
@@ -866,7 +866,7 @@ void Headless::replaceChanSlice(const QString& line) {
   const QString fname = args[2];
   const int sliceNum = OmStringHelpers::getUInt(args[3]);
 
-  HeadlessImpl::ReplaceSlice(cdw.GetChannelPtr(), fname, sliceNum);
+  HeadlessImpl::ReplaceSlice(cdw.GetChannel(), fname, sliceNum);
 }
 
 void Headless::replaceSegSlice(const QString& line) {

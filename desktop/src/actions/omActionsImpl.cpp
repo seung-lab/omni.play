@@ -70,6 +70,10 @@ void OmActionsImpl::ValidateSelectedSegments(const SegmentationDataWrapper sdw,
 
 void OmActionsImpl::UncertainSegment(const SegmentDataWrapper sdw,
                                      const bool uncertain) {
+  if (!sdw.IsValidWrapper()) {
+    return;
+  }
+
   bool shouldJump =
       OmLocalPreferences::GetShouldJumpToNextSegmentAfterValidate();
   const om::common::SegID nextSegmentIDtoJumpTo =
@@ -109,7 +113,7 @@ void OmActionsImpl::setUncertain(const SegmentDataWrapper& sdw,
   set.insert(sdw.FindRootID());
 
   std::shared_ptr<std::set<OmSegment*> > children =
-      OmSegmentUtils::GetAllChildrenSegments(sdw.Segments(), set);
+      OmSegmentUtils::GetAllChildrenSegments(*sdw.Segments(), set);
 
   (new OmSegmentUncertainAction(sdw.MakeSegmentationDataWrapper(), children,
                                 uncertain))->Run();
@@ -120,8 +124,8 @@ void OmActionsImpl::setUncertain(const SegmentationDataWrapper& sdw,
   OmSegments* segments = sdw.Segments();
 
   std::shared_ptr<std::set<OmSegment*> > children =
-      OmSegmentUtils::GetAllChildrenSegments(segments,
-                                             segments->GetSelectedSegmentIDs());
+      OmSegmentUtils::GetAllChildrenSegments(
+          segments, segments->Selection().GetSelectedSegmentIDs());
 
   (new OmSegmentUncertainAction(sdw, children, uncertain))->Run();
 }
@@ -137,18 +141,17 @@ void OmActionsImpl::JoinSegmentsSet(const SegmentationDataWrapper sdw,
   joiner.Join();
 }
 
-void OmActionsImpl::FindAndSplitSegments(OmSegment* seg1, OmSegment* seg2) {
+void OmActionsImpl::FindAndSplitSegments(const SegmentationDataWrapper sdw,
+                                         OmSegment* seg1, OmSegment* seg2) {
   if (seg1 == seg2) {
     log_infos << "can't split--same segment";
     return;
   }
 
-  SegmentationDataWrapper sdw(seg1);
-
-  OmSegmentEdge edge =
+  om::segment::UserEdge edge =
       OmFindCommonEdge::FindClosestCommonEdge(sdw.Segments(), seg1, seg2);
 
-  if (!edge.isValid()) {
+  if (!edge.valid) {
     log_infos << "edge was not splittable";
     return;
   }
@@ -156,10 +159,9 @@ void OmActionsImpl::FindAndSplitSegments(OmSegment* seg1, OmSegment* seg2) {
   (new OmSegmentSplitAction(sdw, edge))->Run();
 }
 
-void OmActionsImpl::ShatterSegment(OmSegment* seg) {
-  SegmentDataWrapper sdw(seg);
-
-  (new OmSegmentShatterAction(sdw))->Run();
+void OmActionsImpl::ShatterSegment(const SegmentationDataWrapper sdw,
+                                   OmSegment* seg) {
+  (new OmSegmentShatterAction(SegmentDataWrapper(sdw, seg->value())))->Run();
 }
 
 void OmActionsImpl::CutSegment(const SegmentDataWrapper sdw) {

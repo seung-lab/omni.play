@@ -28,11 +28,11 @@ class OmExtractSegTile {
  private:
   template <typename T>
   std::shared_ptr<uint32_t> getCachedTile(T* d) const {
-    auto dataPtr = vol_->SliceCache()->Get(coord_, depth_, plane_);
+    auto dataPtr = vol_->SliceCache().Get(coord_, depth_, plane_);
 
     if (!dataPtr) {
       dataPtr = getTile(d);
-      vol_->SliceCache()->Set(coord_, depth_, plane_, dataPtr);
+      vol_->SliceCache().Set(coord_, depth_, plane_, dataPtr);
     }
 
     return dataPtr;

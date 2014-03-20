@@ -25,12 +25,12 @@ bool Forest::Join(segid parentSegID, segid childSegID, float edgeWeight) {
   segid p = Root(parentSegID);
   segid c = Root(childSegID);
   if (p == c) {
-    log_debugs(unknown) << "ERROR: same cell";
+    log_debugs << "ERROR: same cell";
     return false;
   }
 
   if (cells_.Valid(p) || cells_.Valid(c)) {
-    log_debugs(unknown) << "ERROR: can't join validated cell";
+    log_debugs << "ERROR: can't join validated cell";
     return false;
   }
 
@@ -51,12 +51,12 @@ boost::optional<edge> Forest::Split(segid id) {
   checkID(id);
   segid root = Root(id);
   if (root == id) {
-    log_debugs(unknown) << "ERROR: can't split root segment";
+    log_debugs << "ERROR: can't split root segment";
     return boost::optional<edge>();
   }
 
   if (cells_.Valid(id)) {
-    log_debugs(unknown) << "ERROR: can't split validated cell";
+    log_debugs << "ERROR: can't split validated cell";
     return boost::optional<edge>();
   }
 

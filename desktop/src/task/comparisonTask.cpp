@@ -41,7 +41,7 @@ bool ComparisonTask::Start() {
   log_debugs << "Starting Comparison Task.";
 
   OmSegmentation* segmentation = sdw.GetSegmentation();
-  OmSegments* segments = segmentation->Segments();
+  OmSegments& segments = segmentation->Segments();
 
   segmentation->ClearUserChangesAndSave();
   sdw.SegmentLists()->RefreshGUIlists();
@@ -52,20 +52,20 @@ bool ComparisonTask::Start() {
   if (allIter != namedGroups_.end()) {
     common::SegIDSet allRoots;
     for (const auto& id : allIter->segments) {
-      if (id <= 0 || id > segments->getMaxValue()) {
+      if (id <= 0 || id > segments.getMaxValue()) {
         log_errors << "Invalid segment id " << id << " in 'All' segment group.";
         continue;
       }
-      auto rootID = segments->findRootID(id);
+      auto rootID = segments.FindRootID(id);
       if (rootID) {
         allRoots.insert(rootID);
       }
     }
-    segments->UpdateSegmentSelection(allRoots, true);
+    segments.Selection().UpdateSegmentSelection(allRoots, true);
   } else {
     // clear any pre-existing selection (which could exist if the previous task
     // happened to be in the same volume)
-    segments->UpdateSegmentSelection({}, true);
+    segments.Selection().UpdateSegmentSelection({}, true);
     log_errors << "Missing All segments group.";
   }
 
@@ -99,7 +99,7 @@ bool ComparisonTask::Submit() {
   }
   const auto& rootIDs = sdw.Segments()->Selection().GetSelectedSegmentIDs();
   const auto& segments =
-      OmSegmentUtils::GetAllChildrenSegments(sdw.Segments(), rootIDs);
+      OmSegmentUtils::GetAllChildrenSegments(*sdw.Segments(), rootIDs);
   for (OmSegment* seg : *segments) {
     segIDs[seg->value()] = 1;
   }

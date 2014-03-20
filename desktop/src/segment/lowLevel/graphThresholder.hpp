@@ -9,7 +9,6 @@
 #include "segment/lowLevel/graph.h"
 #include "segment/lowLevel/omDynamicForestCache.hpp"
 #include "segment/lowLevel/store.h"
-#include "segment/userEdgeVector.hpp"
 #include "threads/threadPoolBatched.hpp"
 #include "users/omUsers.h"
 #include "utility/timer.hpp"
@@ -33,8 +32,7 @@ class GraphThresholder {
   }
 
   void SetGlobalThreshold() {
-    log_debugs(unknown) << om::string::humanizeNum(edges_.size())
-                        << " edges...";
+    log_debugs << om::string::humanizeNum(edges_.size()) << " edges...";
 
     om::utility::timer timer;
 
@@ -72,7 +70,7 @@ class GraphThresholder {
   }
 
   void ResetGlobalThreshold() {
-    log_debugs(unknown) << string::humanizeNum(edges_.size()) << " edges...";
+    log_debugs << string::humanizeNum(edges_.size()) << " edges...";
 
     utility::timer timer;
 
@@ -135,9 +133,9 @@ class GraphThresholder {
 
   bool sizeCheck(const om::common::SegID a, const om::common::SegID b,
                  const double threshold) {
-    return threshold == 0 || ((segmentLists_.GetSizeWithChildren(Root(a)) +
-                               segmentLists_.GetSizeWithChildren(Root(b))) <
-                              threshold);
+    return threshold == 0 ||
+           ((segmentLists_.GetSizeWithChildren(Root(a)) +
+             segmentLists_.GetSizeWithChildren(Root(b))) < threshold);
   }
 
   boost::optional<TaskArgs> doJoin(const om::common::SegID parentID,
@@ -156,8 +154,7 @@ class GraphThresholder {
     }
 
     Join(childRootID, parentID);
-    return TaskArgs { childRootID, parentID, parentRootID, threshold,
-                      edgeNumber };
+    return TaskArgs{childRootID, parentID, parentRootID, threshold, edgeNumber};
   }
 
   void updateFromJoin(const TaskArgs& t) {

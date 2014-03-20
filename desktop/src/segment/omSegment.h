@@ -105,6 +105,7 @@ class OmSegment {
   double threshold_;
 
   int edgeNumber_;  // index of edge in main edge list
+
   om::segment::UserEdge customMergeEdge_;
   uint64_t freshnessForMeshes_;
 

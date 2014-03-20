@@ -7,7 +7,6 @@
 #include "datalayer/omDataPaths.h"
 #include "mesh/drawer/omMeshDrawer.h"
 #include "mesh/omMeshManagers.hpp"
-#include "segment/io/omUserEdges.hpp"
 #include "segment/io/omValidGroupNum.hpp"
 #include "segment/lists/omSegmentLists.h"
 #include "segment/omSegments.h"
@@ -32,7 +31,6 @@ OmSegmentation::OmSegmentation()
       chunkCache_(new OmChunkCache<OmSegmentation, OmSegChunk>(this)),
       segments_(new OmSegments(this)),
       segmentLists_(new OmSegmentLists()),
-      mstUserEdges_(new OmUserEdges(this)),
       validGroupNum_(new OmValidGroupNum(this)),
       volData_(new OmVolumeData()),
       volSliceCache_(new OmRawSegTileCache(this)),
@@ -49,7 +47,6 @@ OmSegmentation::OmSegmentation(common::ID id)
       chunkCache_(new OmChunkCache<OmSegmentation, OmSegChunk>(this)),
       segments_(new OmSegments(this)),
       segmentLists_(new OmSegmentLists()),
-      mstUserEdges_(new OmUserEdges(this)),
       validGroupNum_(new OmValidGroupNum(this)),
       volData_(new OmVolumeData()),
       volSliceCache_(new OmRawSegTileCache(this)),

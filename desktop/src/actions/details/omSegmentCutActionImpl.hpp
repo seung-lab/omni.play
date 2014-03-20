@@ -4,13 +4,15 @@
 #include "common/common.h"
 #include "events/events.h"
 #include "segment/lists/omSegmentLists.h"
+#include "segment/omSegments.h"
+#include "segment/omSegment.h"
 #include "system/cache/omCacheManager.h"
 #include "utility/dataWrappers.h"
 
 class OmSegmentCutActionImpl {
  private:
   SegmentDataWrapper sdw_;
-  QVector<OmSegmentEdge> edges_;
+  QVector<om::segment::UserEdge> edges_;
   QString desc;  // TODO: rename to desc_
 
  public:
@@ -27,9 +29,9 @@ class OmSegmentCutActionImpl {
 
     OmSegment* seg = sdw_.GetSegment();
 
-    std::vector<OmSegmentEdge> edges = sdw_.Segments()->CutSegment(seg);
+    std::vector<om::segment::UserEdge> edges = sdw_.Segments()->CutSegment(seg);
 
-    edges_ = QVector<OmSegmentEdge>::fromStdVector(edges);
+    edges_ = QVector<om::segment::UserEdge>::fromStdVector(edges);
 
     desc = QString("Cut seg %1; %2 edges").arg(seg->value()).arg(edges.size());
 
@@ -37,7 +39,7 @@ class OmSegmentCutActionImpl {
 
     om::event::SegmentModified();
 
-    sdw_.GetSegmentation()->SegmentLists()->RefreshGUIlists();
+    sdw_.GetSegmentation()->Segments().SegmentLists().RefreshGUIlists();
 
     OmCacheManager::TouchFreshness();
     om::event::Redraw2d();
@@ -52,7 +54,7 @@ class OmSegmentCutActionImpl {
 
     OmSegment* seg = sdw_.GetSegment();
 
-    std::vector<OmSegmentEdge> edges = edges_.toStdVector();
+    std::vector<om::segment::UserEdge> edges = edges_.toStdVector();
 
     const bool ret = sdw_.Segments()->JoinEdges(edges);
 
@@ -65,7 +67,7 @@ class OmSegmentCutActionImpl {
 
     om::event::SegmentModified();
 
-    sdw_.GetSegmentation()->SegmentLists()->RefreshGUIlists();
+    sdw_.GetSegmentation()->Segments().SegmentLists().RefreshGUIlists();
 
     OmCacheManager::TouchFreshness();
     om::event::Redraw2d();

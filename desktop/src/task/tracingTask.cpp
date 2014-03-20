@@ -36,7 +36,7 @@ bool TracingTask::Start() {
   if (!sdw.IsValidWrapper()) {
     return false;
   }
-  sdw.Segments()->UpdateSegmentSelection(seed_, true);
+  sdw.Segments()->Selection().UpdateSegmentSelection(seed_, true);
   return true;
 }
 

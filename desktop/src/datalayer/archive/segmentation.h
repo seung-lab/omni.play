@@ -5,7 +5,6 @@ class OmSegmentationManager;
 class OmSegmentation;
 class OmSegments;
 class OmSegmentsImpl;
-class OmSegmentEdge;
 class DummyGroups;
 class DummyGroup;
 
@@ -20,8 +19,6 @@ YAMLold::Emitter& operator<<(YAMLold::Emitter& out, const OmSegments& sc);
 void operator>>(const YAMLold::Node& in, OmSegments& sc);
 YAMLold::Emitter& operator<<(YAMLold::Emitter& out, const OmSegmentsImpl& sc);
 void operator>>(const YAMLold::Node& in, OmSegmentsImpl& sc);
-YAMLold::Emitter& operator<<(YAMLold::Emitter& out, const OmSegmentEdge& se);
-void operator>>(const YAMLold::Node& in, OmSegmentEdge& se);
 
 YAMLold::Emitter& operator<<(YAMLold::Emitter& out, const DummyGroups& g);
 YAMLold::Emitter& operator<<(YAMLold::Emitter& out, const DummyGroup& g);

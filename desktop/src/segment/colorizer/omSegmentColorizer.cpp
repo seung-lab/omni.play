@@ -43,7 +43,7 @@ std::shared_ptr<om::common::ColorARGB> OmSegmentColorizer::ColorTile(
     zi::rwmutex::read_guard g(colorCache_);
 
     OmSegmentColorizerImpl c(params_, colorCache_, freshness_.load());
-    c.ColorTile(imageData, colorMappedDataPtr->GetData());
+    c.ColorTile(imageData, colorMappedDataPtr.get());
   }
 
   // timer.PrintV("done coloring tile");

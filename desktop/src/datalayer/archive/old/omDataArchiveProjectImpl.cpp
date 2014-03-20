@@ -13,7 +13,8 @@
 #include "segment/lowLevel/omEnabledSegments.hpp"
 #include "segment/lowLevel/omPagingPtrStore.h"
 #include "segment/lowLevel/omSegmentSelection.hpp"
-#include "segment/omSegmentEdge.h"
+
+#include "segment/types.hpp"
 #include "segment/omSegments.h"
 #include "segment/omSegmentsImpl.h"
 #include "system/omGenericManager.hpp"
@@ -240,21 +241,22 @@ QDataStream& operator>>(QDataStream& in, OmSegmentsImpl& sc) {
     in >> dead;
   }
 
-  OmUserEdges* userEdges = sc.segmentation_->MSTUserEdges();
+  // OmUserEdges* userEdges = sc.segmentation_->MSTUserEdges();
 
-  if (OmProject::GetFileVersion() < 19) {
-    int size;
-    in >> size;
-    for (int i = 0; i < size; ++i) {
-      OmSegmentEdge e;
-      in >> e;
-      userEdges->AddEdgeFromProjectLoad(e);
-    }
-    userEdges->Save();
-    log_infos << "loaded " << userEdges->Edges().size() << " user edges";
-  } else {
-    userEdges->Load();
-  }
+  // if (OmProject::GetFileVersion() < 19) {
+  //   int size;
+  //   in >> size;
+  //   for (int i = 0; i < size; ++i) {
+
+  //     om::segment::UserEdge e;
+  //     in >> e;
+  //     userEdges->AddEdgeFromProjectLoad(e);
+  //   }
+  //   userEdges->Save();
+  //   log_infos << "loaded " << userEdges->Edges().size() << " user edges";
+  // } else {
+  //   userEdges->Load();
+  // }
 
   return in;
 }
@@ -271,7 +273,7 @@ QDataStream& operator>>(QDataStream& in, OmPagingPtrStore& ps) {
   return in;
 }
 
-QDataStream& operator>>(QDataStream& in, OmSegmentEdge& se) {
+QDataStream& operator>>(QDataStream& in, om::segment::UserEdge& se) {
   in >> se.parentID;
   in >> se.childID;
   in >> se.threshold;
@@ -300,7 +302,7 @@ QDataStream& operator>>(QDataStream& in, DummyGroup& g) {
   return in;
 }
 
-QDataStream& operator<<(QDataStream& out, const OmSegmentEdge& se) {
+QDataStream& operator<<(QDataStream& out, const om::segment::UserEdge& se) {
   out << se.parentID;
   out << se.childID;
   out << se.threshold;

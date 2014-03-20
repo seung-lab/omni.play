@@ -2,7 +2,8 @@
 #include "precomp.h"
 
 #include "actions/details/omUndoCommand.hpp"
-#include "segment/omSegmentEdge.h"
+
+#include "segment/types.hpp"
 
 class SegmentDataWrapper;
 class SegmentationDataWrapper;

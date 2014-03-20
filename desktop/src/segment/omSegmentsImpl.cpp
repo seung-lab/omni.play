@@ -76,7 +76,7 @@ om::segment::UserEdge OmSegmentsImpl::SplitEdgeUserAction(
     const om::segment::UserEdge& e) {
   boost::optional<std::string> splittableTest = IsEdgeSplittable(e);
   if (splittableTest) {
-    log_debugs(unknown) << "Split error: " << *splittableTest;
+    log_debugs << "Split error: " << *splittableTest;
     return om::segment::UserEdge();
   }
 
@@ -293,7 +293,7 @@ om::common::SegIDSet OmSegmentsImpl::UnJoinTheseSegments(
       ret.insert(segID);
 
     } else {
-      log_debugs(unknown) << "Split error: " << *splittableTest;
+      log_debugs << "Split error: " << *splittableTest;
     }
 
     ++iter;
@@ -310,7 +310,7 @@ om::common::SegIDSet OmSegmentsImpl::UnJoinTheseSegments(
 
 void OmSegmentsImpl::refreshTree() {
   if (!mst_.size() > 0) {
-    log_errors(unknown) << "no mst found...";
+    log_errors << "no mst found...";
   }
 
   resetGlobalThreshold();
@@ -318,7 +318,7 @@ void OmSegmentsImpl::refreshTree() {
   segmentLists_->RefreshGUIlists();
   OmCacheManager::TouchFreshness();
 
-  log_debugs(unknown) << "done refreshing tree";
+  log_debugs << "done refreshing tree";
 }
 
 void OmSegmentsImpl::setGlobalThreshold() {

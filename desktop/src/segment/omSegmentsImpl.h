@@ -16,7 +16,7 @@ class Store;
 class Selection;
 class GraphThresholder;
 class Children;
-class UserEdgeVector;
+struct UserEdge;
 }
 namespace volume {
 class MetadataManager;

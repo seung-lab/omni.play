@@ -65,7 +65,7 @@ class OmChannelImpl : public OmMipVolume, public OmManageableObject {
     return chunkCache_.get();
   }
 
-  inline OmTileCacheChannel* TileCache() { return tileCache_.get(); }
+  inline OmTileCacheChannel& TileCache() { return *tileCache_; }
 
   inline om::channel::folder* Folder() const { return folder_.get(); }
 

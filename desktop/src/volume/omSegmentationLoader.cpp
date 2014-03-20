@@ -1,13 +1,11 @@
 #include "project/omProject.h"
 #include "segment/omSegments.h"
-#include "segment/lowLevel/omPagingPtrStore.h"
 #include "utility/omFileHelpers.h"
 #include "volume/omSegmentation.h"
 #include "volume/omSegmentationFolder.h"
 #include "volume/omSegmentationLoader.h"
 #include "volume/io/omVolumeData.h"
 #include "volume/build/omVolumeProcessor.h"
-#include "segment/io/omUserEdges.hpp"
 
 void om::segmentation::loader::LoadSegmentPages(
     OmPagingPtrStore& ps, QSet<om::common::PageNum>& validPageNumbers,

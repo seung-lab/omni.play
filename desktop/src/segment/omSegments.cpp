@@ -11,8 +11,7 @@ using namespace om::segment;
 OmSegments::OmSegments(OmSegmentation* vol)
     : meta_(vol->Metadata()),
       impl_(std::make_unique<OmSegmentsImpl>(vol->SegData(), vol->SegListData(),
-                                             vol->Edges(), vol->UserEdges(),
-                                             vol->Metadata(),
+                                             vol->MST(), vol->Metadata(),
                                              vol->ValidGroupNum(),
                                              SegmentationDataWrapper(vol))) {}
 

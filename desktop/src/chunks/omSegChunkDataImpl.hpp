@@ -68,7 +68,7 @@ class dataImpl : public dataInterface {
     }
   }
 
-  void RefreshBoundingData(OmSegments* segments) {
+  void RefreshBoundingData(OmSegments& segments) {
     ProcessChunkVoxelBoundingData p(chunk_, segments);
 
     dataAccessor<DATA> dataWrapper(ptrToChunkData_);

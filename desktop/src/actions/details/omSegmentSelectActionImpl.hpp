@@ -5,10 +5,11 @@
 #include "common/common.h"
 #include "common/string.hpp"
 #include "project/omProject.h"
-#include "project/omProject.h"
 #include "events/events.h"
 #include "utility/dataWrappers.h"
 #include "utility/copyFirstN.hpp"
+#include "segment/omSegments.h"
+#include "segment/selection.hpp"
 
 class OmSegmentSelectActionImpl {
  private:
@@ -25,15 +26,16 @@ class OmSegmentSelectActionImpl {
 
     if (params_->augmentListOnly) {
       if (om::common::AddOrSubtract::ADD == params_->addOrSubtract) {
-        segments->AddToSegmentSelection(params_->newSelectedIDs);
+        segments->Selection().AddToSegmentSelection(params_->newSelectedIDs);
 
       } else {
-        segments->RemoveFromSegmentSelection(params_->newSelectedIDs);
+        segments->Selection().RemoveFromSegmentSelection(
+            params_->newSelectedIDs);
       }
 
     } else {
-      segments->UpdateSegmentSelection(params_->newSelectedIDs,
-                                       params_->addToRecentList);
+      segments->Selection().UpdateSegmentSelection(params_->newSelectedIDs,
+                                                   params_->addToRecentList);
     }
 
     om::event::SegmentModified(params_);
@@ -44,15 +46,16 @@ class OmSegmentSelectActionImpl {
 
     if (params_->augmentListOnly) {
       if (om::common::AddOrSubtract::ADD == params_->addOrSubtract) {
-        segments->RemoveFromSegmentSelection(params_->newSelectedIDs);
+        segments->Selection().RemoveFromSegmentSelection(
+            params_->newSelectedIDs);
 
       } else {
-        segments->AddToSegmentSelection(params_->newSelectedIDs);
+        segments->Selection().AddToSegmentSelection(params_->newSelectedIDs);
       }
 
     } else {
-      segments->UpdateSegmentSelection(params_->oldSelectedIDs,
-                                       params_->addToRecentList);
+      segments->Selection().UpdateSegmentSelection(params_->oldSelectedIDs,
+                                                   params_->addToRecentList);
     }
 
     om::event::SegmentModified(params_);

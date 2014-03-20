@@ -86,9 +86,10 @@ void OmActions::JoinSegments(const SegmentationDataWrapper& sdw,
       zi::run_fn(zi::bind(&OmActionsImpl::JoinSegmentsSet, impl(), sdw, ids)));
 }
 
-void OmActions::FindAndSplitSegments(OmSegment* seg1, OmSegment* seg2) {
+void OmActions::FindAndSplitSegments(const SegmentationDataWrapper sdw,
+                                     OmSegment* seg1, OmSegment* seg2) {
   pool().push_back(zi::run_fn(
-      zi::bind(&OmActionsImpl::FindAndSplitSegments, impl(), seg1, seg2)));
+      zi::bind(&OmActionsImpl::FindAndSplitSegments, impl(), sdw, seg1, seg2)));
 }
 
 void OmActions::ShatterSegment(OmSegment* seg) {

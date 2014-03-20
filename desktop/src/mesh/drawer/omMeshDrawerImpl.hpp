@@ -25,7 +25,7 @@ class OmMeshDrawerImpl {
   OmSegmentation* const segmentation_;
 
   OmViewGroupState& vgs_;
-  OmSegments* const segments_;
+  OmSegments& segments_;
   const OmBitfield drawOptions_;
   OmMeshPlan* const sortedSegments_;
   const float breakThreshold_;
@@ -46,7 +46,7 @@ class OmMeshDrawerImpl {
         segments_(segmentation_->Segments()),
         drawOptions_(drawOptions),
         sortedSegments_(sortedSegments),
-        breakThreshold_(vgs->getBreakThreshold()),
+        breakThreshold_(vgs.getBreakThreshold()),
         redrawNeeded_(false),
         numSegsDrawn_(0),
         numVoxelsDrawn_(0),
@@ -199,7 +199,7 @@ class OmMeshDrawerImpl {
   void applyColor(OmSegment* seg, const om::segment::coloring sccType) {
     if (seg->getParent() &&
         sccType != om::segment::coloring::SEGMENTATION_BREAK_BLACK) {
-      applyColor(segments_->findRoot(seg), sccType);
+      applyColor(segments_.FindRoot(seg), sccType);
       return;
     }
 
@@ -207,19 +207,6 @@ class OmMeshDrawerImpl {
     if (om::segment::coloring::SEGMENTATION_BREAK_BLACK != sccType) {
       hyperColor = seg->GetColorFloat() * 2.;
     } else {
-
-      if (!qFuzzyCompare(1, vgs_.getBreakThreshold())) {
-        if (OmSegmentUtils::UseParentColorBasedOnThreshold(seg,
-                                                           breakThreshold_)) {
-          // WARNING: recusive operation is O(depth of MST)
-
-          OmSegment* segToShow =
-              OmSegmentUtils::GetSegmentFromThreshold(seg, breakThreshold_);
-          applyColor(segToShow, sccType);
-          return;
-        }
-      }
-
       hyperColor = seg->GetColorFloat();
     }
 

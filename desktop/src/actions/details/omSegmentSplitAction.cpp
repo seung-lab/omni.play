@@ -5,7 +5,7 @@
 #include "segment/omFindCommonEdge.hpp"
 
 OmSegmentSplitAction::OmSegmentSplitAction(const SegmentationDataWrapper& sdw,
-                                           const OmSegmentEdge& edge)
+                                           const om::segment::UserEdge& edge)
     : impl_(std::make_shared<OmSegmentSplitActionImpl>(sdw, edge)) {
   SetUndoable(true);
 }

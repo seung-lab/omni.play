@@ -33,7 +33,7 @@ class OmProjectImpl {
   QString projectMetadataFile_;
   QString oldHDF5projectFile_;
   OmHdf5* oldHDF5_;
-  om::file::Paths& paths_;
+  om::file::Paths paths_;
 
   int fileVersion_;
 
@@ -41,36 +41,22 @@ class OmProjectImpl {
   std::unique_ptr<OmProjectGlobals> globals_;
 
  public:
-  OmProjectImpl(const QString& fileNameAndPathIn)
-      : oldHDF5_(nullptr),
-        paths_(fileNameAndPathIn.toStdString()),
-        fileVersion_(0) {
+  OmProjectImpl(const QString& fnp)
+      : oldHDF5_(nullptr), paths_(fnp.toStdString()), fileVersion_(0) {
     doNew();
   }
 
-  OmProjectImpl(const QString& fileNameAndPath, QWidget* guiParent,
+  OmProjectImpl(const QString& fnp, QWidget* guiParent,
                 const std::string& username)
-      : oldHDF5_(nullptr),
-        paths_(fileNameAndPathIn.toStdString()),
-        fileVersion_(0) {
+      : oldHDF5_(nullptr), paths_(fnp.toStdString()), fileVersion_(0) {
     doLoad(guiParent, username);
   }
 
   ~OmProjectImpl() {}
 
-  QString FilesFolder() {
-    if (!paths_) {
-      return "";
-    }
-    return paths_->FilesFolder().c_str();
-  }
+  QString FilesFolder() { return paths_.FilesFolder().c_str(); }
 
-  QString OmniFile() {
-    if (!paths_) {
-      return "";
-    }
-    return paths_->OmniFile().c_str();
-  }
+  QString OmniFile() { return paths_.OmniFile().c_str(); }
 
   const om::file::Paths& Paths() { return paths_; }
 
@@ -143,10 +129,6 @@ class OmProjectImpl {
   }
 
   void doLoad(QWidget* guiParent, const std::string& username) {
-    if (!om::file::Paths::IsValid(fnp.toStdString())) {
-      throw om::IoException("Project file not found at" + fnp.toStdString());
-    }
-
     oldHDF5projectFile_ = OmFileNames::OldHDF5projectFileName();
     projectMetadataFile_ = OmFileNames::ProjectMetadataFile();
 
