@@ -7,8 +7,6 @@
 #include "common/common.h"
 #include "datalayer/archive/old/omDataArchiveProject.h"
 #include "datalayer/archive/project.h"
-#include "datalayer/fs/omFile.hpp"
-#include "datalayer/fs/omFileNames.hpp"
 #include "datalayer/hdf5/omHdf5Manager.h"
 #include "datalayer/omDataPath.h"
 #include "datalayer/omDataPaths.h"
@@ -155,11 +153,12 @@ class OmProjectImpl {
     OmTileCache::Reset();
     OmActionLogger::Reset();
 
-    if (om::file::exists(projectMetadataFile_))
+    if (om::file::exists(projectMetadataFile_)) {
       om::data::archive::project::Read(projectMetadataFile_.c_str(), this);
-    else
-      OmDataArchiveProject::ArchiveRead(OmFileNames::ProjectMetadataFileOld(),
+    } else {
+      OmDataArchiveProject::ArchiveRead(paths_.ProjectMetadataQt().c_str(),
                                         this);
+    }
 
     globals_->Users().UserSettings().Load();
 
@@ -178,8 +177,8 @@ class OmProjectImpl {
       projectFile.remove();
     }
 
-    OmFileHelpers::RemoveDir(FilesFolder());
-    OmFileNames::MakeFilesFolder();
+    om::file::RemoveDir(paths_.FilesFolder());
+    om::file::MkDir(paths_.FilesFolder());
   }
 
   void openHDF5() {
@@ -201,7 +200,7 @@ class OmProjectImpl {
   }
 
   void migrateFromHdf5() {
-    OmFileNames::MakeFilesFolder();
+    om::file::MkDir(paths_.FilesFolder());
 
     OmFileHelpers::MoveFile(OmniFile(), oldHDF5projectFile_.c_str());
 
@@ -220,7 +219,7 @@ class OmProjectImpl {
     OmDataWrapperPtr dw = oldHDF5_->readDataset(path, &size);
     char const* const data = dw->getPtr<const char>();
 
-    QFile newProjectMetadafile(OmFileNames::ProjectMetadataFileOld());
+    QFile newProjectMetadafile(paths_.ProjectMetadataQt().c_str());
 
     if (!newProjectMetadafile.open(QIODevice::WriteOnly)) {
       throw om::IoException("could not open");

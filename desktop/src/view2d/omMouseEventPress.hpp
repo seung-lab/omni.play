@@ -339,21 +339,21 @@ class OmMouseEventPress {
   }
 
   void kalina() {
-    boost::optional<SegmentDataWrapper> sdw = getSelectedSegment();
-    if (!sdw) {
-      return;
-    }
-    SegmentDataWrapper& seg = *sdw;
-    if (!seg.IsSegmentValid()) {
-      return;
-    }
+    // boost::optional<SegmentDataWrapper> sdw = getSelectedSegment();
+    // if (!sdw) {
+    //   return;
+    // }
+    // SegmentDataWrapper& seg = *sdw;
+    // if (!seg.IsSegmentValid()) {
+    //   return;
+    // }
 
-    SegmentationDataWrapper segmentation = seg.MakeSegmentationDataWrapper();
+    // SegmentationDataWrapper segmentation = seg.MakeSegmentationDataWrapper();
 
-    if (shiftKey_) {
-      // Do something different
-    } else {
-      // Do the same.
-    }
+    // if (shiftKey_) {
+    //   // Do something different
+    // } else {
+    //   // Do the same.
+    // }
   }
 };

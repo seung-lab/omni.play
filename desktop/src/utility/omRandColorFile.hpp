@@ -58,11 +58,7 @@ class OmRandColorFile {
   }
 
   std::string fileName() const {
-    std::stringstream s;
-    s << OmFileNames::GetRandColorFileName();
-    s << ".ver";
-    s << version_;
-    return s.str();
+    return OmProject::Paths().RandColors().string();
   }
 
   static void buildColorTable(std::vector<om::common::Color>& colorTable) {

@@ -8,12 +8,13 @@
 #include "view2d/omView2dManagerImpl.hpp"
 
 OmProjectGlobals::OmProjectGlobals()
-    : randColorFile_(std::make_unique<OmRandColorFile>()),
-      users_(std::make_unique<om::users>()),
+    : users_(std::make_unique<om::users>()),
       v2dManagerImpl_(std::make_unique<OmView2dManagerImpl>()),
       stateMan_(std::make_unique<OmStateManagerImpl>()),
       actions_(std::make_unique<OmActionsImpl>()),
-      actionLogger_(new OmActionLogger()) {}
+      actionLogger_(new OmActionLogger()) {
+  randColorFile_.reset(new OmRandColorFile());
+}
 
 OmProjectGlobals::~OmProjectGlobals() {}
 
