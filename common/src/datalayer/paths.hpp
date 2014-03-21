@@ -60,41 +60,110 @@ class Paths {
 
   // Relative to Volume
   struct Vol {
-    static path Data(uint8_t mipLevel, const common::DataType& type) {
+    static path DataRel(uint8_t mipLevel, const common::DataType& type) {
       return Mip(mipLevel) / File::Volume(type);
     }
+
+    path Data(uint8_t mipLevel, const common::DataType& type) {
+      return root_ / DataRel(mipLevel, type);
+    }
+
+    Vol(om::file::path root) : root_(root) {}
+
+   protected:
+    om::file::path root_;
   };
 
   // Relative to Segmentation
-  struct Seg {
-    static path Chunks() { return "chunks"; }
-    static path Chunk(const coords::Chunk& c) {
-      return Chunks() / Paths::Chunk(c);
+  struct Seg : public Vol {
+    static path ChunksRel() { return "chunks"; }
+    static path ChunkRel(const coords::Chunk& c) {
+      return ChunksRel() / Paths::Chunk(c);
     }
-    static path ChunkUniqueValues(const coords::Chunk& c) {
-      return Chunk(c) / File::UniqueValues();
+    static path ChunkUniqueValuesRel(const coords::Chunk& c) {
+      return ChunkRel(c) / File::UniqueValues();
     }
-    static path Meshes() { return "meshes/1.0000"; }
-    static path MeshAllocTable(const coords::Chunk& c) {
-      return Meshes() / Paths::Chunk(c) / File::MeshAllocTable();
+    static path MeshesRel() { return "meshes/1.0000"; }
+    static path MeshAllocTableRel(const coords::Chunk& c) {
+      return MeshesRel() / Paths::Chunk(c) / File::MeshAllocTable();
     }
-    static path MeshData(const coords::Chunk& c) {
-      return Meshes() / Paths::Chunk(c) / File::MeshData();
+    static path MeshDataRel(const coords::Chunk& c) {
+      return MeshesRel() / Paths::Chunk(c) / File::MeshData();
     }
-    static path Segments() { return "segments"; }
-    static path SegmentDataPage(uint8_t page) {
-      return Segments() / File::SegmentDataPage(page);
+    static path SegmentsRel() { return "segments"; }
+    static path SegmentDataPageRel(uint8_t page) {
+      return SegmentsRel() / File::SegmentDataPage(page);
     }
-    static path SegmentListTypesPage(uint8_t page) {
-      return Segments() / File::SegmentListTypesPage(page);
+    static path SegmentListTypesPageRel(uint8_t page) {
+      return SegmentsRel() / File::SegmentListTypesPage(page);
     }
-    static path ValidGroupNum() { return Segments() / File::ValidGroupNum(); }
-    static path MST() { return Segments() / File::MST(); }
-    static path UserEdges() { return Segments() / File::UserEdges(); }
+    static path ValidGroupNumRel() {
+      return SegmentsRel() / File::ValidGroupNum();
+    }
+    static path MSTRel() { return SegmentsRel() / File::MST(); }
+    static path UserEdgesRel() { return SegmentsRel() / File::UserEdges(); }
+
+    path Chunks() const { return root_ / ChunksRel(); }
+    path Chunk(const coords::Chunk& c) const { return root_ / ChunkRel(c); }
+    path ChunkUniqueValues(const coords::Chunk& c) const {
+      return root_ / ChunkUniqueValuesRel(c);
+    }
+
+    path Meshes() const { return root_ / MeshesRel(); }
+    path MeshAllocTable(const coords::Chunk& c) const {
+      return root_ / MeshAllocTableRel(c);
+    }
+    path MeshData(const coords::Chunk& c) const {
+      return root_ / MeshDataRel(c);
+    }
+
+    path Segments() const { return root_ / SegmentsRel(); }
+    path SegmentDataPage(uint8_t page) const {
+      return root_ / SegmentDataPageRel(page);
+    }
+    path SegmentListTypesPage(uint8_t page) const {
+      return root_ / SegmentListTypesPageRel(page);
+    }
+    path ValidGroupNum() const { return root_ / ValidGroupNumRel(); }
+    path MST() const { return root_ / MSTRel(); }
+    path UserEdges() const { return root_ / UserEdgesRel(); }
+
+    Seg(path root) : Vol(root) {}
   };
 
   struct Usr {
-    static path LogFiles() { return "logFiles"; }
+    static path LogFilesRel() { return "logFiles"; }
+
+    path Settings() const { return root_ / File::Settings(); }
+    path LogFiles() const { return root_ / LogFilesRel(); }
+    path Segmentation(uint8_t i) const { return root_ / Root::Segmentation(i); }
+    path Annotations(uint8_t i) const {
+      return Segmentation(i) / File::Annotations();
+    }
+    path Segments(uint8_t i) const {
+      return Segmentation(i) / Seg::SegmentsRel();
+    }
+    path SegmentDataPage(uint8_t i, uint8_t page) const {
+      return Segmentation(i) / Seg::SegmentDataPageRel(page);
+    }
+    path SegmentListTypesPage(uint8_t i, uint8_t page) const {
+      return Segmentation(i) / Seg::SegmentListTypesPageRel(page);
+    }
+    path ValidGroupNum(uint8_t i) const {
+      return Segmentation(i) / Seg::ValidGroupNumRel();
+    }
+    path MST(uint8_t i) const { return Segmentation(i) / Seg::MSTRel(); }
+    path UserEdges(uint8_t i) const {
+      return Segmentation(i) / Seg::UserEdgesRel();
+    }
+    path LongRangeConnections(uint8_t i) const {
+      return Segmentation(i) / File::LongRangeConnections();
+    }
+
+    Usr(path root) : root_(root) {}
+
+   private:
+    om::file::path root_;
   };
 
   // Relative
@@ -115,88 +184,20 @@ class Paths {
 
   path Channels() const { return FilesFolder() / Root::Channels(); }
   path Channel(uint8_t i) const { return FilesFolder() / Root::Channel(i); }
-  path ChannelData(uint8_t i, uint8_t mipLevel, const common::DataType& type) {
-    return Channel(i) / Vol::Data(mipLevel, type);
-  }
+  Vol ChannelPaths(uint8_t i) const { return Vol(Channel(i)); }
 
   path Segmentations() const { return FilesFolder() / Root::Segmentations(); }
   path Segmentation(uint8_t i) const {
     return FilesFolder() / Root::Segmentation(i);
   }
-  path SegmentationData(uint8_t i, uint8_t mipLevel,
-                        const common::DataType& type) {
-    return Segmentation(i) / Vol::Data(mipLevel, type);
-  }
-
-  path SegChunks(uint8_t i) const { return Segmentation(i) / Seg::Chunks(); }
-  path SegChunk(uint8_t i, const coords::Chunk& c) const {
-    return Segmentation(i) / Seg::Chunk(c);
-  }
-  path ChunkUniqueValues(uint8_t i, const coords::Chunk& c) const {
-    return Segmentation(i) / Seg::ChunkUniqueValues(c);
-  }
-
-  path Meshes(uint8_t i) const { return Segmentation(i) / Seg::Meshes(); }
-  path MeshAllocTable(uint8_t i, const coords::Chunk& c) const {
-    return Segmentation(i) / Seg::MeshAllocTable(c);
-  }
-  path MeshData(uint8_t i, const coords::Chunk& c) const {
-    return Segmentation(i) / Seg::MeshData(c);
-  }
-
-  path Segments(uint8_t i) const { return Segmentation(i) / Seg::Segments(); }
-  path SegmentDataPage(uint8_t i, uint8_t page) const {
-    return Segmentation(i) / Seg::SegmentDataPage(page);
-  }
-  path SegmentListTypesPage(uint8_t i, uint8_t page) const {
-    return Segmentation(i) / Seg::SegmentListTypesPage(page);
-  }
-  path ValidGroupNum(uint8_t i) const {
-    return Segmentation(i) / Seg::ValidGroupNum();
-  }
-  path MST(uint8_t i) const { return Segmentation(i) / Seg::MST(); }
-  path UserEdges(uint8_t i) const { return Segmentation(i) / Seg::UserEdges(); }
+  Seg SegmentationPaths(uint8_t i) const { return Seg(Segmentation(i)); }
 
   // Users
   path Users() const { return FilesFolder() / Root::Users(); }
   path User(std::string username) const {
     return FilesFolder() / Root::User(username);
   }
-  path UserSettings(std::string username) const {
-    return User(username) / File::Settings();
-  }
-  path UserLogFiles(std::string username) const {
-    return User(username) / Usr::LogFiles();
-  }
-  path UserSegmentation(std::string username, uint8_t i) const {
-    return User(username) / Root::Segmentation(i);
-  }
-  path UserAnnotations(std::string username, uint8_t i) const {
-    return UserSegmentation(username, i) / File::Annotations();
-  }
-  path UserSegments(std::string username, uint8_t i) const {
-    return UserSegmentation(username, i) / Seg::Segments();
-  }
-  path UserSegmentDataPage(std::string username, uint8_t i,
-                           uint8_t page) const {
-    return UserSegmentation(username, i) / Seg::SegmentDataPage(page);
-  }
-  path UserSegmentListTypesPage(std::string username, uint8_t i,
-                                uint8_t page) const {
-    return UserSegmentation(username, i) / Seg::SegmentListTypesPage(page);
-  }
-  path UserValidGroupNum(std::string username, uint8_t i) const {
-    return UserSegmentation(username, i) / Seg::ValidGroupNum();
-  }
-  path UserMST(std::string username, uint8_t i) const {
-    return UserSegmentation(username, i) / Seg::MST();
-  }
-  path UserUserEdges(std::string username, uint8_t i) const {
-    return UserSegmentation(username, i) / Seg::UserEdges();
-  }
-  path UserLongRangeConnections(std::string username, uint8_t i) const {
-    return UserSegmentation(username, i) / File::LongRangeConnections();
-  }
+  Usr UserPaths(std::string userName) const { return Usr(User(userName)); }
 
   // Misc
   static path CookieFile() { return "~/.omni/cookies"; }

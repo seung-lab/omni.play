@@ -8,7 +8,7 @@ namespace tile {
 
 using namespace pipeline;
 
-FileDataSource::FileDataSource(const file::path& volRoot,
+FileDataSource::FileDataSource(file::Paths::Vol volRoot,
                                const common::DataType& dataType,
                                const coords::VolumeSystem& coordSystem)
     : volRoot_(volRoot), dataType_(dataType), coordSystem_(coordSystem) {}
@@ -31,7 +31,7 @@ bool FileDataSource::Put(const coords::Tile&, std::shared_ptr<tile::TileVar>,
 }
 
 std::string FileDataSource::fileName(int mipLevel) {
-  return (volRoot_ / file::Paths::Vol::Data(mipLevel, dataType_)).string();
+  return volRoot_.Data(mipLevel, dataType_).string();
 }
 }
 }  // namespace om::tile::

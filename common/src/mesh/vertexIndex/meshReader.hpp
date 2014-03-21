@@ -17,14 +17,14 @@ class reader {
  public:
   reader(file::path volPath, const coords::Chunk& coord) {
     file::path allocTablePath =
-        volPath / file::Paths::Seg::MeshAllocTable(coord);
+        volPath / file::Paths::Seg::MeshAllocTableRel(coord);
     if (!file::exists(allocTablePath)) {
       throw ArgException("Alloc table file not found.");
     }
 
     chunkTable_.reset(new memMappedAllocFile(allocTablePath));
 
-    file::path dataPath = volPath / file::Paths::Seg::MeshData(coord);
+    file::path dataPath = volPath / file::Paths::Seg::MeshDataRel(coord);
     if (!file::exists(dataPath)) {
       throw ArgException("Mesh data file not found.");
     }

@@ -16,7 +16,7 @@ class UniqueValuesFileDataSource
 
  protected:
   virtual file::path relativePath(const coords::Chunk& key) const override {
-    return file::Paths::Seg::ChunkUniqueValues(key);
+    return file::Paths::Seg::ChunkUniqueValuesRel(key);
   }
 };
 }

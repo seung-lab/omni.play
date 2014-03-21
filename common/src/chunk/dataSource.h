@@ -3,13 +3,14 @@
 #include "datalayer/dataSource.hpp"
 #include "chunk/dataSources.hpp"
 #include "datalayer/filePtrCache.hpp"
+#include "datalayer/paths.hpp"
 
 namespace om {
 namespace chunk {
 
 class FileDataSource : public ChunkDS {
  public:
-  FileDataSource(const file::path&, const common::DataType&,
+  FileDataSource(file::Paths::Vol, const common::DataType&,
                  const coords::VolumeSystem&);
 
   std::shared_ptr<chunk::ChunkVar> Get(const coords::Chunk&,
@@ -23,7 +24,7 @@ class FileDataSource : public ChunkDS {
  private:
   std::string fileName(int);
 
-  const file::path volRoot_;
+  file::Paths::Vol volPaths_;
   const common::DataType dataType_;
   datalayer::VarFilePtrCache files_;
   const coords::VolumeSystem& coordSystem_;

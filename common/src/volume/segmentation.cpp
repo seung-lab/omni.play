@@ -12,14 +12,15 @@ Segmentation::Segmentation(file::Paths p, uint8_t id, std::string username)
       uvmDS_(new chunk::CachedUniqueValuesDataSource(p.Segmentation(id))),
       meshDS_(new mesh::CachedDataSource(p.Segmentation(id).string(),
                                          uvmDS_.get())),
-      segDataDS_(new segment::FileDataSource(p.UserSegments(username, id))),
+      segDataDS_(new segment::FileDataSource(p.UserPaths(username)
+                                                 .Segments(id))),
       segData_(new segment::SegDataVector(*segDataDS_, segment::PageSize,
                                           Metadata().numSegments() + 1)),
-      segListDataDS_(
-          new segment::ListTypeFileDataSource(p.UserSegments(username, id))),
+      segListDataDS_(new segment::ListTypeFileDataSource(p.UserPaths(username)
+                                                             .Segments(id))),
       segListData_(new segment::SegListDataVector(
           *segListDataDS_, segment::PageSize, Metadata().numSegments() + 1)),
-      mst_(new segment::EdgeVector(p.UserMST(username, id))) {}
+      mst_(new segment::EdgeVector(p.UserPaths(username).MST(id))) {}
 
 Segmentation::~Segmentation() {}
 

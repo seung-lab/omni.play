@@ -8,10 +8,10 @@ namespace chunk {
 
 using namespace pipeline;
 
-FileDataSource::FileDataSource(const file::path& volRoot,
+FileDataSource::FileDataSource(file::Paths::Vol volPaths,
                                const common::DataType& dataType,
                                const coords::VolumeSystem& coordSystem)
-    : volRoot_(volRoot), dataType_(dataType), coordSystem_(coordSystem) {}
+    : volPaths_(volPaths), dataType_(dataType), coordSystem_(coordSystem) {}
 
 class ChunkSlicer
     : public boost::static_visitor<std::shared_ptr<chunk::ChunkVar>> {
@@ -43,7 +43,7 @@ class ChunkSlicer
 };
 
 std::string FileDataSource::fileName(int mipLevel) {
-  return (volRoot_ / file::Paths::Vol::Data(mipLevel, dataType_)).string();
+  return volPaths_.Data(mipLevel, dataType_).string();
 }
 
 std::shared_ptr<chunk::ChunkVar> FileDataSource::Get(const coords::Chunk& coord,

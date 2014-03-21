@@ -155,11 +155,11 @@ class VertexIndexDataSourceImpl {
   }
 
   std::string allocPath(const coords::Chunk& key) const {
-    return (volumeRoot_ / file::Paths::Seg::MeshAllocTable(key)).string();
+    return (volumeRoot_ / file::Paths::Seg::MeshAllocTableRel(key)).string();
   }
 
   file::path dataPath(const coords::Chunk& key) const {
-    return (volumeRoot_ / file::Paths::Seg::MeshData(key)).string();
+    return (volumeRoot_ / file::Paths::Seg::MeshDataRel(key)).string();
   }
 
   void appendDataEntry(const coords::Mesh& coord) {

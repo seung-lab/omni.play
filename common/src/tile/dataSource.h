@@ -2,6 +2,7 @@
 
 #include "datalayer/dataSource.hpp"
 #include "datalayer/filePtrCache.hpp"
+#include "datalayer/paths.hpp"
 #include "tile/dataSources.hpp"
 
 namespace om {
@@ -12,7 +13,7 @@ namespace tile {
 
 class FileDataSource : public TileDS {
  public:
-  FileDataSource(const file::path&, const common::DataType&,
+  FileDataSource(file::Paths::Vol, const common::DataType&,
                  const coords::VolumeSystem&);
 
   std::shared_ptr<tile::TileVar> Get(const coords::Tile&, bool async = false);
@@ -25,7 +26,7 @@ class FileDataSource : public TileDS {
  private:
   std::string fileName(int);
 
-  const file::path volRoot_;
+  file::Paths::Vol volRoot_;
   const common::DataType dataType_;
   datalayer::VarFilePtrCache files_;
   const coords::VolumeSystem& coordSystem_;
