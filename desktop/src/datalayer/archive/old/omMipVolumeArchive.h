@@ -3,7 +3,7 @@
 
 #include "datalayer/archive/old/utilsOld.hpp"
 #include "utility/yaml/coords.h"
-#include "datalayer/fs/omFileNames.hpp"
+
 #include "volume/omChannelFolder.h"
 #include "volume/omMipVolume.h"
 #include "volume/omVolumeTypes.hpp"

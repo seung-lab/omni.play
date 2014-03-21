@@ -1,12 +1,12 @@
 #pragma once
 #include "precomp.h"
 
-#include "datalayer/fs/omFileNames.hpp"
 #include "datalayer/fs/omSegmentationFolders.hpp"
 #include "utility/omStringHelpers.h"
 #include "volume/omSegmentation.h"
 #include "volume/omSegmentationFolder.h"
 #include "users/userSettings.h"
+#include "datalayer/paths.hpp"
 
 namespace om {
 
@@ -18,7 +18,8 @@ class usersImpl {
   std::unique_ptr<userSettings> settings_;
 
  public:
-  usersImpl() : usersFolderRoot_(usersFolderRoot()) {}
+  usersImpl(const om::file::Paths& paths)
+      : usersFolderRoot_(paths.Users().c_str()) {}
 
   void SwitchToDefaultUser() {
     userFolder_ =
@@ -60,8 +61,6 @@ class usersImpl {
   inline userSettings& UserSettings() { return *settings_; }
 
  private:
-  QString usersFolderRoot() { return OmFileNames::FilesFolder() + "/users/"; }
-
   QString makeUserSegmentsFolder(const QString& folder) {
     QString dest = folder;
 

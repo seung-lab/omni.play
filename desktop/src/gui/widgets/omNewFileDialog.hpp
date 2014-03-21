@@ -1,8 +1,6 @@
 #pragma once
 #include "precomp.h"
 
-#include "datalayer/fs/omFileNames.hpp"
-
 class OmNewFileDialog {
  private:
   QWidget* const parent_;

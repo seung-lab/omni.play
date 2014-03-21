@@ -13,8 +13,7 @@ struct segmentationFolderInfo {
 
 class segmentationFolders {
  public:
-  static std::vector<segmentationFolderInfo> Find() {
-    const QString folder = OmFileNames::FilesFolder() + "/segmentations/";
+  static std::vector<segmentationFolderInfo> Find(QString folder) {
     QDir dir(folder);
 
     QStringList filters;

@@ -1,7 +1,6 @@
 #pragma once
 #include "precomp.h"
 
-#include "datalayer/fs/omFileNames.hpp"
 #include "volume/omChannelFolder.h"
 #include "volume/omSegmentationFolder.h"
 #include "volume/omVolumeTypes.hpp"

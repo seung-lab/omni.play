@@ -3,7 +3,8 @@
 
 #include "volume/omSegmentationFolder.h"
 #include "common/common.h"
-#include "datalayer/fs/omFileNames.hpp"
+#include "datalayer/fs/omFile.hpp"
+#include "volume/omSegmentation.h"
 #include "chunks/omChunk.h"
 #include "mesh/io/v2/chunk/omMeshChunkTypes.h"
 

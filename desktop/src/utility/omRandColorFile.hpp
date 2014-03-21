@@ -5,7 +5,7 @@
 #include "common/common.h"
 #include "common/string.hpp"
 #include "datalayer/fs/omFile.hpp"
-#include "datalayer/fs/omFileNames.hpp"
+#include "datalayer/paths.hpp"
 #include "utility/omRand.hpp"
 
 class OmRandColorFile {
@@ -21,7 +21,8 @@ class OmRandColorFile {
   friend class OmProjectGlobals;
 
  public:
-  OmRandColorFile() : fnp_(fileName()), values_(nullptr), numEntries_(0) {}
+  OmRandColorFile(const om::file::Paths& paths)
+      : fnp_(paths.RandColors().string()), values_(nullptr), numEntries_(0) {}
 
   ~OmRandColorFile() {}
 
@@ -55,10 +56,6 @@ class OmRandColorFile {
     values_ = om::file::old::mapFile<om::common::Color>(file_.get());
 
     numEntries_ = file_->size() / sizeof(om::common::Color);
-  }
-
-  std::string fileName() const {
-    return OmProject::Paths().RandColors().string();
   }
 
   static void buildColorTable(std::vector<om::common::Color>& colorTable) {

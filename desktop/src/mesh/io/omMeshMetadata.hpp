@@ -3,7 +3,6 @@
 
 #include "volume/omSegmentation.h"
 #include "volume/omSegmentationFolder.h"
-#include "datalayer/fs/omFileNames.hpp"
 
 class OmMeshMetadata {
  private:

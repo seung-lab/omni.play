@@ -4,8 +4,12 @@
 class OmActionLogger;
 class OmActionsImpl;
 namespace om {
+class users;
 namespace event {
 class ManagerImpl;
+}
+namespace file {
+class Paths;
 }
 }
 class OmRandColorFile;
@@ -14,10 +18,6 @@ class OmView2dManagerImpl;
 class OmUsers;
 class QWidget;
 
-namespace om {
-class users;
-}
-
 class OmProjectGlobals {
  private:
   std::unique_ptr<OmRandColorFile> randColorFile_;
@@ -25,12 +25,11 @@ class OmProjectGlobals {
   std::unique_ptr<OmView2dManagerImpl> v2dManagerImpl_;
   std::unique_ptr<OmStateManagerImpl> stateMan_;
   std::unique_ptr<OmActionsImpl> actions_;
-  std::unique_ptr<OmActionLogger> actionLogger_;
 
   zi::semaphore fileReadThrottle_;
 
  public:
-  OmProjectGlobals();
+  OmProjectGlobals(const om::file::Paths& paths);
   ~OmProjectGlobals();
 
   void Init();
@@ -43,8 +42,6 @@ class OmProjectGlobals {
   inline OmStateManagerImpl& StateManagerImpl() { return *stateMan_; }
 
   inline OmActionsImpl& Actions() { return *actions_; }
-
-  inline OmActionLogger& ActionLogger() { return *actionLogger_; }
 
   inline zi::semaphore& FileReadSemaphore() { return fileReadThrottle_; }
 

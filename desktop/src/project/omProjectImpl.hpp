@@ -104,7 +104,8 @@ class OmProjectImpl {
     doCreate();
     touchEmptyProjectFile();
 
-    setupGlobals();
+    globals_.reset(new OmProjectGlobals(paths_));
+    globals_->Init();
 
     OmCacheManager::Reset();
     OmTileCache::Reset();
@@ -135,7 +136,8 @@ class OmProjectImpl {
     else
       migrateFromHdf5();
 
-    setupGlobals();
+    globals_.reset(new OmProjectGlobals(paths_));
+    globals_->Init();
     if (!username.empty()) {
       globals_->Users().SwitchToUser(username);
     } else if (om::system::Account::IsLoggedIn()) {
@@ -148,10 +150,10 @@ class OmProjectImpl {
         throw om::IoException("user not choosen");
       }
     }
+    OmActionLogger::Init(globals_->Users().LogFolderPath());
 
     OmCacheManager::Reset();
     OmTileCache::Reset();
-    OmActionLogger::Reset();
 
     if (om::file::exists(projectMetadataFile_)) {
       om::data::archive::project::Read(projectMetadataFile_.c_str(), this);
@@ -229,11 +231,6 @@ class OmProjectImpl {
   }
 
   void setFileVersion(const int v) { fileVersion_ = v; }
-
-  void setupGlobals() {
-    globals_.reset(new OmProjectGlobals());
-    globals_->Init();
-  }
 
   friend class OmProject;
 

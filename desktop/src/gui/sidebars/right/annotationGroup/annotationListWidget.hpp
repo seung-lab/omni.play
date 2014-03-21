@@ -12,6 +12,7 @@
 #include "viewGroup/omViewGroupView2dState.hpp"
 #include "utility/segmentationDataWrapper.hpp"
 #include "utility/channelDataWrapper.hpp"
+#include "volume/omSegmentation.h"
 
 namespace om {
 namespace sidebars {

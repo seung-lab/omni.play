@@ -2,6 +2,7 @@
 #include "precomp.h"
 
 #include "common/common.h"
+#include "coordinates/chunk.h"
 
 template <typename T>
 class IDataVolume {

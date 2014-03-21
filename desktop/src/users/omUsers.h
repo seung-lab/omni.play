@@ -7,6 +7,10 @@ class OmSegmentation;
 
 namespace om {
 
+namespace file {
+class Paths;
+}
+
 class usersImpl;
 
 class users {
@@ -14,7 +18,7 @@ class users {
   std::unique_ptr<usersImpl> impl_;
 
  public:
-  users();
+  users(const om::file::Paths& paths);
 
   ~users();
 

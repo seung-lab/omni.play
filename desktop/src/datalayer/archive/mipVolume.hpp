@@ -2,7 +2,7 @@
 #include "precomp.h"
 
 #include "volume/omVolumeTypes.hpp"
-#include "datalayer/fs/omFileNames.hpp"
+
 #include "volume/omChannelFolder.h"
 #include "volume/omSegmentationFolder.h"
 

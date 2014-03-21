@@ -3,6 +3,7 @@
 
 #include "common/common.h"
 #include "common/colors.h"
+#include "project/omProject.h"
 #include "project/omProjectGlobals.h"
 #include "utility/omRandColorFile.hpp"
 

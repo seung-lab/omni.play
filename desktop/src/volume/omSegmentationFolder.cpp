@@ -3,7 +3,6 @@
 #include "project/omProject.h"
 #include "project/omProjectGlobals.h"
 #include "users/omUsers.h"
-#include "datalayer/fs/omFileNames.hpp"
 
 om::segmentation::folder::folder(OmSegmentation* vol) : vol_(vol) {}
 
