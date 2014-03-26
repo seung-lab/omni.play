@@ -108,8 +108,7 @@ void get_connected_groups(
   agreed.groups.emplace_back();
 
   // partial is the group of subgroups of segments which are agreed on by some
-  // but not
-  // all of the users.
+  // but not all of the users.
   server::group partial;
   partial.type = server::groupType::PARTIAL;
 
