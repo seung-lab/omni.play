@@ -214,7 +214,7 @@ QTableWidgetItem* makeTableItem(const T val) {
 void TaskSelector::getTasks() {
   auto dsid = datasetID();
   auto cid = cellID();
-  auto tasks = TaskManager::GetTasks(dsid, cid, 3);
+  auto tasks = TaskManager::GetTasks(dsid, cid, 1e6);
   size_t i = 0;
   taskTable_->setSortingEnabled(false);
   for (; i < std::min((size_t)TASK_ROWS, tasks->size()); ++i) {
