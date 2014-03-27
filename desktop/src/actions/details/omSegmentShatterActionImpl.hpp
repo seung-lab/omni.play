@@ -9,6 +9,7 @@
 #include "system/cache/omCacheManager.h"
 #include "utility/dataWrappers.h"
 #include "viewGroup/omViewGroupState.h"
+#include "volume/omSegmentation.h"
 
 class OmSegmentShatterActionImpl {
  private:

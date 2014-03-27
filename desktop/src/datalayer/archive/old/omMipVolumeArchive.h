@@ -2,9 +2,9 @@
 #include "precomp.h"
 
 #include "datalayer/archive/old/utilsOld.hpp"
+#include "datalayer/fs/omFile.hpp"
 #include "utility/yaml/coords.h"
 
-#include "volume/omChannelFolder.h"
 #include "volume/omMipVolume.h"
 #include "volume/omVolumeTypes.hpp"
 
@@ -52,9 +52,7 @@ class OmMipVolumeArchive {
   }
 
  private:
-  QString filePathV1() const {
-    return vol_.Folder().GetVolPath() + "abs_coord.ver1";
-  }
+  QString filePathV1() const { return vol_.VolPaths().AbsCoord(0).c_str(); }
 
   void load() {
     const QString filePath = filePathV1();

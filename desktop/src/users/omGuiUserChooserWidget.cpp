@@ -27,24 +27,17 @@ void om::gui::userChooserWidget::setup() {
 }
 
 std::vector<std::string> om::gui::userChooserWidget::findUsers() {
-  const QString folder =
-      QString::fromStdString(OmProject::Globals().Users().UsersRootFolder());
-
-  QDir dir(folder);
-
-  const QStringList dirNames = dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
+  om::file::path path = OmProject::Globals().Users().UserPaths();
 
   std::vector<std::string> ret;
 
-  FOR_EACH(iter, dirNames) {
-    const std::string str = iter->toStdString();
-
-    if ("_orig" == str) {
+  for (auto f : boost::filesystem::directory_iterator(path)) {
+    if (!om::file::IsFolder(f) || f == "_orig") {
       continue;
     }
 
-    ret.push_back(str);
-    log_infos << "found user " << str;
+    ret.push_back(f.path().string());
+    log_infos << "found user " << f.path().string();
   }
 
   return ret;

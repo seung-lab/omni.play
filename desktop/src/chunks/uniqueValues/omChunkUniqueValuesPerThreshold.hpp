@@ -10,7 +10,6 @@
 #include "utility/image/omImage.hpp"
 #include "utility/segmentationDataWrapper.hpp"
 #include "volume/omSegmentation.h"
-#include "volume/omSegmentationFolder.h"
 #include "segment/omSegments.h"
 
 class OmChunkUniqueValuesPerThreshold {
@@ -132,15 +131,12 @@ class OmChunkUniqueValuesPerThreshold {
   }
 
   QString filePath() {
-    const QString volPath = segmentation_.Folder().GetChunkFolderPath(coord_);
+    auto path = segmentation_.SegPaths().ChunkUniqueValues(coord_);
 
-    if (!QDir(volPath).exists()) {
-      segmentation_.Folder().MakeChunkFolderPath(coord_);
+    if (!om::file::exists(path.parent_path())) {
+      om::file::MkDir(path.parent_path());
     }
 
-    const QString fullPath = QString("%1uniqeValues.%2.ver1").arg(volPath).arg(
-        QString::number(threshold_, 'f', 4));
-
-    return fullPath;
+    return path.c_str();
   }
 };

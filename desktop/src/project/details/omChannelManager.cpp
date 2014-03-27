@@ -2,7 +2,6 @@
 #include "common/common.h"
 
 #include "project/details/omChannelManager.h"
-#include "volume/omChannelFolder.h"
 #include "volume/omFilter2d.h"
 
 OmChannel* OmChannelManager::GetChannel(const om::common::ID id) {
@@ -11,7 +10,7 @@ OmChannel* OmChannelManager::GetChannel(const om::common::ID id) {
 
 OmChannel& OmChannelManager::AddChannel() {
   OmChannel& vol = manager_.Add();
-  vol.Folder().MakeVolFolder();
+  vol.MakeVolFolder();
   OmActions::Save();
   return vol;
 }

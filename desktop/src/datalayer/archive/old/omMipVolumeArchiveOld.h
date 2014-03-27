@@ -76,7 +76,7 @@ class OmMipVolumeArchiveOld {
       vol.mVolDataType = OmVolumeTypeHelpers::GetTypeFromString(volDataType);
 
     } else {
-      vol.mVolDataType = OmVolDataType::UNKNOWN;
+      vol.mVolDataType = om::common::DataType::UNKNOWN;
     }
 
     vol.LoadPath();

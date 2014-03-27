@@ -30,6 +30,7 @@ using boost::filesystem::exists;
 using boost::filesystem::absolute;
 using boost::filesystem::canonical;
 using boost::filesystem::extension;
+using boost::filesystem::permissions;
 
 bool IsFolderEmpty(const path& dirName);
 bool IsFolder(const path& dirName);

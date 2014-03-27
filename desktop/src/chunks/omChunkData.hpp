@@ -15,17 +15,17 @@ class dataFactory {
   template <typename VOL>
   static dataInterface* Produce(VOL* vol, const om::coords::Chunk& coord) {
     switch (vol->getVolDataType().index()) {
-      case OmVolDataType::INT8:
+      case om::common::DataType::INT8:
         return new dataImpl<int8_t>(vol, coord);
-      case OmVolDataType::UINT8:
+      case om::common::DataType::UINT8:
         return new dataImpl<uint8_t>(vol, coord);
-      case OmVolDataType::INT32:
+      case om::common::DataType::INT32:
         return new dataImpl<int32_t>(vol, coord);
-      case OmVolDataType::UINT32:
+      case om::common::DataType::UINT32:
         return new dataImpl<uint32_t>(vol, coord);
-      case OmVolDataType::FLOAT:
+      case om::common::DataType::FLOAT:
         return new dataImpl<float>(vol, coord);
-      case OmVolDataType::UNKNOWN:
+      case om::common::DataType::UNKNOWN:
       default:
         throw om::IoException("data type not handled");
     };

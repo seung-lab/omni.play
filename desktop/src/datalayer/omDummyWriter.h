@@ -29,7 +29,7 @@ class OmDummyWriter : public om::common::IDataWriter {
 
   // image I/O
   void allocateChunkedDataset(const OmDataPath &, const Vector3i &,
-                              const Vector3i &, const OmVolDataType) {
+                              const Vector3i &, const om::common::DataType) {
     log_infos << __FUNCTION__
               << ": write operation should not have happened...";
   }

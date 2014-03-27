@@ -25,6 +25,7 @@
 #include "users/omGuiUserChooser.h"
 #include "utility/omFileHelpers.h"
 #include "utility/segmentationDataWrapper.hpp"
+#include "users/omUsers.h"
 
 class OmProjectImpl {
  private:

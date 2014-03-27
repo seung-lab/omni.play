@@ -32,7 +32,7 @@ class OmHdf5LowLevel {
 
   Vector3i getChunkedDatasetDims(const om::common::AffinityGraph aff);
   void allocateChunkedDataset(const Vector3i&, const Vector3i&,
-                              const OmVolDataType);
+                              const om::common::DataType);
   OmDataWrapperPtr readChunk(const om::coords::DataBbox&,
                              const om::common::AffinityGraph aff);
   void writeChunk(const om::coords::DataBbox&, OmDataWrapperPtr);

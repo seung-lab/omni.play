@@ -162,15 +162,12 @@ class OmMemMappedAllocFile {
   }
 
   QString filePath() {
-    const QString volPath =
-        segmentation_->Folder().GetMeshChunkFolderPath(threshold_, coord_);
+    auto path = segmentation_->SegPaths().MeshAllocTable(coord_);
 
-    if (!QDir(volPath).exists()) {
-      segmentation_->Folder().MakeMeshChunkFolderPath(threshold_, coord_);
+    if (!om::file::exists(path.parent_path())) {
+      om::file::MkDir(path.parent_path());
     }
 
-    const QString fullPath = QString("%1meshAllocTable.ver2").arg(volPath);
-
-    return fullPath;
+    return path.c_str();
   }
 };

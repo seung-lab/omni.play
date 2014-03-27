@@ -20,13 +20,9 @@ OmMeshManager::OmMeshManager(OmSegmentation* segmentation,
 OmMeshManager::~OmMeshManager() {}
 
 void OmMeshManager::Create() {
-  const QString path =
-      segmentation_->Folder().GetMeshThresholdFolderPath(threshold_);
-
-  OmFileHelpers::RemoveDir(path);
-
-  segmentation_->Folder().MakeMeshThresholdFolderPath(threshold_);
-
+  auto path = segmentation_->SegPaths().Meshes();
+  om::file::RemoveDir(path);
+  om::file::MkDir(path);
   reader_.reset(new OmMeshReaderV2(this));
 }
 

@@ -23,7 +23,7 @@
 #include "segment/dataSources.hpp"
 #include "segment/userEdgeVector.hpp"
 #include "segment/selection.hpp"
-
+#include "users/omUsers.h"
 using namespace om;
 
 // used by OmDataArchiveProject
@@ -58,27 +58,28 @@ OmSegmentation::OmSegmentation(common::ID id)
 OmSegmentation::~OmSegmentation() {}
 
 void OmSegmentation::LoadPath() {
-  folder_.reset(new segmentation::folder(this));
 
   const auto& p = OmProject::Paths();
   const auto& username = OmProject::Globals().Users().CurrentUser();
   auto id = GetID();
+  paths_ = p.SegmentationPaths(id);
+  auto userPaths = p.UserPaths(username);
 
   metaDS_.reset(new om::volume::MetadataDataSource());
   metaManager_.reset(
       new om::volume::MetadataManager(*metaDS_, p.Segmentation(id)));
 
-  segDataDS_.reset(new segment::FileDataSource(p.UserSegments(username, id)));
+  segDataDS_.reset(new segment::FileDataSource(userPaths.Segments(id)));
   segData_.reset(new segment::SegDataVector(*segDataDS_, segment::PageSize,
                                             Metadata().numSegments() + 1));
 
   segListDataDS_.reset(
-      new segment::ListTypeFileDataSource(p.UserSegments(username, id)));
+      new segment::ListTypeFileDataSource(userPaths.Segments(id)));
   segListData_.reset(new segment::SegListDataVector(
       *segListDataDS_, segment::PageSize, Metadata().numSegments() + 1));
 
-  mst_.reset(new segment::EdgeVector(p.UserMST(username, id)));
-  userEdges_.reset(new segment::UserEdgeVector(p.UserUserEdges(username, id)));
+  mst_.reset(new segment::EdgeVector(userPaths.MST(id)));
+  userEdges_.reset(new segment::UserEdgeVector(userPaths.UserEdges(id)));
   segments_.reset(new OmSegments(this));
 }
 
@@ -126,10 +127,7 @@ double OmSegmentation::GetSizeThreshold() {
 void OmSegmentation::CloseDownThreads() { meshManagers_->CloseDownThreads(); }
 
 bool OmSegmentation::LoadVolDataIfFoldersExist() {
-  // assume level 0 data always present
-  const QString path = OmFileNames::GetVolDataFolderPath(*this, 0);
-
-  if (QDir(path).exists()) {
+  if (om::file::exists(paths_.Data(0, getVolDataType()))) {
     return LoadVolData();
   }
 
@@ -150,7 +148,7 @@ int OmSegmentation::GetBytesPerSlice() const {
          coords_.ChunkDimensions().y;
 }
 
-void OmSegmentation::SetVolDataType(const OmVolDataType type) {
+void OmSegmentation::SetVolDataType(const om::common::DataType type) {
   mVolDataType = type;
   volData_->SetDataType(this);
 }
@@ -160,7 +158,6 @@ SegmentationDataWrapper OmSegmentation::GetSDW() const {
 }
 
 void OmSegmentation::Flush() {
-  folder_->MakeUserSegmentsFolder();
 
   segments_->Flush();
   mst_->flush();
@@ -176,7 +173,7 @@ void OmSegmentation::BuildBlankVolume(const Vector3i& dims) {
   Coords().SetDataDimensions(dims);
   Coords().UpdateRootLevel();
 
-  OmVolumeAllocater::AllocateData(this, OmVolDataType::UINT32);
+  OmVolumeAllocater::AllocateData(this, om::common::DataType::UINT32);
 
   SetBuildState(MIPVOL_BUILT);
 }
@@ -236,10 +233,6 @@ OmSegChunk* OmSegmentation::GetChunk(const coords::Chunk& coord) {
 void OmSegmentation::UpdateFromVolResize() {
   chunkCache_->UpdateFromVolResize();
   uniqueChunkValues_->UpdateFromVolResize();
-}
-
-std::string OmSegmentation::GetDirectoryPath() const {
-  return folder_->RelativeVolPath().toStdString();
 }
 
 void OmSegmentation::ClearUserChangesAndSave() {

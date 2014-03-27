@@ -4,6 +4,8 @@
 #include "tiles/omTileFilters.hpp"
 #include "chunks/omRawChunkSlicer.hpp"
 #include "volume/omMipVolume.h"
+#include "project/omProject.h"
+#include "project/omProjectGlobals.h"
 
 namespace om {
 namespace chunk {

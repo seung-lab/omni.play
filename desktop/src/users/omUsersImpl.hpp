@@ -1,153 +1,111 @@
 #pragma once
 #include "precomp.h"
 
-#include "datalayer/fs/omSegmentationFolders.hpp"
 #include "utility/omStringHelpers.h"
 #include "volume/omSegmentation.h"
-#include "volume/omSegmentationFolder.h"
 #include "users/userSettings.h"
 #include "datalayer/paths.hpp"
+#include "datalayer/fs/volumeFolders.hpp"
 
 namespace om {
 
 class usersImpl {
- private:
-  const QString usersFolderRoot_;
-  QString userFolder_;
-  std::string currentUser_;
-  std::unique_ptr<userSettings> settings_;
-
  public:
-  usersImpl(const om::file::Paths& paths)
-      : usersFolderRoot_(paths.Users().c_str()) {}
+  usersImpl(file::Paths paths) : paths_(paths) {}
 
   void SwitchToDefaultUser() {
-    userFolder_ =
-        QDir(usersFolderRoot_ + QString::fromStdString(om::users::defaultUser))
-            .absolutePath();
+    if (currentUser_ == om::users::defaultUser) {
+      return;
+    }
+    currentUser_ = users::defaultUser;
     loadUserSettings();
   }
 
   void SwitchToUser(const std::string& userName) {
-    currentUser_ = userName;
-    userFolder_ = QDir(usersFolderRoot_ + QString::fromStdString(userName))
-                      .absolutePath();
-    log_infos << "User folder: " << userFolder_.toStdString();
+    if (currentUser_ == userName) {
+      return;
+    }
 
-    // assuming SegmentationID 1:
-    if (!om::file::exists(userFolder_.toStdString() +
-                          "/segmentations/segmentation1/segments")) {
-      copySegmentsFromDefault();
+    currentUser_ = userName;
+    const auto segmentationFolders = fs::VolumeFolders::FindSegmentations();
+
+    for (auto f : segmentationFolders) {
+      copySegmentsFromDefault(f.id);
     }
     loadUserSettings();
   }
 
-  inline const std::string& CurrentUser() const { return currentUser_; }
-
-  QString LogFolderPath() { return userFolder_ + QLatin1String("/logFiles"); }
+  const std::string& CurrentUser() const { return currentUser_; }
 
   void SetupFolders() {
-    OmFileHelpers::MkDir(userFolder_);
+    file::MkDir(UserPaths());
 
     fixSegmentationFolderSymlinks();
   }
 
-  inline std::string UsersFolder() const { return userFolder_.toStdString(); }
+  userSettings& UserSettings() { return *settings_; }
 
-  inline std::string UsersRootFolder() const {
-    return usersFolderRoot_.toStdString();
-  }
-
-  inline userSettings& UserSettings() { return *settings_; }
+  file::Paths::Usr UserPaths() { return paths_.UserPaths(currentUser_); }
 
  private:
-  QString makeUserSegmentsFolder(const QString& folder) {
-    QString dest = folder;
-
-    dest.replace(OmFileNames::FilesFolder(), userFolder_);
-
-    OmFileHelpers::MkDir(dest);
-
-    return dest += "/segments";
-  }
-
   void fixSegmentationFolderSymlinks() {
-    const auto segmentationFolders = om::fs::segmentationFolders::Find();
+    const auto segmentationFolders = fs::VolumeFolders::FindSegmentations();
 
-    FOR_EACH(iter, segmentationFolders) {
-      const QString folder = iter->path;
-
-      fixSegmentFolderSymlink(folder);
+    for (auto f : segmentationFolders) {
+      fixSegmentFolderSymlink(f);
     }
   }
 
-  void fixSegmentFolderSymlink(const QString& folder) {
-    // Note this function and SetupFolders() are only called before a user is
-    // selected (the user is _default), although they may look like to be
-    // for any user.
-    const QString oldSegmentsFolder = folder + "/segments";
-    const QString userSegmentsFolder = makeUserSegmentsFolder(folder);
+  void fixSegmentFolderSymlink(fs::volumeFolderInfo folder) {
+    auto up = UserPaths();
+    auto oldSegmentsFolder = folder.path / file::Paths::Seg::SegmentsRel();
+    file::MkDir(up.Segmentation(folder.id));
+    auto userSegmentsFolder = up.Segments(folder.id);
 
-    if (OmFileHelpers::IsSymlink(oldSegmentsFolder)) {
+    if (file::IsSymlink(oldSegmentsFolder)) {
 
-    } else if (OmFileHelpers::IsFolder(oldSegmentsFolder)) {
-      OmFileHelpers::MoveFile(oldSegmentsFolder, userSegmentsFolder);
-      OmFileHelpers::Symlink(userSegmentsFolder, oldSegmentsFolder);
+    } else if (file::IsFolder(oldSegmentsFolder)) {
+      file::MoveFile(oldSegmentsFolder, userSegmentsFolder);
+      file::Symlink(userSegmentsFolder, oldSegmentsFolder);
 
     } else {
       // no symlink present
-      OmFileHelpers::Symlink(userSegmentsFolder, oldSegmentsFolder);
+      file::Symlink(userSegmentsFolder, oldSegmentsFolder);
     }
-  }
-
-  QString oldGetVolSegmentsPathAbs(OmSegmentation* vol) {
-    const QDir filesDir(vol->Folder().GetVolPath());
-    return filesDir.absolutePath() + QLatin1String("/segments/");
   }
 
   void loadUserSettings() {
-    if (settings_.get() == nullptr ||
-        settings_->getFilename() != settingsFilename()) {
-      log_infos << "Reloading User Settings...";
-      settings_.reset(new userSettings(settingsFilename()));
-      settings_->Load();
-    }
+    log_infos << "Reloading User Settings...";
+    settings_.reset(new userSettings(UserPaths().Settings().string()));
+    settings_->Load();
   }
 
-  void copySegmentsFromDefault() {
+  void copySegmentsFromDefault(uint8_t id) {
+    using namespace boost::filesystem;
     try {
-      using std::string;
-      using namespace boost::filesystem;
+      auto up = UserPaths();
+      auto defaultUp = paths_.UserPaths(users::defaultUser);
 
-      string userFolder = userFolder_.toStdString();
-      string defaultUserFolder =
-          usersFolderRoot_.toStdString() + om::users::defaultUser;
-
-      string userSegments =
-          userFolder + "/segmentations/segmentation1/segments/";
-      string defaultUserSegments =
-          defaultUserFolder + "/segmentations/segmentation1/segments/";
-
-      om::file::MkDir(userFolder);
-      permissions(userFolder, all_all);
-      om::file::MkDir(userSegments);
-      permissions(userSegments, all_all);
-      auto it = directory_iterator(defaultUserSegments);
-      for (; it != directory_iterator(); ++it) {
-        auto to = userSegments / it->path().filename();
-        copy_file(*it, to);
+      file::MkDir(up);
+      file::permissions(up, all_all);
+      file::MkDir(up.Segments(id));
+      permissions(up.Segments(id), all_all);
+      for (auto& f : directory_iterator(defaultUp.Segments(id))) {
+        auto to = up / f.path().filename();
+        copy_file(f, to);
         permissions(to, all_all ^ owner_exe ^ group_exe ^ others_exe);
       }
     }
-    catch (const boost::filesystem::filesystem_error& e) {
+    catch (const filesystem_error& e) {
       log_errors << "Error creating user segementation data: " << e.what();
-      throw om::IoException(e.what());
+      throw IoException(e.what());
     }
   }
 
-  inline std::string settingsFilename() {
-    return userFolder_.toStdString() + "/settings.yaml";
-  }
+ private:
+  file::Paths paths_;
+  std::string currentUser_;
+  std::unique_ptr<userSettings> settings_;
 };
 
 }  // namespace om

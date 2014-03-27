@@ -261,7 +261,7 @@ Vector3i OmHdf5LowLevel::getChunkedDatasetDims(
 
 void OmHdf5LowLevel::allocateChunkedDataset(const Vector3i& dataDims,
                                             const Vector3i& chunkDims,
-                                            const OmVolDataType type) {
+                                            const om::common::DataType type) {
   herr_t ret;
   const int rank = 3;
   // Creates a new property as an instance of a property list class.

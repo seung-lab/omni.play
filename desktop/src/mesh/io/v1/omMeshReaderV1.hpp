@@ -142,7 +142,7 @@ class OmMeshReaderV1 {
             meshCoord.mipChunkCoord().y % meshCoord.mipChunkCoord().z %
             meshCoord.segID());
 
-    return segmentation_->Folder().RelativeVolPath().toStdString() + p;
+    return (segmentation_->SegPaths().Meshes() / p).string();
   }
 
   template <typename T>

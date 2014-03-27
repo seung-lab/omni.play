@@ -170,13 +170,14 @@ void OmDataArchiveProjectImpl::LoadOldSegmentation(QDataStream& in,
 }
 
 void OmDataArchiveProjectImpl::moveOldMeshMetadataFile(OmSegmentation* vol) {
-  const QString oldFileName = vol->Folder().MeshMetadataFileOld();
+  // Deprecated.  Move to volume upgrade tool.
+  // const QString oldFileName = vol->Folder().MeshMetadataFileOld();
 
-  if (QFile::exists(oldFileName)) {
-    const QString newFileName = vol->Folder().MeshMetadataFilePerThreshold(1);
+  // if (QFile::exists(oldFileName)) {
+  //   const QString newFileName =
+  // vol->Folder().MeshMetadataFilePerThreshold(1);
 
-    OmFileHelpers::MoveFile(oldFileName, newFileName);
-  }
+  //   OmFileHelpers::MoveFile(oldFileName, newFileName);
 }
 
 void OmDataArchiveProjectImpl::LoadNewSegmentation(QDataStream& in,

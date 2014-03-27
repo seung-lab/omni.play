@@ -82,7 +82,7 @@ class OmMemMappedVolumeImpl : public IDataVolume<T> {
  private:
   void resizeMapsVector() { maps_.resize(vol_->Coords().RootMipLevel() + 1); }
 
-  std::string getFileName(const int level) const {
-    return OmFileNames::GetMemMapFileName(*vol_, level);
+  std::string getFileName(const uint8_t level) const {
+    return vol_->VolPaths().Data(level, vol_->getVolDataType()).string();
   }
 };

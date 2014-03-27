@@ -1,8 +1,8 @@
 #pragma once
 #include "precomp.h"
 
-#include "volume/omChannelFolder.h"
-#include "volume/omSegmentationFolder.h"
+#include "coordinates/coordinates.h"
+#include "utility/yaml/omYaml.hpp"
 #include "volume/omVolumeTypes.hpp"
 
 #include "utility/yaml/coords.h"

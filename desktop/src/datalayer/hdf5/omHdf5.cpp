@@ -45,7 +45,7 @@ bool OmHdf5::dataset_exists(const OmDataPath& path) {
 void OmHdf5::allocateChunkedDataset(const OmDataPath& path,
                                     const Vector3i& dataDims,
                                     const Vector3i& chunkDims,
-                                    const OmVolDataType type) {
+                                    const om::common::DataType type) {
   zi::rwmutex::write_guard g(fileLock);
   hdf5_->allocateChunkedDataset(path, dataDims, chunkDims, type);
 }

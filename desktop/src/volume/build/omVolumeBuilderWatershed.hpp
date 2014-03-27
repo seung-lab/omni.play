@@ -66,7 +66,8 @@ class OmVolumeBuilderWatershed : public OmVolumeBuilderBase<VOL> {
 
       const QString in_fnp = metadata_.GetMipLevelFileName(mipLevel);
 
-      const QString out_fnp = OmFileNames::GetMemMapFileNameQT(vol_, mipLevel);
+      const QString out_fnp =
+          vol_.VolPaths().Data(mipLevel, vol_.getVolDataType()).c_str();
 
       OmFileHelpers::MoveFile(in_fnp, out_fnp);
     }

@@ -2,7 +2,6 @@
 #include "precomp.h"
 
 #include "volume/omSegmentation.h"
-#include "volume/omSegmentationFolder.h"
 
 class OmMeshMetadata {
  private:
@@ -63,7 +62,7 @@ class OmMeshMetadata {
 
  private:
   QString filePath() {
-    return segmentation_->Folder().MeshMetadataFilePerThreshold(threshold_);
+    return segmentation_->SegPaths().MeshMetaData().c_str();
   }
 
   bool load() {

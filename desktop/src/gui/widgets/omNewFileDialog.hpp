@@ -25,7 +25,8 @@ class OmNewFileDialog {
       return nullptr;
     }
 
-    const QString fnp = OmFileNames::AddOmniExtensionIfNeeded(fnp_raw);
+    const QString fnp =
+        om::file::Paths(fnp_raw.toStdString()).OmniFile().c_str();
     if (fnp == fnp_raw) {
       return fnp;
     }
@@ -57,8 +58,7 @@ class OmNewFileDialog {
   }
 
   QString newDialog(const QString& fnp) {
-    const QString str =
-        QFileDialog::getSaveFileName(parent_, caption_, fnp, fileNameFilter_);
-    return OmFileNames::AddOmniExtensionIfNeeded(str);
+    return QFileDialog::getSaveFileName(parent_, caption_, fnp,
+                                        fileNameFilter_);
   }
 };

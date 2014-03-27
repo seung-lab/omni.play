@@ -31,8 +31,9 @@ class OmRawChunk {
       : vol_(vol),
         coord_(coord),
         chunkOffset_(OmChunkOffset::ComputeChunkPtrOffsetBytes(vol, coord)),
-        memMapFileName_(OmFileNames::GetMemMapFileNameQT(vol,
-                                                         coord.mipLevel())),
+        memMapFileName_(vol.VolPaths()
+                            .Data(coord.mipLevel(), vol.getVolDataType())
+                            .c_str()),
         numBytes_(128 * 128 * 128 * vol_.GetBytesPerVoxel()),
         dataRaw_(nullptr),
         dirty_(false) {

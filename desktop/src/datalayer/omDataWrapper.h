@@ -12,23 +12,23 @@ template <class T>
 struct OmVolDataTypeImpl;
 template <>
 struct OmVolDataTypeImpl<uint32_t> {
-  static OmVolDataType getType() { return OmVolDataType::UINT32; }
+  static om::common::DataType getType() { return om::common::DataType::UINT32; }
 };
 template <>
 struct OmVolDataTypeImpl<int32_t> {
-  static OmVolDataType getType() { return OmVolDataType::INT32; }
+  static om::common::DataType getType() { return om::common::DataType::INT32; }
 };
 template <>
 struct OmVolDataTypeImpl<float> {
-  static OmVolDataType getType() { return OmVolDataType::FLOAT; }
+  static om::common::DataType getType() { return om::common::DataType::FLOAT; }
 };
 template <>
 struct OmVolDataTypeImpl<int8_t> {
-  static OmVolDataType getType() { return OmVolDataType::INT8; }
+  static om::common::DataType getType() { return om::common::DataType::INT8; }
 };
 template <>
 struct OmVolDataTypeImpl<uint8_t> {
-  static OmVolDataType getType() { return OmVolDataType::UINT8; }
+  static om::common::DataType getType() { return om::common::DataType::UINT8; }
 };
 
 namespace om {
@@ -57,7 +57,7 @@ class OmDataWrapperBase {
   virtual ptr_type newWrapper(void*, const om::OmDataAllocType) = 0;
 
   virtual std::string getTypeAsString() = 0;
-  virtual OmVolDataType getVolDataType() = 0;
+  virtual om::common::DataType getVolDataType() = 0;
   virtual int getHdf5FileType() = 0;
   virtual int getHdf5MemoryType() = 0;
 
@@ -133,7 +133,9 @@ class OmDataWrapper : public OmDataWrapperBase {
     return QString::fromStdString(getTypeAsString());
   }
 
-  OmVolDataType getVolDataType() { return OmVolDataTypeImpl<T>::getType(); }
+  om::common::DataType getVolDataType() {
+    return OmVolDataTypeImpl<T>::getType();
+  }
 
   int getHdf5FileType() {
     return OmVolumeTypeHelpers::getHDF5FileType(getVolDataType());

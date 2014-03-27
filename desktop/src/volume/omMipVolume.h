@@ -8,6 +8,7 @@
  */
 
 #include "common/common.h"
+#include "datalayer/paths.hpp"
 #include "coordinates/chunk.h"
 #include "coordinates/volumeSystem.h"
 #include "volume/omVolumeTypes.hpp"
@@ -41,7 +42,12 @@ class OmMipVolume {
   OmMipVolume();
   virtual ~OmMipVolume() {}
 
-  virtual std::string GetDirectoryPath() const = 0;
+  std::string GetDirectoryPath() const {
+    return ((om::file::path)VolPaths()).string();
+  };
+
+  void MakeVolFolder() const { om::file::MkDir(VolPaths()); }
+  virtual const om::file::Paths::Vol& VolPaths() const = 0;
   virtual std::string GetName() = 0;
   virtual bool LoadVolData() = 0;
   virtual OmVolumeData& VolData() = 0;
@@ -58,13 +64,13 @@ class OmMipVolume {
   // mip data accessors
   bool ContainsVoxel(const om::coords::Global& vox);
 
-  OmVolDataType getVolDataType() { return mVolDataType; }
+  om::common::DataType getVolDataType() { return mVolDataType; }
 
   std::string getVolDataTypeAsStr() {
     return OmVolumeTypeHelpers::GetTypeAsString(mVolDataType);
   }
 
-  virtual void SetVolDataType(const OmVolDataType) = 0;
+  virtual void SetVolDataType(const om::common::DataType) = 0;
 
   virtual int GetBytesPerVoxel() const = 0;
   virtual int GetBytesPerSlice() const = 0;
@@ -74,7 +80,7 @@ class OmMipVolume {
   inline const om::coords::VolumeSystem& Coords() const { return coords_; }
 
  protected:
-  OmVolDataType mVolDataType;
+  om::common::DataType mVolDataType;
 
   om::coords::VolumeSystem coords_;
 

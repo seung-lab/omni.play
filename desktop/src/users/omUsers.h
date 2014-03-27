@@ -2,6 +2,7 @@
 #include "precomp.h"
 
 #include "users/userSettings.h"
+#include "datalayer/paths.hpp"
 
 class OmSegmentation;
 
@@ -14,11 +15,8 @@ class Paths;
 class usersImpl;
 
 class users {
- private:
-  std::unique_ptr<usersImpl> impl_;
-
  public:
-  users(const om::file::Paths& paths);
+  users(om::file::Paths paths);
 
   ~users();
 
@@ -31,9 +29,11 @@ class users {
   void SetupFolders();
 
   const std::string& CurrentUser() const;
-  std::string UsersFolder();
-  std::string UsersRootFolder();
+  om::file::Paths::Usr UserPaths();
   userSettings& UserSettings();
+
+ private:
+  std::unique_ptr<usersImpl> impl_;
 };
 
 }  // namespace om

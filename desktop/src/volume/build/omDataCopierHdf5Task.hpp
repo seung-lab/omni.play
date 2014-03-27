@@ -89,17 +89,17 @@ class OmDataCopierHdf5Task : public zi::runnable {
                                       const om::coords::DataBbox& chunkExtent,
                                       const om::coords::DataBbox& dataExtent) {
     switch (data->getVolDataType().index()) {
-      case OmVolDataType::INT8:
+      case om::common::DataType::INT8:
         return doResizePartialChunk<int8_t>(data, chunkExtent, dataExtent);
-      case OmVolDataType::UINT8:
+      case om::common::DataType::UINT8:
         return doResizePartialChunk<uint8_t>(data, chunkExtent, dataExtent);
-      case OmVolDataType::INT32:
+      case om::common::DataType::INT32:
         return doResizePartialChunk<int32_t>(data, chunkExtent, dataExtent);
-      case OmVolDataType::UINT32:
+      case om::common::DataType::UINT32:
         return doResizePartialChunk<uint32_t>(data, chunkExtent, dataExtent);
-      case OmVolDataType::FLOAT:
+      case om::common::DataType::FLOAT:
         return doResizePartialChunk<float>(data, chunkExtent, dataExtent);
-      case OmVolDataType::UNKNOWN:
+      case om::common::DataType::UNKNOWN:
       default:
         throw om::IoException("unknown data type");
     }

@@ -6,6 +6,7 @@
 #include "chunks/omSegChunk.h"
 #include "tiles/cache/raw/omRawSegTileCache.hpp"
 #include "volume/omSegmentation.h"
+#include "project/omProjectGlobals.h"
 
 namespace om {
 namespace segchunk {

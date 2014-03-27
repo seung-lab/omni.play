@@ -35,7 +35,7 @@ class OmChannelImpl : public OmMipVolume, public OmManageableObject {
 
   std::string GetName();
   std::string GetNameHyphen();
-  std::string GetDirectoryPath() const;
+  const om::file::Paths::Vol& VolPaths() const { return paths_; }
   void LoadPath();
 
   bool LoadVolData();
@@ -53,7 +53,7 @@ class OmChannelImpl : public OmMipVolume, public OmManageableObject {
 
   OmFilter2dManager& FilterManager() { return filterManager_; }
 
-  void SetVolDataType(const OmVolDataType);
+  void SetVolDataType(const om::common::DataType);
 
   OmChunk* GetChunk(const om::coords::Chunk& coord);
 
@@ -67,17 +67,16 @@ class OmChannelImpl : public OmMipVolume, public OmManageableObject {
 
   inline OmTileCacheChannel& TileCache() { return *tileCache_; }
 
-  inline om::channel::folder& Folder() const { return *folder_; }
-
  protected:
   // protected copy constructor and assignment operator to prevent copy
   OmChannelImpl(const OmChannelImpl&);
   OmChannelImpl& operator=(const OmChannelImpl&);
 
-  std::unique_ptr<om::channel::folder> folder_;
   std::unique_ptr<OmChunkCache<OmChannelImpl, OmChunk> > chunkCache_;
   std::unique_ptr<OmVolumeData> volData_;
   std::unique_ptr<OmTileCacheChannel> tileCache_;
+
+  om::file::Paths::Vol paths_;
 
   OmFilter2dManager filterManager_;
 

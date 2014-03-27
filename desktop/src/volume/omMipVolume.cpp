@@ -2,7 +2,8 @@
 #include "volume/io/omVolumeData.h"
 
 OmMipVolume::OmMipVolume()
-    : mVolDataType(OmVolDataType::UNKNOWN), mBuildState(MIPVOL_UNBUILT) {}
+    : mVolDataType(om::common::DataType::UNKNOWN),
+      mBuildState(MIPVOL_UNBUILT) {}
 
 bool OmMipVolume::ContainsVoxel(const om::coords::Global& vox) {
   return coords_.Extent().contains(vox);

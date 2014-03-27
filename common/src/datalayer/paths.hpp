@@ -26,6 +26,7 @@ class Paths {
     static path UniqueValues() { return "uniqeValues.1.0000.ver1"; }
     static path MeshAllocTable() { return "meshAllocTable.ver2"; }
     static path MeshData() { return "meshData.ver2"; }
+    static path MeshMetaData() { return "meshMetadata.ver1"; }
     static path MST() { return "mst.data"; }
     static path UserEdges() { return "mstUserEdges.data"; }
     static path SegmentDataPage(uint8_t page) {
@@ -42,6 +43,7 @@ class Paths {
       return std::string("volume.") + type.value() + ".raw";
     }
     static path LongRangeConnections() { return "LongRangeConnections.txt"; }
+    static path AbsCoord() { return "abs_coord.ver1"; }
   };
 
   // Relative to FilesFolder
@@ -64,11 +66,22 @@ class Paths {
       return Mip(mipLevel) / File::Volume(type);
     }
 
-    path Data(uint8_t mipLevel, const common::DataType& type) {
+    static path AbsCoordRel(uint8_t mipLevel) {
+      return Mip(mipLevel) / File::AbsCoord();
+    }
+
+    path Data(uint8_t mipLevel, const common::DataType& type) const {
       return root_ / DataRel(mipLevel, type);
     }
 
+    path AbsCoord(uint8_t mipLevel) const {
+      return root_ / AbsCoordRel(mipLevel);
+    }
+
+    Vol() {}
     Vol(om::file::path root) : root_(root) {}
+
+    operator path() const { return root_; }
 
    protected:
     om::file::path root_;
@@ -84,6 +97,7 @@ class Paths {
       return ChunkRel(c) / File::UniqueValues();
     }
     static path MeshesRel() { return "meshes/1.0000"; }
+    static path MeshMetaDataRel() { return MeshesRel() / File::MeshMetaData(); }
     static path MeshAllocTableRel(const coords::Chunk& c) {
       return MeshesRel() / Paths::Chunk(c) / File::MeshAllocTable();
     }
@@ -110,6 +124,7 @@ class Paths {
     }
 
     path Meshes() const { return root_ / MeshesRel(); }
+    path MeshMetaData() const { return root_ / MeshMetaDataRel(); }
     path MeshAllocTable(const coords::Chunk& c) const {
       return root_ / MeshAllocTableRel(c);
     }
@@ -128,7 +143,9 @@ class Paths {
     path MST() const { return root_ / MSTRel(); }
     path UserEdges() const { return root_ / UserEdgesRel(); }
 
+    Seg() : Vol() {}
     Seg(path root) : Vol(root) {}
+    operator path() const { return root_; }
   };
 
   struct Usr {
@@ -161,6 +178,7 @@ class Paths {
     }
 
     Usr(path root) : root_(root) {}
+    operator path() { return root_; }
 
    private:
     om::file::path root_;

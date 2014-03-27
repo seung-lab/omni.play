@@ -1,16 +1,22 @@
 #include "annotation/annotation.h"
 #include "annotation/annotationYaml.hpp"
 #include "volume/omSegmentation.h"
-#include "volume/omSegmentationFolder.h"
 #include "utility/yaml/omYaml.hpp"
 #include "utility/yaml/manager.hpp"
 #include "utility/yaml/coords.h"
+#include "project/omProject.h"
+#include "project/omProjectGlobals.h"
+#include "users/omUsers.h"
 
 namespace om {
 namespace annotation {
 
 std::string manager::filePathV1() const {
-  return vol_->Folder().AnnotationFile().toStdString();
+  return OmProject::Globals()
+      .Users()
+      .UserPaths()
+      .Annotations(vol_->GetID())
+      .string();
 }
 
 void manager::Add(coords::Global coord, const std::string& comment,

@@ -2,6 +2,7 @@
 #include "precomp.h"
 
 #include "datalayer/omDataWrapper.h"
+#include "datalayer/paths.hpp"
 #include "mesh/omMeshTypes.h"
 #include "system/omManageableObject.h"
 #include "volume/omMipVolume.h"
@@ -53,7 +54,8 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
   std::string GetName();
   std::string GetNameHyphen();
 
-  std::string GetDirectoryPath() const;
+  const om::file::Paths::Vol& VolPaths() const { return paths_; }
+  const om::file::Paths::Seg& SegPaths() const { return paths_; }
   void LoadPath();
 
   bool LoadVolData();
@@ -86,7 +88,7 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
 
   void UpdateVoxelBoundingData();
 
-  void SetVolDataType(const OmVolDataType);
+  void SetVolDataType(const om::common::DataType);
 
   void BuildBlankVolume(const Vector3i& dims);
 
@@ -113,7 +115,6 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
     return *chunkCache_;
   }
   inline OmTileCacheSegmentation& TileCache() { return *tileCache_; }
-  inline om::segmentation::folder& Folder() const { return *folder_; }
   inline om::annotation::manager& Annotations() const { return *annotations_; }
 
   om::segment::SegDataVector& SegData() const { return *segData_; }
@@ -125,7 +126,6 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
   void ClearUserChangesAndSave();
 
  private:
-  std::unique_ptr<om::segmentation::folder> folder_;
   std::unique_ptr<OmChunkUniqueValuesManager> uniqueChunkValues_;
   std::unique_ptr<OmMeshDrawer> meshDrawer_;
   std::unique_ptr<OmMeshManagers> meshManagers_;
@@ -145,6 +145,8 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
   std::unique_ptr<om::segment::SegListDataVector> segListData_;
   std::unique_ptr<om::segment::EdgeVector> mst_;
   std::unique_ptr<om::segment::UserEdgeVector> userEdges_;
+
+  om::file::Paths::Seg paths_;
 
   template <class T>
   friend class OmVolumeBuilder;

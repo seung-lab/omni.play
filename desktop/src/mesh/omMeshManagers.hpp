@@ -6,7 +6,6 @@
 #include "mesh/omMeshManager.h"
 #include "utility/fuzzyStdObjs.hpp"
 #include "utility/omStringHelpers.h"
-#include "volume/omSegmentationFolder.h"
 
 class OmMeshManagers {
  private:
@@ -127,7 +126,7 @@ class OmMeshManagers {
   DoubleFuzzyStdSet thresholds_;
 
   void findMeshThresholds() {
-    const QString meshFolder = segmentation_->Folder().GetMeshFolderPath();
+    const QString meshFolder = segmentation_->SegPaths().Meshes().c_str();
     QDir dir(meshFolder);
 
     QStringList filters;

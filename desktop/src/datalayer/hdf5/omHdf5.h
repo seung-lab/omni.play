@@ -32,7 +32,7 @@ class OmHdf5 {
   Vector3i getChunkedDatasetDims(const OmDataPath& path,
                                  const om::common::AffinityGraph aff);
   void allocateChunkedDataset(const OmDataPath&, const Vector3i&,
-                              const Vector3i&, const OmVolDataType type);
+                              const Vector3i&, const om::common::DataType type);
   void dataset_image_write_trim(const OmDataPath&, const om::coords::DataBbox&,
                                 OmDataWrapperPtr data);
 

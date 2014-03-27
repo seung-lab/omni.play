@@ -8,6 +8,7 @@
 #include "segment/omSegment.h"
 #include "system/cache/omCacheManager.h"
 #include "utility/dataWrappers.h"
+#include "volume/omSegmentation.h"
 
 class OmSegmentCutActionImpl {
  private:

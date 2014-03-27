@@ -32,7 +32,7 @@ bool OmHdf5Impl::dataset_exists(const OmDataPath& path) {
 void OmHdf5Impl::allocateChunkedDataset(const OmDataPath& path,
                                         const Vector3i& dataDims,
                                         const Vector3i& chunkDims,
-                                        const OmVolDataType type) {
+                                        const om::common::DataType type) {
   hdf_->setPath(path);
   hdf_->dataset_delete_create_tree();
   hdf_->allocateChunkedDataset(dataDims, chunkDims, type);

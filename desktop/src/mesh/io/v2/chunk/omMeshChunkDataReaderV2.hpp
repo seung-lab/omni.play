@@ -1,7 +1,6 @@
 #pragma once
 #include "precomp.h"
 
-#include "volume/omSegmentationFolder.h"
 #include "common/common.h"
 #include "datalayer/fs/omFile.hpp"
 #include "volume/omSegmentation.h"
@@ -54,10 +53,5 @@ class OmMeshChunkDataReaderV2 {
   }
 
  private:
-  QString filePath() {
-    const QString volPath =
-        vol_->Folder().GetMeshChunkFolderPath(threshold_, coord_);
-
-    return volPath + "meshData.ver2";
-  }
+  QString filePath() { return vol_->SegPaths().MeshData(coord_).c_str(); }
 };

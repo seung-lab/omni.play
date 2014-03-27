@@ -21,7 +21,7 @@ class OmHdf5Impl {
   Vector3i getChunkedDatasetDims(const OmDataPath& path,
                                  const om::common::AffinityGraph aff);
   void allocateChunkedDataset(const OmDataPath&, const Vector3i&,
-                              const Vector3i&, const OmVolDataType);
+                              const Vector3i&, const om::common::DataType);
 
   OmDataWrapperPtr readDataset(const OmDataPath&, int* = nullptr);
   void allocateDataset(const OmDataPath&, int, const OmDataWrapperPtr data);

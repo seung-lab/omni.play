@@ -3,9 +3,6 @@
 
 #include "volume/omVolumeTypes.hpp"
 
-#include "volume/omChannelFolder.h"
-#include "volume/omSegmentationFolder.h"
-
 namespace om {
 namespace data {
 namespace archive {

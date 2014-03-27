@@ -1,4 +1,3 @@
-#include "volume/omChannelFolder.h"
 #include "tiles/cache/omTileCacheChannel.hpp"
 #include "actions/omActions.h"
 #include "chunks/omChunk.h"
@@ -32,7 +31,7 @@ OmChannelImpl::OmChannelImpl(om::common::ID id)
 
 OmChannelImpl::~OmChannelImpl() {}
 
-void OmChannelImpl::LoadPath() { folder_.reset(new om::channel::folder(this)); }
+void OmChannelImpl::LoadPath() { paths_ = OmProject::Paths().Channel(GetID()); }
 
 std::string OmChannelImpl::GetName() {
   return "channel" + om::string::num(GetID());
@@ -40,10 +39,6 @@ std::string OmChannelImpl::GetName() {
 
 std::string OmChannelImpl::GetNameHyphen() {
   return "channel-" + om::string::num(GetID());
-}
-
-std::string OmChannelImpl::GetDirectoryPath() const {
-  return folder_->RelativeVolPath().toStdString();
 }
 
 void OmChannelImpl::CloseDownThreads() {}
@@ -60,10 +55,7 @@ bool OmChannelImpl::LoadVolData() {
 }
 
 bool OmChannelImpl::LoadVolDataIfFoldersExist() {
-  // assume level 0 data always present
-  const QString path = OmFileNames::GetVolDataFolderPath(*this, 0);
-
-  if (QDir(path).exists()) {
+  if (om::file::exists(paths_)) {
     return LoadVolData();
   }
 
@@ -78,7 +70,7 @@ int OmChannelImpl::GetBytesPerSlice() const {
   return GetBytesPerVoxel() * 128 * 128;
 }
 
-void OmChannelImpl::SetVolDataType(const OmVolDataType type) {
+void OmChannelImpl::SetVolDataType(const om::common::DataType type) {
   mVolDataType = type;
   volData_->SetDataType(this);
 }
