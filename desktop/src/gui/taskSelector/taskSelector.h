@@ -28,10 +28,9 @@ Q_SLOTS:
   void updateCells();
   void traceClicked();
   void compareClicked();
-  void refreshClicked();
+  virtual void showEvent(QShowEvent* event = nullptr) override;
 
  protected:
-  virtual void showEvent(QShowEvent* event) override;
   virtual void accept() override;
 
   virtual QSize sizeHint() const override;
@@ -44,7 +43,7 @@ Q_SLOTS:
   int selectedTaskId();
   void getTasks();
 
-  bool populating_;
+  int oldCellSelection_;
 
   QComboBox* datasetCombo_;
   QComboBox* cellCombo_;
