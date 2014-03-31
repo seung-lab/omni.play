@@ -13,12 +13,12 @@ struct volumeFolderInfo {
 
 class VolumeFolders {
  public:
-  static std::vector<volumeFolderInfo> FindSegmentations() {
-    return find(OmProject::Paths().Segmentations(), "segmentation");
+  static std::vector<volumeFolderInfo> FindSegmentations(om::file::Paths& p) {
+    return find(p.Segmentations(), "segmentation");
   }
 
-  static std::vector<volumeFolderInfo> FindChannels() {
-    return find(OmProject::Paths().Channels(), "channel");
+  static std::vector<volumeFolderInfo> FindChannels(om::file::Paths& p) {
+    return find(p.Channels(), "channel");
   }
 
  private:

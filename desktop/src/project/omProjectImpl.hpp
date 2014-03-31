@@ -144,7 +144,8 @@ class OmProjectImpl {
     } else if (om::system::Account::IsLoggedIn()) {
       globals_->Users().SwitchToUser(om::system::Account::username());
     } else if (guiParent) {
-      OmGuiUserChooser* chooser = new OmGuiUserChooser(guiParent);
+      OmGuiUserChooser* chooser =
+          new OmGuiUserChooser(guiParent, paths_.Users());
       const int userWasSelected = chooser->exec();
 
       if (!userWasSelected) {

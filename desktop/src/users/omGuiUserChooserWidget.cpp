@@ -5,9 +5,10 @@
 #include "users/omGuiUserChooserWidgetButtons.hpp"
 #include "users/omUsers.h"
 
-om::gui::userChooserWidget::userChooserWidget(OmGuiUserChooser* chooser)
+om::gui::userChooserWidget::userChooserWidget(OmGuiUserChooser* chooser,
+                                              om::file::path p)
     : QWidget(chooser), chooser_(chooser) {
-  users_ = findUsers();
+  users_ = findUsers(p);
 
   if (!users_.size()) {
     return;
@@ -26,17 +27,16 @@ void om::gui::userChooserWidget::setup() {
   setLayout(box);
 }
 
-std::vector<std::string> om::gui::userChooserWidget::findUsers() {
-  om::file::path path = OmProject::Globals().Users().UserPaths();
-
+std::vector<std::string> om::gui::userChooserWidget::findUsers(
+    om::file::path userFolder) {
   std::vector<std::string> ret;
 
-  for (auto f : boost::filesystem::directory_iterator(path)) {
+  for (auto f : boost::filesystem::directory_iterator(userFolder)) {
     if (!om::file::IsFolder(f) || f == "_orig") {
       continue;
     }
 
-    ret.push_back(f.path().string());
+    ret.push_back(f.path().filename().string());
     log_infos << "found user " << f.path().string();
   }
 
