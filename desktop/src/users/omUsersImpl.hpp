@@ -29,9 +29,10 @@ class usersImpl {
     currentUser_ = userName;
     const auto segmentationFolders =
         fs::VolumeFolders::FindSegmentations(paths_);
-
     for (auto f : segmentationFolders) {
-      copySegmentsFromDefault(f.id);
+      if (!om::file::exists(UserPaths().Segments(f.id))) {
+        copySegmentsFromDefault(f.id);
+      }
     }
     loadUserSettings();
   }
