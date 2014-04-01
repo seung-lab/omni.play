@@ -37,11 +37,10 @@ bool OmSegmentListWidget::populate(const bool doScrollToSelectedSegment,
   const om::common::SegID segIDjustSelected =
       segmentJustSelected.GetSegmentID();
   auto sdw = segmentJustSelected.MakeSegmentationDataWrapper();
-  if (!sdw.IsValidWrapper()) {
-    return false;
+  om::segment::Selection* selection = nullptr;
+  if (sdw.IsValidWrapper()) {
+    selection = &sdw.Segments()->Selection();
   }
-
-  auto& selection = sdw.Segments()->Selection();
 
   setUpdatesEnabled(false);
   clear();
@@ -71,7 +70,9 @@ bool OmSegmentListWidget::populate(const bool doScrollToSelectedSegment,
     row->setText(SIZE_COL, OmStringHelpers::HumanizeNumQT(sizeWithChildren));
     row->setTextAlignment(SIZE_COL, Qt::AlignHCenter);
 
-    row->setSelected(selection.IsSegmentSelected(seg));
+    if (selection) {
+      row->setSelected(selection->IsSegmentSelected(seg));
+    }
 
     if (doScrollToSelectedSegment) {
       if (seg->value() == segIDjustSelected) {

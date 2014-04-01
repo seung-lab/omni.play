@@ -54,7 +54,7 @@ void SegmentListBase::populateByPage() {
   currentPageNum_ = segIDs->pageNum;
 
   const bool shouldThisTabBeMadeActive =
-      segmentListWidget->populate(false, SegmentDataWrapper(), segIDs);
+      segmentListWidget->populate(false, SegmentDataWrapper(sdw_, 0), segIDs);
 
   if (shouldThisTabBeMadeActive) {
     makeTabActiveIfContainsJumpedToSegment();
