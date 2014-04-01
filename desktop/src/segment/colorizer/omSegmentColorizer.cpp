@@ -3,6 +3,7 @@
 #include "segment/colorizer/omSegmentColors.hpp"
 #include "system/cache/omCacheManager.h"
 #include "utility/timer.hpp"
+#include "tiles/make_tile.hpp"
 
 extern template class std::vector<uint8_t>;
 
@@ -34,8 +35,7 @@ std::shared_ptr<om::common::ColorARGB> OmSegmentColorizer::ColorTile(
     uint32_t const* imageData) {
   setup();
 
-  std::shared_ptr<om::common::ColorARGB> colorMappedDataPtr;
-
+  auto ret = om::tile::Make<om::common::ColorARGB>();
   // om::utility::timer timer;
 
   {
@@ -43,10 +43,10 @@ std::shared_ptr<om::common::ColorARGB> OmSegmentColorizer::ColorTile(
     zi::rwmutex::read_guard g(colorCache_);
 
     OmSegmentColorizerImpl c(params_, colorCache_, freshness_.load());
-    c.ColorTile(imageData, colorMappedDataPtr.get());
+    c.ColorTile(imageData, ret.get());
   }
 
   // timer.PrintV("done coloring tile");
 
-  return colorMappedDataPtr;
+  return ret;
 }

@@ -32,7 +32,6 @@ OmSegmentation::OmSegmentation()
       meshDrawer_(new OmMeshDrawer(this)),
       meshManagers_(new OmMeshManagers(this)),
       chunkCache_(new OmChunkCache<OmSegmentation, OmSegChunk>(this)),
-      validGroupNum_(new OmValidGroupNum(*this)),
       volData_(new OmVolumeData()),
       volSliceCache_(new OmRawSegTileCache(this)),
       tileCache_(new OmTileCacheSegmentation()),
@@ -45,41 +44,37 @@ OmSegmentation::OmSegmentation(common::ID id)
       meshDrawer_(new OmMeshDrawer(this)),
       meshManagers_(new OmMeshManagers(this)),
       chunkCache_(new OmChunkCache<OmSegmentation, OmSegChunk>(this)),
-      validGroupNum_(new OmValidGroupNum(*this)),
       volData_(new OmVolumeData()),
       volSliceCache_(new OmRawSegTileCache(this)),
       tileCache_(new OmTileCacheSegmentation()),
-      annotations_(new annotation::manager(this)) {
-  LoadPath();
-
-  segments_->refreshTree();
-}
+      annotations_(new annotation::manager(this)) {}
 
 OmSegmentation::~OmSegmentation() {}
 
 void OmSegmentation::LoadPath() {
-
+  log_debugs << "Loading segmentation " << id_;
   const auto& p = OmProject::Paths();
   const auto& username = OmProject::Globals().Users().CurrentUser();
-  auto id = GetID();
-  paths_ = p.SegmentationPaths(id);
+  paths_ = p.SegmentationPaths(id_);
   auto userPaths = p.UserPaths(username);
+
+  validGroupNum_.reset(new OmValidGroupNum(paths_.ValidGroupNum()));
 
   metaDS_.reset(new om::volume::MetadataDataSource());
   metaManager_.reset(
-      new om::volume::MetadataManager(*metaDS_, p.Segmentation(id)));
+      new om::volume::MetadataManager(*metaDS_, p.Segmentation(id_)));
 
-  segDataDS_.reset(new segment::FileDataSource(userPaths.Segments(id)));
+  segDataDS_.reset(new segment::FileDataSource(userPaths.Segments(id_)));
   segData_.reset(new segment::SegDataVector(*segDataDS_, segment::PageSize,
                                             Metadata().numSegments() + 1));
 
   segListDataDS_.reset(
-      new segment::ListTypeFileDataSource(userPaths.Segments(id)));
+      new segment::ListTypeFileDataSource(userPaths.Segments(id_)));
   segListData_.reset(new segment::SegListDataVector(
       *segListDataDS_, segment::PageSize, Metadata().numSegments() + 1));
 
-  mst_.reset(new segment::EdgeVector(userPaths.MST(id)));
-  userEdges_.reset(new segment::UserEdgeVector(userPaths.UserEdges(id)));
+  mst_.reset(new segment::EdgeVector(userPaths.MST(id_)));
+  userEdges_.reset(new segment::UserEdgeVector(userPaths.UserEdges(id_)));
   segments_.reset(new OmSegments(this));
 }
 

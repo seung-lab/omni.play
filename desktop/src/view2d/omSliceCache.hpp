@@ -4,6 +4,7 @@
 #include "chunks/omSegChunk.h"
 #include "tiles/cache/raw/omRawSegTileCache.hpp"
 #include "chunks/omSegChunkDataInterface.hpp"
+#include "volume/omSegmentation.h"
 
 /**
  * unmanaged cache of slices to speed-up brush select tool

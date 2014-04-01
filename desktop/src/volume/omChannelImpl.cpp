@@ -24,8 +24,6 @@ OmChannelImpl::OmChannelImpl(om::common::ID id)
       chunkCache_(new OmChunkCache<OmChannelImpl, OmChunk>(this)),
       volData_(new OmVolumeData()),
       tileCache_(new OmTileCacheChannel()) {
-  LoadPath();
-
   filterManager_.AddFilter();
 }
 

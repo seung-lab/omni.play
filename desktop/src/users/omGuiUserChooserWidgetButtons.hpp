@@ -24,7 +24,7 @@ class chooseUserButton : public OmButton<om::gui::userChooserWidget> {
 
  private:
   void doAction() {
-    OmProject::Globals().Users().SwitchToUser(userName_);
+    // OmProject::Globals().Users().SwitchToUser(userName_);
     chooser_->Done();
   }
 };

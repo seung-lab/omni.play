@@ -1,17 +1,15 @@
 #pragma once
 #include "precomp.h"
 
-#include <atomic>
-
 #include "segment/omSegment.h"
 #include "segment/omSegments.h"
 #include "datalayer/fs/qtFile.hpp"
 #include "datalayer/archive/std_vector.hpp"
-#include "volume/omSegmentation.h"
+#include "datalayer/file.h"
 
 class OmValidGroupNum {
  private:
-  OmSegmentation& vol_;
+  om::file::path path_;
   int version_;
 
   const uint32_t noGroupNum_;
@@ -21,8 +19,8 @@ class OmValidGroupNum {
   std::vector<uint32_t> segToGroupNum_;
 
  public:
-  OmValidGroupNum(OmSegmentation& segmentation)
-      : vol_(segmentation), version_(1), noGroupNum_(0), initialGroupNum_(1) {
+  OmValidGroupNum(om::file::path p)
+      : path_(p), version_(1), noGroupNum_(0), initialGroupNum_(1) {
     maxGroupNum_.store(initialGroupNum_);
     load();
   }
@@ -58,10 +56,8 @@ class OmValidGroupNum {
   inline uint32_t Get(OmSegment* seg) const { return Get(seg->value()); }
 
  private:
-  QString filePathV1() const;
-
   void load() {
-    const QString filePath = filePathV1();
+    const QString filePath = path_.c_str();
 
     QFile file(filePath);
 
@@ -88,7 +84,7 @@ class OmValidGroupNum {
   }
 
   void save() const {
-    const QString filePath = filePathV1();
+    const QString filePath = path_.c_str();
 
     QFile file(filePath);
 

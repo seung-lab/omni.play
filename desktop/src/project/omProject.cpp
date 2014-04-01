@@ -8,7 +8,8 @@ OmProject::~OmProject() {}
 
 QString OmProject::New(const QString& fnp) {
   try {
-    instance().impl_ = std::make_unique<OmProjectImpl>(fnp);
+    instance().impl_ = std::make_unique<OmProjectImpl>(fnp, "");
+    instance().impl_->New();
   }
   catch (...) {
     instance().impl_.reset();
@@ -35,7 +36,8 @@ void OmProject::Load(const QString& fileNameAndPath, QWidget* guiParent,
 
   try {
     instance().impl_ =
-        std::make_unique<OmProjectImpl>(fileNameAndPath, guiParent, username);
+        std::make_unique<OmProjectImpl>(fileNameAndPath, username);
+    instance().impl_->Load(guiParent);
   }
   catch (...) {
     instance().impl_.reset();
@@ -55,11 +57,9 @@ OmHdf5* OmProject::OldHDF5() { return instance().impl_->OldHDF5(); }
 
 OmProjectVolumes& OmProject::Volumes() { return instance().impl_->Volumes(); }
 
-int OmProject::GetFileVersion() { return instance().impl_->GetFileVersion(); }
+int OmProject::GetFileVersion() { return instance().version_; }
 
-void OmProject::setFileVersion(const int ver) {
-  instance().impl_->setFileVersion(ver);
-}
+void OmProject::setFileVersion(const int ver) { instance().version_ = ver; }
 
 bool OmProject::IsReadOnly() { return instance().impl_->IsReadOnly(); }
 

@@ -37,6 +37,10 @@ bool OmSegmentListWidget::populate(const bool doScrollToSelectedSegment,
   const om::common::SegID segIDjustSelected =
       segmentJustSelected.GetSegmentID();
   auto sdw = segmentJustSelected.MakeSegmentationDataWrapper();
+  if (!sdw.IsValidWrapper()) {
+    return false;
+  }
+
   auto& selection = sdw.Segments()->Selection();
 
   setUpdatesEnabled(false);

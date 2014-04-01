@@ -44,7 +44,7 @@ class OmChannelImpl : public OmMipVolume, public OmManageableObject {
 
   om::common::ObjectType getVolumeType() const { return om::common::CHANNEL; }
 
-  om::common::ID GetID() const { return GetID(); }
+  om::common::ID GetID() const { return id_; }
 
   virtual int GetBytesPerVoxel() const;
   virtual int GetBytesPerSlice() const;

@@ -33,6 +33,7 @@ class OmProjectImpl {
   om::file::path oldHDF5projectFile_;
   OmHdf5* oldHDF5_;
   om::file::Paths paths_;
+  std::string username_;
 
   int fileVersion_;
 
@@ -40,16 +41,11 @@ class OmProjectImpl {
   std::unique_ptr<OmProjectGlobals> globals_;
 
  public:
-  OmProjectImpl(const QString& fnp)
-      : oldHDF5_(nullptr), paths_(fnp.toStdString()), fileVersion_(0) {
-    doNew();
-  }
-
-  OmProjectImpl(const QString& fnp, QWidget* guiParent,
-                const std::string& username)
-      : oldHDF5_(nullptr), paths_(fnp.toStdString()), fileVersion_(0) {
-    doLoad(guiParent, username);
-  }
+  OmProjectImpl(const QString& fnp, const std::string& username)
+      : oldHDF5_(nullptr),
+        paths_(fnp.toStdString()),
+        username_(username),
+        fileVersion_(0) {}
 
   ~OmProjectImpl() {}
 
@@ -70,6 +66,19 @@ class OmProjectImpl {
 
   // volume management
   OmProjectVolumes& Volumes() { return volumes_; }
+
+  // project IO
+  void New() { doNew(); }
+
+  void Load(QWidget* guiParent) {
+    try {
+      doLoad(guiParent);
+    }
+    catch (...) {
+      globals_.reset();
+      throw;
+    }
+  }
 
   void Save() {
     if (IsReadOnly()) {
@@ -128,7 +137,7 @@ class OmProjectImpl {
     }
   }
 
-  void doLoad(QWidget* guiParent, const std::string& username) {
+  void doLoad(QWidget* guiParent) {
     oldHDF5projectFile_ = paths_.FilesFolder() / "oldProjectFile.hdf5";
     projectMetadataFile_ = paths_.ProjectMetadataYaml();
 
@@ -139,8 +148,8 @@ class OmProjectImpl {
 
     globals_.reset(new OmProjectGlobals(paths_));
     globals_->Init();
-    if (!username.empty()) {
-      globals_->Users().SwitchToUser(username);
+    if (!username_.empty()) {
+      globals_->Users().SwitchToUser(username_);
     } else if (om::system::Account::IsLoggedIn()) {
       globals_->Users().SwitchToUser(om::system::Account::username());
     } else if (guiParent) {

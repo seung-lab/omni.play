@@ -22,6 +22,7 @@ class Paths;
 class OmProject : private om::SingletonBase<OmProject> {
  private:
   std::unique_ptr<OmProjectImpl> impl_;
+  int version_;
 
  public:
   // project IO

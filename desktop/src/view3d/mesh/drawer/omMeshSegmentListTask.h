@@ -2,6 +2,8 @@
 #include "precomp.h"
 
 #include "view3d/mesh/drawer/struct.hpp"
+#include "omMeshSegmentListTask.h"
+#include "chunks/uniqueValues/omChunkUniqueValuesManager.hpp"
 
 class OmSegment;
 class OmSegments;

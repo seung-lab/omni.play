@@ -37,7 +37,7 @@ std::vector<std::string> om::gui::userChooserWidget::findUsers(
     }
 
     ret.push_back(f.path().filename().string());
-    log_infos << "found user " << f.path().string();
+    log_infos << "found user " << ret.back();
   }
 
   return ret;
