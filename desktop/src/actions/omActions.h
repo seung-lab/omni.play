@@ -6,7 +6,7 @@
 #include "project/omProject.h"
 #include "project/omProjectGlobals.h"
 #include "zi/omUtility.h"
-#include "threads/omTaskManagerTypes.h"
+#include "threads/taskManagerTypes.h"
 
 class OmActionsImpl;
 class OmSegment;
@@ -22,7 +22,7 @@ class OmActions : om::singletonBase<OmActions> {
     return &OmProject::Globals().Actions();
   }
 
-  static OmThreadPool& pool();
+  static om::thread::ThreadPool& pool();
 
  public:
   // project-related

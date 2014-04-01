@@ -1,9 +1,9 @@
 #include "actions/omActions.h"
 #include "actions/omActionsImpl.h"
 #include "utility/dataWrappers.h"
-#include "threads/omTaskManager.hpp"
+#include "threads/taskManager.hpp"
 
-OmThreadPool& OmActions::pool() {
+om::thread::ThreadPool& OmActions::pool() {
   return OmProject::Globals().Actions().ThreadPool();
 }
 

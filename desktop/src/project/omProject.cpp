@@ -78,7 +78,7 @@ bool OmProject::IsOpen(const om::file::path& fileNameAndPath,
 #include "actions/omActions.h"
 #include "segment/omSegmentSelected.hpp"
 #include "system/omOpenGLGarbageCollector.hpp"
-#include "threads/omThreadPoolManager.h"
+#include "threads/threadPoolManager.h"
 
 void OmProject::Close() {
   if (!IsOpen()) {
@@ -88,7 +88,7 @@ void OmProject::Close() {
   OmActions::Close();
 
   OmCacheManager::SignalCachesToCloseDown();
-  OmThreadPoolManager::StopAll();
+  om::thread::ThreadPoolManager::StopAll();
   zi::all_threads::join_all();
 
   OmTileCache::Delete();

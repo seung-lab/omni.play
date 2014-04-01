@@ -1,5 +1,5 @@
 #include "volume/build/omVolumeProcessor.h"
-#include "threads/omTaskManager.hpp"
+#include "threads/taskManager.hpp"
 #include "volume/omChannel.h"
 #include "volume/omSegmentation.h"
 #include "volume/omAffinityChannel.h"
@@ -35,7 +35,7 @@ class OmSegmentationChunkBuildTask : public zi::runnable {
 };
 
 void OmVolumeProcessor::doBuildThreadedVolume(OmSegmentation& vol) {
-  OmThreadPool threadPool;
+  om::thread::ThreadPool threadPool;
   threadPool.start();
 
   std::shared_ptr<std::deque<om::coords::Chunk> > coordsPtr =

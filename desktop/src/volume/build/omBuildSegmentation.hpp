@@ -6,7 +6,7 @@
 #include "mesh/omMeshManagers.hpp"
 #include "project/omProject.h"
 #include "segment/omSegments.h"
-#include "threads/omTaskManager.hpp"
+#include "threads/taskManager.hpp"
 #include "utility/dataWrappers.h"
 #include "volume/build/omBuildVolumes.hpp"
 #include "volume/build/omVolumeBuilder.hpp"

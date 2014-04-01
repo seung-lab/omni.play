@@ -1,7 +1,7 @@
 #include "chunks/omSegChunk.h"
 #include "chunks/omSegChunkDataInterface.hpp"
 #include "segment/omSegments.h"
-#include "threads/omTaskManager.hpp"
+#include "threads/taskManager.hpp"
 #include "volume/omSegmentation.h"
 #include "volume/omUpdateBoundingBoxes.h"
 
@@ -15,7 +15,7 @@ void OmUpdateBoundingBoxes::doUpdate(const om::coords::Chunk& coord) {
 }
 
 void OmUpdateBoundingBoxes::Update() {
-  OmThreadPool pool;
+  om::thread::ThreadPool pool;
   pool.start();
 
   std::shared_ptr<std::deque<om::coords::Chunk> > coordsPtr =

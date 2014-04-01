@@ -6,8 +6,8 @@
 
 #include "project/omProject.h"
 #include "project/omProjectGlobals.h"
-#include "threads/omTaskManager.hpp"
-#include "threads/omTaskManagerTypes.h"
+#include "threads/taskManager.hpp"
+#include "threads/taskManagerTypes.h"
 #include "utility/omFileHelpers.h"
 
 #include "zi/omUtility.h"
@@ -33,7 +33,7 @@ class OmActionLogger : private om::singletonBase<OmActionLogger> {
 
  private:
   QDir logFolder_;
-  OmThreadPool threadPool_;
+  om::thread::ThreadPool threadPool_;
 
   OmActionLogger() {}
 

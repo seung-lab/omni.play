@@ -8,7 +8,7 @@
 #include "datalayer/omDataWrapper.h"
 #include "chunks/omChunk.h"
 #include "utility/omStringHelpers.h"
-#include "threads/omTaskManager.hpp"
+#include "threads/taskManager.hpp"
 #include "datalayer/hdf5/omHdf5Manager.h"
 #include "volume/build/omDataCopierBase.hpp"
 #include "volume/build/omDataCopierHdf5Task.hpp"
@@ -46,7 +46,7 @@ class OmDataCopierHdf5 : public OmDataCopierBase<VOL> {
     OmTimer timer;
     log_infos << "copying in HDF5 data...";
 
-    OmThreadPool threadPool;
+    om::thread::ThreadPool threadPool;
     threadPool.start(3);
 
     std::shared_ptr<std::deque<om::coords::Chunk> > coordsPtr =

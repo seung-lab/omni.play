@@ -5,8 +5,8 @@
 #include "gui/widgets/progress.hpp"
 #include "gui/widgets/progressBar.hpp"
 #include "system/omConnect.hpp"
-#include "threads/omTaskManager.hpp"
-#include "threads/omTaskManagerTypes.h"
+#include "threads/taskManager.hpp"
+#include "threads/taskManagerTypes.h"
 
 namespace om {
 namespace gui {
@@ -18,7 +18,7 @@ class progressBarDialog : public QDialog {
   std::shared_ptr<progress> progress_;
   progressBar<uint64_t>* progressBar_;
 
-  OmThreadPool threadPool_;
+  om::thread::ThreadPool threadPool_;
 
   void init() {
     threadPool_.start(1);

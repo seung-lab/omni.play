@@ -8,8 +8,8 @@
 #include "chunks/omChunk.h"
 #include "volume/omMipVolume.h"
 #include "utility/omTimer.hpp"
-#include "threads/omTaskManager.hpp"
-#include "threads/omTaskManagerTypes.h"
+#include "threads/taskManager.hpp"
+#include "threads/taskManagerTypes.h"
 
 template <typename VOL, typename T>
 class OmLoadImage {
@@ -29,7 +29,7 @@ class OmLoadImage {
 
   LockedUint32 tileNum_;
 
-  OmThreadPool taskMan_;
+  om::thread::ThreadPool taskMan_;
 
   const uint32_t numTilesToWrite_;
   zi::semaphore limit_;

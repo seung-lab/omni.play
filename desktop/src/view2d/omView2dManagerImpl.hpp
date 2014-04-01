@@ -1,11 +1,11 @@
 #pragma once
 #include "precomp.h"
 
-#include "threads/omTaskManager.hpp"
+#include "threads/taskManager.hpp"
 
 class OmView2dManagerImpl {
  private:
-  OmThreadPool threadPool_;
+  om::thread::ThreadPool threadPool_;
 
  public:
   OmView2dManagerImpl() { threadPool_.start(); }

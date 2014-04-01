@@ -1,7 +1,7 @@
 #pragma once
 #include "precomp.h"
 
-#include "threads/omTaskManager.hpp"
+#include "threads/taskManager.hpp"
 #include "tiles/cache/omTaskManagerContainerMipSorted.hpp"
 
 #include "tiles/omTileCoord.h"
@@ -13,7 +13,7 @@ class OmTileCacheThreadPool {
   std::set<key_t> currentlyFetching_;
   typedef std::set<key_t>::iterator iterator;
 
-  OmTaskManager<OmTaskManagerContainerMipSorted> threadPool_;
+  om::thread::TaskManager<OmTaskManagerContainerMipSorted> threadPool_;
 
   zi::spinlock lock_;
 

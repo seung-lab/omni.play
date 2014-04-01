@@ -1,7 +1,7 @@
 #pragma once
 #include "precomp.h"
 
-#include "threads/omTaskManager.hpp"
+#include "threads/taskManager.hpp"
 
 class OmTileDrawer;
 
@@ -16,5 +16,5 @@ class OmTilePreFetcher {
   void Shutdown();
 
  private:
-  OmThreadPool mThreadPool;
+  om::thread::ThreadPool mThreadPool;
 };

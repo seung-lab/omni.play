@@ -3,7 +3,7 @@
 
 #include "mesh/io/v2/omMeshReaderV2.hpp"
 #include "mesh/io/omMeshConvertV1toV2Task.hpp"
-#include "threads/omTaskManager.hpp"
+#include "threads/taskManager.hpp"
 
 class OmMeshConvertV1toV2 {
  private:
@@ -15,7 +15,7 @@ class OmMeshConvertV1toV2 {
   std::unique_ptr<OmMeshReaderV2> meshReader_;
   std::unique_ptr<OmMeshWriterV2> meshWriter_;
 
-  OmThreadPool threadPool_;
+  om::thread::ThreadPool threadPool_;
 
  public:
   OmMeshConvertV1toV2(OmMeshManager* meshManager)

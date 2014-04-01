@@ -2,7 +2,7 @@
 #include "precomp.h"
 
 #include "utility/omLockedPODs.hpp"
-#include "threads/omTaskManager.hpp"
+#include "threads/taskManager.hpp"
 #include "utility/omTimer.hpp"
 
 class OmSimpleProgress {
@@ -13,7 +13,7 @@ class OmSimpleProgress {
   LockedInt32 cur_;
   size_t lineLen_;
 
-  OmThreadPool threadPool_;
+  om::thread::ThreadPool threadPool_;
   OmTimer timer_;
 
  public:

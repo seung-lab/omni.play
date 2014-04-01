@@ -12,12 +12,12 @@
 #include "segment/omFindCommonEdge.hpp"
 #include "segment/omSegmentSelector.h"
 #include "system/omLocalPreferences.hpp"
-#include "threads/omTaskManager.hpp"
+#include "threads/taskManager.hpp"
 #include "utility/dataWrappers.h"
 #include "viewGroup/omSplitting.hpp"
 #include "viewGroup/omViewGroupState.h"
 
-OmActionsImpl::OmActionsImpl() : threadPool_(new OmThreadPool()) {
+OmActionsImpl::OmActionsImpl() : threadPool_(new om::thread::ThreadPool()) {
   threadPool_->start(1);
 }
 

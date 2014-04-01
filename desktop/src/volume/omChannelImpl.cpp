@@ -9,7 +9,7 @@
 #include "datalayer/omDataPath.h"
 #include "datalayer/omDataPaths.h"
 #include "project/omProject.h"
-#include "threads/omTaskManager.hpp"
+#include "threads/taskManager.hpp"
 #include "volume/io/omVolumeData.h"
 #include "volume/omChannelImpl.h"
 #include "volume/omFilter2d.h"

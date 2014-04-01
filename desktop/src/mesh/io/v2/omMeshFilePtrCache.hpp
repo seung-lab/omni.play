@@ -6,7 +6,7 @@
 #include "mesh/io/v2/chunk/omMeshChunkDataReaderV2.hpp"
 #include "mesh/io/v2/chunk/omMeshChunkDataWriterV2.hpp"
 #include "mesh/io/v2/omRingBuffer.hpp"
-#include "threads/omTaskManager.hpp"
+#include "threads/taskManager.hpp"
 
 class OmMeshChunkAllocTableV2;
 class OmMeshChunkDataWriterV2;
@@ -21,7 +21,7 @@ class OmMeshFilePtrCache {
   std::map<om::coords::Chunk, std::shared_ptr<OmMeshChunkDataWriterV2> > data_;
   zi::rwmutex lock_;
 
-  OmThreadPool threadPool_;
+  om::thread::ThreadPool threadPool_;
 
   // limit number of memory-mapped files
   OmRingBuffer<OmMeshChunkAllocTableV2> mappedFiles_;

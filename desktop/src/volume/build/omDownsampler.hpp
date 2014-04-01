@@ -1,7 +1,7 @@
 #pragma once
 #include "precomp.h"
 
-#include "threads/omTaskManager.hpp"
+#include "threads/taskManager.hpp"
 #include "utility/omTimer.hpp"
 #include "volume/build/omDownsamplerTypes.hpp"
 #include "volume/build/omDownsamplerVoxelTask.hpp"
@@ -45,7 +45,7 @@ class OmDownsampler {
     OmTimer timer;
     log_infos << "downsampling...";
 
-    OmThreadPool threadPool;
+    om::thread::ThreadPool threadPool;
     threadPool.start(3);
 
     std::shared_ptr<std::deque<om::coords::Chunk> > coordsPtr =

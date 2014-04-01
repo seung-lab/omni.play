@@ -9,7 +9,7 @@
 #include "cache/lockedObjects.hpp"
 #include "utility/lockedObjects.hpp"
 #include "utility/omLockedPODs.hpp"
-#include "threads/omTaskManager.hpp"
+#include "threads/taskManager.hpp"
 
 #include "common/enums.hpp"
 
@@ -22,7 +22,7 @@ class OmThreadedMeshCache : public OmCacheBase {
   typedef om::coords::Mesh key_t;
   typedef OmMeshPtr ptr_t;
 
-  OmThreadPool threadPool_;
+  om::thread::ThreadPool threadPool_;
   LockedInt64 curSize_;
 
   om::cache::LockedCacheMap<key_t, ptr_t> cache_;

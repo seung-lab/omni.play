@@ -6,7 +6,7 @@
 #include "common/logging.h"
 #include "mesh/drawer/omMeshSegmentListTask.h"
 #include "mesh/drawer/omMeshSegmentListTypes.hpp"
-#include "threads/omTaskManager.hpp"
+#include "threads/taskManager.hpp"
 #include "volume/omMipVolume.h"
 
 #include "segment/omSegment.h"
@@ -70,7 +70,7 @@ class OmMeshSegmentList {
 
  private:
   std::map<OmMeshSegListKey, OmSegPtrListValid> mSegmentListCache;
-  OmThreadPool threadPool_;
+  om::thread::ThreadPool threadPool_;
   zi::mutex lock_;
 
   OmMeshSegListKey makeKey(OmSegChunk* chunk, OmSegment* rootSeg) {

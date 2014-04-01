@@ -12,13 +12,13 @@ class OmSegments;
 
 class OmActionsImpl {
  private:
-  std::unique_ptr<OmThreadPool> threadPool_;
+  std::unique_ptr<om::thread::ThreadPool> threadPool_;
 
  public:
   OmActionsImpl();
   ~OmActionsImpl();
 
-  inline OmThreadPool& ThreadPool() { return *threadPool_; }
+  inline om::thread::ThreadPool& ThreadPool() { return *threadPool_; }
 
   // project-related
   void Save();
