@@ -59,12 +59,12 @@ bool ComparisonTask::Start() {
   for (auto iter : {seedIter, agreedIter}) {
     if (iter != namedGroups_.end()) {
       for (const auto& id : iter->segments) {
-        if (id <= 0 || id > segments->getMaxValue()) {
+        if (id <= 0 || id > segments.maxValue()) {
           log_errors << "Invalid segment id " << id << " in "
                      << typeString[iter->type] << " segment group.";
           continue;
         }
-        auto rootID = segments->findRootID(id);
+        auto rootID = segments.FindRootID(id);
         if (rootID) {
           allRoots.insert(rootID);
         }
@@ -72,11 +72,11 @@ bool ComparisonTask::Start() {
     }
   }
   if (allRoots.size() > 0) {
-    segments->UpdateSegmentSelection(allRoots, true);
+    segments.Selection().UpdateSegmentSelection(allRoots, true);
   } else {
     // clear any pre-existing selection (which could exist if the previous task
     // happened to be in the same volume)
-    segments->UpdateSegmentSelection({}, true);
+    segments.Selection().UpdateSegmentSelection({}, true);
     log_errors << "No segments in Seed segments group.";
   }
 
