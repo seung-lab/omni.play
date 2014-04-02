@@ -1,8 +1,6 @@
 #pragma once
 #include "precomp.h"
 
-#include <atomic>
-
 #include "common/common.h"
 #include "segment/colorizer/omSegmentColorizerColorCache.hpp"
 #include "segment/colorizer/omSegmentColorizerTypes.h"

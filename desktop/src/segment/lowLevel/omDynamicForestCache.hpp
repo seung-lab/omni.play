@@ -1,8 +1,6 @@
 #pragma once
 #include "precomp.h"
 
-#include <atomic>
-
 #include "common/common.h"
 #include "segment/lowLevel/DynamicForestPool.hpp"
 

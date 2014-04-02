@@ -1,9 +1,6 @@
 #pragma once
 #include "precomp.h"
 
-#include <boost/optional.hpp>
-#include <zi/mutex.hpp>
-
 #include "common/core.hpp"
 #include "datalayer/archive/segmentation.h"
 

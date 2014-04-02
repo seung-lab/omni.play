@@ -1,4 +1,3 @@
-// #include "utility/glInclude.h"
 #include "common/logging.h"
 #include "mesh/io/omMeshConvertV1toV2.hpp"
 #include "mesh/io/omMeshMetadata.hpp"

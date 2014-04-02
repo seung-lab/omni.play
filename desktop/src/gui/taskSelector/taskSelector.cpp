@@ -6,7 +6,7 @@ using namespace om::task;
 #define TASK_ROWS 15
 #define TASK_COLS 6
 
-TaskSelector::TaskSelector(QWidget* p) : QDialog(p), populating_(false) {
+TaskSelector::TaskSelector(QWidget* p) : QDialog(p) {
   QGridLayout* layout = new QGridLayout(this);
 
   datasetCombo_ = new QComboBox(this);
@@ -26,7 +26,7 @@ TaskSelector::TaskSelector(QWidget* p) : QDialog(p), populating_(false) {
 
   refreshButton_ = new QPushButton(tr("Refresh"), this);
   layout->addWidget(refreshButton_, 0, 5);
-  om::connect(refreshButton_, SIGNAL(clicked()), this, SLOT(refreshClicked()));
+  om::connect(refreshButton_, SIGNAL(clicked()), this, SLOT(showEvent()));
 
   taskTable_ = new QTableWidget(this);
   taskTable_->setRowCount(TASK_ROWS);
@@ -75,32 +75,31 @@ TaskSelector::TaskSelector(QWidget* p) : QDialog(p), populating_(false) {
 QSize TaskSelector::sizeHint() const { return QSize(900, 600); }
 
 void TaskSelector::showEvent(QShowEvent* event) {
-  populating_ = true;
+  oldCellSelection_ = cellID();
+  auto oldDatasetSelection = datasetID();
+
+  TaskManager::Refresh();
   datasets_ = TaskManager::GetDatasets();
 
   datasetCombo_->clear();
   if ((bool)datasets_) {
-    int prefDataset = OmLocalPreferences::getDataset();
+    if (!oldDatasetSelection) {
+      oldDatasetSelection = OmLocalPreferences::getDataset();
+    }
     for (int i = 0; i < datasets_->size(); ++i) {
       Dataset& ds = (*datasets_)[i];
       ds.LoadCells();
       datasetCombo_->addItem(
           QString::fromStdString(std::to_string(ds.id()) + ". " + ds.name()),
           ds.id());
-      if (ds.id() == prefDataset) {
+      if (ds.id() == oldDatasetSelection) {
         datasetCombo_->setCurrentIndex(i);
       }
     }
   }
-  updateCells();
-  populating_ = false;
 }
 
 void TaskSelector::updateCells() {
-  if (populating_) {
-    return;
-  }
-
   cellCombo_->clear();
   cellCombo_->addItem("", 0);
   if (dataset()) {
@@ -111,10 +110,12 @@ void TaskSelector::updateCells() {
         cellCombo_->addItem(
             QString::fromStdString(std::to_string(c.CellID) + " - " + c.Name),
             i + 1);
+        if (c.CellID == oldCellSelection_) {
+          cellCombo_->setCurrentIndex(i+1);
+        }
       }
     }
   }
-  updateList();
 }
 
 void TaskSelector::updateList() {
@@ -164,12 +165,10 @@ void TaskSelector::compareClicked() {
   accept();
 }
 
-void TaskSelector::refreshClicked() {
-  TaskManager::Refresh();
-  getTasks();
-}
-
 uint8_t TaskSelector::datasetID() {
+  if (!dataset()) {
+    return 0;
+  }
   return datasetCombo_->itemData(datasetCombo_->currentIndex()).toInt();
 }
 
@@ -215,7 +214,7 @@ QTableWidgetItem* makeTableItem(const T val) {
 void TaskSelector::getTasks() {
   auto dsid = datasetID();
   auto cid = cellID();
-  auto tasks = TaskManager::GetTasks(dsid, cid, 3);
+  auto tasks = TaskManager::GetTasks(dsid, cid, 1e6);
   size_t i = 0;
   taskTable_->setSortingEnabled(false);
   for (; i < std::min((size_t)TASK_ROWS, tasks->size()); ++i) {
