@@ -104,8 +104,9 @@ class OmSegmentListsImpl {
   }
 
   void doBuildInitialSegmentList() {
+    log_debugs << "Building Initial SegmentList.";
     uint32_t numSegs = 0;
-    for (auto segId = 1; segId < meta_.numSegments(); segId++) {
+    for (auto segId = 1; segId <= meta_.numSegments(); segId++) {
       OmSegment* seg = store_.GetSegment(segId);
       if (seg && seg->value()) {
         ++numSegs;
