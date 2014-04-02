@@ -94,7 +94,7 @@ class usersImpl {
       file::MkDir(up.Segments(id));
       permissions(up.Segments(id), all_all);
       for (auto& f : directory_iterator(defaultUp.Segments(id))) {
-        auto to = up / f.path().filename();
+        auto to = up.Segments(id) / f.path().filename();
         copy_file(f, to);
         permissions(to, all_all ^ owner_exe ^ group_exe ^ others_exe);
       }
