@@ -60,7 +60,7 @@ TaskSelector::TaskSelector(QWidget* p) : QDialog(p) {
 
   completedTasksCheckbox_ = new QCheckBox(tr("Show Completed"), this);
   layout->addWidget(completedTasksCheckbox_, 2, 2);
-  om::connect(completedTasksCheckbox_, SIGNAL(stateChanged()), this,
+  om::connect(completedTasksCheckbox_, SIGNAL(stateChanged(int)), this,
               SLOT(completedChanged()));
 
   closeButton_ = new QPushButton(tr("Close"), this);
@@ -169,7 +169,7 @@ void TaskSelector::compareClicked() {
   accept();
 }
 
-void TaskSelector::completedChanged() {}
+void TaskSelector::completedChanged() { getTasks(); }
 
 uint8_t TaskSelector::datasetID() {
   if (!dataset()) {
@@ -220,7 +220,9 @@ QTableWidgetItem* makeTableItem(const T val) {
 void TaskSelector::getTasks() {
   auto dsid = datasetID();
   auto cid = cellID();
-  auto tasks = TaskManager::GetTasks(dsid, cid, 1e6);
+  auto tasks = TaskManager::GetTasks(
+      dsid, cid,
+      completedTasksCheckbox_->checkState() == Qt::Unchecked ? 1e6 : 0);
   taskTable_->setSortingEnabled(false);
   taskTable_->setRowCount(tasks->size());
   for (size_t i = 0; i < tasks->size(); ++i) {
