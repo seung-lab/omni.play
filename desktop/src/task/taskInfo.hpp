@@ -17,6 +17,8 @@ struct TaskInfo {
   uint32_t right_edge;
   int status;
   std::vector<std::string> users;
+  int parent_id;
+  std::string notes;
 };
 
 }  // namespace om::task::
@@ -39,6 +41,8 @@ struct convert<om::task::TaskInfo> {
       t.status = node["status"].as<int>();
       typedef std::vector<std::string> string_list;
       t.users = node["users"].as<string_list>(string_list());
+      t.parent_id = node["parent_id"].as<int>(0);
+      t.notes = node["notes"].as<std::string>("");
     }
     catch (std::exception e) {
       log_debugs << std::string("Error Decoding TaskInfo: ") + e.what();

@@ -3,9 +3,6 @@
 
 using namespace om::task;
 
-#define TASK_ROWS 15
-#define TASK_COLS 6
-
 TaskSelector::TaskSelector(QWidget* p) : QDialog(p) {
   QGridLayout* layout = new QGridLayout(this);
 
@@ -29,15 +26,17 @@ TaskSelector::TaskSelector(QWidget* p) : QDialog(p) {
   om::connect(refreshButton_, SIGNAL(clicked()), this, SLOT(showEvent()));
 
   taskTable_ = new QTableWidget(this);
-  taskTable_->setRowCount(TASK_ROWS);
+  taskTable_->setRowCount(0);
 
   QStringList headerLabels;
   headerLabels << "Id"
                << "Cell"
+               << "Parent"
                << "Weight"
-               << "Comparison"
+               << "%"
                << "Path"
-               << "Users";
+               << "Users"
+               << "Notes";
   taskTable_->setColumnCount(headerLabels.size());
   taskTable_->setHorizontalHeaderLabels(headerLabels);
 
@@ -58,6 +57,11 @@ TaskSelector::TaskSelector(QWidget* p) : QDialog(p) {
   compareButton_ = new QPushButton(tr("Compare"), this);
   layout->addWidget(compareButton_, 2, 1);
   om::connect(compareButton_, SIGNAL(clicked()), this, SLOT(compareClicked()));
+
+  completedTasksCheckbox_ = new QCheckBox(tr("Show Completed"), this);
+  layout->addWidget(completedTasksCheckbox_, 2, 2);
+  om::connect(completedTasksCheckbox_, SIGNAL(stateChanged()), this,
+              SLOT(completedChanged()));
 
   closeButton_ = new QPushButton(tr("Close"), this);
   layout->addWidget(closeButton_, 2, 5);
@@ -111,7 +115,7 @@ void TaskSelector::updateCells() {
             QString::fromStdString(std::to_string(c.CellID) + " - " + c.Name),
             i + 1);
         if (c.CellID == oldCellSelection_) {
-          cellCombo_->setCurrentIndex(i+1);
+          cellCombo_->setCurrentIndex(i + 1);
         }
       }
     }
@@ -134,7 +138,7 @@ void TaskSelector::updateEnabled() {
     // TODO: need backend API facility to clean this up
     auto task = TaskManager::GetTaskByID(selectedTaskId());
     traceButton_->setEnabled(bool(task));
-    compareButton_->setEnabled(taskTable_->item(row, 3)->data(0).toBool());
+    compareButton_->setEnabled(taskTable_->item(row, 4)->data(0).toBool());
   }
 }
 
@@ -164,6 +168,8 @@ void TaskSelector::compareClicked() {
   TaskManager::LoadTask(task);
   accept();
 }
+
+void TaskSelector::completedChanged() {}
 
 uint8_t TaskSelector::datasetID() {
   if (!dataset()) {
@@ -215,26 +221,23 @@ void TaskSelector::getTasks() {
   auto dsid = datasetID();
   auto cid = cellID();
   auto tasks = TaskManager::GetTasks(dsid, cid, 1e6);
-  size_t i = 0;
   taskTable_->setSortingEnabled(false);
-  for (; i < std::min((size_t)TASK_ROWS, tasks->size()); ++i) {
+  taskTable_->setRowCount(tasks->size());
+  for (size_t i = 0; i < tasks->size(); ++i) {
     auto& t = (*tasks)[i];
 
     taskTable_->setItem(i, 0, makeTableItem(t.id));
     taskTable_->setItem(i, 1, makeTableItem(t.cell));
-    taskTable_->setItem(i, 2, makeTableItem(t.weight));
+    taskTable_->setItem(i, 2, makeTableItem(t.parent_id));
+    taskTable_->setItem(i, 3, makeTableItem(t.weight));
     taskTable_->setItem(
-        i, 3, makeTableItem(t.inspected_weight == t.weight && t.weight > 1));
-    taskTable_->setItem(i, 4, makeTableItem(QString::fromStdString(t.path)));
+        i, 4, makeTableItem(t.inspected_weight == t.weight && t.weight > 1));
+    taskTable_->setItem(i, 5, makeTableItem(QString::fromStdString(t.path)));
     taskTable_->setItem(
-        i, 5, makeTableItem(QString::fromStdString(om::string::join(t.users))));
+        i, 6, makeTableItem(QString::fromStdString(om::string::join(t.users))));
+    taskTable_->setItem(i, 7, makeTableItem(QString::fromStdString(t.notes)));
   }
-  // Clear the remaining table cells if they had contents:
-  for (; i < TASK_ROWS; ++i) {
-    for (auto j = 0; j < TASK_COLS; j++) {
-      taskTable_->setItem(i, j, nullptr);
-    }
-  }
+
   taskTable_->setSortingEnabled(true);
   taskTable_->resizeColumnsToContents();
   // TODO
@@ -246,11 +249,7 @@ void TaskSelector::onManualEntry() {
   auto text = taskLineEdit_->text().trimmed();
   if (text.size()) {
     taskTable_->setSortingEnabled(false);
-    for (size_t i = 0; i < TASK_ROWS; ++i) {
-      for (auto j = 0; j < TASK_COLS; j++) {
-        taskTable_->setItem(i, j, nullptr);
-      }
-    }
+    taskTable_->setRowCount(0);
     taskTable_->setSortingEnabled(true);
 
     // TODO: clean up
@@ -259,6 +258,7 @@ void TaskSelector::onManualEntry() {
     auto compTask = TaskManager::GetComparisonTaskByID(taskId);
     task = task ? task : compTask;
     if (task) {
+      taskTable_->insertRow(0);
       taskTable_->setItem(0, 0, makeTableItem(taskId));
       taskTable_->setItem(0, 1, makeTableItem(task->CellId()));
       // taskTable_->setItem(i, 2, makeTableItem(t.weight));

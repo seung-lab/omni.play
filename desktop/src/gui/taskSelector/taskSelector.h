@@ -28,6 +28,7 @@ Q_SLOTS:
   void updateCells();
   void traceClicked();
   void compareClicked();
+  void completedChanged();
   virtual void showEvent(QShowEvent* event = nullptr) override;
 
  protected:
@@ -53,6 +54,7 @@ Q_SLOTS:
   QPushButton* compareButton_;
   QPushButton* closeButton_;
   QPushButton* refreshButton_;
+  QCheckBox* completedTasksCheckbox_;
 
   std::shared_ptr<om::task::Task> traceTask_;
   std::shared_ptr<om::task::Task> compareTask_;
