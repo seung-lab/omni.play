@@ -87,6 +87,12 @@ std::shared_ptr<std::vector<Cell>> TaskManager::GetCells(int datasetID) {
   return std::shared_ptr<std::vector<Cell>>();
 }
 
+bool TaskManager::UpdateNotes(int taskID, std::string notes) {
+  auto uri = system::Account::endpoint(std::string("/1.0/task/") +
+                                       std::to_string(taskID) + "/notes");
+  return network::HTTP::PUT(uri, notes);
+}
+
 void TaskManager::ConnectionChangeEvent() {}
 
 bool TaskManager::LoadTask(const std::shared_ptr<Task>& task) {

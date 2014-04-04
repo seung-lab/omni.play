@@ -8,9 +8,15 @@ namespace utility {
 template <typename T>
 class ResourcePool {
  public:
-  ResourcePool(int max,
-               std::function<std::shared_ptr<T>()> generator = &default_create)
-      : num_(0), max_(max), generator_(generator), closing_(false) {}
+  ResourcePool(int max, std::function<void(std::shared_ptr<T>)> cleanup =
+                            std::function<void(std::shared_ptr<T>)>(),
+               std::function<std::shared_ptr<T>()> generator =
+                   &std::make_shared<T>)
+      : num_(0),
+        max_(max),
+        cleanup_(cleanup),
+        generator_(generator),
+        closing_(false) {}
   ~ResourcePool() {
     // Will this have problems with ordering of destructors?
     closing_.store(true);
@@ -57,8 +63,6 @@ class ResourcePool {
   };
 
  private:
-  static std::shared_ptr<T> default_create() { return std::make_shared<T>(); }
-
   std::shared_ptr<T> get() {
     if (closing_) {
       return std::shared_ptr<T>();
@@ -82,6 +86,9 @@ class ResourcePool {
   void release(std::shared_ptr<T> ptr) {
     if ((bool)ptr) {
       std::lock_guard<std::mutex> g(m_);
+      if ((bool)cleanup_) {
+        cleanup_(ptr);
+      }
       resources_.push_back(ptr);
     }
   }
@@ -90,6 +97,7 @@ class ResourcePool {
   std::deque<std::shared_ptr<T>> resources_;
   int num_;
   const int max_;
+  std::function<void(std::shared_ptr<T>)> cleanup_;
   std::function<std::shared_ptr<T>()> generator_;
   std::atomic<bool> closing_;
 };

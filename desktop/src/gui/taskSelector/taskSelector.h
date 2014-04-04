@@ -7,6 +7,7 @@
 #include "task/taskManager.h"
 #include "task/tracingTask.h"
 #include "network/http/http.hpp"
+#include "events/eventFilters.hpp"
 
 namespace om {
 namespace task {
@@ -29,6 +30,7 @@ Q_SLOTS:
   void traceClicked();
   void compareClicked();
   void completedChanged();
+  void itemEdited(QTableWidgetItem*);
   virtual void showEvent(QShowEvent* event = nullptr) override;
 
  protected:

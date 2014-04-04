@@ -80,6 +80,10 @@ class HTTP : private SingletonBase<HTTP> {
     return val;
   }
 
+  static bool PUT(const network::Uri& uri, const std::string& data) {
+    return PUT(uri.string(), data);
+  }
+
   static bool PUT(const std::string& uri, const std::string& data) {
     log_debugs << "HTTP PUT: " << uri;
     typename handle_pool::Lease h(instance().HandlePool, true);
@@ -281,12 +285,17 @@ class HTTP : private SingletonBase<HTTP> {
     }
 
     CURL* Handle;
+    static void ResetHandle(std::shared_ptr<handle> h) {
+      if ((bool)h) {
+        curl_easy_reset(h->Handle);
+      }
+    }
   };
   typedef utility::ResourcePool<handle> handle_pool;
 
   handle_pool HandlePool;
 
-  HTTP() : HandlePool(10) {}
+  HTTP() : HandlePool(10, &handle::ResetHandle) {}
 
   static long getResponseCode(CURL* h) {
     long code;

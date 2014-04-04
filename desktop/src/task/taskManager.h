@@ -37,6 +37,7 @@ class TaskManager : private om::SingletonBase<TaskManager>,
 
   static std::shared_ptr<std::vector<Dataset>> GetDatasets();
   static std::shared_ptr<std::vector<Cell>> GetCells(int datasetID);
+  static bool UpdateNotes(int taskID, std::string notes);
   static bool LoadTask(const std::shared_ptr<Task>& task);
   static bool AttemptFinishTask();
   static bool SubmitTask();

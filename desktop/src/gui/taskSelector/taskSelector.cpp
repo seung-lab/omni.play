@@ -3,6 +3,17 @@
 
 using namespace om::task;
 
+enum class Columns {
+  Id = 0,
+  Cell,
+  Parent,
+  Weight,
+  Comparison,
+  Path,
+  Users,
+  Notes
+};
+
 TaskSelector::TaskSelector(QWidget* p) : QDialog(p) {
   QGridLayout* layout = new QGridLayout(this);
 
@@ -44,11 +55,13 @@ TaskSelector::TaskSelector(QWidget* p) : QDialog(p) {
   taskTable_->setSelectionBehavior(QAbstractItemView::SelectRows);
   taskTable_->setSelectionMode(QAbstractItemView::SingleSelection);
   taskTable_->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
-  taskTable_->setEditTriggers(QAbstractItemView::NoEditTriggers);
+  taskTable_->setEditTriggers(QAbstractItemView::DoubleClicked);
 
   layout->addWidget(taskTable_, 1, 0, 1, 6);
   om::connect(taskTable_, SIGNAL(itemSelectionChanged()), this,
               SLOT(updateEnabled()));
+  om::connect(taskTable_, SIGNAL(itemChanged(QTableWidgetItem*)), this,
+              SLOT(itemEdited(QTableWidgetItem*)));
 
   traceButton_ = new QPushButton(tr("Trace"), this);
   layout->addWidget(traceButton_, 2, 0);
@@ -129,8 +142,7 @@ void TaskSelector::updateList() {
 
 void TaskSelector::updateEnabled() {
   auto row = taskTable_->currentRow();
-  int col = 0;  // colume 0 is task id
-  auto* taskIdItem = taskTable_->item(row, col);
+  auto* taskIdItem = taskTable_->item(row, (int)Columns::Id);
   if (!taskIdItem) {
     traceButton_->setEnabled(false);
     compareButton_->setEnabled(false);
@@ -138,14 +150,14 @@ void TaskSelector::updateEnabled() {
     // TODO: need backend API facility to clean this up
     auto task = TaskManager::GetTaskByID(selectedTaskId());
     traceButton_->setEnabled(bool(task));
-    compareButton_->setEnabled(taskTable_->item(row, 4)->data(0).toBool());
+    compareButton_->setEnabled(
+        taskTable_->item(row, (int)Columns::Comparison)->data(0).toBool());
   }
 }
 
 int TaskSelector::selectedTaskId() {
   auto row = taskTable_->currentRow();
-  int col = 0;  // colume 0 is task id
-  auto* taskIdItem = taskTable_->item(row, col);
+  auto* taskIdItem = taskTable_->item(row, (int)Columns::Id);
   if (!taskIdItem) {
     log_infos << "No task selected";
     return 0;
@@ -208,12 +220,25 @@ uint32_t TaskSelector::cellID() {
   return cellsref[idx - 1].CellID;
 }
 
+void TaskSelector::itemEdited(QTableWidgetItem* item) {
+  if (item->column() == (int)Columns::Notes) {
+    auto row = item->row();
+    auto id = taskTable_->item(row, (int)Columns::Id)->data(0).toInt();
+    if (!TaskManager::UpdateNotes(id, item->data(0).toString().toStdString())) {
+      item->setData(0, "");
+    }
+  }
+}
+
 uint32_t TaskSelector::taskID() { return taskLineEdit_->text().toInt(); }
 
 template <typename T>
-QTableWidgetItem* makeTableItem(const T val) {
+QTableWidgetItem* makeTableItem(const T val,
+                                Qt::ItemFlags flags =
+                                    Qt::ItemIsEnabled | Qt::ItemIsSelectable) {
   QTableWidgetItem* item = new QTableWidgetItem();
   item->setData(0, val);
+  item->setFlags(flags);
   return item;
 }
 
@@ -225,31 +250,40 @@ void TaskSelector::getTasks() {
       completedTasksCheckbox_->checkState() == Qt::Unchecked ? 1e6 : 0);
   taskTable_->setSortingEnabled(false);
   taskTable_->setRowCount(tasks->size());
+  taskTable_->blockSignals(true);
   for (size_t i = 0; i < tasks->size(); ++i) {
     auto& t = (*tasks)[i];
 
-    taskTable_->setItem(i, 0, makeTableItem(t.id));
-    taskTable_->setItem(i, 1, makeTableItem(t.cell));
-    taskTable_->setItem(i, 2, makeTableItem(t.parent_id));
-    taskTable_->setItem(i, 3, makeTableItem(t.weight));
+    taskTable_->setItem(i, (int)Columns::Id, makeTableItem(t.id));
+    taskTable_->setItem(i, (int)Columns::Cell, makeTableItem(t.cell));
+    taskTable_->setItem(i, (int)Columns::Parent, makeTableItem(t.parent_id));
+    taskTable_->setItem(i, (int)Columns::Weight, makeTableItem(t.weight));
     taskTable_->setItem(
-        i, 4, makeTableItem(t.inspected_weight == t.weight && t.weight > 1));
-    taskTable_->setItem(i, 5, makeTableItem(QString::fromStdString(t.path)));
+        i, (int)Columns::Comparison,
+        makeTableItem(t.inspected_weight == t.weight && t.weight > 1));
+    taskTable_->setItem(i, (int)Columns::Path,
+                        makeTableItem(QString::fromStdString(t.path)));
     taskTable_->setItem(
-        i, 6, makeTableItem(QString::fromStdString(om::string::join(t.users))));
-    taskTable_->setItem(i, 7, makeTableItem(QString::fromStdString(t.notes)));
+        i, (int)Columns::Users,
+        makeTableItem(QString::fromStdString(om::string::join(t.users))));
+    taskTable_->setItem(i, (int)Columns::Notes,
+                        makeTableItem(QString::fromStdString(t.notes),
+                                      Qt::ItemIsEnabled | Qt::ItemIsSelectable |
+                                          Qt::ItemIsEditable));
   }
 
   taskTable_->setSortingEnabled(true);
   taskTable_->resizeColumnsToContents();
   // TODO
-  taskTable_->sortByColumn(4);
-  taskTable_->sortByColumn(2);
+  taskTable_->sortByColumn((int)Columns::Weight);
+  taskTable_->sortByColumn((int)Columns::Cell);
+  taskTable_->blockSignals(false);
 }
 
 void TaskSelector::onManualEntry() {
   auto text = taskLineEdit_->text().trimmed();
   if (text.size()) {
+    taskTable_->blockSignals(true);
     taskTable_->setSortingEnabled(false);
     taskTable_->setRowCount(0);
     taskTable_->setSortingEnabled(true);
@@ -261,17 +295,15 @@ void TaskSelector::onManualEntry() {
     task = task ? task : compTask;
     if (task) {
       taskTable_->insertRow(0);
-      taskTable_->setItem(0, 0, makeTableItem(taskId));
-      taskTable_->setItem(0, 1, makeTableItem(task->CellId()));
-      // taskTable_->setItem(i, 2, makeTableItem(t.weight));
-      // taskTable_->setItem(i, 3, makeTableItem(t.inspected_weight ==
-      // t.weight));
-      taskTable_->setItem(
-          0, 3, makeTableItem(bool(compTask)));  //...doesn't match real state
-                                                 // taskTable_->setItem(i, 4,
+      taskTable_->setItem(0, (int)Columns::Id, makeTableItem(taskId));
+      taskTable_->setItem(0, (int)Columns::Cell, makeTableItem(task->CellId()));
+      taskTable_->setItem(0, (int)Columns::Comparison,
+                          makeTableItem(bool(compTask)));
+      // taskTable_->setItem(i, 4,
       // makeTableItem(QString::fromStdString(t.path)));
       taskTable_->setCurrentCell(0, 0);
     }
+    taskTable_->blockSignals(false);
   } else {
     getTasks();
   }
