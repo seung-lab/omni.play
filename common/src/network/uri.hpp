@@ -127,7 +127,7 @@ class Uri {
       ss << hostname_;
     }
     if (port_) {
-      ss << ":" << port_;
+      ss << ":" << (uint32_t)port_;
     }
     ss << path_;
     if (queryParameters_.size()) {

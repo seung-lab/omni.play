@@ -103,7 +103,7 @@ class HTTP : private SingletonBase<HTTP> {
     SET_OPT(h->Handle, CURLOPT_COOKIEJAR, file::Paths::CookieFile().c_str(),
             false);
     SET_OPT(h->Handle, CURLOPT_SSL_VERIFYPEER, 0, false);
-    SET_OPT(h->Handle, CURLOPT_UPLOAD, 1, false);
+    SET_OPT(h->Handle, CURLOPT_PUT, 1, false);
 
     err = curl_easy_perform(h->Handle);
     if (err) {

@@ -90,6 +90,7 @@ std::shared_ptr<std::vector<Cell>> TaskManager::GetCells(int datasetID) {
 bool TaskManager::UpdateNotes(int taskID, std::string notes) {
   auto uri = system::Account::endpoint(std::string("/1.0/task/") +
                                        std::to_string(taskID) + "/notes");
+  uri.set_port(88);
   return network::HTTP::PUT(uri, notes);
 }
 

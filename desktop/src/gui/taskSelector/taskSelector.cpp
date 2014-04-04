@@ -256,7 +256,7 @@ void TaskSelector::getTasks() {
 
     taskTable_->setItem(i, (int)Columns::Id, makeTableItem(t.id));
     taskTable_->setItem(i, (int)Columns::Cell, makeTableItem(t.cell));
-    taskTable_->setItem(i, (int)Columns::Parent, makeTableItem(t.parent_id));
+    taskTable_->setItem(i, (int)Columns::Parent, makeTableItem(t.parent));
     taskTable_->setItem(i, (int)Columns::Weight, makeTableItem(t.weight));
     taskTable_->setItem(
         i, (int)Columns::Comparison,

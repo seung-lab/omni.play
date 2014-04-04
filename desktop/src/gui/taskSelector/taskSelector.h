@@ -7,7 +7,6 @@
 #include "task/taskManager.h"
 #include "task/tracingTask.h"
 #include "network/http/http.hpp"
-#include "events/eventFilters.hpp"
 
 namespace om {
 namespace task {
