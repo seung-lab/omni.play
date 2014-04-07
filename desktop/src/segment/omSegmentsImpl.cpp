@@ -315,6 +315,9 @@ void OmSegmentsImpl::refreshTree() {
   }
 
   resetGlobalThreshold();
+  for (auto& iter : userEdges_) {
+    JoinEdgeFromUser(iter);
+  }
 
   segmentLists_->RefreshGUIlists();
   OmCacheManager::TouchFreshness();
