@@ -6,7 +6,8 @@
 namespace om {
 namespace data {
 
-template <typename T> class PagedStoragePolicy {
+template <typename T>
+class PagedStoragePolicy {
  public:
   typedef size_t index_type;
   typedef datalayer::Vector<index_type, T> page_type;
@@ -49,16 +50,18 @@ template <typename T> class PagedStoragePolicy {
     // Push Old & New
     for (index_type i = 0; i < numPages(); ++i) {
       if (pages_[i]) {
-        // TODO: Check for failure?
-        pagedDS_.Put(i, pages_[i]);
+        if (!pagedDS_.Put(i, pages_[i])) {
+          log_errors << "Unable to save page " << i;
+        }
       }
     }
 
     // Push Deletes
     for (index_type i = numPages(); i < numBackendPages(); ++i) {
       if (pages_[i]) {
-        // TODO: Check for failure?
-        pagedDS_.Put(i, std::make_shared<page_type>(i));
+        if (!pagedDS_.Put(i, std::make_shared<page_type>(i))) {
+          log_errors << "Unable to delete page " << i;
+        }
       }
     }
 
