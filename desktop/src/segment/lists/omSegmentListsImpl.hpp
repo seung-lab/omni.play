@@ -79,7 +79,7 @@ class OmSegmentListsImpl {
   }
 
   // avoid locking by adding to serial job list
-  void doResize(const size_t size) { list_.resize(size); }
+  void doResize(const size_t size) { list_.resize(size + 1); }
 
   void doAddSegment(OmSegment* seg) {
     const om::common::SegID segID = seg->value();
@@ -109,8 +109,12 @@ class OmSegmentListsImpl {
     for (auto segId = 1; segId <= meta_.numSegments(); segId++) {
       OmSegment* seg = store_.GetSegment(segId);
       if (seg && seg->value()) {
-        ++numSegs;
-        addSegment(seg);
+        if (seg->value() < list_.size()) {
+          ++numSegs;
+          addSegment(seg);
+        } else {
+          log_errors << "Invalid Segment " << seg->value();
+        }
       }
     }
 
