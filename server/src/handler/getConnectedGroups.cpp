@@ -30,12 +30,12 @@ pairwise_overlap_map FindPairwiseOverlaps(
       }
       auto segB = segmentation.SegData()[b];
       coords::DataBbox overlap(segA.bounds, segmentation.Coords(), 0);
-      overlap.intersect(
-          coords::DataBbox(segB.bounds, segmentation.Coords(), 0));
       // Offset by one to cover off-by-one errors which were causing segs to not
       // be grouped.
       overlap.setMin(overlap.getMin() - Vector3i::ONE);
       overlap.setMax(overlap.getMax() + Vector3i::ONE);
+      overlap.intersect(
+          coords::DataBbox(segB.bounds, segmentation.Coords(), 0));
       pairwiseOverlaps[overlap] = std::make_pair(a, b);
     }
   }
