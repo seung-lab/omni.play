@@ -67,10 +67,17 @@ void MoveFile(const path& from_fnp, const path& to_fnp) {
 }
 
 void CopyFile(const path& from_fnp, const path& to_fnp, bool overwrite) {
-  if (overwrite) {
-    copy_file(from_fnp, to_fnp, copy_option::overwrite_if_exists);
-  } else {
-    copy_file(from_fnp, to_fnp);
+  try {
+    if (overwrite) {
+      copy_file(from_fnp, to_fnp, copy_option::overwrite_if_exists);
+    } else {
+      copy_file(from_fnp, to_fnp);
+    }
+  }
+  catch (boost::filesystem::filesystem_error fe) {
+    throw InvalidOperationException(std::string("Error Copying file from ") +
+                                    from_fnp.string() + " to " +
+                                    to_fnp.string() + " " + fe.what());
   }
 }
 
