@@ -8,16 +8,8 @@
 namespace om {
 namespace handler {
 
-struct CompareBBox {
-  bool operator()(const coords::DataBbox& a, const coords::DataBbox& b) {
-    auto adim = a.getDimensions();
-    auto bdim = b.getDimensions();
-    return adim.x * adim.y * adim.z < bdim.x * bdim.y * bdim.z;
-  }
-};
-
-typedef std::map<coords::DataBbox, std::pair<common::SegID, common::SegID>,
-                 CompareBBox> pairwise_overlap_map;
+typedef std::map<size_t, std::tuple<coords::DataBbox, common::SegID,
+                                    common::SegID>> pairwise_overlap_map;
 
 pairwise_overlap_map FindPairwiseOverlaps(
     const std::set<int>& set, const volume::Segmentation& segmentation) {
@@ -36,7 +28,9 @@ pairwise_overlap_map FindPairwiseOverlaps(
       overlap.setMax(overlap.getMax() + Vector3i::ONE);
       overlap.intersect(
           coords::DataBbox(segB.bounds, segmentation.Coords(), 0));
-      pairwiseOverlaps[overlap] = std::make_pair(a, b);
+      auto dims = overlap.getDimensions();
+      pairwiseOverlaps.emplace(dims.x * dims.y * dims.z,
+                               std::make_tuple(overlap, a, b));
     }
   }
   return pairwiseOverlaps;
@@ -48,17 +42,18 @@ std::vector<std::set<int>> ConnectedComponents(
   zi::disjoint_sets<uint32_t> sets(segmentation.SegData().size());
 
   for (const auto& overlap : map) {
-    const auto& bounds = overlap.first;
-    const auto& pair = overlap.second;
+    const auto& bounds = std::get<0>(overlap.second);
+    const auto& segA = std::get<1>(overlap.second);
+    const auto& segB = std::get<2>(overlap.second);
 
-    if (sets.find_set(pair.first) == sets.find_set(pair.second)) {
+    if (sets.find_set(segA) == sets.find_set(segB)) {
       continue;
     }
 
     utility::VolumeWalker<uint32_t> walker(bounds, voxels);
     common::SegIDSet first;
-    first.insert(pair.first);
-    const common::SegID& second = pair.second;
+    first.insert(segA);
+    const common::SegID& second = segB;
     bool join =
         !walker.true_foreach_voxel_in_set(
              first, [&voxels, second](const coords::Data& dc, uint32_t) {
@@ -71,7 +66,7 @@ std::vector<std::set<int>> ConnectedComponents(
              });
 
     if (join) {
-      sets.join(sets.find_set(pair.first), sets.find_set(pair.second));
+      sets.join(sets.find_set(segA), sets.find_set(segB));
     }
   }
   std::vector<std::set<int>> ret;
@@ -88,36 +83,48 @@ std::vector<std::set<int>> ConnectedComponents(
   return ret;
 }
 
+void Subset(std::vector<server::group>& _return, int uid,
+            server::groupType::type groupType, const std::set<int>& set,
+            const volume::Segmentation& vol, chunk::Voxels<uint32_t>& voxels,
+            size_t totalSize) {
+  // Small is defined as a percentage (DUST_THRESHOLD) of the size of all
+  // segments.
+  const double DUST_THRESHOLD = 0.01;
+
+  server::group dust;
+  dust.user_id = uid;
+  dust.type = groupType;
+  dust.dust = true;
+  dust.size = 0;
+
+  const auto pairwiseOverlaps = FindPairwiseOverlaps(set, vol);
+  auto components = ConnectedComponents(set, pairwiseOverlaps, voxels, vol);
+
+  for (const auto& c : components) {
+    server::group g;
+    g.user_id = uid;
+    g.type = groupType;
+    g.dust = false;
+    g.size = 0;
+
+    for (auto segID : c) {
+      g.size += vol.SegData()[segID].size;
+    }
+    if ((double)g.size / totalSize < DUST_THRESHOLD) {
+      dust.segments.insert(c.begin(), c.end());
+      dust.size += g.size;
+    } else {
+      g.segments = c;
+      _return.push_back(g);
+    }
+  }
+  _return.push_back(dust);
+}
+
 void get_connected_groups(
     std::vector<server::group>& _return, const volume::Segmentation& vol,
     const std::unordered_map<int, common::SegIDSet>& groups) {
   log_infos << "Making Comparison Task.";
-
-  // all is the group of all segments selected by anyone.  It's size is
-  // totalSize.
-  server::group all;
-  all.type = server::groupType::ALL;
-  size_t totalSize = 0;
-  all.groups.emplace_back();
-
-  // agreed is the group of all the segments selected by everyone.  It's size is
-  // agreedSize.
-  server::group agreed;
-  agreed.type = server::groupType::AGREED;
-  size_t aggreedSize = 0;
-  agreed.groups.emplace_back();
-
-  // partial is the group of subgroups of segments which are agreed on by some
-  // but not all of the users.
-  server::group partial;
-  partial.type = server::groupType::PARTIAL;
-
-  // dust is the group of all segments which are grouped into small groups.
-  // Small is defined as a percentage (DUST_THRESHOLD) of the totalSize.
-  const double DUST_THRESHOLD = 0.01;
-  server::group dust;
-  dust.type = server::groupType::DUST;
-  dust.groups.emplace_back();
 
   // Here's the plan:
   //
@@ -126,6 +133,7 @@ void get_connected_groups(
   // (flagToUserid).
   std::unordered_map<common::SegID, int> segToFlag;
   std::unordered_map<int, int> flagToUserid;
+  std::unordered_map<int, int> flagToMissingUserid;
   // agreedFlag is the flag with all the bits set.
   int agreedFlag = 0;
 
@@ -135,7 +143,8 @@ void get_connected_groups(
 
   // 3. Take flagToSet and we make one set for each connected component for a
   // given flag.  Go through all the resultant components.  The small ones are
-  // clumped into dust.  The rest get their own group in _return.
+  // clumped into dust ona per user basis.  The rest get their own group in
+  // _return.
 
   log_debugs << "1. Flag Segments.";
   int flag = 1;
@@ -158,20 +167,32 @@ void get_connected_groups(
     flag <<= 1;
   }
 
+  for (const auto& iter : flagToUserid) {
+    flagToMissingUserid[agreedFlag ^ iter.first] = iter.second;
+  }
+
+  server::group all;
+  all.user_id = 0;
+  all.type = server::groupType::ALL;
+  all.dust = false;
+  all.size = 0;
+
   log_debugs << "2. Group by Flag & Compute Total Size.";
   for (const auto& iter : segToFlag) {
     if (iter.first > vol.SegData().size()) {
       // Discard invalid segIDs
       continue;
     }
-    all.groups.front().insert(iter.first);
+    all.segments.insert(iter.first);
     flagToSet[iter.second].insert(iter.first);
-    totalSize += vol.SegData()[iter.first].size;
+    all.size += vol.SegData()[iter.first].size;
   }
+  _return.push_back(all);
 
   log_debugs << "3. Connected Components by flag.";
 
-  std::unordered_map<int, int> untouchedUsers(flagToUserid);
+  std::set<int> partialIDs;
+
   chunk::Voxels<uint32_t> voxels(vol.ChunkDS(), vol.Coords());
   for (const auto& iter : flagToSet) {
     const int& flag = iter.first;
@@ -180,54 +201,35 @@ void get_connected_groups(
     // agreed set is special. Calculate percent of total size and join all
     // together normally.
     if (flag == agreedFlag) {
+      server::group agreed;
+      agreed.type = server::groupType::AGREED;
+      agreed.size = 0;
       for (const auto& id : set) {
-        aggreedSize += vol.SegData()[id].size;
+        agreed.size += vol.SegData()[id].size;
       }
-      agreed.groups.front().insert(set.begin(), set.end());
+      agreed.segments = set;
+      _return.push_back(agreed);
       continue;
     }
 
-    auto flagUIDpair = flagToUserid.find(flag);
-    // Check for partial agreement
-    if (flagUIDpair == flagToUserid.end()) {
-      partial.groups.push_back(set);
+    auto flagUIDmissed = flagToMissingUserid.find(flag);
+    if (flagUIDmissed != flagToMissingUserid.end()) {
+      Subset(_return, flagUIDmissed->second, server::groupType::USER_MISSED,
+             set, vol, voxels, all.size);
       continue;
     }
 
-    untouchedUsers.erase(flag);
-    auto uid = flagUIDpair->second;
-
-    const auto pairwiseOverlaps = FindPairwiseOverlaps(set, vol);
-    server::group g;
-    g.user_id = uid;
-    g.type = server::groupType::USER;
-    auto components = ConnectedComponents(set, pairwiseOverlaps, voxels, vol);
-
-    for (const auto& c : components) {
-      size_t size = 0;
-      for (auto segID : c) {
-        size += vol.SegData()[segID].size;
-      }
-      if ((double)size / totalSize < DUST_THRESHOLD) {
-        dust.groups.front().insert(c.begin(), c.end());
-      } else {
-        g.groups.push_back(c);
-      }
+    auto flagUIDfound = flagToUserid.find(flag);
+    if (flagUIDfound != flagToUserid.end()) {
+      Subset(_return, flagUIDfound->second, server::groupType::USER_FOUND, set,
+             vol, voxels, all.size);
+      continue;
     }
-    _return.push_back(g);
+
+    partialIDs.insert(set.begin(), set.end());
   }
-  // Make sure every user has its own group even if it's empty, so in the
-  // database it will overwrite any existing one that might not have been empty:
-  for (const auto& flagUIDpair : untouchedUsers) {
-    server::group g;
-    g.user_id = flagUIDpair.second;
-    g.type = server::groupType::USER;
-    _return.push_back(g);
-  }
-  _return.push_back(all);
-  _return.push_back(agreed);
-  _return.push_back(partial);
-  _return.push_back(dust);
+  Subset(_return, 0, server::groupType::PARTIAL, partialIDs, vol, voxels,
+         all.size);
 }
 }
 }

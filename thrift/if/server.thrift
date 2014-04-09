@@ -86,15 +86,17 @@ struct metadata
 enum groupType {
     ALL = 1,
     AGREED = 2,
-    USER = 3,
-    DUST = 4,
-    PARTIAL = 5
+    USER_FOUND = 3,
+    PARTIAL = 5,
+    USER_MISSED = 6
 }
 
 struct group {
     1: i32 user_id,
     2: groupType type,
-    3: list<set<i32>> groups
+    3: set<i32> segments,
+    4: bool dust,
+    5: i32 size
 }
 
 service server extends fb303.FacebookService
