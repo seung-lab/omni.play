@@ -74,6 +74,9 @@ void OmSegmentation::LoadPath() {
       *segListDataDS_, segment::PageSize, Metadata().numSegments() + 1));
 
   mst_.reset(new segment::EdgeVector(userPaths.MST(id_)));
+  for (auto& edge : *mst_) {
+    edge.wasJoined = 0;
+  }
   userEdges_.reset(new segment::UserEdgeVector(userPaths.UserEdges(id_)));
   segments_.reset(new OmSegments(this));
 }

@@ -126,11 +126,6 @@ class GraphThresholder {
     return graph_.Root(segID);
   }
 
-  inline void Join(const om::common::SegID childRootID,
-                   const om::common::SegID parentRootID) {
-    graph_.Join(childRootID, parentRootID);
-  }
-
   bool sizeCheck(const om::common::SegID a, const om::common::SegID b,
                  const double threshold) {
     return threshold == 0 ||
@@ -153,7 +148,7 @@ class GraphThresholder {
       return false;
     }
 
-    Join(childRootID, parentID);
+    graph_.Join(childRootID, parentID);
     return TaskArgs{childRootID, parentID, parentRootID, threshold, edgeNumber};
   }
 
@@ -181,7 +176,7 @@ class GraphThresholder {
     if (ta) {
       joinTaskPool_.AddOrSpawnTasks(ta.get());
     }
-    return true;
+    return ta;
   }
 
   bool joinInternal(const om::common::SegID parentID,
@@ -191,7 +186,7 @@ class GraphThresholder {
     if (ta) {
       updateFromJoin(ta.get());
     }
-    return true;
+    return ta;
   }
 
   bool splitChildFromParentInternal(const om::common::SegID childID) {
