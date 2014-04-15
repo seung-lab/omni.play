@@ -121,6 +121,9 @@ public:
 
     /*bwarne*/
     bool operator<( const Vector3& rhs ) const;
+    bool operator>( const Vector3& rhs ) const;
+    bool operator<=( const Vector3& rhs ) const;
+    bool operator>=( const Vector3& rhs ) const;
 
     bool operator==( const Vector3& rhs ) const;
     bool operator!=(const Vector3& rhs ) const;
@@ -876,7 +879,25 @@ bool Vector3< T >::operator<( const Vector3& rhs ) const
     return (z < rhs.z);
 }
 
+template < typename T >
+bool Vector3< T >::operator>( const Vector3& rhs ) const
+{
+    if( x != rhs.x ) return (x > rhs.x);
+    if( y != rhs.y ) return (y > rhs.y);
+    return (z > rhs.z);
+}
 
+template < typename T >
+bool Vector3< T >::operator<=( const Vector3& rhs ) const
+{
+    return !(*this > rhs);
+}
+
+template < typename T >
+bool Vector3< T >::operator>=( const Vector3& rhs ) const
+{
+    return !(*this < rhs);
+}
 
 template < typename T >
 bool Vector3< T >::operator==( const Vector3& rhs ) const
