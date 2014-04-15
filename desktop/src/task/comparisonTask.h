@@ -80,8 +80,12 @@ struct convert<om::task::ComparisonTask> {
           case om::task::SegGroup::GroupType::AGREED:
             name = "Agreed";
             break;
-          case om::task::SegGroup::GroupType::USER:
+          case om::task::SegGroup::GroupType::USER_MISSED:
             name = group["username"].as<std::string>(om::users::defaultUser);
+            break;
+          case om::task::SegGroup::GroupType::USER_FOUND:
+            name = std::string("only ") +
+                   group["username"].as<std::string>(om::users::defaultUser);
             break;
           case om::task::SegGroup::GroupType::DUST:
             name = "Dust";

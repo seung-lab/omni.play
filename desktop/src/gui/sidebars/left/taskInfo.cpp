@@ -66,7 +66,8 @@ void TaskInfoWidget::updateInfo() {
         {SegGroup::GroupType::SEED, 1000},
         {SegGroup::GroupType::ALL, 0},
         {SegGroup::GroupType::AGREED, 100},
-        {SegGroup::GroupType::USER, 10},
+        {SegGroup::GroupType::USER_MISSED, 75},
+        {SegGroup::GroupType::USER_FOUND, 10},
         {SegGroup::GroupType::DUST, 1},
         {SegGroup::GroupType::PARTIAL, 50}, };
     std::vector<std::tuple<int, std::string, size_t, const om::task::SegGroup*>>
