@@ -1,2 +1,2 @@
 #pragma once
-#define OMNI_DESKTOP_VERSION "1.1.3"
+#define OMNI_DESKTOP_VERSION "1.1.4"
