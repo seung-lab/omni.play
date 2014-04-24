@@ -2,6 +2,7 @@
 #include "gmock/gmock.h"
 #include "utility/iterators.hpp"
 #include "utility/timer.hpp"
+#include "volume/segmentation.h"
 
 namespace om {
 namespace test {
@@ -59,13 +60,32 @@ TEST(Utility_Iterators, Benchmark_VectorIterator) {
   ASSERT_EQ(inc, inc2);
 }
 
+TEST(Utility_Iterators, ChunkIterator) {
+  size_t count = 0;
+
+  for (auto iter = make_chunk_iterator(coords::Chunk(1, 1, 2, 3),
+                                       coords::Chunk(1, 2, 4, 6));
+       iter != chunk_iterator(); ++iter) {
+    count++;
+    if (count > 30) {
+      break;
+    }
+  }
+  ASSERT_EQ(24, count);
+  coords::Chunk val(1, 1, 4, 3);
+  ASSERT_NE(chunk_iterator(),
+            std::find(make_chunk_iterator(coords::Chunk(1, 1, 2, 3),
+                                          coords::Chunk(1, 2, 4, 6)),
+                      chunk_iterator(), val));
+}
+
 TEST(Utility_Iterators, Benchmark_ChunkIterator) {
   const size_t LIMIT = 200;
   coords::VolumeSystem vs(Vector3i{LIMIT, LIMIT, LIMIT});
 
   utility::timer t;
   t.start();
-  size_t val;
+  size_t val = 0;
   for (int i = 0; i <= LIMIT; ++i) {
     for (int j = 0; j <= LIMIT; ++j) {
       for (int k = 0; k <= LIMIT; ++k) {
@@ -89,21 +109,51 @@ TEST(Utility_Iterators, Benchmark_ChunkIterator) {
   ASSERT_EQ(val, val2);
 }
 
-// TEST(Utility_Iterators, ChunkIterator) {
-//   size_t count = 0;
+TEST(Utility_Iterators, Benchmark_FilteredChunkIterator) {
+  volume::Segmentation seg(
+      file::Paths("/omniData/e2198/e2198_a_s10_101_46_e17_116_61.omni"), 1);
 
-//   for (auto iter = make_chunk_iterator(1, {1, 2, 3}, {2, 4, 6});
-//        iter != make_chunk_iterator(); ++iter) {
-//     count++;
-//     if (count > 30) {
-//       break;
-//     }
-//   }
-//   ASSERT_EQ(24, count);
-//   coords::Chunk val(1, 1, 4, 3);
-//   ASSERT_NE(make_chunk_iterator(),
-//             std::find(make_chunk_iterator(1, {1, 2, 3}, {2, 4, 6}),
-//                       make_chunk_iterator(), val));
-// }
+  const common::SegID id = 37;
+  auto chunkDims = seg.Coords().MipLevelDimensionsInMipChunks(0);
+
+  // prime cache.
+  for (int i = 0; i <= chunkDims.x; ++i) {
+    for (int j = 0; j <= chunkDims.y; ++j) {
+      for (int k = 0; k <= chunkDims.z; ++k) {
+        auto uv = seg.UniqueValuesDS().Get(coords::Chunk(0, i, j, k));
+      }
+    }
+  }
+
+  utility::timer t;
+  t.start();
+  size_t count;
+
+  for (int i = 0; i <= chunkDims.x; ++i) {
+    for (int j = 0; j <= chunkDims.y; ++j) {
+      for (int k = 0; k <= chunkDims.z; ++k) {
+        coords::Chunk c(0, i, j, k);
+        auto uv = seg.UniqueValuesDS().Get(c);
+        if (uv && uv->contains(id)) {
+          count++;
+        }
+      }
+    }
+  }
+  t.Print("Standard For loop");
+
+  t.reset();
+  t.start();
+  size_t count2 = 0;
+  for (auto iter = make_segment_chunk_iterator(seg.UniqueValuesDS(), id,
+                                               coords::Chunk(0, 0, 0, 0),
+                                               coords::Chunk(0, chunkDims));
+       iter != filtered_chunk_iterator(); ++iter) {
+    count2++;
+  }
+  t.Print("chunk_iterator");
+
+  ASSERT_EQ(count, count2);
+}
 }
 }  // namespace om::test::

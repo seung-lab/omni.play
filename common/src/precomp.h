@@ -14,6 +14,8 @@
 #include <boost/iostreams/filter/gzip.hpp>
 #include <boost/iostreams/filtering_streambuf.hpp>
 #include <boost/iterator/iterator_facade.hpp>
+#include <boost/iterator/iterator_adaptor.hpp>
+#include <boost/iterator/filter_iterator.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/log/attributes/clock.hpp>
 #include <boost/log/attributes/current_thread_id.hpp>

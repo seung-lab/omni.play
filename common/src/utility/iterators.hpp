@@ -101,8 +101,6 @@ class vector3_iterator
   }
 
   void increment() {
-    // utility::increment(val_.z, from_.z, to_.z, val_.y, from_.y, to_.y,
-    // val_.x);
     if (++val_.z > to_.z) {
       val_.z = from_.z;
       if (++val_.y > to_.y) {
@@ -116,8 +114,6 @@ class vector3_iterator
   }
 
   void decrement() {
-    // utility::decrement(val_.z, from_.z, to_.z, val_.y, from_.y, to_.y,
-    // val_.x);
     if (--val_.z < from_.z) {
       val_.z = to_.z;
       if (--val_.y < from_.y) {
@@ -152,51 +148,60 @@ inline chunk_iterator make_chunk_iterator(const coords::Chunk& from,
   return make_chunk_iterator(from.mipLevel(), vector3_iterator<int>(from, to));
 }
 
-// // Iterates over specific chunks in a given range at a given mip level.
-// Takes a
-// // filter function to decide what chunks to use. Built using the
-// chunk_iterator.
-// typedef boost::filter_iterator<std::function<bool(const coords::Chunk&)>,
-//                                chunk_iterator> filtered_chunk_iterator;
+// Iterates over specific chunks in a given range at a given mip level. Takes a
+// filter function to decide what chunks to use. Built using the chunk_iterator.
+typedef boost::filter_iterator<std::function<bool(const coords::Chunk&)>,
+                               chunk_iterator> filtered_chunk_iterator;
 
-// inline filtered_chunk_iterator make_filtered_chunk_iterator(
-//     std::function<bool(const coords::Chunk&)> filter, chunk_iterator iter) {
-//   return filtered_chunk_iterator(filter, iter);
-// }
+inline filtered_chunk_iterator make_filtered_chunk_iterator(
+    std::function<bool(const coords::Chunk&)> filter, chunk_iterator iter) {
+  return filtered_chunk_iterator(filter, iter);
+}
 
-// inline filtered_chunk_iterator make_filtered_chunk_iterator(
-//     std::function<bool(const coords::Chunk&)> filter, const coords::Chunk&
-// from,
-//     const coords::Chunk& to) {
-//   return make_filtered_chunk_iterator(filter, make_chunk_iterator(from, to));
-// }
+inline filtered_chunk_iterator make_filtered_chunk_iterator(
+    std::function<bool(const coords::Chunk&)> filter, const coords::Chunk& from,
+    const coords::Chunk& to) {
+  return make_filtered_chunk_iterator(filter, make_chunk_iterator(from, to));
+}
 
-// // Iterates over specific chunks in a given range at a given mip level.  This
-// // only yeilds chunks which contain segments in the given set.  Built using
-// the
-// // filtered_chunk_iterator.
-// inline filtered_chunk_iterator make_segset_chunk_iterator(
-//     chunk::UniqueValuesDS& uvm, common::SegIDSet segs, chunk_iterator iter) {
-//   return make_filtered_chunk_iterator([&uvm, segs](const coords::Chunk& c) {
-//                                         auto uv = uvm.Get(c);
-//                                         if (!uv) {
-//                                           return false;
-//                                         }
-//                                         return std::find_if(
-//                                                    segs.begin(), segs.end(),
-//                                                    [&uv](common::SegID s) {
-//                                                      return uv->contains(s);
-//                                                    }) != segs.end();
-//                                       },
-//                                       iter);
-// }
+// Iterates over specific chunks in a given range at a given mip level.  This
+// only yeilds chunks which contain segments in the given set.  Built using the
+// filtered_chunk_iterator.
+inline filtered_chunk_iterator make_segment_chunk_iterator(
+    chunk::UniqueValuesDS& uvm, common::SegID segment, chunk_iterator iter) {
+  return make_filtered_chunk_iterator([&uvm, segment](const coords::Chunk& c) {
+                                        auto uv = uvm.Get(c);
+                                        return !uv || uv->contains(segment);
+                                      },
+                                      iter);
+}
 
-// inline filtered_chunk_iterator make_segset_chunk_iterator(
-//     chunk::UniqueValuesDS& uvm, common::SegIDSet segs,
-//     const coords::Chunk& from, const coords::Chunk& to) {
-//   return make_segset_chunk_iterator(uvm, segs, make_chunk_iterator(from,
-// to));
-// }
+inline filtered_chunk_iterator make_segment_chunk_iterator(
+    chunk::UniqueValuesDS& uvm, common::SegID segment,
+    const coords::Chunk& from, const coords::Chunk& to) {
+  return make_segment_chunk_iterator(uvm, segment,
+                                     make_chunk_iterator(from, to));
+}
+
+// Iterates over specific chunks in a given range at a given mip level.  This
+// only yeilds chunks which contain segments in the given set.  Built using the
+// filtered_chunk_iterator.
+inline filtered_chunk_iterator make_segset_chunk_iterator(
+    chunk::UniqueValuesDS& uvm, common::SegIDSet segs, chunk_iterator iter) {
+  return make_filtered_chunk_iterator([&uvm, segs](const coords::Chunk& c) {
+                                        auto uv = uvm.Get(c);
+                                        return !uv ||
+                                               uv->contains_any(segs.begin(),
+                                                                segs.end());
+                                      },
+                                      iter);
+}
+
+inline filtered_chunk_iterator make_segset_chunk_iterator(
+    chunk::UniqueValuesDS& uvm, common::SegIDSet segs,
+    const coords::Chunk& from, const coords::Chunk& to) {
+  return make_segset_chunk_iterator(uvm, segs, make_chunk_iterator(from, to));
+}
 
 // // Iterates over coords::Data in a given range at a given mip level.  Built
 // // using the vector_iterator.
