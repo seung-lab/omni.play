@@ -9,63 +9,6 @@
 namespace om {
 namespace utility {
 
-template <class T, class U>
-void carry(T& a, const T& a_from, const T& a_to, U& b) {
-  const T diff = a_to - a_from + 1;  // inclusive
-  if (a < a_from) {
-    auto dist = (a_from - a);
-    auto carries = dist / diff;
-    if (dist % diff) {
-      carries++;
-    }
-    a += carries * diff;
-    b -= carries;
-  }
-  if (a > a_to) {
-    auto dist = (a - a_to);
-    auto carries = dist / diff;
-    if (dist % diff) {
-      carries++;
-    }
-    a -= carries * diff;
-    b += carries;
-  }
-}
-
-template <class T, class U, class... TRest>
-void carry(T& a, const T& a_from, const T& a_to, U& b, TRest&... rest) {
-  carry(a, a_from, a_to, b);
-  carry(b, rest...);
-}
-
-template <class T>
-inline void increment(T& a) {
-  a++;
-}
-
-template <class T, class U, class... TRest>
-inline void increment(T& a, const T& a_from, const T& a_to, U& b,
-                      TRest&... rest) {
-  if (++a > a_to) {
-    a = a_from;
-    increment(b, rest...);
-  }
-}
-
-template <class T>
-inline void decrement(T& a) {
-  a++;
-}
-
-template <class T, class U, class... TRest>
-inline void decrement(T& a, const T& a_from, const T& a_to, U& b,
-                      TRest&... rest) {
-  if (++a > a_to) {
-    a = a_from;
-    decrement(b, rest...);
-  }
-}
-
 // Iterates through a 3d range of vector values [from, to] inclusive.
 template <typename T>
 class vector3_iterator
@@ -131,6 +74,8 @@ class vector3_iterator
   bool valid_;
 };
 
+///  CHUNK ITERATORS //////////////////////////
+
 // Iterates over chunks in a given range at a given mip level.  Built using the
 // vector_iterator.
 typedef boost::transform_iterator<std::function<coords::Chunk(const Vector3i&)>,
@@ -177,8 +122,8 @@ inline filtered_chunk_iterator make_segment_chunk_iterator(
 }
 
 inline filtered_chunk_iterator make_segment_chunk_iterator(
-    chunk::UniqueValuesDS& uvm, common::SegID segment,
-    const coords::Chunk& from, const coords::Chunk& to) {
+    const coords::Chunk& from, const coords::Chunk& to,
+    chunk::UniqueValuesDS& uvm, common::SegID segment) {
   return make_segment_chunk_iterator(uvm, segment,
                                      make_chunk_iterator(from, to));
 }
@@ -198,230 +143,173 @@ inline filtered_chunk_iterator make_segset_chunk_iterator(
 }
 
 inline filtered_chunk_iterator make_segset_chunk_iterator(
-    chunk::UniqueValuesDS& uvm, common::SegIDSet segs,
-    const coords::Chunk& from, const coords::Chunk& to) {
+    const coords::Chunk& from, const coords::Chunk& to,
+    chunk::UniqueValuesDS& uvm, common::SegIDSet segs) {
   return make_segset_chunk_iterator(uvm, segs, make_chunk_iterator(from, to));
 }
 
-// // Iterates over coords::Data in a given range at a given mip level.  Built
-// // using the vector_iterator.
-// typedef boost::transform_iterator<std::function<coords::Data(const
-// Vector3i&)>,
-//                                   vector3_iterator<int>> data_iterator;
+/// DATAVAL ITERATORS /////////////////////////
 
-// inline data_iterator make_data_iterator(const coords::VolumeSystem& sys,
-//                                         int mipLevel,
-//                                         vector3_iterator<int> iter) {
-//   return data_iterator(iter, [&sys, mipLevel](const Vector3i& vec) {
-//     return coords::Data(vec, sys, mipLevel);
-//   });
-// }
+template <typename T, typename ChunkIterator>
+class dataval_iterator
+    : public boost::iterator_adaptor<dataval_iterator<T, ChunkIterator>,
+                                     ChunkIterator, std::pair<coords::Data, T>,
+                                     std::forward_iterator_tag,
+                                     const std::pair<coords::Data, T>&> {
+  typedef typename dataval_iterator<T, ChunkIterator>::iterator_adaptor_ base_t;
 
-// inline data_iterator make_data_iterator(const coords::Data& from,
-//                                         const coords::Data& to) {
-//   return make_data_iterator(from.volume(), from.mipLevel(),
-//                             vector3_iterator<int>(from, to));
-// }
+ public:
+  dataval_iterator() : base_t() {}
+  dataval_iterator(ChunkIterator chunkIter, const coords::DataBbox& bounds,
+                   chunk::ChunkDS& ds, const coords::Data& curr)
+      : base_t(chunkIter), iterBounds_(bounds), chunkDs_(&ds), val_{curr, 0} {
+    // TODO: What if the chunkIter has bad bounds?  Better way to initialize
+    // without knowing the type?
 
-// // Iterates over chunks in a given range at a given mip level.  Built using
-// the
-// // vector_iterator.
-// template <typename T>
-// using dataval_iterator = boost::transform_iterator<
-//     std::function<std::pair<coords::Data, T>(const coords::Data&)>,
-//     data_iterator>;
+    updateChunkBounds();
 
-// template <typename T>
-// inline dataval_iterator<T> make_dataval_iterator(chunk::Voxels<T>& voxels,
-//                                                  data_iterator iter) {
-//   return dataval_iterator<T>(iter, [&voxels](const coords::Data& d) {
-//     return std::make_pair(d, voxels.GetValue(d));
-//   });
-// }
+    idx_ = val_.first.ToChunkOffset();
+    chunk_ = chunkDs_->Get(*base_t::base());
+    SetDataVal();
+  }
 
-// template <typename T>
-// inline dataval_iterator<T> make_dataval_iterator(chunk::Voxels<T>& voxels,
-//                                                  const coords::Data& from,
-//                                                  const coords::Data& to) {
-//   return make_dataval_iterator<T>(voxels, make_data_iterator(from, to));
-// }
+  dataval_iterator(const dataval_iterator& other)
+      : base_t(other),
+        idx_(other.idx_),
+        iterBounds_(other.iterBounds_),
+        chunkBounds_(other.chunkBounds_),
+        chunk_(other.chunk_),
+        chunkDs_(other.chunkDs_),
+        val_(other.val_) {}
 
-// // Iterates over specific chunks in a given range at a given mip level.
-// Takes a
-// // filter function to decide what chunks to use. Built using the
-// chunk_iterator.
-// template <typename T>
-// using filtered_dataval_iterator = boost::filter_iterator<
-//     std::function<bool(const std::pair<coords::Data, T>&)>,
-//     dataval_iterator<T>>;
+  boost::optional<std::pair<coords::Data, T>> neighbor(Vector3i offset) const {
+    // TODO: Speed up!
+    if (!chunkDs_) {
+      return false;
+    }
 
-// template <typename T>
-// filtered_dataval_iterator<T> make_filtered_dataval_iterator(
-//     std::function<bool(const std::pair<coords::Data, T>&)> filter,
-//     chunk::Voxels<T>& voxels, const coords::Data& from,
-//     const coords::Data& to) {
-//   return filtered_dataval_iterator<T>(filter,
-//                                       make_dataval_iterator(voxels, from,
-// to));
-// }
+    std::pair<coords::Data, T> ret = val_;
+    ret.first += offset;
+    std::shared_ptr<chunk::Chunk<T>> chunk;
 
-// template <typename T>
-// class chunkfiltered_dataval_iterator
-//     : public boost::iterator_adaptor<
-//           chunkfiltered_dataval_iterator<T>, filtered_chunk_iterator,
-//           std::pair<coords::Data, T>, std::forward_iterator_tag,
-//           const std::pair<coords::Data, T>&> {
-//  public:
-//   chunkfiltered_dataval_iterator()
-//       : chunkfiltered_dataval_iterator<T>::iterator_adaptor_(),
-//         voxels_(nullptr) {}
-//   chunkfiltered_dataval_iterator(
-//       coords::Data from, coords::Data to, coords::Data curr,
-//       std::function<bool(const coords::Chunk&)> filter,
-//       chunk::Voxels<T>& voxels)
-//       : chunkfiltered_dataval_iterator<T>::iterator_adaptor_(
-//             make_filtered_chunk_iterator(
-//                 filter,
-//                 make_chunk_iterator(from.mipLevel(),
-//                                     vector3_iterator<int>(from.ToChunk(),
-//                                                           to.ToChunk(),
-//                                                           curr.ToChunk())))),
-//         from_(new coords::Data(from)),
-//         to_(new coords::Data(to)),
-//         voxels_(&voxels) {
-//     if (from.mipLevel() != to.mipLevel() ||
-//         from.mipLevel() != curr.mipLevel()) {
-//       throw ArgException(
-//           "Data Coords must have the same mip level for iterator.");
-//     }
-//     val_.reset(std::make_pair(curr, voxels_->GetValue(curr)));
-//     updateChunkRange();
-//     carry();
-//   }
+    if (ret.ToChunk() == val_.ToChunk()) {
+      chunk = chunk_;
+    } else {
+      chunk = chunkDs_->Get(ret.ToChunk());
+    }
+    if (!chunk) {
+      return false;
+    }
 
-//   chunkfiltered_dataval_iterator(const chunkfiltered_dataval_iterator& other)
-//       : chunkfiltered_dataval_iterator<T>::iterator_adaptor_(other),
-//         from_(new coords::Data(*other.from_)),
-//         to_(new coords::Data(*other.to_)),
-//         chunkFrom_(other.chunkFrom_),
-//         chunkTo_(other.chunkTo_),
-//         voxels_(other.voxels_),
-//         val_(other.val_) {}
+    ret.second = (*chunk)[ret.first.ToChunkOffset()];
+    return ret;
+  }
 
-//  private:
-//   friend class boost::iterator_core_access;
+ private:
+  friend class boost::iterator_core_access;
 
-//   const std::pair<coords::Data, common::SegID>& dereference() const {
-//     if (val_) {
-//       return val_.get();
-//     } else {
-//       throw InvalidOperationException(
-//           "Dereferencing Invalid chunkfiltered_dataval_iterator Iterator.");
-//     }
-//   }
+  const std::pair<coords::Data, common::SegID>& dereference() const {
+    return val_;
+  }
 
-//   bool equal(const chunkfiltered_dataval_iterator& y) const {
-//     if (!val_) {
-//       return !y.val_;
-//     }
-//     return std::tie(*from_, *to_, voxels_, val_) ==
-//            std::tie(*y.from_, *y.to_, y.voxels_, y.val_);
-//   }
+  bool equal(const dataval_iterator& y) const {
+    return (!y.chunk_ && !chunk_) || (y.chunk_ && val_ == y.val_);
+  }
 
-//   void increment() {
-//     if (val_) {
-//       val_.get().first.z += 1;
-//       carry();
-//     } else {
-//       throw InvalidOperationException(
-//           "Incrementing Invalid chunkfiltered_dataval_iterator Iterator.");
-//     }
-//   }
+  void increment() {
+    if (++val_.first.x > chunkBounds_.getMax().x) {
+      val_.first.x = chunkBounds_.getMin().x;
+      if (++val_.first.y > chunkBounds_.getMax().y) {
+        val_.first.y = chunkBounds_.getMin().y;
+        if (++val_.first.z > chunkBounds_.getMax().z) {
+          base_t::base_reference()++;
+          updateChunkBounds();
+          val_.first = chunkBounds_.getMin();
+          chunk_ = val_.first > iterBounds_.getMax() && chunkDs_
+                       ? nullptr
+                       : chunkDs_->Get(*base_t::base());
+        }
+      }
+      idx_ = val_.first.ToChunkOffset();
+    } else {
+      idx_++;
+    }
 
-//   void decrement() {
-//     if (val_) {
-//       val_.get().first.z -= 1;
-//       carry();
-//     } else {
-//       throw InvalidOperationException(
-//           "Decrementing Invalid chunkfiltered_dataval_iterator Iterator.");
-//     }
-//   }
+    SetDataVal();
+  }
 
-//   void carry() {
-//     if (val_) {
-//       auto& ref = val_.get().first;
-//       utility::carry(ref.z, chunkFrom_.z, chunkTo_.z, ref.y, chunkFrom_.y,
-//                      chunkTo_.y, ref.x);
-//       if (ref > chunkTo_) {
-//         if (++this->base_reference() ==
-//             typename chunkfiltered_dataval_iterator<T>::base_type()) {
-//           val_.reset();
-//           return;
-//         } else {
-//           updateChunkRange();
-//           ref = coords::Data(chunkFrom_, ref.volume(), ref.mipLevel());
-//         }
-//       }
-//       val_.get().second = voxels_->GetValue(ref);
-//     }
-//   }
+  void decrement() {
+    if (--val_.first.x < chunkBounds_.getMin().x) {
+      val_.first.x = chunkBounds_.getMax().x;
+      if (--val_.first.y < chunkBounds_.getMin().y) {
+        val_.first.y = chunkBounds_.getMax().y;
+        if (--val_.first.z < chunkBounds_.getMin().z) {
+          base_t::base_reference()--;
+          updateChunkBounds();
+          val_.first = chunkBounds_.getMax();
+          chunk_ = val_.first < iterBounds_.getMin() && chunkDs_
+                       ? nullptr
+                       : chunkDs_->Get(*base_t::base());
+        }
+      }
+      idx_ = val_.first.ToChunkOffset();
+    } else {
+      idx_--;
+    }
+    SetDataVal();
+  }
 
-//   void updateChunkRange() {
-//     auto bounds = this->base()->BoundingBox(from_->volume());
-//     chunkFrom_ = std::max(bounds.getMin(), *from_);
-//     chunkTo_ = std::min(bounds.getMax(), *to_);
-//   }
+  void updateChunkBounds() {
+    chunkBounds_ = base_t::base()->BoundingBox(val_.first.volume());
+    chunkBounds_.intersect(iterBounds_);
+  }
 
-//   std::unique_ptr<coords::Data> from_, to_;
-//   Vector3i chunkFrom_, chunkTo_;
+  void SetDataVal() {
+    if (chunk_) {
+      val_.second = (*chunk_)[idx_];
+    }
+  }
 
-//   chunk::Voxels<T>* const voxels_;
-//   mutable boost::optional<std::pair<coords::Data, T>> val_;
-// };
+  int idx_;
+  coords::DataBbox iterBounds_, chunkBounds_;
+  std::shared_ptr<chunk::Chunk<T>> chunk_;
+  chunk::ChunkDS* chunkDs_;
+  mutable std::pair<coords::Data, T> val_;
+};
 
-// inline chunkfiltered_dataval_iterator<common::SegID>
-// make_segset_chunkfiltered_dataval_iterator(coords::Data from, coords::Data
-// to,
-//                                            coords::Data curr,
-//                                            chunk::Voxels<common::SegID>&
-// voxels,
-//                                            chunk::UniqueValuesDS& uvm,
-//                                            common::SegIDSet vals) {
-//   return chunkfiltered_dataval_iterator<common::SegID>(
-//       from, to, curr,
-//       [&uvm, vals](const coords::Chunk& c) {
-//         auto uv = uvm.Get(c);
-//         if (!uv) {
-//           return false;
-//         }
-//         return std::find_if(vals.begin(), vals.end(), [&uv](common::SegID s)
-// {
-//                  return uv->contains(s);
-//                }) != vals.end();
-//       },
-//       voxels);
-// }
+template <typename T>
+using all_dataval_iterator = dataval_iterator<T, chunk_iterator>;
 
-// // Iterates over specific chunks in a given range at a given mip level.
-// Takes a
-// // filter function to decide what chunks to use. Built using the
-// chunk_iterator.
-// typedef boost::filter_iterator<
-//     std::function<bool(const std::pair<coords::Data, common::SegID>&)>,
-//     chunkfiltered_dataval_iterator<common::SegID>> segset_iterator;
+template <typename T>
+all_dataval_iterator<T> make_all_dataval_iterator(
+    const coords::DataBbox& bounds, chunk::ChunkDS& ds) {
+  return all_dataval_iterator<T>(
+      make_chunk_iterator(bounds.getMin().ToChunk(), bounds.getMax().ToChunk()),
+      bounds, ds, bounds.getMin());
+}
 
-// inline segset_iterator make_segset_iterator(
-//     coords::Data from, coords::Data to, coords::Data curr,
-//     chunk::Voxels<common::SegID>& voxels, chunk::UniqueValuesDS& uvm,
-//     common::SegIDSet segs) {
-//   return segset_iterator([segs](
-//                              const std::pair<coords::Data, common::SegID>& c)
-// {
-//                            return segs.count(c.second);
-//                          },
-//                          make_segset_chunkfiltered_dataval_iterator(
-//                              from, to, curr, voxels, uvm, segs));
-// }
+template <typename T>
+using chunk_filtered_dataval_iterator =
+    dataval_iterator<T, filtered_chunk_iterator>;
+
+template <typename T>
+chunk_filtered_dataval_iterator<T> make_chunk_filtered_dataval_iterator(
+    const coords::DataBbox& bounds, chunk::ChunkDS& ds,
+    chunk::UniqueValuesDS& uvm, common::SegID id) {
+  return chunk_filtered_dataval_iterator<T>(
+      make_segment_chunk_iterator(bounds.getMin().ToChunk(),
+                                  bounds.getMax().ToChunk(), uvm, id),
+      bounds, ds, bounds.getMin());
+}
+
+template <typename T>
+chunk_filtered_dataval_iterator<T> make_chunk_filtered_dataval_iterator(
+    const coords::DataBbox& bounds, chunk::ChunkDS& ds,
+    chunk::UniqueValuesDS& uvm, common::SegIDSet set) {
+  return chunk_filtered_dataval_iterator<T>(
+      make_segset_chunk_iterator(bounds.getMin().ToChunk(),
+                                 bounds.getMax().ToChunk(), uvm, set),
+      bounds, ds, bounds.getMin());
+}
 }
 }  // namespace om::utility::

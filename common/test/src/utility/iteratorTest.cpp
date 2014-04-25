@@ -145,9 +145,9 @@ TEST(Utility_Iterators, Benchmark_FilteredChunkIterator) {
   t.reset();
   t.start();
   size_t count2 = 0;
-  for (auto iter = make_segment_chunk_iterator(seg.UniqueValuesDS(), id,
-                                               coords::Chunk(0, 0, 0, 0),
-                                               coords::Chunk(0, chunkDims));
+  for (auto iter = make_segment_chunk_iterator(coords::Chunk(0, 0, 0, 0),
+                                               coords::Chunk(0, chunkDims),
+                                               seg.UniqueValuesDS(), id);
        iter != filtered_chunk_iterator(); ++iter) {
     count2++;
   }
