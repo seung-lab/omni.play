@@ -162,25 +162,28 @@ class dataval_iterator
   dataval_iterator() : base_t() {}
   dataval_iterator(ChunkIterator chunkIter, const coords::DataBbox& bounds,
                    chunk::ChunkDS& ds, const coords::Data& curr)
-      : base_t(chunkIter), iterBounds_(bounds), chunkDs_(&ds), val_{curr, 0} {
+      : base_t(chunkIter),
+        iterBounds_(new coords::DataBbox(bounds)),
+        chunkDs_(&ds),
+        val_(new std::pair<coords::Data, T>(curr, 0)) {
     // TODO: What if the chunkIter has bad bounds?  Better way to initialize
     // without knowing the type?
 
     updateChunkBounds();
+    updateChunk();
 
-    idx_ = val_.first.ToChunkOffset();
-    chunk_ = chunkDs_->Get(*base_t::base());
-    SetDataVal();
+    idx_ = val_->first.ToChunkOffset();
+    setDataVal();
   }
 
   dataval_iterator(const dataval_iterator& other)
       : base_t(other),
         idx_(other.idx_),
-        iterBounds_(other.iterBounds_),
-        chunkBounds_(other.chunkBounds_),
+        iterBounds_(new coords::DataBbox(*other.iterBounds_)),
+        chunkBounds_(new coords::DataBbox(*other.chunkBounds_)),
         chunk_(other.chunk_),
         chunkDs_(other.chunkDs_),
-        val_(other.val_) {}
+        val_(new std::pair<coords::Data, T>(*other.val_)) {}
 
   boost::optional<std::pair<coords::Data, T>> neighbor(Vector3i offset) const {
     // TODO: Speed up!
@@ -188,20 +191,25 @@ class dataval_iterator
       return false;
     }
 
-    std::pair<coords::Data, T> ret = val_;
+    std::pair<coords::Data, T> ret = *val_;
     ret.first += offset;
-    std::shared_ptr<chunk::Chunk<T>> chunk;
 
-    if (ret.ToChunk() == val_.ToChunk()) {
-      chunk = chunk_;
+    if (ret.ToChunk() == val_->ToChunk()) {
+      if (!chunk_) {
+        return false;
+      }
+
+      ret.second = (*chunk_)[ret.first.ToChunkOffset()];
     } else {
-      chunk = chunkDs_->Get(ret.ToChunk());
-    }
-    if (!chunk) {
-      return false;
+      auto chunkPtr = chunkDs_->Get(ret.ToChunk());
+      auto chunk = boost::get<chunk::Chunk<T>*>(chunkPtr.get());
+      if (!chunk) {
+        return false;
+      }
+
+      ret.second = (*chunk)[ret.first.ToChunkOffset()];
     }
 
-    ret.second = (*chunk)[ret.first.ToChunkOffset()];
     return ret;
   }
 
@@ -209,72 +217,89 @@ class dataval_iterator
   friend class boost::iterator_core_access;
 
   const std::pair<coords::Data, common::SegID>& dereference() const {
-    return val_;
+    return *val_;
   }
 
   bool equal(const dataval_iterator& y) const {
-    return (!y.chunk_ && !chunk_) || (y.chunk_ && val_ == y.val_);
+    if (!y.val_) {
+      return !val_;
+    } else {
+      return val_ && *val_ == *y.val_;
+    }
   }
 
   void increment() {
-    if (++val_.first.x > chunkBounds_.getMax().x) {
-      val_.first.x = chunkBounds_.getMin().x;
-      if (++val_.first.y > chunkBounds_.getMax().y) {
-        val_.first.y = chunkBounds_.getMin().y;
-        if (++val_.first.z > chunkBounds_.getMax().z) {
+    auto& ref = *val_;
+    if (++ref.first.x >= chunkBounds_->getMax().x) {
+      ref.first.x = chunkBounds_->getMin().x;
+      if (++ref.first.y >= chunkBounds_->getMax().y) {
+        ref.first.y = chunkBounds_->getMin().y;
+        if (++ref.first.z >= chunkBounds_->getMax().z) {
           base_t::base_reference()++;
-          updateChunkBounds();
-          val_.first = chunkBounds_.getMin();
-          chunk_ = val_.first > iterBounds_.getMax() && chunkDs_
-                       ? nullptr
-                       : chunkDs_->Get(*base_t::base());
+          if (base_t::base() == ChunkIterator()) {
+            val_.reset();
+          } else {
+            updateChunkBounds();
+            ref.first = chunkBounds_->getMin();
+            updateChunk();
+          }
         }
       }
-      idx_ = val_.first.ToChunkOffset();
+      idx_ = ref.first.ToChunkOffset();
     } else {
       idx_++;
     }
 
-    SetDataVal();
+    setDataVal();
   }
-
   void decrement() {
-    if (--val_.first.x < chunkBounds_.getMin().x) {
-      val_.first.x = chunkBounds_.getMax().x;
-      if (--val_.first.y < chunkBounds_.getMin().y) {
-        val_.first.y = chunkBounds_.getMax().y;
-        if (--val_.first.z < chunkBounds_.getMin().z) {
+    auto& ref = *val_;
+    if (--ref.first.x < chunkBounds_->getMin().x) {
+      ref.first.x = chunkBounds_->getMax().x;
+      if (--ref.first.y < chunkBounds_->getMin().y) {
+        ref.first.y = chunkBounds_->getMax().y;
+        if (--ref.first.z < chunkBounds_->getMin().z) {
           base_t::base_reference()--;
-          updateChunkBounds();
-          val_.first = chunkBounds_.getMax();
-          chunk_ = val_.first < iterBounds_.getMin() && chunkDs_
-                       ? nullptr
-                       : chunkDs_->Get(*base_t::base());
+          if (base_t::base() == ChunkIterator()) {
+            val_.reset();
+          } else {
+            updateChunkBounds();
+            ref.first = chunkBounds_->getMax();
+            updateChunk();
+          }
         }
       }
-      idx_ = val_.first.ToChunkOffset();
+      idx_ = ref.first.ToChunkOffset();
     } else {
       idx_--;
     }
-    SetDataVal();
+    setDataVal();
+  }
+
+  void updateChunk() {
+    chunkSharedPtr_ = chunkDs_->Get(*base_t::base());
+    chunk_ = boost::get<chunk::Chunk<T>>(chunkSharedPtr_.get());
   }
 
   void updateChunkBounds() {
-    chunkBounds_ = base_t::base()->BoundingBox(val_.first.volume());
-    chunkBounds_.intersect(iterBounds_);
+    chunkBounds_.reset(new coords::DataBbox(
+        base_t::base()->BoundingBox(val_->first.volume())));
+    chunkBounds_->intersect(*iterBounds_);
   }
 
-  void SetDataVal() {
-    if (chunk_) {
-      val_.second = (*chunk_)[idx_];
+  void setDataVal() {
+    if (chunk_ && val_) {
+      val_->second = (*chunk_)[idx_];
     }
   }
 
   int idx_;
-  coords::DataBbox iterBounds_, chunkBounds_;
-  std::shared_ptr<chunk::Chunk<T>> chunk_;
+  std::unique_ptr<coords::DataBbox> iterBounds_;
+  std::unique_ptr<coords::DataBbox> chunkBounds_;
+  chunk::Chunk<T>* chunk_;
+  std::shared_ptr<chunk::ChunkVar> chunkSharedPtr_;
   chunk::ChunkDS* chunkDs_;
-  mutable std::pair<coords::Data, T> val_;
+  mutable std::unique_ptr<std::pair<coords::Data, T>> val_;
 };
 
 template <typename T>

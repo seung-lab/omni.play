@@ -155,5 +155,62 @@ TEST(Utility_Iterators, Benchmark_FilteredChunkIterator) {
 
   ASSERT_EQ(count, count2);
 }
+
+TEST(Utility_Iterators, Benchmark_DatavalIterator) {
+  volume::Segmentation seg(
+      file::Paths("/omniData/e2198/e2198_a_s10_101_46_e17_116_61.omni"), 1);
+
+  coords::DataBbox bounds({{1, 2, 3}, {500, 300, 400}}, seg.Coords(), 1);
+
+  utility::timer t;
+  t.start();
+  auto chunkFrom = bounds.getMin().ToChunk();
+  auto chunkTo = bounds.getMax().ToChunk();
+
+  size_t sum = 0;
+  for (int i = chunkFrom.x; i <= chunkTo.x; ++i) {
+    for (int j = chunkFrom.y; j <= chunkTo.y; ++j) {
+      for (int k = chunkFrom.z; k <= chunkTo.z; ++k) {
+        coords::Chunk c(chunkFrom.mipLevel(), i, j, k);
+        auto chunk =
+            boost::get<chunk::Chunk<common::SegID>>(seg.ChunkDS().Get(c).get());
+        if (!chunk) {
+          continue;
+        }
+
+        auto chunkBounds = c.BoundingBox(seg.Coords());
+        chunkBounds.intersect(bounds);
+        auto dataFrom = chunkBounds.getMin();
+        auto dataTo = chunkBounds.getMax();
+
+        size_t idx = 0;
+        coords::Data d = dataFrom;
+        for (d.z = dataFrom.z; d.z < dataTo.z; ++d.z) {
+          for (d.y = dataFrom.y; d.y < dataTo.y; ++d.y) {
+            d.x = dataFrom.x;
+            idx = d.ToChunkOffset();
+            for (; d.x < dataTo.x; ++d.x) {
+              sum += (*chunk)[idx];
+              idx++;
+            }
+          }
+        }
+      }
+    }
+  }
+  t.Print("Standard For loop");
+
+  t.reset();
+  t.start();
+  size_t sum2 = 0;
+  for (auto iter =
+           make_all_dataval_iterator<common::SegID>(bounds, seg.ChunkDS());
+       iter != all_dataval_iterator<common::SegID>(); ++iter) {
+    sum2 += iter->second;
+  }
+  t.Print("dataval_iterator");
+
+  ASSERT_EQ(sum, sum2);
+}
 }
 }  // namespace om::test::
