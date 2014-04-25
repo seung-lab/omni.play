@@ -180,7 +180,8 @@ class dataval_iterator
       : base_t(other),
         idx_(other.idx_),
         iterBounds_(new coords::DataBbox(*other.iterBounds_)),
-        chunkBounds_(new coords::DataBbox(*other.chunkBounds_)),
+        chunkFrom_(other.chunkFrom_),
+        chunkTo_(other.chunkTo_),
         chunk_(other.chunk_),
         chunkDs_(other.chunkDs_),
         val_(new std::pair<coords::Data, T>(*other.val_)) {}
@@ -230,17 +231,18 @@ class dataval_iterator
 
   void increment() {
     auto& ref = *val_;
-    if (++ref.first.x >= chunkBounds_->getMax().x) {
-      ref.first.x = chunkBounds_->getMin().x;
-      if (++ref.first.y >= chunkBounds_->getMax().y) {
-        ref.first.y = chunkBounds_->getMin().y;
-        if (++ref.first.z >= chunkBounds_->getMax().z) {
+    if (++ref.first.x >= chunkTo_.x) {
+      ref.first.x = chunkFrom_.x;
+      if (++ref.first.y >= chunkTo_.y) {
+        ref.first.y = chunkFrom_.y;
+        if (++ref.first.z >= chunkTo_.z) {
           base_t::base_reference()++;
           if (base_t::base() == ChunkIterator()) {
             val_.reset();
           } else {
             updateChunkBounds();
-            ref.first = chunkBounds_->getMin();
+            ref.first = coords::Data(chunkFrom_, ref.first.volume(),
+                                     ref.first.mipLevel());
             updateChunk();
           }
         }
@@ -254,17 +256,18 @@ class dataval_iterator
   }
   void decrement() {
     auto& ref = *val_;
-    if (--ref.first.x < chunkBounds_->getMin().x) {
-      ref.first.x = chunkBounds_->getMax().x;
-      if (--ref.first.y < chunkBounds_->getMin().y) {
-        ref.first.y = chunkBounds_->getMax().y;
-        if (--ref.first.z < chunkBounds_->getMin().z) {
+    if (--ref.first.x < chunkFrom_.x) {
+      ref.first.x = chunkTo_.x;
+      if (--ref.first.y < chunkFrom_.y) {
+        ref.first.y = chunkTo_.y;
+        if (--ref.first.z < chunkFrom_.z) {
           base_t::base_reference()--;
           if (base_t::base() == ChunkIterator()) {
             val_.reset();
           } else {
             updateChunkBounds();
-            ref.first = chunkBounds_->getMax();
+            ref.first = coords::Data(chunkTo_, ref.first.volume(),
+                                     ref.first.mipLevel());
             updateChunk();
           }
         }
@@ -279,23 +282,28 @@ class dataval_iterator
   void updateChunk() {
     chunkSharedPtr_ = chunkDs_->Get(*base_t::base());
     chunk_ = boost::get<chunk::Chunk<T>>(chunkSharedPtr_.get());
+    if (!chunk_) {
+      log_errors << "Unable to get chunk " << *base_t::base();
+      val_.reset();
+    }
   }
 
   void updateChunkBounds() {
-    chunkBounds_.reset(new coords::DataBbox(
-        base_t::base()->BoundingBox(val_->first.volume())));
-    chunkBounds_->intersect(*iterBounds_);
+    auto cb = base_t::base()->BoundingBox(val_->first.volume());
+    cb.intersect(*iterBounds_);
+    chunkFrom_ = cb.getMin();
+    chunkTo_ = cb.getMax();
   }
 
   void setDataVal() {
-    if (chunk_ && val_) {
+    if (val_) {
       val_->second = (*chunk_)[idx_];
     }
   }
 
   int idx_;
   std::unique_ptr<coords::DataBbox> iterBounds_;
-  std::unique_ptr<coords::DataBbox> chunkBounds_;
+  Vector3i chunkFrom_, chunkTo_;
   chunk::Chunk<T>* chunk_;
   std::shared_ptr<chunk::ChunkVar> chunkSharedPtr_;
   chunk::ChunkDS* chunkDs_;
