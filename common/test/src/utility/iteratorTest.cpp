@@ -1,6 +1,8 @@
 #include "gtest/gtest.h"
 #include "gmock/gmock.h"
-#include "utility/iterators.hpp"
+#include "utility/vector3_iterator.hpp"
+#include "chunk/iterators.hpp"
+#include "volume/iterators.hpp"
 #include "utility/timer.hpp"
 #include "volume/segmentation.h"
 
@@ -8,6 +10,8 @@ namespace om {
 namespace test {
 
 using namespace utility;
+using namespace chunk;
+using namespace volume;
 
 TEST(Utility_Iterators, VectorIterator) {
   size_t count = 0;
@@ -63,9 +67,9 @@ TEST(Utility_Iterators, Benchmark_VectorIterator) {
 TEST(Utility_Iterators, ChunkIterator) {
   size_t count = 0;
 
-  for (auto iter = make_chunk_iterator(coords::Chunk(1, 1, 2, 3),
-                                       coords::Chunk(1, 2, 4, 6));
-       iter != chunk_iterator(); ++iter) {
+  for (auto iter = chunk::make_iterator(coords::Chunk(1, 1, 2, 3),
+                                        coords::Chunk(1, 2, 4, 6));
+       iter != chunk::iterator(); ++iter) {
     count++;
     if (count > 30) {
       break;
@@ -73,10 +77,10 @@ TEST(Utility_Iterators, ChunkIterator) {
   }
   ASSERT_EQ(24, count);
   coords::Chunk val(1, 1, 4, 3);
-  ASSERT_NE(chunk_iterator(),
-            std::find(make_chunk_iterator(coords::Chunk(1, 1, 2, 3),
-                                          coords::Chunk(1, 2, 4, 6)),
-                      chunk_iterator(), val));
+  ASSERT_NE(chunk::iterator(),
+            std::find(chunk::make_iterator(coords::Chunk(1, 1, 2, 3),
+                                           coords::Chunk(1, 2, 4, 6)),
+                      chunk::iterator(), val));
 }
 
 TEST(Utility_Iterators, Benchmark_ChunkIterator) {
@@ -99,12 +103,12 @@ TEST(Utility_Iterators, Benchmark_ChunkIterator) {
   t.reset();
   t.start();
   size_t val2 = 0;
-  for (auto iter = make_chunk_iterator(coords::Chunk(0, 0, 0, 0),
-                                       coords::Chunk(0, LIMIT, LIMIT, LIMIT));
-       iter != chunk_iterator(); ++iter) {
+  for (auto iter = chunk::make_iterator(coords::Chunk(0, 0, 0, 0),
+                                        coords::Chunk(0, LIMIT, LIMIT, LIMIT));
+       iter != chunk::iterator(); ++iter) {
     val2 = (val2 + iter->PtrOffset(vs, 32)) % LIMIT;
   }
-  t.Print("chunk_iterator");
+  t.Print("chunk::iterator");
 
   ASSERT_EQ(val, val2);
 }
@@ -145,13 +149,13 @@ TEST(Utility_Iterators, Benchmark_FilteredChunkIterator) {
   t.reset();
   t.start();
   size_t count2 = 0;
-  for (auto iter = make_segment_chunk_iterator(coords::Chunk(0, 0, 0, 0),
-                                               coords::Chunk(0, chunkDims),
-                                               seg.UniqueValuesDS(), id);
-       iter != filtered_chunk_iterator(); ++iter) {
+  for (auto iter = chunk::make_segment_iterator(coords::Chunk(0, 0, 0, 0),
+                                                coords::Chunk(0, chunkDims),
+                                                seg.UniqueValuesDS(), id);
+       iter != chunk::filtered_iterator(); ++iter) {
     count2++;
   }
-  t.Print("chunk_iterator");
+  t.Print("chunk::iterator");
 
   ASSERT_EQ(count, count2);
 }
