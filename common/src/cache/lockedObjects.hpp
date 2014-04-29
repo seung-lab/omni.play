@@ -30,12 +30,12 @@ class LockedCacheMap {
     boost::optional<KEY> k = list_.remove_oldest();
 
     if (!k) {
-      return false;
+      return boost::optional<VAL>();
     }
 
     iterator iter = map_.find(k.get());
     if (iter == map_.end()) {
-      return false;
+      return boost::optional<VAL>();
     }
     VAL ret = iter->second;
     map_.erase(iter);
@@ -81,7 +81,7 @@ class LockedCacheMap {
     list_.touch(k);
     iterator iter = map_.find(k);
     if (iter == map_.end()) {
-      return false;
+      return boost::optional<VAL>();
     }
     return iter->second;
   }
@@ -93,7 +93,7 @@ class LockedCacheMap {
 
     iterator iter = map_.find(k);
     if (iter == map_.end()) {
-      return false;
+      return boost::optional<VAL>();
     }
     VAL ret = iter->second;
     map_.erase(iter);
