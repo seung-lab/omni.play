@@ -24,7 +24,7 @@ class Data : public vmml::Vector3i {
   // Cheat for performance reasons.
   Data() : base_t(), volume_(nullptr), mipLevel_(0) {}
   template <typename T, typename U>
-  friend class std::pair;
+  friend struct std::pair;
 
  public:
   Data(base_t v, const VolumeSystem& vol, int mipLevel);
