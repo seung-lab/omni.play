@@ -22,6 +22,7 @@ OmSegmentsImpl::OmSegmentsImpl(SegDataVector& data, SegListDataVector& listData,
                                SegmentationDataWrapper sdw)
     : mst_(mst),
       userEdges_(userEdges),
+      valid_(valid),
       meta_(meta),
       store_(new Store(data, listData, meta.coordSystem(), meta.maxSegments())),
       graph_(new Graph(meta.maxSegments())),
@@ -54,6 +55,8 @@ OmSegment* OmSegmentsImpl::AddSegment(const om::common::SegID value) {
   seg->SetColor(OmProject::Globals().RandColorFile().GetRandomColor(value));
   if (value > meta_.maxSegments()) {
     graph_->Resize(value);
+    valid_.Resize(value);
+    segmentLists_->Resize(value);
     meta_.UpdateMaxSegments(value);
   }
 

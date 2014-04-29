@@ -100,6 +100,7 @@ class OmSegmentsImpl {
  private:
   om::segment::EdgeVector& mst_;
   om::segment::UserEdgeVector& userEdges_;
+  OmValidGroupNum& valid_;
   om::volume::MetadataManager& meta_;
 
   std::unique_ptr<om::segment::Store> store_;
