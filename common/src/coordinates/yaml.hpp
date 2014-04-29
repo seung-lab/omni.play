@@ -6,7 +6,8 @@
 
 namespace YAML {
 
-template <> struct convert<om::coords::Global> {
+template <>
+struct convert<om::coords::Global> {
   static Node encode(const om::coords::Global& p) {
     return convert<Vector3f>::encode(p);
   }
@@ -16,7 +17,8 @@ template <> struct convert<om::coords::Global> {
   }
 };
 
-template <> struct convert<om::coords::GlobalBbox> {
+template <>
+struct convert<om::coords::GlobalBbox> {
   static Node encode(const om::coords::GlobalBbox& p) {
     return convert<AxisAlignedBoundingBox<float>>::encode(p);
   }
@@ -26,7 +28,8 @@ template <> struct convert<om::coords::GlobalBbox> {
   }
 };
 
-template <> struct convert<om::coords::VolumeSystem> {
+template <>
+struct convert<om::coords::VolumeSystem> {
   static Node encode(const om::coords::VolumeSystem& c) {
     Node node;
     node["dataDimensions"] = c.DataDimensions();
@@ -56,6 +59,7 @@ template <> struct convert<om::coords::VolumeSystem> {
     // in["mMipRootLevel"] >> c.mMipRootLevel;
     c.SetAbsOffset(node["absOffset"].as<Vector3i>(Vector3i::ZERO));
     c.UpdateRootLevel();
+    return true;
   }
 };
 

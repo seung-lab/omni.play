@@ -152,35 +152,42 @@ class HTTP : private SingletonBase<HTTP> {
     typename handle_pool::Lease h(instance().HandlePool, true);
     if (!h) {
       log_debugs << "Unable to get curl handle!";
-      return false;
+      return boost::optional<std::string>();
     }
 
     CURLcode err;
-    SET_OPT(h->Handle, CURLOPT_URL, uri.c_str(), false);
-    SET_OPT(h->Handle, CURLOPT_FOLLOWLOCATION, 1, false);
-    SET_OPT(h->Handle, CURLOPT_USERAGENT, "Omni", false);
+    SET_OPT(h->Handle, CURLOPT_URL, uri.c_str(),
+            boost::optional<std::string>());
+    SET_OPT(h->Handle, CURLOPT_FOLLOWLOCATION, 1,
+            boost::optional<std::string>());
+    SET_OPT(h->Handle, CURLOPT_USERAGENT, "Omni",
+            boost::optional<std::string>());
 
-    SET_OPT(h->Handle, CURLOPT_POST, 1, false);
+    SET_OPT(h->Handle, CURLOPT_POST, 1, boost::optional<std::string>());
 
     auto post = postString(rest...);
     log_debugs << "Posting: " << post;
-    SET_OPT(h->Handle, CURLOPT_POSTFIELDS, post.c_str(), false);
+    SET_OPT(h->Handle, CURLOPT_POSTFIELDS, post.c_str(),
+            boost::optional<std::string>());
     if (post.empty()) {
-      SET_OPT(h->Handle, CURLOPT_POSTFIELDSIZE, 0, false);
+      SET_OPT(h->Handle, CURLOPT_POSTFIELDSIZE, 0,
+              boost::optional<std::string>());
     }
 
-    SET_OPT(h->Handle, CURLOPT_WRITEFUNCTION, &write_data, false);
+    SET_OPT(h->Handle, CURLOPT_WRITEFUNCTION, &write_data,
+            boost::optional<std::string>());
     std::stringstream ss;
-    SET_OPT(h->Handle, CURLOPT_WRITEDATA, &ss, false);
+    SET_OPT(h->Handle, CURLOPT_WRITEDATA, &ss, boost::optional<std::string>());
 
     SET_OPT(h->Handle, CURLOPT_COOKIEJAR, file::Paths::CookieFile().c_str(),
-            false);
-    SET_OPT(h->Handle, CURLOPT_SSL_VERIFYPEER, 0, false);
+            boost::optional<std::string>());
+    SET_OPT(h->Handle, CURLOPT_SSL_VERIFYPEER, 0,
+            boost::optional<std::string>());
 
     err = curl_easy_perform(h->Handle);
     if (err) {
       log_debugs << "CURL Error getting: " << curl_easy_strerror(err);
-      return false;
+      return boost::optional<std::string>();
     }
 
     auto resp = getResponseCode(h->Handle);

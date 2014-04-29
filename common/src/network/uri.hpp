@@ -68,7 +68,7 @@ class Uri {
 
     boost::match_results<std::string::const_iterator> mr;
     if (!boost::regex_match(fullUri, mr, r)) {
-      return false;
+      return boost::optional<Uri>();
     }
 
     if (mr[1].matched) {
