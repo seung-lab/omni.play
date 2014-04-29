@@ -58,11 +58,12 @@ void OmSegmentation::LoadPath() {
   paths_ = p.SegmentationPaths(id_);
   auto userPaths = p.UserPaths(username);
 
-  validGroupNum_.reset(new OmValidGroupNum(paths_.ValidGroupNum()));
-
   metaDS_.reset(new om::volume::MetadataDataSource());
   metaManager_.reset(
       new om::volume::MetadataManager(*metaDS_, p.Segmentation(id_)));
+
+  validGroupNum_.reset(new OmValidGroupNum(userPaths.ValidGroupNum(id_),
+                                           metaManager_->numSegments()));
 
   segDataDS_.reset(new segment::FileDataSource(userPaths.Segments(id_)));
   segData_.reset(new segment::SegDataVector(*segDataDS_, segment::PageSize,

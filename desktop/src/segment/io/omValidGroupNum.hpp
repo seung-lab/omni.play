@@ -19,10 +19,13 @@ class OmValidGroupNum {
   std::vector<uint32_t> segToGroupNum_;
 
  public:
-  OmValidGroupNum(om::file::path p)
+  OmValidGroupNum(om::file::path p, size_t numSegs)
       : path_(p), version_(1), noGroupNum_(0), initialGroupNum_(1) {
     maxGroupNum_.store(initialGroupNum_);
     load();
+    if (numSegs > segToGroupNum_.size()) {
+      Resize(numSegs);
+    }
   }
 
   void Save() const { save(); }
@@ -46,6 +49,7 @@ class OmValidGroupNum {
 
   inline bool InSameValidGroup(const om::common::SegID segID1,
                                const om::common::SegID segID2) const {
+    assert(segID1 < segToGroupNum_.size() && segID2 < segToGroupNum_.size());
     return segToGroupNum_[segID1] == segToGroupNum_[segID2];
   }
 
