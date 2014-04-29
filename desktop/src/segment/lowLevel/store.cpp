@@ -18,6 +18,7 @@ Store::Store(SegDataVector& data, SegListDataVector& listData,
 
 OmSegment* Store::GetSegment(const common::SegID value) const {
   if (value >= data_.size()) {
+    log_errors << "Invalid segid " << value;
     return nullptr;
   }
   return const_cast<OmSegment*>(&segments_[value]);

@@ -53,6 +53,10 @@ bool OmSegmentListWidget::populate(const bool doScrollToSelectedSegment,
 
   FOR_EACH(iter, segIDs->segs) {
     OmSegment* seg = iter->seg;
+    if (!seg || !seg->value()) {
+      log_errors << "Invalid segment in SegInfo for " << eventSenderName();
+      continue;
+    }
 
     QTreeWidgetItem* row = new QTreeWidgetItem(this);
     setRowFlags(row);
