@@ -131,7 +131,7 @@ TEST(Utility_Iterators, Benchmark_FilteredChunkIterator) {
 
   utility::timer t;
   t.start();
-  size_t count;
+  size_t count = 0;
 
   for (int i = 0; i <= chunkDims.x; ++i) {
     for (int j = 0; j <= chunkDims.y; ++j) {
