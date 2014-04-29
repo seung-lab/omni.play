@@ -282,7 +282,7 @@ template< typename T >
 Vector3< T >
 AxisAlignedBoundingBox< T >::getCenter() const
 {
-    return _min + ( ( _max - _min ) * 0.5f );
+    return _min + Vector3<T>( Vector3f( _max - _min ) * 0.5f );
 }
 
 
