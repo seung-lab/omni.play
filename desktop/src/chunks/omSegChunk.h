@@ -19,7 +19,6 @@ class dataInterface;
 
 class OmSegChunk : public OmChunk {
  private:
-  OmSegmentation& vol_;
   const std::unique_ptr<om::segchunk::dataInterface> segChunkData_;
 
   std::set<om::common::SegID> modifiedSegIDs_;
