@@ -20,7 +20,7 @@ class Util {
 
     std::vector<T> ret;
 
-    for (auto& n : doc) {
+    for (auto n : doc) {
       ret.push_back(n.as<T>());
     }
 
