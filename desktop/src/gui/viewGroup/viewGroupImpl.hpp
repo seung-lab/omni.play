@@ -12,8 +12,6 @@ class viewGroupImpl : public QObject {
   Q_OBJECT;
 
  private:
-  MainWindow* const mainWindow_;
-
   OmViewGroupState& vgs_;
 
   std::unique_ptr<ViewGroupUtils> utils_;
@@ -21,10 +19,9 @@ class viewGroupImpl : public QObject {
 
  public:
   viewGroupImpl(MainWindow* mainWindow, OmViewGroupState& vgs)
-      : mainWindow_(mainWindow),
-        vgs_(vgs),
+      : vgs_(vgs),
         utils_(new ViewGroupUtils(mainWindow, vgs)),
-        mainWindowUtils_(new ViewGroupMainWindowUtils(mainWindow, vgs,
+        mainWindowUtils_(new ViewGroupMainWindowUtils(mainWindow,
                                                       utils_.get())) {
     om::connect(this, SIGNAL(signalAddView3D()), this, SLOT(addView3D()));
 

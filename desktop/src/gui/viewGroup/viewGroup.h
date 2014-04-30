@@ -31,7 +31,5 @@ class ViewGroup {
   void AddXYViewAndView3d();
 
  private:
-  MainWindow* const mainWindow_;
-
   std::unique_ptr<om::gui::viewGroupImpl> impl_;
 };
