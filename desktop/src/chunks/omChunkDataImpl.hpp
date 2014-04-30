@@ -92,7 +92,7 @@ class dataImpl : public dataInterface {
     dataAccessor<DATA> dataWrapper(ptrToChunkData_);
     DATA* data = dataWrapper.Data();
 
-    extractChanTile extractor(vol_, coord_, plane, depth);
+    extractChanTile extractor(coord_, plane, depth);
     return extractor.Extract(data);
   }
 };

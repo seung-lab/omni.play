@@ -12,15 +12,14 @@ namespace chunk {
 
 class extractChanTile {
  private:
-  OmMipVolume* const vol_;
   const om::coords::Chunk coord_;
   const om::common::ViewType plane_;
   const int depth_;
 
  public:
-  extractChanTile(OmMipVolume* vol, const om::coords::Chunk& coord,
+  extractChanTile(const om::coords::Chunk& coord,
                   const om::common::ViewType plane, int depth)
-      : vol_(vol), coord_(coord), plane_(plane), depth_(depth) {}
+      : coord_(coord), plane_(plane), depth_(depth) {}
 
   template <typename T>
   std::shared_ptr<uint8_t> Extract(T* d) {
