@@ -7,7 +7,6 @@
 #include "datalayer/hdf5/omHdf5.h"
 
 static const QString Omni_Postfix("OMNI");
-const int Omni_Segment_Version = 2;
 static int segmentFileVersion_;
 
 void OmDataArchiveSegment::ArchiveRead(const OmDataPath& path,
