@@ -50,7 +50,7 @@ class ProcessChunkVoxelBoundingData {
     if (bbox != bounds_.end()) {
       return bbox->second;
     } else {
-      return false;
+      return boost::optional<om::coords::DataBbox&>();
     }
   }
 };
