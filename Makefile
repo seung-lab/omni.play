@@ -123,11 +123,6 @@ define build_gch
 	$(CXX) -c $(CXXFLAGS) $1 -o $@ $<
 endef
 
-define make_d
-	$(MKDIR) -p $(dir $@)
-	$(CXX) $(CPP_DEPFLAGS) $1 -MF $@ $<
-endef
-
 define deps
 	$(eval $1_SOURCES = $(shell find $2/src -iname "*.cpp" 2>/dev/null | grep -v "main.cpp"))
 	$(eval $1_MAIN = $(BUILDDIR)/$2/main.o)
@@ -144,8 +139,6 @@ endef
 THRIFT_PROXY_DEPS = $(GENDIR)/server.thrift.mkcpp \
 			        $(GENDIR)/rtm.thrift.mkcpp
 
-%.d: %.cpp
-	$(call make_d, $(INCLUDES))
 %.o: %.cpp
 	$(call build_cpp, $(INCLUDES))
 %.o: %.cc
@@ -228,8 +221,6 @@ LIBS = $(EXTERNAL)/boost/lib/libboost_filesystem.a \
 
 COMMON_INCLUDES = $(INCLUDES) -include common/src/precomp.h
 
-$(BUILDDIR)/common/%.d: common/src/%.cpp common/src/precomp.h.gch 
-	$(call make_d, $(COMMON_INCLUDES))
 $(BUILDDIR)/common/%.o: common/src/%.cpp common/src/precomp.h.gch 
 	$(call build_cpp, $(COMMON_INCLUDES))
 common/src/precomp.h.gch: common/src/precomp.h
@@ -240,8 +231,6 @@ $(eval $(call deps,COMMON,common,$(YAML_DEPS)))
 
 COMMON_TEST_INCLUDES = -I$(HERE)/common/test/src
 
-$(BUILDDIR)/common/test/%.d: common/test/src/%.cpp common/src/precomp.h.gch 
-	$(call make_d, $(COMMON_INCLUDES) $(TEST_INCLUDES) $(COMMON_TEST_INCLUDES))
 $(BUILDDIR)/common/test/%.o: common/test/src/%.cpp common/src/precomp.h.gch 
 	$(call build_cpp, $(COMMON_INCLUDES) $(TEST_INCLUDES) $(COMMON_TEST_INCLUDES))
 
@@ -259,8 +248,6 @@ THRIFT_INCLUDES = $(COMMON_INCLUDES) \
 				 -I$(EXTERNAL)/thrift/include \
 				 -I$(EXTERNAL)/thrift/include/thrift \
 
-$(BUILDDIR)/thrift/%.d: $(GENDIR)/%.cpp $(THRIFT_DEPS)
-	$(call make_d, $(THRIFT_INCLUDES))
 $(BUILDDIR)/thrift/%.o: $(GENDIR)/%.cpp $(THRIFT_DEPS)
 	$(call build_cpp, $(THRIFT_INCLUDES))
 
@@ -285,8 +272,6 @@ SERVERLIBS = $(EXTERNAL)/thrift/lib/libthrift.a \
 			 $(LIBS) \
 			 -levent -lz
 
-$(BUILDDIR)/server/%.d: server/src/%.cpp $(THRIFT_PROXY_DEPS)
-	$(call make_d, $(SERVER_INCLUDES))
 $(BUILDDIR)/server/%.o: server/src/%.cpp $(THRIFT_PROXY_DEPS)
 	$(call build_cpp, $(SERVER_INCLUDES))
 
@@ -298,8 +283,6 @@ $(BINDIR)/omni.server: $(SERVER_DEPS) $(SERVER_MAIN)
 
 SERVER_TEST_INCLUDES = -I$(HERE)/server/test/src
 
-$(BUILDDIR)/server/test/%.d: server/test/src/%.cpp $(THRIFT_PROXY_DEPS)
-	$(call make_d, $(SERVER_INCLUDES) $(TEST_INCLUDES) $(SERVER_TEST_INCLUDES))
 $(BUILDDIR)/server/test/%.o: server/test/src/%.cpp $(THRIFT_PROXY_DEPS)
 	$(call build_cpp, $(SERVER_INCLUDES) $(TEST_INCLUDES) $(SERVER_TEST_INCLUDES))
 
@@ -358,8 +341,6 @@ DESKTOPLIBS = $(LIBS) \
 					$(QTLIBS)
 
 
-$(BUILDDIR)/desktop/%.d: desktop/src/%.cpp desktop/src/precomp.h.gch
-	$(call make_d, $(DESKTOP_INCLUDES))
 $(BUILDDIR)/desktop/%.o: desktop/src/%.cpp desktop/src/precomp.h.gch
 	$(call build_cpp, $(DESKTOP_INCLUDES))
 desktop/src/precomp.h.gch: desktop/src/precomp.h
@@ -390,8 +371,6 @@ $(BINDIR)/omni.desktop: $(DESKTOP_DEPS) $(DESKTOP_MAIN)
 
 DESKTOP_TEST_INCLUDES = -I$(HERE)/desktop/test/src
 
-$(BUILDDIR)/desktop/test/%.d: desktop/test/src/%.cpp desktop/src/precomp.h.gch
-	$(call make_d, $(DESKTOP_INCLUDES) $(TEST_INCLUDES) $(COMMON_TEST_INCLUDES) $(DESKTOP_TEST_INCLUDES))
 $(BUILDDIR)/desktop/test/%.o: desktop/test/src/%.cpp desktop/src/precomp.h.gch
 	$(call build_cpp, $(DESKTOP_INCLUDES) $(TEST_INCLUDES) $(COMMON_TEST_INCLUDES) $(DESKTOP_TEST_INCLUDES))
 
@@ -471,8 +450,6 @@ URTM_INCLUDES = $(SERVER_INCLUDES) \
 
 URTMLIBS = $(SERVERLIBS)
 
-$(BUILDDIR)/urtm/%.d: urtm/src/%.cpp $(THRIFT_PROXY_DEPS)
-	$(call make_d, $(URTM_INCLUDES))
 $(BUILDDIR)/urtm/%.o: urtm/src/%.cpp $(THRIFT_PROXY_DEPS)
 	$(call build_cpp, $(URTM_INCLUDES))
 
@@ -490,8 +467,6 @@ VALID_INCLUDES = $(INCLUDES) \
 
 VALIDLIBS = $(LIBS)
 
-$(BUILDDIR)/valid/%.d: valid/src/%.cpp
-	$(call make_d, $(VALID_INCLUDES))
 $(BUILDDIR)/valid/%.o: valid/src/%.cpp
 	$(call build_cpp, $(VALID_INCLUDES))
 
@@ -510,8 +485,6 @@ EXPORT_INCLUDES = $(INCLUDES) \
 EXPORTLIBS = $(LIBS) \
 					$(EXTERNAL)/boost/lib/libboost_program_options.a \
 
-$(BUILDDIR)/export/%.d: export/src/%.cpp
-	$(call make_d, $(EXPORT_INCLUDES))
 $(BUILDDIR)/export/%.o: export/src/%.cpp
 	$(call build_cpp, $(EXPORT_INCLUDES))
 
