@@ -36,7 +36,7 @@ OmSegmentCenter::computeSelectedSegmentBoundingBox(
   }
 
   if (box.isEmpty()) {
-    return false;
+    return boost::optional<om::coords::DataBbox>();
   }
 
   return box;
@@ -46,7 +46,7 @@ boost::optional<om::coords::Data> OmSegmentCenter::findCenterOfSelectedSegments(
     const SegmentationDataWrapper& sdw) {
   auto box = computeSelectedSegmentBoundingBox(sdw);
   if (!box) {
-    return false;
+    return boost::optional<om::coords::Data>();
   }
 
   return (box->getMin() + box->getMax()) / 2;
@@ -55,13 +55,13 @@ boost::optional<om::coords::Data> OmSegmentCenter::findCenterOfSelectedSegments(
 boost::optional<om::coords::Data> OmSegmentCenter::findCenterOfSelectedSegments(
     const SegmentDataWrapper& sdw) {
   if (!sdw.IsSegmentValid()) {
-    return false;
+    return boost::optional<om::coords::Data>();
   }
 
   OmSegment* seg = sdw.GetSegment();
   const auto box = seg->BoundingBox();
   if (box.isEmpty()) {
-    return false;
+    return boost::optional<om::coords::Data>();
   }
 
   return (box.getMin() + box.getMax()) / 2;

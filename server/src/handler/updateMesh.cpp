@@ -23,12 +23,11 @@ typedef std::function<MesherPtr()> ConnectionFunc;
 
 class Sender : public boost::static_visitor<> {
  public:
-  Sender(const volume::Segmentation& v, const coords::Data& min,
+  Sender(const coords::Data& min,
          const coords::Data& max, ConnectionFunc connect,
          const std::set<uint32_t> addedSegIds,
          const std::set<uint32_t> modifiedSegIds, int32_t segId)
-      : v_(v),
-        min_(min),
+      : min_(min),
         max_(max),
         connect_(connect),
         addedSegIds_(addedSegIds),
@@ -114,7 +113,6 @@ class Sender : public boost::static_visitor<> {
   }
 
  private:
-  const volume::Segmentation& v_;
   const coords::Data& min_;
   const coords::Data& max_;
   ConnectionFunc connect_;
@@ -170,7 +168,7 @@ bool modify_global_mesh_data(ConnectionFunc c, const volume::Segmentation& vol,
     min.z = std::max(min.z, TRIM);
 
     boost::apply_visitor(
-        Sender(vol, min, max, c, addedSegIds, modifiedSegIds, segId),
+        Sender(min, max, c, addedSegIds, modifiedSegIds, segId),
         *vol.ChunkDS().Get(cc));
   }
   return true;

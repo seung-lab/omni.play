@@ -20,23 +20,19 @@ namespace v3d {
 
 class Drawer {
  private:
-  prefs::View3d& prefs_;
   Widgets& widgets_;
   DrawStatus& drawStatus_;
   Camera& camera_;
-  OmViewGroupState& vgs_;
   const om::coords::VolumeSystem& system_;
   std::vector<std::unique_ptr<MeshDrawInfo>> drawInfos_;
 
  public:
-  Drawer(prefs::View3d& prefs, Widgets& widgets, DrawStatus& drawStatus,
+  Drawer(Widgets& widgets, DrawStatus& drawStatus,
          Camera& camera, const std::vector<OmSegmentation*>& segmentations,
          OmViewGroupState& vgs, const om::coords::VolumeSystem& system)
-      : prefs_(prefs),
-        widgets_(widgets),
+      : widgets_(widgets),
         drawStatus_(drawStatus),
         camera_(camera),
-        vgs_(vgs),
         system_(system) {
     for (auto* vol : segmentations) {
       drawInfos_.emplace_back(std::make_unique<MeshDrawInfo>(*vol, vgs));

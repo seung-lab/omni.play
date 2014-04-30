@@ -39,7 +39,7 @@ class OmSegmentListGlobal {
   boost::optional<SegInfo> Get(const om::common::SegID segID) {
     if (segID >= list_.size()) {
       log_debugs << "segment " << segID << "not found";
-      return false;
+      return boost::optional<SegInfo>();
     }
     return boost::optional<SegInfo>(list_[segID]);
   }

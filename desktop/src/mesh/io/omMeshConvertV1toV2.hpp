@@ -9,7 +9,6 @@ class OmMeshConvertV1toV2 {
  private:
   OmMeshManager* const meshManager_;
   OmSegmentation* const segmentation_;
-  const double threshold_;
 
   std::unique_ptr<OmMeshReaderV1> hdf5Reader_;
   std::unique_ptr<OmMeshReaderV2> meshReader_;
@@ -21,7 +20,6 @@ class OmMeshConvertV1toV2 {
   OmMeshConvertV1toV2(OmMeshManager* meshManager)
       : meshManager_(meshManager),
         segmentation_(meshManager_->GetSegmentation()),
-        threshold_(1),
         hdf5Reader_(new OmMeshReaderV1(segmentation_)),
         meshReader_(new OmMeshReaderV2(meshManager_)),
         meshWriter_(new OmMeshWriterV2(meshManager_)) {}

@@ -6,7 +6,6 @@
 class OmMeshMetadata {
  private:
   OmSegmentation *const segmentation_;
-  const double threshold_;
   const QString fnp_;
 
   int fileVersion_;
@@ -20,9 +19,8 @@ class OmMeshMetadata {
   zi::spinlock lock_;
 
  public:
-  OmMeshMetadata(OmSegmentation *segmentation, const double threshold)
+  OmMeshMetadata(OmSegmentation *segmentation)
       : segmentation_(segmentation),
-        threshold_(threshold),
         fnp_(filePath()),
         fileVersion_(1),
         meshBuilt_(false),

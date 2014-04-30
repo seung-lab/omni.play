@@ -10,14 +10,13 @@
 
 class OmOpenGLTileDrawer {
  private:
-  const int allowedDrawTimeMS_;
 
   QGLContext const* context_;
   OmTimer elapsed_;
 
  public:
   OmOpenGLTileDrawer()
-      : allowedDrawTimeMS_(20)  // 30 fps goal
+      // : allowedDrawTimeMS_(20)  // 30 fps goal
   {}
 
   /**

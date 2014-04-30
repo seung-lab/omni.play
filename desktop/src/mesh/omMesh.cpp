@@ -9,11 +9,9 @@
 
 static const GLuint NULL_VBO_ID = 0;
 
-OmMesh::OmMesh(OmSegmentation* seg, const om::coords::Mesh& coord,
-               OmMeshManager* pMipMeshManager, OmMeshCache* cache)
-    : segmentation_(seg),
-      cache_(cache),
-      meshMan_(pMipMeshManager),
+OmMesh::OmMesh(const om::coords::Mesh& coord,
+               OmMeshManager* pMipMeshManager)
+    : meshMan_(pMipMeshManager),
       meshCoord_(coord),
       numBytes_(0),
       hasData_(false) {

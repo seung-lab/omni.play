@@ -15,7 +15,6 @@ class OmMeshChunkDataWriterV2 {
  private:
   OmSegmentation* const vol_;
   const om::coords::Chunk& coord_;
-  const double threshold_;
   const QString fnp_;
 
   int64_t curEndOfFile_;
@@ -27,7 +26,6 @@ class OmMeshChunkDataWriterV2 {
                           const double threshold)
       : vol_(seg),
         coord_(coord),
-        threshold_(threshold),
         fnp_(filePath()),
         curEndOfFile_(0) {
     openOrCreateFile();

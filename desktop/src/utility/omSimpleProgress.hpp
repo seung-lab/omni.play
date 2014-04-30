@@ -11,14 +11,13 @@ class OmSimpleProgress {
   const std::string title_;
 
   LockedInt32 cur_;
-  size_t lineLen_;
 
   om::thread::ThreadPool threadPool_;
   OmTimer timer_;
 
  public:
   OmSimpleProgress(const int max, const std::string& title)
-      : max_(max), title_(title), lineLen_(0) {
+      : max_(max), title_(title) {
     cur_.set(0);
 
     threadPool_.start(1);

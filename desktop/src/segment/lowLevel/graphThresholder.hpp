@@ -141,11 +141,11 @@ class GraphThresholder {
     const om::common::SegID parentRootID = Root(parentID);
 
     if (childRootID == parentRootID) {
-      return false;
+      return boost::optional<TaskArgs>();
     }
 
     if (!validGroupNum_.InSameValidGroup(childRootID, parentID)) {
-      return false;
+      return boost::optional<TaskArgs>();
     }
 
     graph_.Join(childRootID, parentID);

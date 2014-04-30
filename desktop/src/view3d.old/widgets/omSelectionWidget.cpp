@@ -4,8 +4,6 @@
 #include "mesh/omVolumeCuller.h"
 #include "utility/glInclude.h"
 
-static const float TEXT_COLOR[4] = { 1, 1, 1, 0.8 };
-
 OmSelectionWidget::OmSelectionWidget(OmView3d* view3d)
     : OmView3dWidget(view3d) {}
 ;

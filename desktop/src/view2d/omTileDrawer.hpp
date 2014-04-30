@@ -20,7 +20,6 @@ class OmTileDrawer {
  public:
   OmTileDrawer(OmView2dState* state, const om::common::ViewType viewType)
       : state_(state),
-        viewType_(viewType),
         blockingRedraw_(false),
         tileCount_(0),
         tileCountIncomplete_(0),
@@ -62,7 +61,6 @@ class OmTileDrawer {
 
  private:
   OmView2dState* state_;
-  const om::common::ViewType viewType_;
 
   bool blockingRedraw_;
 

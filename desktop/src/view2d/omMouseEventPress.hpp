@@ -319,7 +319,7 @@ class OmMouseEventPress {
   }
 
   void doFill(const SegmentDataWrapper sdw) {
-    OmFillTool fillTool(sdw, state_->getViewType());
+    OmFillTool fillTool(sdw);
     fillTool.Fill(dataClickPoint_);
   }
 

@@ -20,12 +20,12 @@ struct OmDimension {
     return OmDimension<D + 1>(*this, idx);
   }
 
-  template <int I>
-  inline int get() {
-    assert(I < D && I >= 0);
-    if (I == D - 1) return dimValue_;
-    return subDimension_.get<I>();
-  }
+  // template <int I>
+  // inline int get() {
+  //   assert(I < D && I >= 0);
+  //   if (I == D - 1) return dimValue_;
+  //   return subDimension_.get<I>();
+  // }
 
   template <int I>
   inline void set(int x) {
@@ -37,15 +37,15 @@ struct OmDimension {
     }
   }
 
-  template <int I>
-  OmDimension<D - 1> stripDimension() {
-    assert(I < D && I >= 0);
-    if (I == D - 1) {
-      return subDimension_;
-    } else {
-      return subDimension_.stripDimension<I>()[dimValue_];
-    }
-  }
+  // template <int I>
+  // OmDimension<D - 1> stripDimension() {
+  //   assert(I < D && I >= 0);
+  //   if (I == D - 1) {
+  //     return subDimension_;
+  //   } else {
+  //     return subDimension_.stripDimension<I>()[dimValue_];
+  //   }
+  // }
 
   template <int I, int X>
   friend struct MakeBoostRange;

@@ -21,8 +21,7 @@ class QGLContext;
 
 class OmMesh {
  public:
-  OmMesh(OmSegmentation*, const om::coords::Mesh&, OmMeshManager*,
-         OmMeshCache*);
+  OmMesh(const om::coords::Mesh&, OmMeshManager*);
 
   virtual ~OmMesh();
 
@@ -36,8 +35,6 @@ class OmMesh {
   OmDataForMeshLoad* Data() { return data_.get(); }
 
  private:
-  OmSegmentation* const segmentation_;
-  OmMeshCache* const cache_;
   OmMeshManager* const meshMan_;
 
   const om::coords::Mesh meshCoord_;

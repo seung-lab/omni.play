@@ -7,14 +7,13 @@
 
 class OmMouseEventRelease {
  private:
-  OmView2d* const v2d_;
   OmView2dState* const state_;
 
   om::coords::Global dataClickPoint_;
 
  public:
-  OmMouseEventRelease(OmView2d* v2d, OmView2dState* state)
-      : v2d_(v2d), state_(state) {}
+  OmMouseEventRelease(OmView2dState* state)
+      : state_(state) {}
 
   void Release(QMouseEvent* event) {
     setState(event);

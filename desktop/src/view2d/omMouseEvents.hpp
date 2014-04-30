@@ -18,7 +18,7 @@ class OmMouseEvents {
   OmMouseEvents(OmView2d* v2d, OmView2dState* state)
       : move_(new OmMouseEventMove(v2d, state)),
         press_(new OmMouseEventPress(v2d, state)),
-        release_(new OmMouseEventRelease(v2d, state)),
+        release_(new OmMouseEventRelease(state)),
         wheel_(new OmMouseEventWheel(v2d, state)) {}
 
   void Press(QMouseEvent* event) { press_->Press(event); }

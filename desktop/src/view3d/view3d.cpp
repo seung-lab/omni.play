@@ -43,7 +43,7 @@ View3d::View3d(QWidget* parent, OmViewGroupState& vgs)
 
   const auto& primary_coords = vgs.Segmentation().GetSegmentation()->Coords();
 
-  drawer_.reset(new Drawer(*prefs_, *widgets_, *drawStatus_, *camera_,
+  drawer_.reset(new Drawer(*widgets_, *drawStatus_, *camera_,
                            segmentations_, vgs, primary_coords));
 
   // set keyboard policy

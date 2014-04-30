@@ -15,7 +15,7 @@ OmMeshManager::OmMeshManager(OmSegmentation* segmentation,
       threshold_(threshold),
       dataCache_(new OmMeshCache(this)),
       filePtrCache_(new OmMeshFilePtrCache(segmentation_, threshold)),
-      metadata_(new OmMeshMetadata(segmentation_, threshold_)) {}
+      metadata_(new OmMeshMetadata(segmentation_)) {}
 
 OmMeshManager::~OmMeshManager() {}
 
@@ -76,7 +76,7 @@ void OmMeshManager::inferMeshMetadata() {
 }
 
 OmMeshPtr OmMeshManager::Produce(const om::coords::Mesh& coord) {
-  return std::make_shared<OmMesh>(segmentation_, coord, this, dataCache_.get());
+  return std::make_shared<OmMesh>(coord, this);
 }
 
 void OmMeshManager::GetMesh(OmMeshPtr& ptr, const om::coords::Mesh& coord,

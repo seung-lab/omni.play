@@ -11,7 +11,6 @@ class ViewGroupMainWindowUtils {
  private:
   MainWindow* const mainWindow_;
 
-  OmViewGroupState& vgs_;
   ViewGroupUtils* const utils_;
 
   static const om::common::ViewType upperLeft_ = om::common::XY_VIEW;
@@ -19,9 +18,9 @@ class ViewGroupMainWindowUtils {
   static const om::common::ViewType lowerLeft_ = om::common::XZ_VIEW;
 
  public:
-  ViewGroupMainWindowUtils(MainWindow* mainWindow, OmViewGroupState& vgs,
+  ViewGroupMainWindowUtils(MainWindow* mainWindow,
                            ViewGroupUtils* utils)
-      : mainWindow_(mainWindow), vgs_(vgs), utils_(utils) {}
+      : mainWindow_(mainWindow), utils_(utils) {}
 
   void InsertDockIntoGroup2View(ViewGroupWidgetInfo& vgw,
                                 const om::common::ViewType viewType) {

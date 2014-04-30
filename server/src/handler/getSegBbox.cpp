@@ -32,7 +32,7 @@ boost::optional<server::segData> get(const volume::Segmentation& vol,
     return out;
   }
   catch (Exception e) {
-    return false;
+    return boost::optional<server::segData>();
   }
 }
 

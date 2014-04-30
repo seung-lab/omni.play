@@ -115,7 +115,7 @@ boost::optional<std::string> OmSegmentsImpl::IsSegmentSplittable(
     return std::string("segments are valid");
   }
 
-  return false;
+  return boost::optional<std::string>();
 }
 
 boost::optional<std::string> OmSegmentsImpl::IsSegmentCuttable(OmSegment* seg) {
@@ -123,7 +123,7 @@ boost::optional<std::string> OmSegmentsImpl::IsSegmentCuttable(OmSegment* seg) {
     return std::string("segment is valid");
   }
 
-  return false;
+  return boost::optional<std::string>();
 }
 
 om::segment::UserEdge OmSegmentsImpl::splitChildFromParentNoTest(
@@ -313,7 +313,7 @@ om::common::SegIDSet OmSegmentsImpl::UnJoinTheseSegments(
 }
 
 void OmSegmentsImpl::refreshTree() {
-  if (!mst_.size() > 0) {
+  if (mst_.size() <= 0) {
     log_errors << "no mst found...";
   }
 

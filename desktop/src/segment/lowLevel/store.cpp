@@ -28,7 +28,7 @@ OmSegment* Store::AddSegment(const common::SegID value) {
   zi::guard g(pagesLock_);
   if (value < data_.size()) {
     OmSegment* seg = GetSegment(value);
-    if (seg && !seg->value() == value) {
+    if (seg && seg->value() != value) {
       data_[value].value = value;
     }
     return seg;

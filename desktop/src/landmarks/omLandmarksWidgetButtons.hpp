@@ -16,13 +16,11 @@ namespace landmarks {
 
 class ClearButton : public OmButton<om::landmarks::widget> {
  private:
-  widget* const widget_;
   dialog* const dialog_;
 
  public:
   ClearButton(widget* widget, dialog* dialog)
       : OmButton<om::landmarks::widget>(widget, "Clear", "Clear", false),
-        widget_(widget),
         dialog_(dialog) {}
 
  private:
@@ -31,7 +29,6 @@ class ClearButton : public OmButton<om::landmarks::widget> {
 
 class LongRangeConnectionButton : public OmButton<om::landmarks::widget> {
  private:
-  widget* const widget_;
   dialog* const dialog_;
   const std::vector<sdwAndPt> pts_;
 
@@ -40,7 +37,6 @@ class LongRangeConnectionButton : public OmButton<om::landmarks::widget> {
                             const std::vector<sdwAndPt>& pts)
       : OmButton<om::landmarks::widget>(widget, "Make Long Range Connection",
                                         "Make Long Range Connection", false),
-        widget_(widget),
         dialog_(dialog),
         pts_(pts) {}
 

@@ -18,8 +18,7 @@ class MeshTest {
         threshold_(threshold),
         meshManager_(segmentation->MeshManager(threshold)),
         meshWriter_(new OmMeshWriterV2(meshManager_)),
-        numParallelChunks_(numberParallelChunks()),
-        numThreadsPerChunk_(zi::system::cpu_count / 2) {}
+        numParallelChunks_(numberParallelChunks()) {}
 
   ~MeshTest() {}
 
@@ -39,7 +38,6 @@ class MeshTest {
   std::unique_ptr<OmMeshWriterV2> meshWriter_;
 
   const int numParallelChunks_;
-  const int numThreadsPerChunk_;
 
   void init() {
     zi::task_manager::simple manager(numParallelChunks_);
