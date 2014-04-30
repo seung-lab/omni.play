@@ -16,8 +16,6 @@ class PageExport : public QWidget {
   const SegmentationDataWrapper& GetSDW() const { return sdw_; }
 
  private:
-  QPlainTextEdit* notesEdit_;
-
   QGroupBox* makeActionsBox();
 };
 
