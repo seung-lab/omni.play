@@ -22,6 +22,7 @@ OmSegmentLists::OmSegmentLists(om::volume::MetadataManager& meta,
 OmSegmentLists::~OmSegmentLists() {}
 
 void OmSegmentLists::Resize(size_t size) { segmentListsLL_->Resize(size); }
+void OmSegmentLists::AddSegment(OmSegment* seg) { segmentListsLL_->AddSegment(seg); }
 
 void OmSegmentLists::TouchRecent(OmSegment* seg) {
   // recent is internally locked

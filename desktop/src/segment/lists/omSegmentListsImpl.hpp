@@ -85,7 +85,7 @@ class OmSegmentListsImpl {
     const om::common::SegID segID = seg->value();
 
     if (segID >= list_.size()) {
-      list_.resize(segID + 10);
+      list_.resize(segID + 10, SegInfo{nullptr, 0, 0, 0});
     }
 
     addSegment(seg);

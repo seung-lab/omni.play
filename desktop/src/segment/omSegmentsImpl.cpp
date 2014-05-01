@@ -42,8 +42,7 @@ OmSegment* OmSegmentsImpl::AddSegment() {
 
   assert(newValue);
 
-  OmSegment* newSeg = AddSegment(newValue);
-  return newSeg;
+  return AddSegment(newValue);
 }
 
 OmSegment* OmSegmentsImpl::AddSegment(const om::common::SegID value) {
@@ -56,8 +55,8 @@ OmSegment* OmSegmentsImpl::AddSegment(const om::common::SegID value) {
   if (value > meta_.maxSegments()) {
     graph_->Resize(value);
     valid_.Resize(value);
-    segmentLists_->Resize(value);
     meta_.UpdateMaxSegments(value);
+    segmentLists_->AddSegment(seg);
   }
 
   return seg;

@@ -51,8 +51,8 @@ bool OmSegmentListWidget::populate(const bool doScrollToSelectedSegment,
 
   assert(100 >= segIDs->segs.size() && "too many segments returned");
 
-  FOR_EACH(iter, segIDs->segs) {
-    OmSegment* seg = iter->seg;
+  for(auto& iter : segIDs->segs) {
+    OmSegment* seg = iter.seg;
     if (!seg || !seg->value()) {
       log_errors << "Invalid segment in SegInfo for " << eventSenderName();
       continue;
@@ -66,11 +66,11 @@ bool OmSegmentListWidget::populate(const bool doScrollToSelectedSegment,
     SegmentDataWrapper segDW(sdw, seg->value());
     row->setData(USER_DATA_COL, Qt::UserRole, qVariantFromValue(segDW));
 
-    const uint32_t numPieces = iter->numChildren + 1;
+    const uint32_t numPieces = iter.numChildren + 1;
     row->setText(NUM_PIECES_COL, OmStringHelpers::HumanizeNumQT(numPieces));
     row->setTextAlignment(NUM_PIECES_COL, Qt::AlignHCenter);
 
-    const int64_t sizeWithChildren = iter->sizeIncludingChildren;
+    const int64_t sizeWithChildren = iter.sizeIncludingChildren;
     row->setText(SIZE_COL, OmStringHelpers::HumanizeNumQT(sizeWithChildren));
     row->setTextAlignment(SIZE_COL, Qt::AlignHCenter);
 

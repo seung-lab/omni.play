@@ -30,6 +30,7 @@ class OmSegmentLists {
 
   void RefreshGUIlists();
   void Resize(size_t size);
+  void AddSegment(OmSegment* seg);
 
   void TouchRecent(OmSegment* seg);
 
