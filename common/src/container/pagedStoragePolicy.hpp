@@ -2,6 +2,7 @@
 
 #include "datalayer/dataSource.hpp"
 #include "datalayer/vector.hpp"
+#include "utility/malloc.hpp"
 
 namespace om {
 namespace data {
@@ -33,6 +34,16 @@ class PagedStoragePolicy {
       if (newPageSize != pages_[page]->Values.size()) {
         pages_[page]->Values.resize(newPageSize, val);
       }
+    }
+  }
+
+  void reserve(index_type n) {
+    auto reservePages = (n / pageSize_) + 1;
+    pages_.resize(reservePages);
+    for (int page = 0; page < reservePages; ++page) {
+      auto newPageSize =
+          (page == reservePages - 1) ? size_ % pageSize_ : pageSize_;
+      pages_[page]->Values.reserve(newPageSize);
     }
   }
 

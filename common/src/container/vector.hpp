@@ -2,74 +2,10 @@
 
 #include "precomp.h"
 #include "common/indexedIterator.hpp"
+#include "container/policies.hpp"
 
 namespace om {
 namespace data {
-
-// Async Policies //////////////////////////////
-
-class NoAsyncPolicy {
- protected:
-  template <typename TRet>
-  TRet asnyc_do(std::function<TRet()> f) {
-    return f();
-  }
-
-  template <typename TRet, typename TArg, typename InputIterator>
-  TRet asnyc_do(std::function<TRet(TArg)> f, InputIterator begin,
-                InputIterator end) {
-    for (; begin != end; ++begin) return f(*begin);
-  }
-};
-
-// Locking Policies //////////////////////////////
-
-class NoLockingPolicy {
- protected:
-  void lock() const {}
-  void unlock() const {}
-};
-
-class ZiLockingPolicy {
- protected:
-  void lock() const { return mutex_.lock(); }
-  void unlock() const { return mutex_.unlock(); }
-  mutable zi::mutex mutex_;
-};
-
-// Exception Policies //////////////////////////////
-
-template <typename TKey, typename TValue>
-class NoThrowPolicy {
- protected:
-  void throw_invalid_index(TKey idx) const {}
-};
-
-template <typename TKey, typename TValue>
-class ThrowPolicy {
- protected:
-  void throw_invalid_index(TKey idx) const {
-    throw ArgException("Invalid Index", idx);
-  }
-};
-
-// Storage Policies ////////////////////////////////
-
-template <typename T>
-class VectorBackedStore {
- public:
-  size_t size() const { return vec_.size(); }
-  void resize(size_t n, const T& val) { vec_.resize(n, val); }
-  T& doGet(size_t i) { return vec_[i]; }
-  const T& doGet(size_t i) const { return vec_[i]; }
-
-  void flush() {}
-
- private:
-  std::vector<T> vec_;
-};
-
-// Vector Type  /////////////////////////////////
 
 template <typename T, typename StoragePolicy = VectorBackedStore<T>,
           typename AsyncPolicy = NoAsyncPolicy,
@@ -86,22 +22,20 @@ class vector : public LockingPolicy,
   vector(StoragePolicy&& store = StoragePolicy()) : store_(store) {}
 
   virtual T& operator[](size_t idx) {
-    LockingPolicy::lock();
+    lock_guard<this_t> g(*this);
     if (idx >= size()) {
       ExceptionPolicy::throw_invalid_index(idx);
     }
     auto& ret = store_.doGet(idx);
-    LockingPolicy::unlock();
     return ret;
   }
 
   virtual const T& operator[](size_t idx) const {
-    LockingPolicy::lock();
+    lock_guard<this_t> g(*this);
     if (idx >= size()) {
       ExceptionPolicy::throw_invalid_index(idx);
     }
     auto& ret = store_.doGet(idx);
-    LockingPolicy::unlock();
     return ret;
   }
 
@@ -126,45 +60,40 @@ class vector : public LockingPolicy,
   virtual size_t size() const noexcept { return store_.size(); }
   virtual void resize(size_t n) { resize(n, T()); }
   virtual void resize(size_t n, const T& val) {
-    LockingPolicy::lock();
+    lock_guard<this_t> g(*this);
     store_.resize(n, val);
-    LockingPolicy::unlock();
   }
+  virtual void reserve(size_t n) { store_.reserve(n); }
   virtual void push_back(const T& val) {
-    LockingPolicy::lock();
+    lock_guard<this_t> g(*this);
     store_.resize(store_.size() + 1, val);
-    LockingPolicy::unlock();
   }
 
   virtual void push_back(T&& val) {
-    LockingPolicy::lock();
+    lock_guard<this_t> g(*this);
     store_.resize(store_.size() + 1, val);
-    LockingPolicy::unlock();
   }
 
   virtual void pop_back() { resize(size() - 1); }
   virtual void clear() noexcept { resize(0); }
   virtual void flush() {
-    LockingPolicy::lock();
+    lock_guard<this_t> g(*this);
     store_.flush();
-    LockingPolicy::unlock();
   }
 
   virtual iterator erase(const_iterator position) {
-    LockingPolicy::lock();
+    lock_guard<this_t> g(*this);
     auto pos = begin() + std::distance(cbegin(), position);
     std::copy(position + 1, cend(), pos);
     store_.resize(store_.size() - 1, T());
-    LockingPolicy::unlock();
     return pos;
   }
 
   virtual iterator erase(const_iterator first, const_iterator last) {
-    LockingPolicy::lock();
+    lock_guard<this_t> g(*this);
     auto pos = begin() + std::distance(cbegin(), first);
     std::copy(last + 1, cend(), pos);
     store_.resize(store_.size() - std::distance(first, last), T());
-    LockingPolicy::unlock();
     return pos;
   }
 
@@ -179,8 +108,10 @@ class vector : public LockingPolicy,
   // virtual iterator insert(const_iterator position, initializer_list<T> il) {}
   // template <class... Args>
   // virtual iterator emplace(const_iterator position, Args&&... args) {}
-  // template <class... Args>
-  // virtual void emplace_back(Args&&... args) {}
+  template <class... Args>
+  void emplace_back(Args&&... args) {
+    push_back(T(std::forward<Args>(args)...));
+  }
 
  private:
   StoragePolicy store_;
