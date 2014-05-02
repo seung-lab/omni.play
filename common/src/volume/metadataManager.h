@@ -155,6 +155,12 @@ class MetadataManager {
     throwIfInvalid();
     meta_->NumSegments = numSegments;
   }
+  uint32_t NumSegmentsInc() {
+    zi::guard g(lock_);
+    throwIfInvalid();
+    meta_->NumSegments++;
+    return meta_->NumSegments;
+  }
 
   uint32_t maxSegments() const {
     zi::guard g(lock_);

@@ -28,9 +28,8 @@ OmSegmentsImpl::OmSegmentsImpl(SegDataVector& data, SegListDataVector& listData,
       graph_(new Graph(meta.maxSegments())),
       segmentLists_(new OmSegmentLists(meta_, *store_, sdw)),
       selection_(new om::segment::Selection(*graph_, *store_, *segmentLists_)),
-      thresholder_(new om::segment::GraphThresholder(*graph_, valid,
-                                                     *segmentLists_, *store_,
-                                                     mst_)) {
+      thresholder_(new om::segment::GraphThresholder(
+          *graph_, valid, *segmentLists_, *store_, mst_)) {
 
   thresholder_->SetGlobalThreshold();
 }
@@ -38,11 +37,17 @@ OmSegmentsImpl::OmSegmentsImpl(SegDataVector& data, SegListDataVector& listData,
 OmSegmentsImpl::~OmSegmentsImpl() {}
 
 OmSegment* OmSegmentsImpl::AddSegment() {
-  const auto newValue = meta_.MaxSegmentsInc();
+  // FIXME: This is bad practice and wrong, but this should be the only place we
+  // add Segments and it's locked from a above so we should be okay.
+  const auto newValue = meta_.maxSegments() + 1;
 
   assert(newValue);
-
-  return AddSegment(newValue);
+  log_debugs << "Adding Segment " << newValue;
+  auto seg = AddSegment(newValue);
+  if (seg) {
+    meta_.MaxSegmentsInc();
+  }
+  return seg;
 }
 
 OmSegment* OmSegmentsImpl::AddSegment(const om::common::SegID value) {
@@ -51,12 +56,15 @@ OmSegment* OmSegmentsImpl::AddSegment(const om::common::SegID value) {
   }
 
   OmSegment* seg = store_->AddSegment(value);
+  if (!seg) {
+    return nullptr;
+  }
+  meta_.NumSegmentsInc();
   seg->SetColor(OmProject::Globals().RandColorFile().GetRandomColor(value));
+  segmentLists_->AddSegment(seg);
   if (value > meta_.maxSegments()) {
     graph_->Resize(value);
     valid_.Resize(value);
-    meta_.UpdateMaxSegments(value);
-    segmentLists_->AddSegment(seg);
   }
 
   return seg;

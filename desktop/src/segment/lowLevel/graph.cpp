@@ -28,9 +28,9 @@ common::SegID Graph::Root(const common::SegID segID) {
 }
 
 void Graph::Resize(common::SegID newMax) {
-  forest_->Resize(newMax);
+  forest_->Resize(newMax + 1);
   // cellForest_->Resize(newMax);
-  children_->Resize(newMax);
+  children_->Resize(newMax + 1);
 }
 
 void Graph::SetBatch(bool batchMode) { forest_->SetBatch(batchMode); }
