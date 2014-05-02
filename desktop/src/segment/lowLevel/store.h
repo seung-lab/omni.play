@@ -1,13 +1,10 @@
 #pragma once
 
 #include "common/common.h"
-#include <zi/mutex.hpp>
 #include "segment/dataSources.hpp"
-
-#include <unordered_map>
+#include "container/pagedVector.hpp"
 
 class OmSegment;
-class OmSegments;
 
 namespace om {
 namespace segment {
@@ -28,11 +25,7 @@ class Store {
   SegListDataVector& listData_;
   const coords::VolumeSystem& system_;
 
-  // FIXME: this is broken for adding new segments
-  // segments MUST be paged w/ fixed page sizes
-  // else, when adding new segments, a vector resize operation
-  // could occur, and the addresses of the segments could change!
-  std::vector<OmSegment> segments_;
+  data::paged_dynarray<OmSegment> segments_;
 
   zi::spinlock pagesLock_;
 };

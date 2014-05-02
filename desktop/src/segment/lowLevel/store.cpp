@@ -10,9 +10,9 @@ Store::Store(SegDataVector& data, SegListDataVector& listData,
              const coords::VolumeSystem& system, common::SegID maxSegID)
     : data_(data), listData_(listData), system_(system) {
 
-  segments_.reserve(data.size());
+  segments_.resize(data.size());
   for (int i = 0; i < data_.size(); ++i) {
-    segments_.emplace_back(data_[i], listData_[i], system_);
+    segments_[i] = OmSegment(data_[i], listData_[i], system_);
   }
 }
 
@@ -42,9 +42,9 @@ OmSegment* Store::AddSegment(const common::SegID value) {
 
   listData_.resize(newSize);
 
-  segments_.reserve(newSize);
+  segments_.resize(newSize);
   for (int i = oldSize; i < data_.size(); ++i) {
-    segments_.emplace_back(data_[i], listData_[i], system_);
+    segments_[i] = OmSegment(data_[i], listData_[i], system_);
   }
   return GetSegment(value);
 }
