@@ -2,7 +2,6 @@
 #include "precomp.h"
 
 #include "chunks/omRawChunk.hpp"
-#include "chunks/omProcessChunkVoxelBoundingData.hpp"
 #include "chunks/omExtractSegTile.hpp"
 #include "chunks/omSegChunk.h"
 #include "segment/omSegments.h"
@@ -69,14 +68,16 @@ class dataImpl : public dataInterface {
   }
 
   void RefreshBoundingData(OmSegments& segments) {
-    ProcessChunkVoxelBoundingData p(chunk_, segments);
+    OmProcessSegmentationChunk p(&chunk_, false, &segments);
 
     dataAccessor<DATA> dataWrapper(ptrToChunkData_);
     DATA* data = dataWrapper.Data();
 
     OmChunkVoxelWalker iter(128);
+
     for (iter.begin(); iter < iter.end(); ++iter) {
       const om::common::SegID val = static_cast<om::common::SegID>(*data++);
+
       if (val) {
         p.processVoxel(val, *iter);
       }

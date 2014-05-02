@@ -9,7 +9,7 @@
 #include "volume/volume.h"
 #include "volume/segmentation.h"
 #include "volume/metadataManager.h"
-#include "datalayer/pagedVector.hpp"
+#include "container/pagedVector.hpp"
 
 #include "boost/format.hpp"
 
