@@ -15,12 +15,12 @@ enum class ZeroFill {
 template <typename T>
 class Malloc {
  public:
-  static std::shared_ptr<T> inline NumBytesZero(const uint64_t numBytes) {
+  static std::shared_ptr<T> NumBytesZero(const uint64_t numBytes) {
     return NumBytes(numBytes, ZeroFill::ZERO);
   }
 
-  static std::shared_ptr<T> inline NumBytes(const uint64_t numBytes,
-                                            const ZeroFill zero) {
+  static std::shared_ptr<T> NumBytes(const uint64_t numBytes,
+                                     const ZeroFill zero) {
     T* rawPtr = static_cast<T*>(malloc(numBytes));
     if (!rawPtr) {
 
@@ -33,33 +33,32 @@ class Malloc {
     return WrapMalloc(rawPtr);
   }
 
-  static std::shared_ptr<T> inline NumElementsZero(const uint64_t numElements) {
+  static std::shared_ptr<T> NumElementsZero(const uint64_t numElements) {
     return NumElements(numElements, ZeroFill::ZERO);
   }
 
-  static std::shared_ptr<T> inline NumElementsDontZero(
-      const uint64_t numElements) {
+  static std::shared_ptr<T> NumElementsDontZero(const uint64_t numElements) {
     return NumElements(numElements, ZeroFill::DONT);
   }
 
-  static std::shared_ptr<T> inline NumElements(const uint64_t numElements,
-                                               const ZeroFill zero) {
+  static std::shared_ptr<T> NumElements(const uint64_t numElements,
+                                        const ZeroFill zero) {
     return NumBytes(numElements * sizeof(T), zero);
   }
 
-  static std::shared_ptr<T> inline NewNumElements(const uint64_t numElements) {
+  static std::shared_ptr<T> NewNumElements(const uint64_t numElements) {
     return WrapNewArray(new T[numElements]);
   }
 
-  static std::shared_ptr<T> inline WrapNewArray(T* rawPtr) {
+  static std::shared_ptr<T> WrapNewArray(T* rawPtr) {
     return std::shared_ptr<T>(rawPtr, deallocatorNewArray());
   }
 
-  static std::shared_ptr<T> inline WrapNoFree(T* rawPtr) {
+  static std::shared_ptr<T> WrapNoFree(T* rawPtr) {
     return std::shared_ptr<T>(rawPtr, deallocatorDoNothing());
   }
 
-  static std::shared_ptr<T> inline WrapMalloc(T* rawPtr) {
+  static std::shared_ptr<T> WrapMalloc(T* rawPtr) {
     return std::shared_ptr<T>(rawPtr, deallocatorMalloc());
   }
 
