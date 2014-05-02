@@ -66,6 +66,8 @@ class AddSegmentButton : public OmButton<QWidget> {
     OmSegmentSelector sel(sdw, this, "addSegmentButton");
     sel.selectJustThisSegment(newSeg->value(), true);
     sel.sendEvent();
+    SegmentDataWrapper segWrapper(sdw, newSeg->value());
+    OmSegmentSelected::SetSegmentForPainting(segWrapper);
   }
 };
 
