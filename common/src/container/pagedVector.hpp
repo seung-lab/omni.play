@@ -1,6 +1,7 @@
 #pragma once
 
 #include "container/vector.hpp"
+#include "container/dynarray.hpp"
 #include "container/pagedStoragePolicy.hpp"
 
 namespace om {
@@ -14,5 +15,9 @@ class PagedVector : public vector<T, PagedStoragePolicy<T>> {
       : vector<T, PagedStoragePolicy<T>>(
             PagedStoragePolicy<T>(pagedDS, pageSize, size)) {}
 };
+
+template <typename T>
+using paged_dynarray =
+    typename data::dynarray<T, data::MemPagedStoragePolicy<T, 100>>;
 }
 }  // namespace om::datalayer::

@@ -14,6 +14,7 @@ class QFileStoragePolicy {
 
   size_t size() const { return data_.size(); }
   void resize(size_t n, const T& val) { data_.resize(n, val); }
+  void resize(size_t n) { data_.resize(n); }
   void reserve(size_t n) { data_.reserve(n); }
   T& doGet(size_t i) { return data_[i]; }
   const T& doGet(size_t i) const { return data_[i]; }

@@ -70,6 +70,7 @@ class VectorBackedStore {
  public:
   size_t size() const { return vec_.size(); }
   void resize(size_t n, const T& val) { vec_.resize(n, val); }
+  void resize(size_t n) { vec_.resize(n); }
   void reserve(size_t n) { vec_.resreve(n); }
   T& doGet(size_t i) { return vec_[i]; }
   const T& doGet(size_t i) const { return vec_[i]; }

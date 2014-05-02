@@ -37,6 +37,18 @@ class PagedStoragePolicy {
     }
   }
 
+  void resize(index_type n) {
+    size_ = n;
+    pages_.resize(numPages());
+    for (int page = 0; page < numPages(); ++page) {
+      auto newPageSize =
+          (page == numPages() - 1) ? size_ % pageSize_ : pageSize_;
+      if (newPageSize != pages_[page]->Values.size()) {
+        pages_[page]->Values.resize(newPageSize);
+      }
+    }
+  }
+
   void reserve(index_type n) {
     auto reservePages = (n / pageSize_) + 1;
     pages_.resize(reservePages);
@@ -98,6 +110,116 @@ class PagedStoragePolicy {
   index_type pageSize_;
   index_type size_;
   index_type backendSize_;
+  mutable std::vector<page_ptr_type> pages_;
+};
+
+template <typename T, size_t PageSize, typename Enable = void>
+class MemPagedStoragePolicy {
+ public:
+  typedef size_t index_type;
+  typedef std::array<T, PageSize> page_type;
+  typedef std::unique_ptr<page_type> page_ptr_type;
+
+  MemPagedStoragePolicy(index_type size = 0)
+      : size_(size), pages_(numPages()) {}
+
+  index_type size() const { return size_; }
+
+  void resize(index_type n, const T& val) {
+    size_ = n;
+    pages_.resize(numPages());
+  }
+
+  void resize(index_type n) {
+    size_ = n;
+    pages_.resize(numPages());
+  }
+
+  void reserve(index_type n) {
+    auto reservePages = (n / PageSize) + 1;
+    pages_.resize(reservePages);
+  }
+
+  T& doGet(index_type i) {
+    auto page = getPage(i);
+    return (*page)[i % PageSize];
+  }
+
+  const T& doGet(index_type i) const {
+    auto page = getPage(i);
+    return (*page)[i % PageSize];
+  }
+
+  void flush() {}
+
+ private:
+  page_ptr_type getPage(index_type idx) const {
+    auto pageNum = idx / PageSize;
+    if (!pages_[pageNum]) {
+      pages_[pageNum] = std::make_unique<page_type>();
+    }
+    return pages_[pageNum];
+  }
+
+  index_type numPages() const { return (size_ / PageSize) + 1; }
+
+  index_type size_;
+  mutable std::vector<page_ptr_type> pages_;
+};
+
+template <typename T, size_t PageSize>
+class MemPagedStoragePolicy<
+    T, PageSize,
+    typename std::enable_if<!std::is_default_constructible<T>::value>::type> {
+ public:
+  typedef size_t index_type;
+  typedef T* page_type;
+  typedef std::shared_ptr<T> page_ptr_type;
+
+  MemPagedStoragePolicy(index_type size = 0)
+      : size_(size), pages_(numPages()) {}
+
+  index_type size() const { return size_; }
+
+  void resize(index_type n, const T& val) {
+    size_ = n;
+    pages_.resize(numPages());
+  }
+
+  void resize(index_type n) {
+    size_ = n;
+    pages_.resize(numPages());
+  }
+
+  void reserve(index_type n) {
+    auto reservePages = (n / PageSize) + 1;
+    pages_.resize(reservePages);
+  }
+
+  T& doGet(index_type i) {
+    auto page = getPage(i);
+    return page[i % PageSize];
+  }
+
+  const T& doGet(index_type i) const {
+    auto page = getPage(i);
+    return page[i % PageSize];
+  }
+
+  void flush() {}
+
+ private:
+  page_type getPage(index_type idx) const {
+    auto pageNum = idx / PageSize;
+    if (!pages_[pageNum]) {
+      pages_[pageNum] = om::mem::Malloc<T>::NumElementsDontZero(PageSize);
+    }
+    return pages_[pageNum].get();
+  }
+
+  index_type numPages() const { return (size_ / PageSize) + 1; }
+
+  index_type size_;
   mutable std::vector<page_ptr_type> pages_;
 };
 }
