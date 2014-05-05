@@ -203,7 +203,7 @@ INCLUDES    =   -I$(HERE) \
 		-I$(HERE)/common/include/yaml-cpp/include \
 		-I$(HERE)/desktop/include/yaml-cpp-old/include \
 		-I$(EXTERNAL)/libjpeg/include \
-		-isystem$(HERE)/zi_lib \
+		-I$(HERE)/zi_lib \
 		-I$(BASE64)/include \
 		-I$(EXTERNAL)/boost/include \
 		$(CURL_INCLUDES)
