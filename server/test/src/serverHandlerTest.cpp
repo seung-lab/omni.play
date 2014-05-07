@@ -17,7 +17,9 @@ namespace test {
 class ServerHandlerTest : public ::testing::Test {
  public:
   ServerHandlerTest() {
-    file::Paths p("test/data/test.omni.files/");
+    file::Paths p(
+      "/omniweb_data/x06/y59/"
+      "x06y59z28_s1587_13491_6483_e1842_13746_6738.omni");
     channel.reset(new volume::Volume(p.Channel(1)));
     segmentation.reset(new volume::Segmentation(p, 1));
   }
@@ -69,7 +71,7 @@ TEST_F(ServerHandlerTest, get_seg_list_data) {
 TEST_F(ServerHandlerTest, get_mesh) {
   std::string ret;
   const server::vector3i chunk;
-  int32_t segId = 100;
+  int32_t segId = 1001;
 
   handler::get_mesh(ret, *segmentation, chunk, 0, segId);
   EXPECT_TRUE(ret.size() > 0);
@@ -80,7 +82,7 @@ TEST_F(ServerHandlerTest, get_mesh) {
 TEST_F(ServerHandlerTest, get_obj) {
   std::string ret;
   const server::vector3i chunk;
-  int32_t segId = 100;
+  int32_t segId = 1001;
 
   handler::get_obj(ret, *segmentation, chunk, 0, segId);
   EXPECT_TRUE(ret.size() > 0);
