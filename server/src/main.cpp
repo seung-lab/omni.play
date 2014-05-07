@@ -16,6 +16,7 @@
 #include "zi/system/daemon.hpp"
 
 ZiARG_int32(port, 9090, "Server's port");
+ZiARG_int32(threads, 32, "Number of thrift threads.");
 ZiARG_bool(daemonize, true, "Run as daemon");
 ZiARG_string(mesher, "localhost", "Mesher's address");
 ZiARG_int32(mport, 9090, "Mesher's port");
@@ -60,7 +61,7 @@ int main(int argc, char *argv[]) {
       new TBinaryProtocolFactory());
 
   boost::shared_ptr<ThreadManager> threadManager =
-      ThreadManager::newSimpleThreadManager(32);
+      ThreadManager::newSimpleThreadManager(ZiARG_threads);
   auto threadFactory = boost::make_shared<PosixThreadFactory>();
 
   threadManager->threadFactory(threadFactory);
