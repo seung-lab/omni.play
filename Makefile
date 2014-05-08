@@ -9,31 +9,18 @@ EXTERNAL    =   $(HERE)/external/libs
 BREAKPAD    =   $(HERE)/external/srcs/google-breakpad/src
 GMOCK       =   $(HERE)/common/include/gmock-1.6.0
 BASE64      =   $(HERE)/common/include/libb64
-# BINDIR        =   ./bin
-# BUILDDIR  =   build
 GENDIR      =   thrift/src
 
 AT      =   @
-DOLLAR  =   $$
 
-CD      =   $(AT)cd
 CP      =   $(AT)cp
 ECHO    =   $(AT)echo
-CAT     =   $(AT)cat
-IF      =   $(AT)if
-LN      =   $(AT)ln
 MKDIR   =   $(AT)mkdir
 MV      =   $(AT)mv
-SED     =   $(AT)sed
 RM      =   $(AT)rm
 TOUCH   =   $(AT)touch
-CHMOD   =   $(AT)chmod
-DATE    =   $(AT)date
-PERL    =   $(AT)perl
-AR      =   $(AT)ar
 TAR     =   $(AT)tar
 FIND     =   $(AT)find
-ARFLAGS =   rcs
 
 ifdef OSX
 INT     =   $(AT)install_name_tool
@@ -46,7 +33,6 @@ MOC      =  $(AT)$(EXTERNAL)/qt/bin/moc
 RCC      =  $(AT)$(EXTERNAL)/qt/bin/rcc
 
 DUMPSYMS =  $(AT)$(EXTERNAL)/breakpad/bin/dump_syms
-FPIC     =  -fPIC
 
 # don't delete intermediate files
 .SECONDARY:
@@ -55,13 +41,12 @@ FPIC     =  -fPIC
 CWARN       =   -Wall -Wno-sign-compare -Wunused-variable -Wreturn-type -Wno-unused-local-typedefs
 CXXWARN     =   $(CWARN) -Wno-deprecated -Woverloaded-virtual -Wunused-but-set-variable -Wno-switch -Wno-unused-value -Wno-comment -Winvalid-pch
 
-CPP_DEPFLAGS        =   --std=c++11 -MM -MG -MP -MT "$(@:.d=.o)"
 COMMON_CFLAGS       =   -g -std=gnu99 -D_GNU_SOURCE=1 \
-				-D_REENTRANT $(FPIC) $(CWARN)
+				-D_REENTRANT -fPIC $(CWARN)
 
 THRIFT_CXXFLAGS    =    -DHAVE_CONFIG_H
 
-COMMON_CXXFLAGS    =    -g $(FPIC) $(CXXWARN) $(THRIFT_CXXFLAGS) -std=c++11 -MMD -MP -MT "$(@)" -MF $(@:.o=.d)
+COMMON_CXXFLAGS    =    -g -fPIC $(CXXWARN) $(THRIFT_CXXFLAGS) -std=c++11 -MMD -MP -MT "$(@)" -MF $(@:.o=.d)
 
 DBG_CFLAGS         =    $(COMMON_CFLAGS) -DDEBUG_MODE=1
 DBG_CXXFLAGS       =    $(COMMON_CXXFLAGS) -DDEBUG_MODE=1 -Og -gstabs+
@@ -70,13 +55,9 @@ OPT_CFLAGS         =    $(COMMON_CFLAGS) -DNDEBUG \
 						$(OPTIMIZATION_FLAGS) -fno-omit-frame-pointer
 OPT_CXXFLAGS       =    $(COMMON_CXXFLAGS) -DNDEBUG \
 						$(OPTIMIZATION_FLAGS) -fno-omit-frame-pointer
-COMMON_LDFLAGS     =    -g $(FPIC) -Wl,--eh-frame-hdr -lm
+COMMON_LDFLAGS     =    -g -fPIC -Wl,--eh-frame-hdr -lm
 DBG_LDFLAGS        =    $(COMMON_LDFLAGS)
 OPT_LDFLAGS        =    $(COMMON_LDFLAGS) -O2 -fno-omit-frame-pointer
-
-COMM_FLEX_FLAGS    =    -d
-OPT_FLEXFLAGS      =    $(COMM_FLEX_FLAGS)
-DBG_FLEXFLAGS      =    $(COMM_FLEX_FLAGS) -t
 
 DEFINES = -DQT_NO_KEYWORDS -DQT_OPENGL_LIB -DQT_GUI_LIB -DQT_CORE_LIB \
 -DQT_SHARED -DQT_USE_FAST_CONCATENATION -DQT_USE_FAST_OPERATOR_PLUS \
