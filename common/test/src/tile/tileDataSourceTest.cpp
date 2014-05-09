@@ -10,11 +10,13 @@ using namespace om::tile;
 namespace om {
 namespace test {
 
-#define URI "test/data/test.omni.files/"
+#define URI \
+  "/omniweb_data/x06/y59/x06y59z28_s1587_13491_6483_e1842_13746_6738.omni"
 
 TEST(Tile_FileDataSource, GetTile) {
-  volume::Volume chan(std::string(URI) + "channels/channel1");
-  volume::Volume seg(std::string(URI) + "segmentations/segmentation1");
+  file::Paths p(URI);
+  volume::Volume chan(p.Channel(1));
+  volume::Volume seg(p.Segmentation(1));
   auto& chanSource = chan.TileDS();
   auto& segSource = seg.TileDS();
 

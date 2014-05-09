@@ -10,7 +10,8 @@ using namespace om::chunk;
 namespace om {
 namespace test {
 
-#define URI "test/data/test.omni.files/"
+#define URI \
+  "/omniweb_data/x06/y59/x06y59z28_s1587_13491_6483_e1842_13746_6738.omni"
 
 TEST(Chunk_FileDataSource, GetChunk) {
   volume::Volume channel(std::string(URI) + "channels/channel1");

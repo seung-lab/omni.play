@@ -13,7 +13,8 @@ using namespace om::chunk;
 namespace om {
 namespace test {
 
-#define URI "test/data/test.omni"
+#define URI \
+  "/omniweb_data/x06/y59/x06y59z28_s1587_13491_6483_e1842_13746_6738.omni"
 
 TEST(Chunk_UniqueValuesFileDataSource, Get) {
   file::Paths p(URI);
