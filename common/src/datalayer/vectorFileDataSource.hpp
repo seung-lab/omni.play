@@ -92,6 +92,8 @@ class CompressedVectorFileDataSource
     file::MkDir(tempDir_);
   }
 
+  ~CompressedVectorFileDataSource() { file::RemoveDir(tempDir_); }
+
  protected:
   virtual std::shared_ptr<Vector<TKey, TValue>> doGet(const TKey& key,
                                                       bool async = false) const
