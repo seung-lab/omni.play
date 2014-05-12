@@ -11,12 +11,9 @@ using namespace om::segment;
 namespace om {
 namespace test {
 
-#define URI \
-  "/omniweb_data/x06/y59/x06y59z28_s1587_13491_6483_e1842_13746_6738.omni"
-
 TEST(Segment_SegDataDS, Get) {
-  file::Paths p(URI);
-  FileDataSource fds(p.UserPaths("_default").Segmentation(1));
+  file::Paths p("/omniData/e2198/e2198_a_s10_101_46_e17_116_61.omni");
+  FileDataSource fds(p.UserPaths("_default").Segments(1));
 
   auto values = fds.Get(0);
   ASSERT_TRUE((bool)values);
@@ -29,8 +26,8 @@ TEST(Segment_SegDataDS, Get) {
 TEST(Segment_SegDataDS, Put) {}
 
 TEST(Segment_SegListTypeDataDS, Get) {
-  file::Paths p(URI);
-  ListTypeFileDataSource ltfds(p.UserPaths("_default").Segmentation(1));
+  file::Paths p("/omniData/e2198/e2198_a_s10_101_46_e17_116_61.omni");
+  ListTypeFileDataSource ltfds(p.UserPaths("_default").Segments(1));
 
   auto values = ltfds.Get(0);
   ASSERT_TRUE((bool)values);

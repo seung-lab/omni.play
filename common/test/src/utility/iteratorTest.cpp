@@ -117,7 +117,7 @@ TEST(Utility_Iterators, Benchmark_FilteredChunkIterator) {
   volume::Segmentation seg(
       file::Paths("/omniData/e2198/e2198_a_s10_101_46_e17_116_61.omni"), 1);
 
-  const common::SegID id = 37;
+  const common::SegID id = 1127249;
   auto chunkDims = seg.Coords().MipLevelDimensionsInMipChunks(0);
 
   // prime cache.

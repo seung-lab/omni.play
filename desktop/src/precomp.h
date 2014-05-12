@@ -20,6 +20,7 @@
 #include <boost/algorithm/string/join.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/date_time.hpp>
+#include <boost/exception/diagnostic_information.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/format.hpp>
 #include <boost/functional/hash.hpp>

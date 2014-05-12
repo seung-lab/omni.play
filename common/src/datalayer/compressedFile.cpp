@@ -20,7 +20,13 @@ void uncompressFileToFile(const std::string& in_fnp,
   std::ofstream out_file(out_fnp.c_str(),
                          std::ios::out | std::ios::trunc | std::ios::binary);
 
-  boost::iostreams::copy(in, out_file);
+  try {
+    boost::iostreams::copy(in, out_file);
+  }
+  catch (boost::exception& e) {
+    log_errors << boost::diagnostic_information(e);
+    throw IoException("Unable to uncompress file.", in_fnp);
+  }
 }
 
 void compressToFileNumBytes(char const* const data, const int64_t numBytes,

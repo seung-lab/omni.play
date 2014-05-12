@@ -18,12 +18,24 @@ class VectorFileDataSource
 
   virtual std::shared_ptr<Vector<TKey, TValue>> Get(const TKey& key,
                                                     bool async = false) {
-    return doGet(key, async);
+    try {
+      return doGet(key, async);
+    }
+    catch (Exception e) {
+      log_errors << e.what();
+      return std::shared_ptr<Vector<TKey, TValue>>();
+    }
   }
 
   virtual std::shared_ptr<Vector<TKey, TValue>> Get(const TKey& key,
                                                     bool async = false) const {
-    return doGet(key, async);
+    try {
+      return doGet(key, async);
+    }
+    catch (Exception e) {
+      log_errors << e.what();
+      return std::shared_ptr<Vector<TKey, TValue>>();
+    }
   }
 
   virtual bool Put(const TKey& key, std::shared_ptr<Vector<TKey, TValue>> data,
@@ -98,8 +110,13 @@ class CompressedVectorFileDataSource
   virtual std::shared_ptr<Vector<TKey, TValue>> doGet(const TKey& key,
                                                       bool async = false) const
       override {
-    file::uncompressFileToFile(base_t::fnp(key).string(), fnp(key).string());
-    return base_t::doGet(key, async);
+    try {
+      file::uncompressFileToFile(base_t::fnp(key).string(), fnp(key).string());
+      return base_t::doGet(key, async);
+    }
+    catch (Exception e) {
+      file::CopyFile(base_t::fnp(key), fnp(key), true);
+    }
   }
 
   virtual void doPut(const TKey& key,

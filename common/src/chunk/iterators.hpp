@@ -48,7 +48,7 @@ inline filtered_iterator make_segment_iterator(chunk::UniqueValuesDS& uvm,
                                                iterator iter) {
   return make_filtered_iterator([&uvm, segment](const coords::Chunk& c) {
                                   auto uv = uvm.Get(c);
-                                  return !uv || uv->contains(segment);
+                                  return uv && uv->contains(segment);
                                 },
                                 iter);
 }
@@ -68,8 +68,8 @@ inline filtered_iterator make_segset_iterator(chunk::UniqueValuesDS& uvm,
                                               iterator iter) {
   return make_filtered_iterator([&uvm, segs](const coords::Chunk& c) {
                                   auto uv = uvm.Get(c);
-                                  return !uv || uv->contains_any(segs.begin(),
-                                                                 segs.end());
+                                  return uv && uv->contains_any(segs.begin(),
+                                                                segs.end());
                                 },
                                 iter);
 }
