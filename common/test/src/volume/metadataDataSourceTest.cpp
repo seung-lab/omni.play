@@ -2,6 +2,7 @@
 #include "gmock/gmock.h"
 
 #include "utility/UUID.hpp"
+#include "datalayer/paths.hpp"
 
 #include "volume/metadataDataSource.hpp"
 
@@ -10,14 +11,15 @@ using namespace om::volume;
 namespace om {
 namespace test {
 
-#define CHAN_URI "test/data/test.omni.files/channels/channel1"
-#define SEG_URI "test/data/test.omni.files/segmentations/segmentation1"
+#define URI \
+  "/omniweb_data/x06/y59/x06y59z28_s1587_13491_6483_e1842_13746_6738.omni"
 
 TEST(Volume_MetadataDataSource, GetMetadata) {
+  file::Paths p(URI);
   MetadataDataSource source;
 
-  auto chan = source.Get(CHAN_URI);
-  auto seg = source.Get(SEG_URI);
+  auto chan = source.Get(p.Channel(1).string());
+  auto seg = source.Get(p.Segmentation(1).string());
   ASSERT_NO_THROW(source.Get("bogus"));
 
   ASSERT_NE(nullptr, chan.get());
@@ -25,9 +27,10 @@ TEST(Volume_MetadataDataSource, GetMetadata) {
 }
 
 TEST(Volume_MetadataDataSource, PutMetadata) {
+  file::Paths p(URI);
 
   MetadataDataSource source;
-  auto m1 = source.Get(SEG_URI);
+  auto m1 = source.Get(p.Segmentation(1).string());
   ASSERT_NE(nullptr, m1);
 
   auto m2 = std::make_shared<Metadata>();
@@ -42,8 +45,8 @@ TEST(Volume_MetadataDataSource, PutMetadata) {
   m2->NumSegments = 10;
   m2->MaxSegments = 10;
 
-  ASSERT_NO_THROW(source.Put(SEG_URI, m2));
-  ASSERT_EQ(*m2, *source.Get(SEG_URI));
+  ASSERT_NO_THROW(source.Put(p.Segmentation(1).string(), m2));
+  ASSERT_EQ(*m2, *source.Get(p.Segmentation(1).string()));
 }
 
 #undef URI

@@ -3,6 +3,7 @@
 
 #include "utility/UUID.hpp"
 #include "common/enums.hpp"
+#include "datalayer/paths.hpp"
 
 #include "volume/metadataDataSource.hpp"
 #include "volume/metadataManager.h"
@@ -14,13 +15,14 @@ using namespace om::coords;
 namespace om {
 namespace test {
 
-#define CHAN_URI "test/data/test.omni.files/channels/channel1"
-#define SEG_URI "test/data/test.omni.files/segmentations/segmentation1"
+#define URI \
+  "/omniweb_data/x06/y59/x06y59z28_s1587_13491_6483_e1842_13746_6738.omni"
 
 TEST(Volume_MetadataManager, Gets) {
+  file::Paths p(URI);
   MetadataDataSource source;
-  MetadataManager chanMan(source, CHAN_URI);
-  MetadataManager segMan(source, SEG_URI);
+  MetadataManager chanMan(source, p.Channel(1));
+  MetadataManager segMan(source, p.Segmentation(1));
   MetadataManager bogus(source, "bogus");
 
   EXPECT_TRUE(chanMan.HasMetadata());
@@ -70,9 +72,10 @@ TEST(Volume_MetadataManager, Gets) {
 }
 
 TEST(Volume_MetadataManager, Sets) {
+  file::Paths p(URI);
   MetadataDataSource source;
-  MetadataManager chanMan(source, CHAN_URI);
-  MetadataManager segMan(source, SEG_URI);
+  MetadataManager chanMan(source, p.Channel(1));
+  MetadataManager segMan(source, p.Segmentation(1));
   MetadataManager bogus(source, "bogus");
 
   EXPECT_TRUE(chanMan.HasMetadata());
