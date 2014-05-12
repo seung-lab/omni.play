@@ -87,6 +87,7 @@ enum groupType {
     ALL = 1,
     AGREED = 2,
     USER_FOUND = 3,
+    DUST = 4,
     PARTIAL = 5,
     USER_MISSED = 6
 }
