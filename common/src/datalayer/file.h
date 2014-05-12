@@ -66,6 +66,9 @@ void readAll(const path& fnp, std::vector<T>& vec) {
   char* dataChar = reinterpret_cast<char*>(vec.data());
 
   std::fstream file(fnp.c_str(), std::fstream::in | std::fstream::binary);
+  if (!file.is_open()) {
+    throw IoException("Unable to Open File.", fnp.string());
+  }
   file.read(dataChar, bytes);
   const int64_t bytesRead = file.gcount();
 
