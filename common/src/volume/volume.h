@@ -2,6 +2,7 @@
 
 #include "datalayer/file.h"
 #include "volume/ivolume.hpp"
+#include "volume/iterators.hpp"
 #include "tile/dataSources.hpp"
 #include "chunk/dataSources.hpp"
 
@@ -33,6 +34,7 @@ class Volume : virtual public IVolume {
 
   MetadataManager& Metadata() const override;
   const coords::VolumeSystem& Coords() const override;
+  coords::DataBbox Bounds() const;
 
   void CloseDownThreads();
 
@@ -42,6 +44,29 @@ class Volume : virtual public IVolume {
   const std::string& GUID() const override;
   const std::string& Endpoint() const override;
   const std::string& Name() const override;
+
+  template <typename T>
+  struct iterable_volume {
+    all_dataval_iterator<T> begin() {
+      return make_all_dataval_iterator<T>(bounds, vol.ChunkDS());
+    }
+    all_dataval_iterator<T> end() { return all_dataval_iterator<T>(); }
+    Volume& vol;
+    coords::DataBbox bounds;
+  };
+
+  template <typename T>
+  iterable_volume<T> Iterate() {
+    return Volume::iterable_volume<T>{*this, Bounds()};
+  }
+  template <typename T>
+  iterable_volume<T> Iterate(coords::DataBbox bounds) {
+    return Volume::iterable_volume<T>{*this, bounds};
+  }
+  template <typename T>
+  iterable_volume<T> Iterate(coords::GlobalBbox bounds) {
+    return Volume::iterable_volume<T>{*this, bounds.ToDataBbox(Coords(), 0)};
+  }
 
  protected:
   std::unique_ptr<MetadataDataSource> metaDS_;

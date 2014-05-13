@@ -1,6 +1,7 @@
 #pragma once
 
 #include "volume/volume.h"
+#include "volume/iterators.hpp"
 #include "volume/isegmentation.hpp"
 #include "datalayer/paths.hpp"
 
@@ -28,6 +29,40 @@ class Segmentation : public Volume, virtual public ISegmentation {
   segment::SegDataVector& SegData() const;
   segment::SegListDataVector& SegListData() const;
   segment::EdgeVector& Edges() const;
+
+  template <typename T>
+  struct filtered_iterable_volume {
+    chunk_filtered_dataval_iterator<T> begin();
+    chunk_filtered_dataval_iterator<T> end();
+    Segmentation& vol;
+    coords::DataBbox bounds;
+    T id;
+  };
+
+  template <typename T>
+  filtered_iterable_volume<T> SegIterate(T id);
+  template <typename T>
+  filtered_iterable_volume<T> SegIterate(T id, coords::GlobalBbox bounds);
+  template <typename T>
+  filtered_iterable_volume<T> SegIterate(T id, coords::DataBbox bounds);
+
+  template <typename T>
+  struct filtered_set_iterable_volume {
+    chunk_filtered_dataval_iterator<T> begin();
+    chunk_filtered_dataval_iterator<T> end();
+    Segmentation& vol;
+    coords::DataBbox bounds;
+    std::set<T> ids;
+  };
+
+  template <typename T>
+  filtered_set_iterable_volume<T> SegIterate(std::set<T> ids);
+  template <typename T>
+  filtered_set_iterable_volume<T> SegIterate(std::set<T> ids,
+                                             coords::GlobalBbox bounds);
+  template <typename T>
+  filtered_set_iterable_volume<T> SegIterate(std::set<T> ids,
+                                             coords::DataBbox bounds);
 
  private:
   std::unique_ptr<chunk::CachedUniqueValuesDataSource> uvmDS_;

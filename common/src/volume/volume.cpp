@@ -21,9 +21,8 @@ using namespace pipeline;
 Volume::Volume(file::path uri)
     : metaDS_(std::make_unique<MetadataDataSource>()),
       metaManager_(std::make_unique<MetadataManager>(*metaDS_, uri)),
-      tileDS_(std::make_unique<tile::CachedDataSource>(uri,
-                                                       metaManager_->dataType(),
-                                                       Coords())),
+      tileDS_(std::make_unique<tile::CachedDataSource>(
+          uri, metaManager_->dataType(), Coords())),
       chunkDS_(std::make_unique<chunk::CachedDataSource>(
           uri, metaManager_->dataType(), Coords())) {
   log_debugs << "Initialized Volume";
@@ -37,6 +36,10 @@ chunk::ChunkDS& Volume::ChunkDS() const { return *chunkDS_; }
 MetadataManager& Volume::Metadata() const { return *metaManager_; }
 const coords::VolumeSystem& Volume::Coords() const {
   return metaManager_->coordSystem();
+}
+
+coords::DataBbox Volume::Bounds() const {
+  return metaManager_->bounds().ToDataBbox(Coords(), 0);
 }
 
 void Volume::CloseDownThreads() {}
