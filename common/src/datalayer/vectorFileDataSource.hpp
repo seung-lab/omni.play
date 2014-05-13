@@ -116,6 +116,7 @@ class CompressedVectorFileDataSource
     }
     catch (Exception e) {
       file::CopyFile(base_t::fnp(key), fnp(key), true);
+      return base_t::doGet(key, async);
     }
   }
 
