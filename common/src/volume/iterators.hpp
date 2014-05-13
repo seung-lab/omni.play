@@ -14,7 +14,7 @@ class dataval_iterator
   typedef typename dataval_iterator<T, ChunkIterator>::iterator_adaptor_ base_t;
 
  public:
-  dataval_iterator() : base_t() {}
+  dataval_iterator() : base_t(), chunk_(nullptr) {}
   dataval_iterator(ChunkIterator chunkIter, const coords::DataBbox& bounds,
                    chunk::ChunkDS& ds, const coords::Data& curr)
       : base_t(chunkIter),
@@ -26,6 +26,8 @@ class dataval_iterator
 
     updateChunkBounds();
     updateChunk();
+    val_.first =
+        coords::Data(chunkFrom_, val_.first.volume(), val_.first.mipLevel());
 
     idx_ = val_.first.ToChunkOffset();
     setDataVal();

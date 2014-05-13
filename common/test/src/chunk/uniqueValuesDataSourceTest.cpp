@@ -31,17 +31,15 @@ TEST(Chunk_UniqueValuesFileDataSource, Get) {
 
 TEST(Chunk_UniqueValuesFileDataSource, Completeness) {
   volume::Segmentation s(file::Paths(URI), 1);
-  Voxels<uint32_t> vg(s.ChunkDS(), s.Coords());
   coords::Chunk cc(0, 1, 0, 1);
 
-  utility::VolumeWalker<uint32_t> walker(cc.BoundingBox(s.Coords()), vg);
-  std::set<uint32_t> voxels;
-  walker.foreach_voxel([&](coords::Data, uint32_t val) {
-    if (val) {
-      voxels.insert(val);
+  common::SegIDSet voxels;
+  auto iterable = s.Iterate<common::SegID>(cc.BoundingBox(s.Coords()));
+  for (auto& iter : iterable) {
+    if (iter.second) {
+      voxels.insert(iter.second);
     }
-  });
-
+  }
   auto uv = s.UniqueValuesDS().Get(cc);
 
   ASSERT_EQ(voxels.size(), uv->Values.size());

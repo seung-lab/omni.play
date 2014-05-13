@@ -216,5 +216,87 @@ TEST(Utility_Iterators, Benchmark_DatavalIterator) {
 
   ASSERT_EQ(sum, sum2);
 }
+
+TEST(Utility_Iterators, Benchmark_FilteredDatavalIterator) {
+  volume::Segmentation seg(
+      file::Paths("/omniData/e2198/e2198_a_s10_101_46_e17_116_61.omni"), 1);
+
+  const common::SegID id = 1127249;
+  coords::DataBbox bounds = seg.Bounds();
+  bounds.setMax(bounds.getMax() - 1);
+
+  utility::timer t;
+  t.start();
+  auto chunkFrom = bounds.getMin().ToChunk();
+  auto chunkTo = bounds.getMax().ToChunk();
+
+  // prime cache.
+  for (int i = chunkFrom.x; i <= chunkTo.x; ++i) {
+    for (int j = chunkFrom.y; j <= chunkTo.y; ++j) {
+      for (int k = chunkFrom.z; k <= chunkTo.z; ++k) {
+        auto uv = seg.UniqueValuesDS().Get(
+            coords::Chunk(chunkFrom.mipLevel(), i, j, k));
+      }
+    }
+  }
+
+  size_t count = 0;
+  for (int i = chunkFrom.x; i <= chunkTo.x; ++i) {
+    for (int j = chunkFrom.y; j <= chunkTo.y; ++j) {
+      for (int k = chunkFrom.z; k <= chunkTo.z; ++k) {
+        coords::Chunk c(chunkFrom.mipLevel(), i, j, k);
+        auto uv = seg.UniqueValuesDS().Get(c);
+        if (!uv) {
+          continue;
+        }
+        if (!uv->contains(id)) {
+          continue;
+        }
+
+        auto chunk =
+            boost::get<chunk::Chunk<common::SegID>>(seg.ChunkDS().Get(c).get());
+        if (!chunk) {
+          continue;
+        }
+
+        auto chunkBounds = c.BoundingBox(seg.Coords());
+        chunkBounds.intersect(bounds);
+        auto dataFrom = chunkBounds.getMin();
+        auto dataTo = chunkBounds.getMax();
+
+        size_t idx = 0;
+        coords::Data d = dataFrom;
+        for (d.z = dataFrom.z; d.z < dataTo.z; ++d.z) {
+          for (d.y = dataFrom.y; d.y < dataTo.y; ++d.y) {
+            d.x = dataFrom.x;
+            idx = d.ToChunkOffset();
+            for (; d.x < dataTo.x; ++d.x) {
+              if ((*chunk)[idx] == id) {
+                count++;
+              }
+              idx++;
+            }
+          }
+        }
+      }
+    }
+  }
+  t.Print("Standard For loop");
+
+  t.reset();
+  t.start();
+  size_t count2 = 0;
+  for (auto iter = make_chunk_filtered_dataval_iterator<common::SegID>(
+           bounds, seg.ChunkDS(), seg.UniqueValuesDS(), id);
+       iter != chunk_filtered_dataval_iterator<common::SegID>(); ++iter) {
+    if (iter->second == id) {
+      count2++;
+    }
+  }
+  t.Print("dataval_iterator");
+
+  log_debugs << count;
+  ASSERT_EQ(count, count2);
+}
 }
 }  // namespace om::test::
