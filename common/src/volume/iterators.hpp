@@ -137,7 +137,6 @@ class dataval_iterator
   }
 
   void updateChunk() {
-    log_debugs << *base_t::base();
     chunkSharedPtr_ = chunkDs_->Get(*base_t::base());
     auto typedChunk = boost::get<chunk::Chunk<T>>(chunkSharedPtr_.get());
     if (typedChunk) {

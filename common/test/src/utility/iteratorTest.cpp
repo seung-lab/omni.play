@@ -118,12 +118,15 @@ TEST(Utility_Iterators, Benchmark_FilteredChunkIterator) {
       file::Paths("/omniData/e2198/e2198_a_s10_101_46_e17_116_61.omni"), 1);
 
   const common::SegID id = 1127249;
-  auto chunkDims = seg.Coords().MipLevelDimensionsInMipChunks(0);
+  coords::DataBbox bounds = seg.Bounds();
+
+  auto chunkFrom = bounds.getMin().ToChunk();
+  auto chunkTo = bounds.getMax().ToChunk();
 
   // prime cache.
-  for (int i = 0; i <= chunkDims.x; ++i) {
-    for (int j = 0; j <= chunkDims.y; ++j) {
-      for (int k = 0; k <= chunkDims.z; ++k) {
+  for (int i = chunkFrom.x; i <= chunkTo.x; ++i) {
+    for (int j = chunkFrom.y; j <= chunkTo.y; ++j) {
+      for (int k = chunkFrom.z; k <= chunkTo.z; ++k) {
         auto uv = seg.UniqueValuesDS().Get(coords::Chunk(0, i, j, k));
       }
     }
@@ -133,9 +136,9 @@ TEST(Utility_Iterators, Benchmark_FilteredChunkIterator) {
   t.start();
   size_t count = 0;
 
-  for (int i = 0; i <= chunkDims.x; ++i) {
-    for (int j = 0; j <= chunkDims.y; ++j) {
-      for (int k = 0; k <= chunkDims.z; ++k) {
+  for (int i = chunkFrom.x; i <= chunkTo.x; ++i) {
+    for (int j = chunkFrom.y; j <= chunkTo.y; ++j) {
+      for (int k = chunkFrom.z; k <= chunkTo.z; ++k) {
         coords::Chunk c(0, i, j, k);
         auto uv = seg.UniqueValuesDS().Get(c);
         if (uv && uv->contains(id)) {
@@ -149,8 +152,7 @@ TEST(Utility_Iterators, Benchmark_FilteredChunkIterator) {
   t.reset();
   t.start();
   size_t count2 = 0;
-  for (auto iter = chunk::make_segment_iterator(coords::Chunk(0, 0, 0, 0),
-                                                coords::Chunk(0, chunkDims),
+  for (auto iter = chunk::make_segment_iterator(chunkFrom, chunkTo,
                                                 seg.UniqueValuesDS(), id);
        iter != chunk::filtered_iterator(); ++iter) {
     count2++;
@@ -238,8 +240,6 @@ TEST(Utility_Iterators, Benchmark_FilteredDatavalIterator) {
   const common::SegID id = 1127249;
   coords::DataBbox bounds = seg.Bounds();
 
-  utility::timer t;
-  t.start();
   auto chunkFrom = bounds.getMin().ToChunk();
   auto chunkTo = bounds.getMax().ToChunk();
 
@@ -247,12 +247,21 @@ TEST(Utility_Iterators, Benchmark_FilteredDatavalIterator) {
   for (int i = chunkFrom.x; i <= chunkTo.x; ++i) {
     for (int j = chunkFrom.y; j <= chunkTo.y; ++j) {
       for (int k = chunkFrom.z; k <= chunkTo.z; ++k) {
-        auto uv = seg.UniqueValuesDS().Get(
-            coords::Chunk(chunkFrom.mipLevel(), i, j, k));
+        coords::Chunk c(chunkFrom.mipLevel(), i, j, k);
+        auto uv = seg.UniqueValuesDS().Get(c);
+        if (!uv) {
+          continue;
+        }
+        if (!uv->contains(id)) {
+          continue;
+        }
+        auto chunk = seg.ChunkDS().Get(c);
       }
     }
   }
 
+  utility::timer t;
+  t.start();
   size_t count = 0;
   for (int i = chunkFrom.x; i <= chunkTo.x; ++i) {
     for (int j = chunkFrom.y; j <= chunkTo.y; ++j) {
