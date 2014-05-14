@@ -202,5 +202,30 @@ chunk_filtered_dataval_iterator<T> make_chunk_filtered_dataval_iterator(
                                   bounds.getMax().ToChunk(), uvm, set),
       bounds, ds, bounds.getMin());
 }
+
+template <typename T>
+using segment_filtered_dataval_iterator = boost::filter_iterator<
+    std::function<bool(const std::pair<coords::Data, T>&)>,
+    chunk_filtered_dataval_iterator<T>>;
+
+template <typename T>
+segment_filtered_dataval_iterator<T> make_segment_filtered_dataval_iterator(
+    const coords::DataBbox& bounds, chunk::ChunkDS& ds,
+    chunk::UniqueValuesDS& uvm, common::SegID id) {
+  return segment_filtered_dataval_iterator<T>(
+      [id](const std::pair<coords::Data, T>& p) { return p.second == id; },
+      chunk_filtered_dataval_iterator<T>(bounds, ds, uvm, id));
+}
+
+template <typename T>
+segment_filtered_dataval_iterator<T> make_segment_filtered_dataval_iterator(
+    const coords::DataBbox& bounds, chunk::ChunkDS& ds,
+    chunk::UniqueValuesDS& uvm, common::SegIDSet set) {
+  return segment_filtered_dataval_iterator<T>(
+      [set](const std::pair<coords::Data, T>& p) {
+        return set.count(p.second);
+      },
+      chunk_filtered_dataval_iterator<T>(bounds, ds, uvm, set));
+}
 }
 }  // namespace om::volume::
