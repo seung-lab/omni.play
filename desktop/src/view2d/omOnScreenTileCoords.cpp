@@ -163,6 +163,8 @@ OmTileCoord OmOnScreenTileCoords::makeTileCoord(const om::coords::Chunk& coord,
 GLfloatBox OmOnScreenTileCoords::computeVertices(const om::coords::Chunk& coord,
                                                  const OmMipVolume& vol) {
   auto bounds = coord.BoundingBox(vol.Coords());
+  // Data coords are inclusive, Texture coords are exclusive.
+  bounds.setMax(bounds.getMax() + 1);
   auto min = bounds.getMin().ToGlobal().ToScreen(state_.Coords());
   auto max = bounds.getMax().ToGlobal().ToScreen(state_.Coords());
 

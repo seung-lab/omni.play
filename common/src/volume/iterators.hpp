@@ -87,11 +87,11 @@ class dataval_iterator
   }
 
   void increment() {
-    if (++val_.first.x >= chunkTo_.x) {
+    if (++val_.first.x > chunkTo_.x) {
       val_.first.x = chunkFrom_.x;
-      if (++val_.first.y >= chunkTo_.y) {
+      if (++val_.first.y > chunkTo_.y) {
         val_.first.y = chunkFrom_.y;
-        if (++val_.first.z >= chunkTo_.z) {
+        if (++val_.first.z > chunkTo_.z) {
           base_t::base_reference()++;
           if (base_t::base() == ChunkIterator()) {
             chunk_ = nullptr;
@@ -137,6 +137,7 @@ class dataval_iterator
   }
 
   void updateChunk() {
+    log_debugs << *base_t::base();
     chunkSharedPtr_ = chunkDs_->Get(*base_t::base());
     auto typedChunk = boost::get<chunk::Chunk<T>>(chunkSharedPtr_.get());
     if (typedChunk) {

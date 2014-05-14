@@ -187,7 +187,7 @@ class MetadataDataSource
     dims.y = om::math::roundUp((int)dims.y, ret->ChunkDim);
     dims.z = om::math::roundUp((int)dims.z, ret->ChunkDim);
 
-    ret->Bounds = coords::GlobalBbox(absOffset, absOffset + dims);
+    ret->Bounds = coords::GlobalBbox(absOffset, absOffset + dims - 1);
 
     return ret;
   }

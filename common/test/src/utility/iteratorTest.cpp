@@ -160,6 +160,20 @@ TEST(Utility_Iterators, Benchmark_FilteredChunkIterator) {
   ASSERT_EQ(count, count2);
 }
 
+TEST(Utility_Iterators, DatavalIterator) {
+  volume::Segmentation seg(
+      file::Paths("/omniData/e2198/e2198_a_s10_101_46_e17_116_61.omni"), 1);
+  coords::Chunk cc(0, 1, 1, 1);
+  size_t counter = 0;
+  auto bounds = cc.BoundingBox(seg.Coords());
+  auto iterable = seg.Iterate<common::SegID>(bounds);
+  for (auto& iter : iterable) {
+    counter++;
+  }
+  ASSERT_EQ(iterable.begin()->first, bounds.getMin());
+  ASSERT_EQ(128 * 128 * 128, counter);
+}
+
 TEST(Utility_Iterators, Benchmark_DatavalIterator) {
   volume::Segmentation seg(
       file::Paths("/omniData/e2198/e2198_a_s10_101_46_e17_116_61.omni"), 1);
@@ -189,11 +203,11 @@ TEST(Utility_Iterators, Benchmark_DatavalIterator) {
 
         size_t idx = 0;
         coords::Data d = dataFrom;
-        for (d.z = dataFrom.z; d.z < dataTo.z; ++d.z) {
-          for (d.y = dataFrom.y; d.y < dataTo.y; ++d.y) {
+        for (d.z = dataFrom.z; d.z <= dataTo.z; ++d.z) {
+          for (d.y = dataFrom.y; d.y <= dataTo.y; ++d.y) {
             d.x = dataFrom.x;
             idx = d.ToChunkOffset();
-            for (; d.x < dataTo.x; ++d.x) {
+            for (; d.x <= dataTo.x; ++d.x) {
               sum += (*chunk)[idx];
               idx++;
             }
@@ -223,7 +237,6 @@ TEST(Utility_Iterators, Benchmark_FilteredDatavalIterator) {
 
   const common::SegID id = 1127249;
   coords::DataBbox bounds = seg.Bounds();
-  bounds.setMax(bounds.getMax() - 1);
 
   utility::timer t;
   t.start();
@@ -266,11 +279,11 @@ TEST(Utility_Iterators, Benchmark_FilteredDatavalIterator) {
 
         size_t idx = 0;
         coords::Data d = dataFrom;
-        for (d.z = dataFrom.z; d.z < dataTo.z; ++d.z) {
-          for (d.y = dataFrom.y; d.y < dataTo.y; ++d.y) {
+        for (d.z = dataFrom.z; d.z <= dataTo.z; ++d.z) {
+          for (d.y = dataFrom.y; d.y <= dataTo.y; ++d.y) {
             d.x = dataFrom.x;
             idx = d.ToChunkOffset();
-            for (; d.x < dataTo.x; ++d.x) {
+            for (; d.x <= dataTo.x; ++d.x) {
               if ((*chunk)[idx] == id) {
                 count++;
               }

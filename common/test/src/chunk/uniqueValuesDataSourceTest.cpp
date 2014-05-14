@@ -13,8 +13,7 @@ using namespace om::chunk;
 namespace om {
 namespace test {
 
-#define URI \
-  "/omniweb_data/x06/y59/x06y59z28_s1587_13491_6483_e1842_13746_6738.omni"
+#define URI "/omniData/e2198/e2198_a_s10_101_46_e17_116_61.omni"
 
 TEST(Chunk_UniqueValuesFileDataSource, Get) {
   file::Paths p(URI);
@@ -31,7 +30,7 @@ TEST(Chunk_UniqueValuesFileDataSource, Get) {
 
 TEST(Chunk_UniqueValuesFileDataSource, Completeness) {
   volume::Segmentation s(file::Paths(URI), 1);
-  coords::Chunk cc(0, 1, 0, 1);
+  coords::Chunk cc(0, 1, 1, 1);
 
   common::SegIDSet voxels;
   auto iterable = s.Iterate<common::SegID>(cc.BoundingBox(s.Coords()));

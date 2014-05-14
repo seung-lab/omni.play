@@ -84,7 +84,7 @@ Data Chunk::ToData(const VolumeSystem &vol) const {
 
 DataBbox Chunk::BoundingBox(const VolumeSystem &vol) const {
   const Data min = ToData(vol);
-  const Data max = min + vol.ChunkDimensions();
+  const Data max = min + vol.ChunkDimensions() - 1;
   return DataBbox(min, max);
 }
 
