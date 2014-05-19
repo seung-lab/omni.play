@@ -320,7 +320,7 @@ TEST(Utility_Iterators, Benchmark_FilteredDatavalIterator) {
   ASSERT_EQ(count, count2);
 }
 
-TEST(Utility_Iterators, Benchmark_FilteredDatavalIterator) {
+TEST(Utility_Iterators, Benchmark_SegmentFilteredDatavalIterator) {
   volume::Segmentation seg(
       file::Paths("/omniData/e2198/e2198_a_s10_101_46_e17_116_61.omni"), 1);
 
@@ -397,7 +397,7 @@ TEST(Utility_Iterators, Benchmark_FilteredDatavalIterator) {
   size_t count2 = 0;
   for (auto iter = make_segment_filtered_dataval_iterator<common::SegID>(
            bounds, seg.ChunkDS(), seg.UniqueValuesDS(), id);
-       iter != chunk_filtered_dataval_iterator<common::SegID>(); ++iter) {
+       iter != segment_filtered_dataval_iterator<common::SegID>(); ++iter) {
     count2++;
   }
   t.Print("dataval_iterator");

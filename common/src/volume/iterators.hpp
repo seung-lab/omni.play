@@ -20,28 +20,43 @@ class dataval_iterator
       : base_t(chunkIter),
         iterBounds_(new coords::DataBbox(bounds)),
         chunkDs_(&ds),
-        val_(curr, 0) {
+        val_(new std::pair<coords::Data, T>(curr, 0)) {
     // TODO: What if the chunkIter has bad bounds?  Better way to initialize
     // without knowing the type?
 
     updateChunkBounds();
     updateChunk();
-    val_.first =
-        coords::Data(chunkFrom_, val_.first.volume(), val_.first.mipLevel());
+    val_->first =
+        coords::Data(chunkFrom_, val_->first.volume(), val_->first.mipLevel());
 
-    idx_ = val_.first.ToChunkOffset();
+    idx_ = val_->first.ToChunkOffset();
     setDataVal();
   }
 
   dataval_iterator(const dataval_iterator& other)
       : base_t(other),
         idx_(other.idx_),
-        iterBounds_(new coords::DataBbox(*other.iterBounds_)),
+        chunkFrom_(other.chunkFrom_),
+        chunkTo_(other.chunkTo_),
+        chunk_(other.chunk_),
+        chunkDs_(other.chunkDs_) {
+    if ((bool)other.iterBounds_) {
+      iterBounds_.reset(new coords::DataBbox(*other.iterBounds_));
+    }
+    if ((bool)other.val_) {
+      val_.reset(new std::pair<coords::Data, T>(*other.val_));
+    }
+  }
+
+  dataval_iterator(dataval_iterator&& other)
+      : base_t(other),
+        idx_(other.idx_),
+        iterBounds_(std::move(other.iterBounds_)),
         chunkFrom_(other.chunkFrom_),
         chunkTo_(other.chunkTo_),
         chunk_(other.chunk_),
         chunkDs_(other.chunkDs_),
-        val_(other.val_) {}
+        val_(std::move(other.val_)) {}
 
   boost::optional<std::pair<coords::Data, T>> neighbor(Vector3i offset) const {
     // TODO: Speed up!
@@ -49,10 +64,10 @@ class dataval_iterator
       return false;
     }
 
-    std::pair<coords::Data, T> ret = val_;
+    std::pair<coords::Data, T> ret = *val_;
     ret.first += offset;
 
-    if (ret.ToChunk() == val_.ToChunk()) {
+    if (ret.ToChunk() == val_->ToChunk()) {
       if (!chunk_) {
         return false;
       }
@@ -75,7 +90,7 @@ class dataval_iterator
   friend class boost::iterator_core_access;
 
   const std::pair<coords::Data, common::SegID>& dereference() const {
-    return val_;
+    return *val_;
   }
 
   bool equal(const dataval_iterator& y) const {
@@ -87,24 +102,24 @@ class dataval_iterator
   }
 
   void increment() {
-    if (++val_.first.x > chunkTo_.x) {
-      val_.first.x = chunkFrom_.x;
-      if (++val_.first.y > chunkTo_.y) {
-        val_.first.y = chunkFrom_.y;
-        if (++val_.first.z > chunkTo_.z) {
+    if (++val_->first.x > chunkTo_.x) {
+      val_->first.x = chunkFrom_.x;
+      if (++val_->first.y > chunkTo_.y) {
+        val_->first.y = chunkFrom_.y;
+        if (++val_->first.z > chunkTo_.z) {
           base_t::base_reference()++;
           if (base_t::base() == ChunkIterator()) {
             chunk_ = nullptr;
             return;
           } else {
             updateChunkBounds();
-            val_.first = coords::Data(chunkFrom_, val_.first.volume(),
-                                      val_.first.mipLevel());
+            val_->first = coords::Data(chunkFrom_, val_->first.volume(),
+                                       val_->first.mipLevel());
             updateChunk();
           }
         }
       }
-      idx_ = val_.first.ToChunkOffset();
+      idx_ = val_->first.ToChunkOffset();
     } else {
       idx_++;
     }
@@ -112,24 +127,24 @@ class dataval_iterator
     setDataVal();
   }
   void decrement() {
-    if (--val_.first.x < chunkFrom_.x) {
-      val_.first.x = chunkTo_.x;
-      if (--val_.first.y < chunkFrom_.y) {
-        val_.first.y = chunkTo_.y;
-        if (--val_.first.z < chunkFrom_.z) {
+    if (--val_->first.x < chunkFrom_.x) {
+      val_->first.x = chunkTo_.x;
+      if (--val_->first.y < chunkFrom_.y) {
+        val_->first.y = chunkTo_.y;
+        if (--val_->first.z < chunkFrom_.z) {
           base_t::base_reference()--;
           if (base_t::base() == ChunkIterator()) {
             chunk_ = nullptr;
             return;
           } else {
             updateChunkBounds();
-            val_.first = coords::Data(chunkTo_, val_.first.volume(),
-                                      val_.first.mipLevel());
+            val_->first = coords::Data(chunkTo_, val_->first.volume(),
+                                       val_->first.mipLevel());
             updateChunk();
           }
         }
       }
-      idx_ = val_.first.ToChunkOffset();
+      idx_ = val_->first.ToChunkOffset();
     } else {
       idx_--;
     }
@@ -150,13 +165,13 @@ class dataval_iterator
   }
 
   void updateChunkBounds() {
-    auto cb = base_t::base()->BoundingBox(val_.first.volume());
+    auto cb = base_t::base()->BoundingBox(val_->first.volume());
     cb.intersect(*iterBounds_);
     chunkFrom_ = cb.getMin();
     chunkTo_ = cb.getMax();
   }
 
-  void setDataVal() { val_.second = chunk_[idx_]; }
+  void setDataVal() { val_->second = chunk_[idx_]; }
 
   int idx_;
   std::unique_ptr<coords::DataBbox> iterBounds_;
@@ -164,7 +179,7 @@ class dataval_iterator
   T* chunk_;
   std::shared_ptr<chunk::ChunkVar> chunkSharedPtr_;
   chunk::ChunkDS* chunkDs_;
-  mutable std::pair<coords::Data, T> val_;
+  std::unique_ptr<std::pair<coords::Data, T>> val_;
 };
 
 template <typename T>
@@ -214,7 +229,7 @@ segment_filtered_dataval_iterator<T> make_segment_filtered_dataval_iterator(
     chunk::UniqueValuesDS& uvm, common::SegID id) {
   return segment_filtered_dataval_iterator<T>(
       [id](const std::pair<coords::Data, T>& p) { return p.second == id; },
-      chunk_filtered_dataval_iterator<T>(bounds, ds, uvm, id));
+      make_chunk_filtered_dataval_iterator<T>(bounds, ds, uvm, id));
 }
 
 template <typename T>
@@ -225,7 +240,7 @@ segment_filtered_dataval_iterator<T> make_segment_filtered_dataval_iterator(
       [set](const std::pair<coords::Data, T>& p) {
         return set.count(p.second);
       },
-      chunk_filtered_dataval_iterator<T>(bounds, ds, uvm, set));
+      make_chunk_filtered_dataval_iterator<T>(bounds, ds, uvm, set));
 }
 }
 }  // namespace om::volume::
