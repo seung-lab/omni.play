@@ -21,14 +21,23 @@ class Data : public vmml::Vector3i {
  private:
   typedef Vector3i base_t;
 
-  // Cheat for performance reasons.
-  Data() : base_t(), volume_(nullptr), mipLevel_(0) {}
-  template <typename T, typename U>
-  friend struct std::pair;
-
  public:
   Data(base_t v, const VolumeSystem& vol, int mipLevel);
   Data(int x, int y, int z, const VolumeSystem& vol, int mipLevel);
+  Data(const Data& other)
+      : base_t(other), volume_(other.volume_), mipLevel_(other.mipLevel_) {}
+
+  friend void swap(Data& a, Data& b) {
+    using std::swap;
+    swap((base_t&)a, (base_t&)b);
+    swap(a.volume_, b.volume_);
+    swap(a.mipLevel_, b.mipLevel_);
+  }
+
+  Data& operator=(Data other) {
+    swap(*this, other);
+    return *this;
+  }
 
   Global ToGlobal() const;
   Norm ToNorm() const;
