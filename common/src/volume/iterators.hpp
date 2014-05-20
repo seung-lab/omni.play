@@ -42,7 +42,9 @@ class CoordValue {
   CoordValue(const chunk::ChunkDS& ds, coords::Data coord)
       : coord_(coord), chunkDs_(std::ref(ds)) {
     updateChunk(coord.ToChunk());
-    updateValue(coord_.ToChunkOffset());
+    if (chunk_) {
+      updateValue(coord_.ToChunkOffset());
+    }
   }
 
   PROP_REF(coords::Data, coord);
@@ -51,11 +53,7 @@ class CoordValue {
   void updateChunk(const coords::Chunk& cc) {
     chunkSharedPtr_ = chunkDs_.get().Get(cc);
     auto typedChunk = boost::get<chunk::Chunk<T>>(chunkSharedPtr_.get());
-    if (typedChunk) {
-      chunk_ = typedChunk->data().get();
-    } else {
-      chunk_ = nullptr;
-    }
+    chunk_ = typedChunk ? typedChunk->data().get() : nullptr;
     if (!chunk_) {
       log_errors << "Unable to get chunk " << cc;
     }
@@ -121,7 +119,13 @@ class dataval_iterator
 
   const CoordValue<T>& dereference() const { return *val_; }
 
-  bool equal(const dataval_iterator& y) const { return *val_ == *y.val_; }
+  bool equal(const dataval_iterator& y) const {
+    if (!val_ || !y.val_) {
+      return val_.get() == y.val_.get();
+    } else {
+      return *val_ == *y.val_;
+    }
+  }
 
   void increment() {
     if (++val_->coord_.x > chunkTo_.x) {
@@ -131,7 +135,7 @@ class dataval_iterator
         if (++val_->coord_.z > chunkTo_.z) {
           base_t::base_reference()++;
           if (base_t::base() == ChunkIterator()) {
-            val_->chunk_ = nullptr;
+            val_.reset();
             return;
           } else {
             updateChunkBounds();
@@ -156,7 +160,7 @@ class dataval_iterator
         if (--val_->coord_.z < chunkFrom_.z) {
           base_t::base_reference()--;
           if (base_t::base() == ChunkIterator()) {
-            val_->chunk_ = nullptr;
+            val_.reset();
             return;
           } else {
             updateChunkBounds();
