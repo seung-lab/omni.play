@@ -112,8 +112,8 @@ void OmCacheGroup::Clean() {
   const int64_t curTotalSize = removeOldest(oldTotalSize);
 
   if (oldTotalSize != curTotalSize) {
-    log_infos << cacheGroup_ << " was: " << om::string::bytesToMB(oldTotalSize)
-              << "; currently: " << om::string::bytesToMB(curTotalSize)
-              << "; max is: " << om::string::bytesToMB(maxAllowedSize_);
+    log_debugs << cacheGroup_ << " was: " << om::string::bytesToMB(oldTotalSize)
+               << "; currently: " << om::string::bytesToMB(curTotalSize)
+               << "; max is: " << om::string::bytesToMB(maxAllowedSize_);
   }
 }
