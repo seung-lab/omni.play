@@ -11,7 +11,7 @@ class CacheDataSource : public IDataSource<TKey, TValue> {
  public:
   CacheDataSource(size_t cacheSize) : cacheSize_(cacheSize) {}
 
-  std::shared_ptr<TValue> Get(const TKey& key, bool async = false) {
+  std::shared_ptr<TValue> Get(const TKey& key, bool async = false) const {
     // TODO: don't return optional of shared_ptr
     boost::optional<std::shared_ptr<TValue>> data = cache_.get(key.keyStr());
     if (data) {
@@ -33,7 +33,7 @@ class CacheDataSource : public IDataSource<TKey, TValue> {
 
  protected:
   PROP_REF(size_t, cacheSize);
-  cache::LockedCacheMap<std::string, std::shared_ptr<TValue>> cache_;
+  mutable cache::LockedCacheMap<std::string, std::shared_ptr<TValue>> cache_;
 
   void cleanCache() {
     while (cache_.size() > cacheSize_) {

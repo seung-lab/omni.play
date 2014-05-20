@@ -31,60 +31,62 @@ class Segmentation : public Volume, virtual public ISegmentation {
   segment::EdgeVector& Edges() const;
 
   template <typename T>
+  using iterator = segment_filtered_dataval_iterator<T>;
+
+  template <typename T>
   struct filtered_iterable_volume {
-    segment_filtered_dataval_iterator<T> begin() {
+    iterator<T> begin() {
       return make_segment_filtered_dataval_iterator(bounds, vol.ChunkDS(),
                                                     vol.UniqueValuesDS(), id);
     }
-    segment_filtered_dataval_iterator<T> end() {
-      return segment_filtered_dataval_iterator<T>();
-    }
-    Segmentation& vol;
+    iterator<T> end() { return iterator<T>(); }
+
+    const Segmentation& vol;
     coords::DataBbox bounds;
     T id;
   };
 
   template <typename T>
-  filtered_iterable_volume<T> SegIterate(T id) {
+  filtered_iterable_volume<T> SegIterate(T id) const {
     return Segmentation::filtered_iterable_volume<T>{*this, Bounds(), id};
   }
   template <typename T>
-  filtered_iterable_volume<T> SegIterate(T id, coords::GlobalBbox bounds) {
+  filtered_iterable_volume<T> SegIterate(T id,
+                                         coords::GlobalBbox bounds) const {
     return Segmentation::filtered_iterable_volume<T>{
         *this, bounds.ToDataBbox(Coords(), 0), id};
   }
   template <typename T>
-  filtered_iterable_volume<T> SegIterate(T id, coords::DataBbox bounds) {
+  filtered_iterable_volume<T> SegIterate(T id, coords::DataBbox bounds) const {
     return Segmentation::filtered_iterable_volume<T>{*this, bounds, id};
   }
 
   template <typename T>
   struct filtered_set_iterable_volume {
-    segment_filtered_dataval_iterator<T> begin() {
+    iterator<T> begin() {
       return make_segment_filtered_dataval_iterator(bounds, vol.ChunkDS(),
                                                     vol.UniqueValuesDS(), ids);
     }
-    segment_filtered_dataval_iterator<T> end() {
-      return segment_filtered_dataval_iterator<T>();
-    }
-    Segmentation& vol;
+    iterator<T> end() { return iterator<T>(); }
+
+    const Segmentation& vol;
     coords::DataBbox bounds;
     std::set<T> ids;
   };
 
   template <typename T>
-  filtered_set_iterable_volume<T> SegIterate(std::set<T> ids) {
+  filtered_set_iterable_volume<T> SegIterate(std::set<T> ids) const {
     return Segmentation::filtered_set_iterable_volume<T>{*this, Bounds(), ids};
   }
   template <typename T>
   filtered_set_iterable_volume<T> SegIterate(std::set<T> ids,
-                                             coords::GlobalBbox bounds) {
+                                             coords::GlobalBbox bounds) const {
     return Segmentation::filtered_set_iterable_volume<T>{
         *this, bounds.ToDataBbox(Coords(), 0), ids};
   }
   template <typename T>
   filtered_set_iterable_volume<T> SegIterate(std::set<T> ids,
-                                             coords::DataBbox bounds) {
+                                             coords::DataBbox bounds) const {
     return Segmentation::filtered_set_iterable_volume<T>{*this, bounds, ids};
   }
 

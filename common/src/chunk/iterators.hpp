@@ -43,7 +43,7 @@ inline filtered_iterator make_filtered_iterator(
 // Iterates over specific chunks in a given range at a given mip level.  This
 // only yeilds chunks which contain segments in the given set.  Built using the
 // filtered_iterator.
-inline filtered_iterator make_segment_iterator(chunk::UniqueValuesDS& uvm,
+inline filtered_iterator make_segment_iterator(const chunk::UniqueValuesDS& uvm,
                                                common::SegID segment,
                                                iterator iter) {
   return make_filtered_iterator([&uvm, segment](const coords::Chunk& c) {
@@ -55,7 +55,7 @@ inline filtered_iterator make_segment_iterator(chunk::UniqueValuesDS& uvm,
 
 inline filtered_iterator make_segment_iterator(const coords::Chunk& from,
                                                const coords::Chunk& to,
-                                               chunk::UniqueValuesDS& uvm,
+                                               const chunk::UniqueValuesDS& uvm,
                                                common::SegID segment) {
   return make_segment_iterator(uvm, segment, make_iterator(from, to));
 }
@@ -63,7 +63,7 @@ inline filtered_iterator make_segment_iterator(const coords::Chunk& from,
 // Iterates over specific chunks in a given range at a given mip level.  This
 // only yeilds chunks which contain segments in the given set.  Built using the
 // filtered_iterator.
-inline filtered_iterator make_segset_iterator(chunk::UniqueValuesDS& uvm,
+inline filtered_iterator make_segset_iterator(const chunk::UniqueValuesDS& uvm,
                                               common::SegIDSet segs,
                                               iterator iter) {
   return make_filtered_iterator([&uvm, segs](const coords::Chunk& c) {
@@ -76,7 +76,7 @@ inline filtered_iterator make_segset_iterator(chunk::UniqueValuesDS& uvm,
 
 inline filtered_iterator make_segset_iterator(const coords::Chunk& from,
                                               const coords::Chunk& to,
-                                              chunk::UniqueValuesDS& uvm,
+                                              const chunk::UniqueValuesDS& uvm,
                                               common::SegIDSet segs) {
   return make_segset_iterator(uvm, segs, make_iterator(from, to));
 }

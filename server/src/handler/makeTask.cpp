@@ -210,13 +210,6 @@ void get_seeds(std::vector<std::map<int32_t, int32_t>>& seeds,
   auto iterBounds = bounds.ToDataBbox(pre.Coords(), 0);
   iterBounds.setMin(iterBounds.getMin() + 1);
 
-  // This optimization is necessary for omni sized volumes and slower for
-  // eyewire sized volumes.  So don't do it if the overlap is too small.
-  chunk::UniqueValuesDS* cuvmDS = nullptr;
-  if (range.x * range.y * range.z > 128 * 128 * 128 * 4) {
-    cuvmDS = &pre.UniqueValuesDS();
-  }
-
   for (auto iter : pre.SegIterate(sel, iterBounds)) {
     uint32_t post_seg_id = postGetter.GetValue(iter.coord().ToGlobal());
 
@@ -225,13 +218,13 @@ void get_seeds(std::vector<std::map<int32_t, int32_t>>& seeds,
       mappingCounts[post_seg_id]++;
     }
 
-    uint32_t proxy = toProxy(iter->first, range, proxyBounds);
+    uint32_t proxy = toProxy(iter.coord(), range, proxyBounds);
     included.insert(proxy);
 
     auto considerNeighbor = [&](Vector3i offset) {
       auto n = iter.neighbor(offset);
       if ((bool)n && sel.count(n->value())) {
-        auto p = toProxy(n.coord(), range, proxyBounds);
+        auto p = toProxy(n->coord(), range, proxyBounds);
         included.insert(p);
         sets.join(sets.find_set(proxy), sets.find_set(p));
       }

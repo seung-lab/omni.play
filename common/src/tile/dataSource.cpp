@@ -14,7 +14,7 @@ FileDataSource::FileDataSource(file::Paths::Vol volRoot,
     : volRoot_(volRoot), dataType_(dataType), coordSystem_(coordSystem) {}
 
 std::shared_ptr<tile::TileVar> FileDataSource::Get(const coords::Tile& coord,
-                                                   bool async) {
+                                                   bool async) const {
   try {
     auto file = files_.Get(fileName(coord.chunk().mipLevel()), dataType_);
     return file >> TileSlicer(coord, coordSystem_);
@@ -30,7 +30,7 @@ bool FileDataSource::Put(const coords::Tile&, std::shared_ptr<tile::TileVar>,
   throw om::NotImplementedException("fixme");
 }
 
-std::string FileDataSource::fileName(int mipLevel) {
+std::string FileDataSource::fileName(int mipLevel) const {
   return volRoot_.Data(mipLevel, dataType_).string();
 }
 }

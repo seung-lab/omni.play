@@ -23,20 +23,25 @@ class CoordValue {
     auto* chunk = chunk_;
     if (ret.coord_.ToChunk() != coord_.ToChunk()) {
       auto chunkPtr = chunkDs_.get().Get(ret.coord_.ToChunk());
-      chunk = boost::get<chunk::Chunk<T>*>(chunkPtr.get());
+      auto typedChunk = boost::get<chunk::Chunk<T>>(chunkSharedPtr_.get());
+      chunk = typedChunk ? typedChunk->data().get() : nullptr;
       if (!chunk) {
         return boost::optional<CoordValue<T>>();
       }
     }
-    ret.Value = (*chunk)[ret.coord_.ToChunkOffset()];
+    ret.value_ = chunk[ret.coord_.ToChunkOffset()];
 
     return ret;
   }
 
+  friend bool operator==(const CoordValue& a, const CoordValue& b) {
+    return std::tie(a.coord_, a.value_) == std::tie(b.coord_, b.value_);
+  }
+
  private:
-  CoordValue(chunk::ChunkDS& ds, coords::Data coord)
+  CoordValue(const chunk::ChunkDS& ds, coords::Data coord)
       : coord_(coord), chunkDs_(std::ref(ds)) {
-    updateChunk();
+    updateChunk(coord.ToChunk());
     updateValue(coord_.ToChunkOffset());
   }
 
@@ -60,7 +65,7 @@ class CoordValue {
 
   T* chunk_;
   std::shared_ptr<chunk::ChunkVar> chunkSharedPtr_;
-  std::reference_wrapper<chunk::ChunkDS> chunkDs_;
+  std::reference_wrapper<const chunk::ChunkDS> chunkDs_;
 
   template <typename, typename>
   friend class dataval_iterator;
@@ -76,7 +81,7 @@ class dataval_iterator
  public:
   dataval_iterator() : base_t() {}
   dataval_iterator(ChunkIterator chunkIter, const coords::DataBbox& bounds,
-                   chunk::ChunkDS& ds, const coords::Data& curr)
+                   const chunk::ChunkDS& ds, const coords::Data& curr)
       : base_t(chunkIter), iterBounds_(new coords::DataBbox(bounds)) {
     // TODO: What if the chunkIter has bad bounds?  Better way to initialize
     // without knowing the type?
@@ -132,7 +137,7 @@ class dataval_iterator
             updateChunkBounds();
             val_->coord_ = coords::Data(chunkFrom_, val_->coord_.volume(),
                                         val_->coord_.mipLevel());
-            val_->updateChunk();
+            val_->updateChunk(*base_t::base());
           }
         }
       }
@@ -157,7 +162,7 @@ class dataval_iterator
             updateChunkBounds();
             val_->coord_ = coords::Data(chunkTo_, val_->coord_.volume(),
                                         val_->coord_.mipLevel());
-            val_->updateChunk();
+            val_->updateChunk(*base_t::base());
           }
         }
       }
@@ -187,7 +192,7 @@ using all_dataval_iterator = dataval_iterator<T, chunk::iterator>;
 
 template <typename T>
 all_dataval_iterator<T> make_all_dataval_iterator(
-    const coords::DataBbox& bounds, chunk::ChunkDS& ds) {
+    const coords::DataBbox& bounds, const chunk::ChunkDS& ds) {
   return all_dataval_iterator<T>(
       chunk::make_iterator(bounds.getMin().ToChunk(),
                            bounds.getMax().ToChunk()),
@@ -200,8 +205,8 @@ using chunk_filtered_dataval_iterator =
 
 template <typename T>
 chunk_filtered_dataval_iterator<T> make_chunk_filtered_dataval_iterator(
-    const coords::DataBbox& bounds, chunk::ChunkDS& ds,
-    chunk::UniqueValuesDS& uvm, common::SegID id) {
+    const coords::DataBbox& bounds, const chunk::ChunkDS& ds,
+    const chunk::UniqueValuesDS& uvm, common::SegID id) {
   return chunk_filtered_dataval_iterator<T>(
       chunk::make_segment_iterator(bounds.getMin().ToChunk(),
                                    bounds.getMax().ToChunk(), uvm, id),
@@ -210,8 +215,8 @@ chunk_filtered_dataval_iterator<T> make_chunk_filtered_dataval_iterator(
 
 template <typename T>
 chunk_filtered_dataval_iterator<T> make_chunk_filtered_dataval_iterator(
-    const coords::DataBbox& bounds, chunk::ChunkDS& ds,
-    chunk::UniqueValuesDS& uvm, common::SegIDSet set) {
+    const coords::DataBbox& bounds, const chunk::ChunkDS& ds,
+    const chunk::UniqueValuesDS& uvm, common::SegIDSet set) {
   return chunk_filtered_dataval_iterator<T>(
       chunk::make_segset_iterator(bounds.getMin().ToChunk(),
                                   bounds.getMax().ToChunk(), uvm, set),
@@ -219,27 +224,25 @@ chunk_filtered_dataval_iterator<T> make_chunk_filtered_dataval_iterator(
 }
 
 template <typename T>
-using segment_filtered_dataval_iterator = boost::filter_iterator<
-    std::function<bool(const std::pair<coords::Data, T>&)>,
-    chunk_filtered_dataval_iterator<T>>;
+using segment_filtered_dataval_iterator =
+    boost::filter_iterator<std::function<bool(const CoordValue<T>& p)>,
+                           chunk_filtered_dataval_iterator<T>>;
 
 template <typename T>
 segment_filtered_dataval_iterator<T> make_segment_filtered_dataval_iterator(
     const coords::DataBbox& bounds, const chunk::ChunkDS& ds,
-    const chunk::UniqueValuesDS& uvm, common::SegID id) {
+    const chunk::UniqueValuesDS& uvm, T id) {
   return segment_filtered_dataval_iterator<T>(
-      [id](const std::pair<coords::Data, T>& p) { return p.second == id; },
+      [id](const CoordValue<T>& p) { return p.value() == id; },
       make_chunk_filtered_dataval_iterator<T>(bounds, ds, uvm, id));
 }
 
 template <typename T>
 segment_filtered_dataval_iterator<T> make_segment_filtered_dataval_iterator(
     const coords::DataBbox& bounds, const chunk::ChunkDS& ds,
-    const chunk::UniqueValuesDS& uvm, common::SegIDSet set) {
+    const chunk::UniqueValuesDS& uvm, std::set<T> set) {
   return segment_filtered_dataval_iterator<T>(
-      [set](const std::pair<coords::Data, T>& p) {
-        return set.count(p.second);
-      },
+      [set](const CoordValue<T>& p) { return set.count(p.value()); },
       make_chunk_filtered_dataval_iterator<T>(bounds, ds, uvm, set));
 }
 }

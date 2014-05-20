@@ -12,7 +12,8 @@ template <typename TKey, typename TValue>
 class IDataSource {
  public:
   virtual ~IDataSource() {}
-  virtual std::shared_ptr<TValue> Get(const TKey&, bool async = false) = 0;
+  virtual std::shared_ptr<TValue> Get(const TKey&,
+                                      bool async = false) const = 0;
   virtual bool Put(const TKey&, std::shared_ptr<TValue>,
                    bool asnyc = false) = 0;
   virtual void Flush() {}

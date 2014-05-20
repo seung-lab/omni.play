@@ -19,7 +19,7 @@ class MetadataDataSource
     return mds.Get(uri);
   }
   virtual std::shared_ptr<Metadata> Get(const std::string& uri,
-                                        bool async = false) override {
+                                        bool async = false) const override {
     std::string path;
     common::ObjectType volType;
     int number;
@@ -134,7 +134,7 @@ class MetadataDataSource
 
   std::shared_ptr<Metadata> loadYaml(const std::string& path,
                                      const common::ObjectType volType,
-                                     int number) {
+                                     int number) const {
     auto docs = YAML::LoadAllFromFile(path);
 
     std::shared_ptr<Metadata> ret(new Metadata());

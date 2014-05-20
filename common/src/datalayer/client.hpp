@@ -28,8 +28,8 @@ class ClientDS : public IDataSource<TKey, TValue> {
   ClientDS(std::string endpoint) : endpoint_(endpoint), handlePool_(100) {}
   virtual ~ClientDS() {}
 
-  virtual std::shared_ptr<TValue> Get(const TKey& key,
-                                      bool async = false) override {
+  virtual std::shared_ptr<TValue> Get(const TKey& key, bool async = false) const
+      override {
     typename handle_pool::Lease h(handlePool_);
     if (!h) {
       log_debugs << "Out of connections!";
@@ -104,20 +104,20 @@ class ClientDS : public IDataSource<TKey, TValue> {
 
  private:
   template <typename... Types>
-  bool call_all(CURLcode err, Types... t) {
+  bool call_all(CURLcode err, Types... t) const {
     if (!call_all(err)) {
       return false;
     }
     return call_all(t...);
   }
-  bool call_all(CURLcode err) {
+  bool call_all(CURLcode err) const {
     if (err) {
       log_debugs << "CURL Error: " << curl_easy_strerror(err);
       return false;
     }
     return true;
   }
-  bool call_all() { return true; }
+  bool call_all() const { return true; }
 
   // Reimplement to avoid copies.
   static size_t write_data(char* buffer, size_t size, size_t nmemb,
@@ -149,7 +149,7 @@ class ClientDS : public IDataSource<TKey, TValue> {
   typedef utility::ResourcePool<handle> handle_pool;
 
   PROP_REF_SET(std::string, endpoint);
-  handle_pool handlePool_;
+  mutable handle_pool handlePool_;
 };
 
 #undef SET_OPT

@@ -16,7 +16,8 @@ class FileDataSource : public TileDS {
   FileDataSource(file::Paths::Vol, const common::DataType&,
                  const coords::VolumeSystem&);
 
-  std::shared_ptr<tile::TileVar> Get(const coords::Tile&, bool async = false);
+  std::shared_ptr<tile::TileVar> Get(const coords::Tile&,
+                                     bool async = false) const;
   bool Put(const coords::Tile&, std::shared_ptr<tile::TileVar>,
            bool async = false);
 
@@ -24,11 +25,11 @@ class FileDataSource : public TileDS {
   inline bool is_persisted() const { return true; }
 
  private:
-  std::string fileName(int);
+  std::string fileName(int) const;
 
   file::Paths::Vol volRoot_;
   const common::DataType dataType_;
-  datalayer::VarFilePtrCache files_;
+  mutable datalayer::VarFilePtrCache files_;
   const coords::VolumeSystem& coordSystem_;
 };
 }

@@ -51,20 +51,20 @@ class Volume : virtual public IVolume {
       return make_all_dataval_iterator<T>(bounds, vol.ChunkDS());
     }
     all_dataval_iterator<T> end() { return all_dataval_iterator<T>(); }
-    Volume& vol;
+    const Volume& vol;
     coords::DataBbox bounds;
   };
 
   template <typename T>
-  iterable_volume<T> Iterate() {
+  iterable_volume<T> Iterate() const {
     return Volume::iterable_volume<T>{*this, Bounds()};
   }
   template <typename T>
-  iterable_volume<T> Iterate(coords::DataBbox bounds) {
+  iterable_volume<T> Iterate(coords::DataBbox bounds) const {
     return Volume::iterable_volume<T>{*this, bounds};
   }
   template <typename T>
-  iterable_volume<T> Iterate(coords::GlobalBbox bounds) {
+  iterable_volume<T> Iterate(coords::GlobalBbox bounds) const {
     return Volume::iterable_volume<T>{*this, bounds.ToDataBbox(Coords(), 0)};
   }
 

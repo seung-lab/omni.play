@@ -16,7 +16,7 @@ namespace mesh {
 class VertexIndexDataSourceImpl {
  public:
   inline datalayer::MemMappedFile<DataEntry> getAllocFile(
-      const coords::Chunk& coord) {
+      const coords::Chunk& coord) const {
     return allocationTables_.Get(allocPath(coord));
   }
 
@@ -43,7 +43,7 @@ class VertexIndexDataSourceImpl {
     return entry;
   }
 
-  std::shared_ptr<VertexIndexMesh> getMesh(const coords::Mesh& coord) {
+  std::shared_ptr<VertexIndexMesh> getMesh(const coords::Mesh& coord) const {
     auto ret = std::make_shared<VertexIndexMesh>(coord);
 
     datalayer::MemMappedFile<DataEntry> table =
@@ -124,7 +124,7 @@ class VertexIndexDataSourceImpl {
 
   template <typename T>
   std::shared_ptr<T> read(const FilePart& part,
-                          const datalayer::MemMappedFile<char>& rawData) {
+                          const datalayer::MemMappedFile<char>& rawData) const {
     const int64_t numBytes = part.totalBytes;
 
     assert(numBytes);
@@ -226,8 +226,8 @@ class VertexIndexDataSourceImpl {
                             chunk::UniqueValuesDS* uniqueValuesSource)
       : uniqueValuesSource_(uniqueValuesSource), volumeRoot_(volumeRoot) {}
 
-  datalayer::FilePtrCache<DataEntry> allocationTables_;
-  datalayer::FilePtrCache<char> dataFiles_;
+  mutable datalayer::FilePtrCache<DataEntry> allocationTables_;
+  mutable datalayer::FilePtrCache<char> dataFiles_;
   std::unordered_map<std::string, std::shared_ptr<ChunkWriter>> writers_;
   chunk::UniqueValuesDS* uniqueValuesSource_;
   file::path volumeRoot_;
@@ -240,7 +240,7 @@ VertexIndexDataSource::VertexIndexDataSource(
 VertexIndexDataSource::~VertexIndexDataSource() {}
 
 std::shared_ptr<VertexIndexMesh> VertexIndexDataSource::Get(
-    const coords::Mesh& coord, bool async) {
+    const coords::Mesh& coord, bool async) const {
   try {
     return impl_->getMesh(coord);
   }

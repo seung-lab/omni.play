@@ -14,7 +14,7 @@ class FileDataSource : public ChunkDS {
                  const coords::VolumeSystem&);
 
   std::shared_ptr<chunk::ChunkVar> Get(const coords::Chunk&,
-                                       bool async = false);
+                                       bool async = false) const;
   bool Put(const coords::Chunk&, std::shared_ptr<chunk::ChunkVar>,
            bool async = false);
 
@@ -22,11 +22,11 @@ class FileDataSource : public ChunkDS {
   inline bool is_persisted() const { return true; }
 
  private:
-  std::string fileName(int);
+  std::string fileName(int) const;
 
-  file::Paths::Vol volPaths_;
+  const file::Paths::Vol volPaths_;
   const common::DataType dataType_;
-  datalayer::VarFilePtrCache files_;
+  mutable datalayer::VarFilePtrCache files_;
   const coords::VolumeSystem& coordSystem_;
 };
 }

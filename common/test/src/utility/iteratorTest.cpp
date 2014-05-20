@@ -168,11 +168,9 @@ TEST(Utility_Iterators, DatavalIterator) {
   coords::Chunk cc(0, 1, 1, 1);
   size_t counter = 0;
   auto bounds = cc.BoundingBox(seg.Coords());
-  auto iterable = seg.Iterate<common::SegID>(bounds);
-  for (auto& iter : iterable) {
+  for (auto iter : seg.Iterate<common::SegID>(bounds)) {
     counter++;
   }
-  ASSERT_EQ(iterable.begin()->coord(), bounds.getMin());
   ASSERT_EQ(128 * 128 * 128, counter);
 }
 

@@ -31,7 +31,7 @@ class SizedCacheDataSource : public IDataSource<TKey, TValue> {
     cv_.notify_all();
   }
 
-  std::shared_ptr<TValue> Get(const TKey& key, bool async = false) {
+  std::shared_ptr<TValue> Get(const TKey& key, bool async = false) const {
     // TODO: don't return optional of shared_ptr
     boost::optional<std::shared_ptr<TValue>> data = cache_.get(key.keyStr());
     if (data) {
@@ -56,7 +56,7 @@ class SizedCacheDataSource : public IDataSource<TKey, TValue> {
  protected:
   std::atomic<size_t> bytes_;
   PROP_CONST_REF(size_t, maxBytes);
-  cache::LockedCacheMap<std::string, std::shared_ptr<TValue>> cache_;
+  mutable cache::LockedCacheMap<std::string, std::shared_ptr<TValue>> cache_;
   std::future<void> cleaner_;
   std::atomic<bool> killing_;
   std::mutex m_;

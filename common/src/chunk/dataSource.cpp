@@ -42,12 +42,12 @@ class ChunkSlicer
   const coords::VolumeSystem& system_;
 };
 
-std::string FileDataSource::fileName(int mipLevel) {
+std::string FileDataSource::fileName(int mipLevel) const {
   return volPaths_.Data(mipLevel, dataType_).string();
 }
 
 std::shared_ptr<chunk::ChunkVar> FileDataSource::Get(const coords::Chunk& coord,
-                                                     bool async) {
+                                                     bool async) const {
   try {
     auto file = files_.Get(fileName(coord.mipLevel()), dataType_);
     return boost::apply_visitor(ChunkSlicer(coord, coordSystem_), file);

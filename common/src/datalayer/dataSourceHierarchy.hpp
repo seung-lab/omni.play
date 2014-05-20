@@ -27,7 +27,7 @@ class DataSourceHierarchy : public IDataSource<TKey, TValue> {
     // currentlyFetching_.clear();
   }
 
-  std::shared_ptr<TValue> Get(const TKey& key, bool async = false) {
+  std::shared_ptr<TValue> Get(const TKey& key, bool async = false) const {
     std::shared_ptr<TValue> ret;
 
     // Try getting from cache.
@@ -104,7 +104,8 @@ class DataSourceHierarchy : public IDataSource<TKey, TValue> {
   }
 
  protected:
-  void store(const TKey& key, std::shared_ptr<TValue> data, bool persist) {
+  void store(const TKey& key, std::shared_ptr<TValue> data,
+             bool persist) const {
     for (auto& s : sources_) {
       if (s->is_cache()) {
         s->Put(key, data);
@@ -115,7 +116,7 @@ class DataSourceHierarchy : public IDataSource<TKey, TValue> {
     }
   }
 
-  std::shared_ptr<TValue> do_get(const TKey& key) {
+  std::shared_ptr<TValue> do_get(const TKey& key) const {
     if (killingCache_.load()) {
       return std::shared_ptr<TValue>();
     }
@@ -139,9 +140,9 @@ class DataSourceHierarchy : public IDataSource<TKey, TValue> {
   }
 
   // TODO: Lock access to this Vector
-  std::vector<std::unique_ptr<IDataSource<TKey, TValue>>> sources_;
+  mutable std::vector<std::unique_ptr<IDataSource<TKey, TValue>>> sources_;
   uint numThreads_;
-  thread::ThreadPool threadPool_;
+  mutable thread::ThreadPool threadPool_;
   // cache::LockedKeySet<TKey> currentlyFetching_;
   std::atomic_bool killingCache_;
 };

@@ -18,7 +18,7 @@ class VertexIndexDataSource : public VertexIndexMeshDS {
   ~VertexIndexDataSource();
 
   virtual std::shared_ptr<VertexIndexMesh> Get(const coords::Mesh& coord,
-                                               bool async = false);
+                                               bool async = false) const;
   virtual bool Put(const coords::Mesh& coord,
                    std::shared_ptr<VertexIndexMesh> mesh, bool async = false);
 
