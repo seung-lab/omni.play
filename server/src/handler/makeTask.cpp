@@ -217,38 +217,33 @@ void get_seeds(std::vector<std::map<int32_t, int32_t>>& seeds,
     cuvmDS = &pre.UniqueValuesDS();
   }
 
-  utility::VolumeWalker<uint32_t> walker(iterBounds, preGetter, cuvmDS);
-
-  walker.foreach_voxel_in_set(sel, [&](const coords::Data& dc, uint32_t) {
-    uint32_t post_seg_id = postGetter.GetValue(dc.ToGlobal());
+  for (auto iter : pre.SegIterate(sel, iterBounds)) {
+    uint32_t post_seg_id = postGetter.GetValue(iter.coord().ToGlobal());
 
     if (post_seg_id) {
       postSelected.insert(post_seg_id);
       mappingCounts[post_seg_id]++;
     }
 
-    uint32_t proxy = toProxy(dc, range, proxyBounds);
+    uint32_t proxy = toProxy(iter->first, range, proxyBounds);
     included.insert(proxy);
 
-    auto considerNeighbor = [&](const coords::Data d) {
-      if (selected.count(preGetter.GetValue(d))) {
-        auto p = toProxy(d, range, proxyBounds);
+    auto considerNeighbor = [&](Vector3i offset) {
+      auto n = iter.neighbor(offset);
+      if ((bool)n && sel.count(n->value())) {
+        auto p = toProxy(n.coord(), range, proxyBounds);
         included.insert(p);
         sets.join(sets.find_set(proxy), sets.find_set(p));
       }
     };
+    considerNeighbor(Vector3i(-1, 0, 0));
+    considerNeighbor(Vector3i(0, -1, 0));
+    considerNeighbor(Vector3i(0, 0, -1));
+  }
 
-    considerNeighbor(dc - Vector3i(1, 0, 0));
-    considerNeighbor(dc - Vector3i(0, 1, 0));
-    considerNeighbor(dc - Vector3i(0, 0, 1));
-  });
-
-  utility::VolumeWalker<uint32_t> postWalker(
-      bounds.ToDataBbox(post.Coords(), 0), postGetter, &post.UniqueValuesDS());
-
-  postWalker.foreach_voxel_in_set(
-      postSelected,
-      [&sizes](const coords::Data&, uint32_t seg_id) { sizes[seg_id]++; });
+  for (auto& iter : post.SegIterate(postSelected, bounds)) {
+    sizes[iter.value()]++;
+  }
 
   std::unordered_map<uint32_t, common::SegIDSet> newSeedSets;
   std::unordered_map<uint32_t, common::SegIDSet> preSideSets;

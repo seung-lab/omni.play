@@ -172,7 +172,7 @@ TEST(Utility_Iterators, DatavalIterator) {
   for (auto& iter : iterable) {
     counter++;
   }
-  ASSERT_EQ(iterable.begin()->first, bounds.getMin());
+  ASSERT_EQ(iterable.begin()->coord(), bounds.getMin());
   ASSERT_EQ(128 * 128 * 128, counter);
 }
 
@@ -226,7 +226,7 @@ TEST(Utility_Iterators, Benchmark_DatavalIterator) {
   for (auto iter =
            make_all_dataval_iterator<common::SegID>(bounds, seg.ChunkDS());
        iter != all_dataval_iterator<common::SegID>(); ++iter) {
-    sum2 += iter->second;
+    sum2 += iter->value();
   }
   t.Print("dataval_iterator");
 
@@ -311,7 +311,7 @@ TEST(Utility_Iterators, Benchmark_FilteredDatavalIterator) {
   for (auto iter = make_chunk_filtered_dataval_iterator<common::SegID>(
            bounds, seg.ChunkDS(), seg.UniqueValuesDS(), id);
        iter != chunk_filtered_dataval_iterator<common::SegID>(); ++iter) {
-    if (iter->second == id) {
+    if (iter->value() == id) {
       count2++;
     }
   }

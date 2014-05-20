@@ -50,20 +50,26 @@ std::vector<std::set<int>> ConnectedComponents(
       continue;
     }
 
-    utility::VolumeWalker<uint32_t> walker(bounds, voxels);
-    common::SegIDSet first;
-    first.insert(segA);
-    const common::SegID& second = segB;
-    bool join =
-        !walker.true_foreach_voxel_in_set(
-             first, [&voxels, second](const coords::Data& dc, uint32_t) {
-               return !(voxels.GetValue(dc + Vector3i(1, 0, 0)) == second ||
-                        voxels.GetValue(dc + Vector3i(0, 1, 0)) == second ||
-                        voxels.GetValue(dc + Vector3i(0, 0, 1)) == second ||
-                        voxels.GetValue(dc + Vector3i(-1, 0, 0)) == second ||
-                        voxels.GetValue(dc + Vector3i(0, -1, 0)) == second ||
-                        voxels.GetValue(dc + Vector3i(0, 0, -1)) == second);
-             });
+    bool join = false;
+    for (auto iter : segmentation.SegIterate(segA, bounds)) {
+      auto n = iter.neighbor(Vector3i(1, 0, 0));
+      if ((join = (bool)n && n->value() == segB)) break;
+
+      n = iter.neighbor(Vector3i(0, 1, 0));
+      if ((join = (bool)n && n->value() == segB)) break;
+
+      n = iter.neighbor(Vector3i(0, 0, 1));
+      if ((join = (bool)n && n->value() == segB)) break;
+
+      n = iter.neighbor(Vector3i(-1, 0, 0));
+      if ((join = (bool)n && n->value() == segB)) break;
+
+      n = iter.neighbor(Vector3i(0, -1, 0));
+      if ((join = (bool)n && n->value() == segB)) break;
+
+      n = iter.neighbor(Vector3i(0, 0, -1));
+      if ((join = (bool)n && n->value() == segB)) break;
+    }
 
     if (join) {
       sets.join(sets.find_set(segA), sets.find_set(segB));

@@ -35,8 +35,8 @@ TEST(Chunk_UniqueValuesFileDataSource, Completeness) {
   common::SegIDSet voxels;
   auto iterable = s.Iterate<common::SegID>(cc.BoundingBox(s.Coords()));
   for (auto& iter : iterable) {
-    if (iter.second) {
-      voxels.insert(iter.second);
+    if (iter.value()) {
+      voxels.insert(iter.value());
     }
   }
   auto uv = s.UniqueValuesDS().Get(cc);
