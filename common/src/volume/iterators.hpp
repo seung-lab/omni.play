@@ -74,15 +74,16 @@ class dataval_iterator
  public:
   dataval_iterator() : base_t() {}
   dataval_iterator(ChunkIterator chunkIter, const coords::DataBbox& bounds,
-                   const chunk::ChunkDS& ds, const coords::Data& curr)
+                   const chunk::ChunkDS& ds)
       : base_t(chunkIter), iterBounds_(new coords::DataBbox(bounds)) {
     // TODO: What if the chunkIter has bad bounds?  Better way to initialize
     // without knowing the type?
 
-    if (!bounds.contains(curr)) {
-      throw ArgException("Invalid curr or bounds");
-    }
-    val_.reset(new CoordValue<T>(ds, curr));
+    auto chunkBounds = base_t::base()->BoundingBox(bounds.volume());
+
+    val_.reset(new CoordValue<T>(ds, chunkBounds.getMin() < bounds.getMin()
+                                         ? bounds.getMin()
+                                         : chunkBounds.getMin()));
     idx_ = val_->coord_.ToChunkOffset();
 
     updateChunkBounds();
@@ -195,7 +196,7 @@ all_dataval_iterator<T> make_all_dataval_iterator(
   return all_dataval_iterator<T>(
       chunk::make_iterator(bounds.getMin().ToChunk(),
                            bounds.getMax().ToChunk()),
-      bounds, ds, bounds.getMin());
+      bounds, ds);
 }
 
 template <typename T>
@@ -209,7 +210,7 @@ chunk_filtered_dataval_iterator<T> make_chunk_filtered_dataval_iterator(
   return chunk_filtered_dataval_iterator<T>(
       chunk::make_segment_iterator(bounds.getMin().ToChunk(),
                                    bounds.getMax().ToChunk(), uvm, id),
-      bounds, ds, bounds.getMin());
+      bounds, ds);
 }
 
 template <typename T>
@@ -219,7 +220,7 @@ chunk_filtered_dataval_iterator<T> make_chunk_filtered_dataval_iterator(
   return chunk_filtered_dataval_iterator<T>(
       chunk::make_segset_iterator(bounds.getMin().ToChunk(),
                                   bounds.getMax().ToChunk(), uvm, set),
-      bounds, ds, bounds.getMin());
+      bounds, ds);
 }
 
 template <typename T>
