@@ -20,17 +20,10 @@ class CoordValue {
     auto ret = *this;
     ret.coord_ += offset;
 
-    auto* chunk = chunk_;
     if (ret.coord_.ToChunk() != coord_.ToChunk()) {
-      auto chunkPtr = chunkDs_.get().Get(ret.coord_.ToChunk());
-      auto typedChunk = boost::get<chunk::Chunk<T>>(chunkSharedPtr_.get());
-      chunk = typedChunk ? typedChunk->data().get() : nullptr;
-      if (!chunk) {
-        return boost::optional<CoordValue<T>>();
-      }
+      ret.updateChunk();
     }
-    ret.value_ = chunk[ret.coord_.ToChunkOffset()];
-
+    ret.updateValue();
     return ret;
   }
 
@@ -58,8 +51,10 @@ class CoordValue {
       log_errors << "Unable to get chunk " << cc;
     }
   }
+  void updateChunk() { updateChunk(coord_.ToChunk()); }
 
   void updateValue(size_t idx) { value_ = chunk_[idx]; }
+  void updateValue() { updateValue(coord_.ToChunkOffset()); }
 
   T* chunk_;
   std::shared_ptr<chunk::ChunkVar> chunkSharedPtr_;
