@@ -79,14 +79,11 @@ class dataval_iterator
     // TODO: What if the chunkIter has bad bounds?  Better way to initialize
     // without knowing the type?
 
-    auto chunkBounds = base_t::base()->BoundingBox(bounds.volume());
-
-    val_.reset(new CoordValue<T>(ds, chunkBounds.getMin() < bounds.getMin()
-                                         ? bounds.getMin()
-                                         : chunkBounds.getMin()));
-    idx_ = val_->coord_.ToChunkOffset();
-
     updateChunkBounds();
+    val_.reset(
+        new CoordValue<T>(ds, coords::Data(chunkFrom_, iterBounds_->volume(),
+                                           iterBounds_->mipLevel())));
+    idx_ = val_->coord_.ToChunkOffset();
   }
 
   dataval_iterator(const dataval_iterator& other)
@@ -148,33 +145,9 @@ class dataval_iterator
 
     val_->updateValue(idx_);
   }
-  void decrement() {
-    if (--val_->coord_.x < chunkFrom_.x) {
-      val_->coord_.x = chunkTo_.x;
-      if (--val_->coord_.y < chunkFrom_.y) {
-        val_->coord_.y = chunkTo_.y;
-        if (--val_->coord_.z < chunkFrom_.z) {
-          base_t::base_reference()--;
-          if (base_t::base() == ChunkIterator()) {
-            val_.reset();
-            return;
-          } else {
-            updateChunkBounds();
-            val_->coord_ = coords::Data(chunkTo_, val_->coord_.volume(),
-                                        val_->coord_.mipLevel());
-            val_->updateChunk(*base_t::base());
-          }
-        }
-      }
-      idx_ = val_->coord_.ToChunkOffset();
-    } else {
-      idx_--;
-    }
-    val_->updateValue(idx_);
-  }
 
   void updateChunkBounds() {
-    auto cb = base_t::base()->BoundingBox(val_->coord_.volume());
+    auto cb = base_t::base()->BoundingBox(iterBounds_->volume());
     cb.intersect(*iterBounds_);
     chunkFrom_ = cb.getMin();
     chunkTo_ = cb.getMax();
