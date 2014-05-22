@@ -27,6 +27,7 @@ class AnnotationListWidget : public QTreeWidget,
       : QTreeWidget(parent), vgs_(vgs), editing_(false) {
     setSelectionMode(QAbstractItemView::SingleSelection);
     setAlternatingRowColors(true);
+    setSortingEnabled(true);
 
     QStringList headers;
     headers << tr("") << tr("") << tr("Comment") << tr("Position")
