@@ -22,6 +22,9 @@ class CoordValue {
 
     if (ret.coord_.ToChunk() != coord_.ToChunk()) {
       ret.updateChunk();
+      if (!chunk_) {
+        return boost::optional<CoordValue<T>>();
+      }
     }
     ret.updateValue();
     return ret;
