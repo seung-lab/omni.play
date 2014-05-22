@@ -50,7 +50,8 @@ std::ostream& operator<<(std::ostream& out, const Direction& d) {
 inline Vector3i slab(const coords::GlobalBbox& bounds) {
   return Vector3i(bounds.getMax().x - bounds.getMin().x,
                   bounds.getMax().y - bounds.getMin().y,
-                  bounds.getMax().z - bounds.getMin().z);
+                  bounds.getMax().z - bounds.getMin().z) +
+         Vector3i::ONE;
 }
 
 inline uint32_t toProxy(const coords::Data& g, const Vector3i& slab,
