@@ -162,8 +162,14 @@ om::segment::UserEdge OmSegmentsImpl::splitChildFromParentNoTest(
   }
 
   if (child->getCustomMergeEdge().valid) {
-    userEdges_.erase(std::find(userEdges_.cbegin(), userEdges_.cend(),
-                               child->getCustomMergeEdge()));
+    auto childEdge = std::find(userEdges_.cbegin(), userEdges_.cend(),
+                               child->getCustomMergeEdge());
+    if (childEdge != userEdges_.cend()) {
+      userEdges_.erase(childEdge);
+    } else {
+      log_errors << "Unable to remove " << child->value()
+                 << " Custom Merge Edge";
+    }
     child->setCustomMergeEdge(om::segment::UserEdge());
   }
 
@@ -418,26 +424,19 @@ bool OmSegmentsImpl::JoinEdges(
 std::vector<om::segment::UserEdge> OmSegmentsImpl::Shatter(
     OmSegment* segUnknownRoot) {
   OmSegment* seg = FindRoot(segUnknownRoot);
-  std::deque<OmSegment*> segs;
-
-  for (OmSegment* s : graph_->SegChildren().GetChildren(seg)) {
-    segs.push_back(s);
-  }
+  auto children = graph_->SegChildren().GetChildren(seg);
+  std::deque<OmSegment*> segs(children.begin(), children.end());
 
   OmSegment* segRet = nullptr;
   std::vector<om::segment::UserEdge> edges;
-
   while (!segs.empty()) {
     segRet = segs.back();
     segs.pop_back();
 
-    for (OmSegment* seg : graph_->SegChildren().GetChildren(segRet)) {
-      segs.push_back(seg);
-    }
-
+    children = graph_->SegChildren().GetChildren(segRet);
+    segs.insert(segs.end(), children.begin(), children.end());
     edges.push_back(splitChildFromParentNoTest(segRet));
   }
-
   return edges;
 }
 
