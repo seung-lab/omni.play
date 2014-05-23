@@ -7,8 +7,8 @@ namespace segment {
 
 class CacheRootIDs {
  public:
-  CacheRootIDs(OmDynamicForestCache* graph, size_t numSegments)
-      : graph_(graph), cache_(numSegments) {}
+  CacheRootIDs(OmDynamicForestCache* graph, size_t maxSegments)
+      : graph_(graph), cache_(maxSegments) {}
 
   common::SegID Root(const common::SegID segID, const uint64_t mstFreshness) {
     if (segID >= cache_.size()) {

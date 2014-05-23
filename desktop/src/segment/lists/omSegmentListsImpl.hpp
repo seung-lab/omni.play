@@ -23,7 +23,7 @@ class OmSegmentListsImpl {
         segmentLists_(lists),
         sdw_(sdw),
         recreateGUIlists_(true) {
-    doResize(meta_.numSegments());
+    doResize(meta_.maxSegments());
     doBuildInitialSegmentList();
 
     // use threadPool as serial job queue;
@@ -106,7 +106,7 @@ class OmSegmentListsImpl {
   void doBuildInitialSegmentList() {
     log_debugs << "Building Initial SegmentList.";
     uint32_t numSegs = 0;
-    for (auto segId = 1; segId <= meta_.numSegments(); segId++) {
+    for (auto segId = 1; segId <= meta_.maxSegments(); segId++) {
       OmSegment* seg = store_.GetSegment(segId);
       if (seg && seg->value()) {
         if (seg->value() < list_.size()) {

@@ -15,11 +15,11 @@ Segmentation::Segmentation(file::Paths p, uint8_t id, std::string username)
       segDataDS_(
           new segment::FileDataSource(p.UserPaths(username).Segments(id))),
       segData_(new segment::SegDataVector(*segDataDS_, segment::PageSize,
-                                          Metadata().numSegments() + 1)),
+                                          Metadata().maxSegments() + 1)),
       segListDataDS_(new segment::ListTypeFileDataSource(
           p.UserPaths(username).Segments(id))),
       segListData_(new segment::SegListDataVector(
-          *segListDataDS_, segment::PageSize, Metadata().numSegments() + 1)),
+          *segListDataDS_, segment::PageSize, Metadata().maxSegments() + 1)),
       mst_(new segment::EdgeVector(p.UserPaths(username).MST(id))) {}
 
 Segmentation::~Segmentation() {}

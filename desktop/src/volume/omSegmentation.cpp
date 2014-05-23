@@ -67,12 +67,12 @@ void OmSegmentation::LoadPath() {
 
   segDataDS_.reset(new segment::FileDataSource(userPaths.Segments(id_)));
   segData_.reset(new segment::SegDataVector(*segDataDS_, segment::PageSize,
-                                            Metadata().numSegments() + 1));
+                                            Metadata().maxSegments() + 1));
 
   segListDataDS_.reset(
       new segment::ListTypeFileDataSource(userPaths.Segments(id_)));
   segListData_.reset(new segment::SegListDataVector(
-      *segListDataDS_, segment::PageSize, Metadata().numSegments() + 1));
+      *segListDataDS_, segment::PageSize, Metadata().maxSegments() + 1));
 
   mst_.reset(new segment::EdgeVector(userPaths.MST(id_)));
   for (auto& edge : *mst_) {

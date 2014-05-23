@@ -19,12 +19,12 @@ class OmValidGroupNum {
   std::vector<uint32_t> segToGroupNum_;
 
  public:
-  OmValidGroupNum(om::file::path p, size_t numSegs)
+  OmValidGroupNum(om::file::path p, size_t maxSegs)
       : path_(p), version_(1), noGroupNum_(0), initialGroupNum_(1) {
     maxGroupNum_.store(initialGroupNum_);
     load();
-    if (numSegs > segToGroupNum_.size()) {
-      Resize(numSegs);
+    if (maxSegs > segToGroupNum_.size()) {
+      Resize(maxSegs);
     }
   }
 
