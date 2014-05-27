@@ -198,7 +198,8 @@ LIBS = $(EXTERNAL)/boost/lib/libboost_filesystem.a \
 	   $(EXTERNAL)/boost/lib/libboost_date_time.a \
 	   $(EXTERNAL)/libjpeg/lib/libturbojpeg.a \
 	   -lpthread -lrt -lGLU -lGL -lz \
-	   $(CURL_LIBS)
+	   $(CURL_LIBS) \
+		 /usr/local/lib/libtcmalloc_minimal.a
 
 COMMON_INCLUDES = $(INCLUDES) -include common/src/precomp.h
 
