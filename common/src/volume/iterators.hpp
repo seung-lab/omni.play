@@ -221,5 +221,31 @@ segment_filtered_dataval_iterator<T> make_segment_filtered_dataval_iterator(
       [set](const CoordValue<T>& p) { return set.count(p.value()); },
       make_chunk_filtered_dataval_iterator<T>(bounds, ds, uvm, set));
 }
+
+template <typename T>
+using filtered_all_dataval_iterator = boost::filter_iterator<
+    std::function<bool(const CoordValue<T>& p)>, all_dataval_iterator<T>>;
+
+template <typename T>
+filtered_all_dataval_iterator<T> make_filtered_all_dataval_iterator(
+    const coords::DataBbox& bounds, const chunk::ChunkDS& ds,
+    const chunk::UniqueValuesDS& uvm, T id) {
+  return filtered_all_dataval_iterator<T>([id](const CoordValue<T>& p) {
+                                            return p.value() == id;
+                                          },
+                                          make_all_dataval_iterator<T>(bounds,
+                                                                       ds));
+}
+
+template <typename T>
+filtered_all_dataval_iterator<T> make_filtered_all_dataval_iterator(
+    const coords::DataBbox& bounds, const chunk::ChunkDS& ds,
+    const chunk::UniqueValuesDS& uvm, std::set<T> set) {
+  return filtered_all_dataval_iterator<T>([set](const CoordValue<T>& p) {
+                                            return set.count(p.value());
+                                          },
+                                          make_all_dataval_iterator<T>(bounds,
+                                                                       ds));
+}
 }
 }  // namespace om::volume::
