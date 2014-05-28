@@ -28,6 +28,9 @@ pairwise_overlap_map FindPairwiseOverlaps(
       overlap.setMax(overlap.getMax() + Vector3i::ONE);
       overlap.intersect(
           coords::DataBbox(segB.bounds, segmentation.Coords(), 0));
+      if (overlap.isEmpty()) {
+        continue;
+      }
       auto dims = overlap.getDimensions();
       pairwiseOverlaps.emplace(dims.x * dims.y * dims.z,
                                std::make_tuple(overlap, a, b));
