@@ -221,7 +221,7 @@ class Paths {
   static path CookieFile() { return "~/.omni/cookies"; }
 
   static path AddOmniExtensionIfNeeded(path fnp) {
-    if (extension(fnp) != ".omni") {
+    if (fnp.extension() != ".omni") {
       fnp += ".omni";
     }
     return fnp;

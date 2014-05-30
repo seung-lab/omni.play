@@ -29,7 +29,6 @@ void resizeFileNumElements(const path& fnp, const int64_t numElements) {
 using boost::filesystem::exists;
 using boost::filesystem::absolute;
 using boost::filesystem::canonical;
-using boost::filesystem::extension;
 using boost::filesystem::permissions;
 
 bool IsFolderEmpty(const path& dirName);
