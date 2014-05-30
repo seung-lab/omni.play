@@ -8,26 +8,29 @@
 namespace om {
 namespace handler {
 
-typedef std::map<size_t, std::tuple<coords::DataBbox, common::SegID,
-                                    common::SegID>> pairwise_overlap_map;
+typedef std::multimap<size_t, std::tuple<coords::DataBbox, common::SegID,
+                                         common::SegID>> pairwise_overlap_map;
 
 pairwise_overlap_map FindPairwiseOverlaps(
     const std::set<int>& set, const volume::Segmentation& segmentation) {
   pairwise_overlap_map pairwiseOverlaps;
   for (const auto& a : set) {
-    auto segA = segmentation.SegData()[a];
     for (const auto& b : set) {
-      if (a == b) {
+      if (a <= b) {
         continue;
       }
+      auto segA = segmentation.SegData()[a];
       auto segB = segmentation.SegData()[b];
-      coords::DataBbox overlap(segA.bounds, segmentation.Coords(), 0);
-      // Offset by one to cover off-by-one errors which were causing segs to not
-      // be grouped.
+      // Start with B and increase the size by 1 to account for touching but not
+      // overlapping bboxes.  Must do B first because we iterate through the
+      // volume looking for A.
+      coords::DataBbox overlap(segB.bounds, segmentation.Coords(), 0);
       overlap.setMin(overlap.getMin() - Vector3i::ONE);
       overlap.setMax(overlap.getMax() + Vector3i::ONE);
+
       overlap.intersect(
-          coords::DataBbox(segB.bounds, segmentation.Coords(), 0));
+          coords::DataBbox(segA.bounds, segmentation.Coords(), 0));
+
       if (overlap.isEmpty()) {
         continue;
       }
@@ -41,7 +44,7 @@ pairwise_overlap_map FindPairwiseOverlaps(
 
 std::vector<std::set<int>> ConnectedComponents(
     const std::set<int>& idSet, const pairwise_overlap_map& map,
-    chunk::Voxels<uint32_t>& voxels, const volume::Segmentation& segmentation) {
+    const volume::Segmentation& segmentation) {
   zi::disjoint_sets<uint32_t> sets(segmentation.SegData().size());
 
   for (const auto& overlap : map) {
@@ -94,8 +97,7 @@ std::vector<std::set<int>> ConnectedComponents(
 
 void Subset(std::vector<server::group>& _return, int uid,
             server::groupType::type groupType, const std::set<int>& set,
-            const volume::Segmentation& vol, chunk::Voxels<uint32_t>& voxels,
-            size_t totalSize) {
+            const volume::Segmentation& vol, size_t totalSize) {
   // Small is defined as a percentage (DUST_THRESHOLD) of the size of all
   // segments.
   const double DUST_THRESHOLD = 0.01;
@@ -107,7 +109,7 @@ void Subset(std::vector<server::group>& _return, int uid,
   dust.size = 0;
 
   const auto pairwiseOverlaps = FindPairwiseOverlaps(set, vol);
-  auto components = ConnectedComponents(set, pairwiseOverlaps, voxels, vol);
+  auto components = ConnectedComponents(set, pairwiseOverlaps, vol);
 
   for (const auto& c : components) {
     server::group g;
@@ -202,7 +204,6 @@ void get_connected_groups(
 
   std::set<int> partialIDs;
 
-  chunk::Voxels<uint32_t> voxels(vol.ChunkDS(), vol.Coords());
   for (const auto& iter : flagToSet) {
     const int& flag = iter.first;
     const std::set<int>& set = iter.second;
@@ -224,21 +225,20 @@ void get_connected_groups(
     auto flagUIDmissed = flagToMissingUserid.find(flag);
     if (flagUIDmissed != flagToMissingUserid.end()) {
       Subset(_return, flagUIDmissed->second, server::groupType::USER_MISSED,
-             set, vol, voxels, all.size);
+             set, vol, all.size);
       continue;
     }
 
     auto flagUIDfound = flagToUserid.find(flag);
     if (flagUIDfound != flagToUserid.end()) {
       Subset(_return, flagUIDfound->second, server::groupType::USER_FOUND, set,
-             vol, voxels, all.size);
+             vol, all.size);
       continue;
     }
 
     partialIDs.insert(set.begin(), set.end());
   }
-  Subset(_return, 0, server::groupType::PARTIAL, partialIDs, vol, voxels,
-         all.size);
+  Subset(_return, 0, server::groupType::PARTIAL, partialIDs, vol, all.size);
 }
 }
 }
