@@ -16,7 +16,7 @@ struct TaskInfo {
   uint32_t left_edge;
   uint32_t right_edge;
   int status;
-  std::vector<std::string> users;
+  std::string users;
   int parent;
   std::string notes;
 };
@@ -39,8 +39,7 @@ struct convert<om::task::TaskInfo> {
       t.left_edge = node["left_edge"].as<uint32_t>();
       t.right_edge = node["right_edge"].as<uint32_t>();
       t.status = node["status"].as<int>();
-      typedef std::vector<std::string> string_list;
-      t.users = node["users"].as<string_list>(string_list());
+      t.users = node["users"].as<std::string>("");
       t.parent = node["parent"].as<int>(0);
       t.notes = node["notes"].as<std::string>("");
     }

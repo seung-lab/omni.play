@@ -263,9 +263,8 @@ void TaskSelector::getTasks() {
         makeTableItem(t.inspected_weight == t.weight && t.weight > 1));
     taskTable_->setItem(i, (int)Columns::Path,
                         makeTableItem(QString::fromStdString(t.path)));
-    taskTable_->setItem(
-        i, (int)Columns::Users,
-        makeTableItem(QString::fromStdString(om::string::join(t.users))));
+    taskTable_->setItem(i, (int)Columns::Users,
+                        makeTableItem(QString::fromStdString(t.users)));
     taskTable_->setItem(i, (int)Columns::Notes,
                         makeTableItem(QString::fromStdString(t.notes),
                                       Qt::ItemIsEnabled | Qt::ItemIsSelectable |
