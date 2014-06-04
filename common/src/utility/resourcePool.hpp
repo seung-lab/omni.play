@@ -39,26 +39,34 @@ class ResourcePool {
   struct Lease {
    public:
     Lease(ResourcePool& pool, bool spin = false)
-        : pool_(pool), ptr_(pool.get()) {
+        : pool_(std::ref(pool)), ptr_(pool.get()) {
       while (spin && !ptr_ && !pool_.closing_) {
         ptr_ = pool_.get();
       }
     }
-    ~Lease() { pool_.release(ptr_); }
+    ~Lease() { release(); }
     Lease(const Lease&) = delete;
+    Lease(Lease&& other) : pool_(other.pool_), ptr_(std::move(other.ptr_)) {}
     Lease& operator=(const Lease&) = delete;
-    Lease(Lease&& other) {
-      swap(other);
-    }  // Does allowing moving cause problems?
-    void swap(Lease&& other) { std::swap(ptr_, other.ptr_); }
+    Lease& operator=(Lease&& other) {
+      pool_ = std::move(other.pool_);
+      ptr_ = std::move(other.ptr_);
+    }
 
     explicit operator T*() { return ptr_.get(); }
     explicit operator bool() { return (bool)ptr_; }
     T* get() { return ptr_.get(); }
     T* operator->() { return ptr_.get(); }
 
+    void release() {
+      if (ptr_) {  // Threading issues??
+        pool_.release(ptr_);
+        ptr_.reset();
+      }
+    }
+
    private:
-    ResourcePool& pool_;
+    std::reference_wrapper<ResourcePool> pool_;
     std::shared_ptr<T> ptr_;
   };
 
