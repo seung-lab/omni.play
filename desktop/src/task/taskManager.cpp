@@ -15,7 +15,7 @@ namespace task {
 
 TaskManager::~TaskManager() {}
 
-std::shared_ptr<Task> TaskManager::GetTask(int cellID) {
+TaskManager::TaskRequest TaskManager::GetTask(int cellID) {
   auto uri = system::Account::endpoint();
   uri.set_path("/1.0/task/assign");
   if (cellID) {
@@ -24,9 +24,8 @@ std::shared_ptr<Task> TaskManager::GetTask(int cellID) {
   return instance().taskCache_.GET<TracingTask>(uri);
 }
 
-std::shared_ptr<std::vector<TaskInfo>> TaskManager::GetTasks(int datasetID,
-                                                             int cellID,
-                                                             int maxWeight) {
+TaskManager::TaskInfosRequest TaskManager::GetTasks(int datasetID, int cellID,
+                                                    int maxWeight) {
   auto uri = system::Account::endpoint();
   uri.set_path("/1.0/task");
   if (cellID) {
@@ -40,13 +39,13 @@ std::shared_ptr<std::vector<TaskInfo>> TaskManager::GetTasks(int datasetID,
   return instance().taskInfoCache_.GET(uri);
 }
 
-std::shared_ptr<Task> TaskManager::GetTaskByID(int taskID) {
-  auto uri = system::Account::endpoint(std::string("/1.0/task/") +
-                                       std::to_string(taskID));
+TaskManager::TaskRequest TaskManager::GetTaskByID(int taskID) {
+  auto uri = system::Account::endpoint(
+      std::string("/api/v1/task/cell/0/task/") + std::to_string(taskID));
   return instance().taskCache_.GET<TracingTask>(uri);
 }
 
-std::shared_ptr<Task> TaskManager::GetComparisonTask(int cellID) {
+TaskManager::TaskRequest TaskManager::GetComparisonTask(int cellID) {
   auto uri = system::Account::endpoint("/1.0/comparison_task");
   if (cellID) {
     uri.AddQueryParameter("cell", std::to_string(cellID));
@@ -54,9 +53,9 @@ std::shared_ptr<Task> TaskManager::GetComparisonTask(int cellID) {
   return instance().taskCache_.GET<ComparisonTask>(uri);
 }
 
-std::shared_ptr<Task> TaskManager::GetComparisonTaskByID(int taskID) {
+TaskManager::TaskRequest TaskManager::GetComparisonTaskByID(int taskID) {
   if (!taskID) {
-    return std::shared_ptr<Task>();
+    return TaskManager::TaskRequest();
   }
 
   auto uri = system::Account::endpoint("/1.0/comparison_task");
@@ -65,7 +64,7 @@ std::shared_ptr<Task> TaskManager::GetComparisonTaskByID(int taskID) {
   return instance().taskCache_.GET<ComparisonTask>(uri);
 }
 
-std::shared_ptr<std::vector<Dataset>> TaskManager::GetDatasets() {
+TaskManager::DatasetsRequest TaskManager::GetDatasets() {
   try {
     auto datasetURI = system::Account::endpoint("/1.0/dataset");
     return instance().datasetCache_.GET(datasetURI);
@@ -73,10 +72,10 @@ std::shared_ptr<std::vector<Dataset>> TaskManager::GetDatasets() {
   catch (om::Exception e) {
     log_debugs << "Failed loading datasets: " << e.what();
   }
-  return std::shared_ptr<std::vector<Dataset>>();
+  return TaskManager::DatasetsRequest();
 }
 
-std::shared_ptr<std::vector<Cell>> TaskManager::GetCells(int datasetID) {
+TaskManager::CellsRequest TaskManager::GetCells(int datasetID) {
   try {
     auto cellURI = system::Account::endpoint("/1.0/cell");
     cellURI.AddQueryParameter("dataset", std::to_string(datasetID));
@@ -85,14 +84,15 @@ std::shared_ptr<std::vector<Cell>> TaskManager::GetCells(int datasetID) {
   catch (om::Exception e) {
     log_debugs << "Failed loading cells: " << e.what();
   }
-  return std::shared_ptr<std::vector<Cell>>();
+  return TaskManager::CellsRequest();
 }
 
-bool TaskManager::UpdateNotes(int taskID, std::string notes) {
+std::shared_ptr<om::network::http::PutRequest> TaskManager::UpdateNotes(
+    int taskID, std::string notes) {
   auto uri = system::Account::endpoint(std::string("/1.0/task/") +
                                        std::to_string(taskID) + "/notes");
   uri.set_port(88);
-  return network::HTTP::PUT(uri, notes);
+  return network::http::PUT(uri, notes);
 }
 
 void TaskManager::ConnectionChangeEvent() {}

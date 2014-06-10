@@ -10,7 +10,8 @@ Request::~Request() {
 }
 
 void Request::getResponseCode() {
-  auto err = curl_easy_getinfo(handle_, CURLINFO_RESPONSE_CODE, &returnCode_);
+  auto err =
+      curl_easy_getinfo(lease_->Handle, CURLINFO_RESPONSE_CODE, &returnCode_);
   if (err) {
     log_debugs << "CURL Error with response: " << curl_easy_strerror(err);
     returnCode_ = -1;
@@ -20,29 +21,32 @@ void Request::getResponseCode() {
 void Request::start(handle_pool::Lease&& l) {
   lease_ = std::move(l);
   SetCurlOptions(lease_->Handle);
-  state_ = DOING;
+  state_ = State::DOING;
 }
 
 void Request::finish() {
   getResponseCode();
   Finish(lease_->Handle);
   lease_.release();
-  state_ = DONE;
+  state_ = State::DONE;
   set_ready();
+  detachedPtr_.reset();
 }
 
 void Request::abort() {
   lease_.release();
-  state_ = ABORTED;
+  state_ = State::ABORTED;
   set_ready();
+  detachedPtr_.reset();
 }
 
 CURLCore::CURLCore()
     : handle_(curl_multi_init()),
       killing_(false),
       max_active_requests_(10),
-      pool_(max_active_requests_, &Request::ResetHandle)
-      watcherThread_(&CURLCore::watch) {}
+      pool_(max_active_requests_,
+            std::bind(&Request::ResetHandle, handle_, std::placeholders::_1)),
+      watcherThread_(&CURLCore::watch, this) {}
 
 CURLCore::~CURLCore() {
   killing_.store(true);
@@ -74,11 +78,17 @@ void CURLCore::watch() {
   {
     std::lock_guard<std::mutex> lock(pending_mutex_);
     for (auto& iter : pending_) {
-      iter.abort();
+      auto pend = iter.lock();
+      if (pend) {
+        pend->abort();
+      }
     }
   }
   for (auto& iter : active_) {
-    iter.second.abort();
+    auto active = iter.second.lock();
+    if (active) {
+      active->abort();
+    }
   }
 }
 
@@ -114,8 +124,8 @@ int CURLCore::check_handles() {
   FD_ZERO(&fdread);
   FD_ZERO(&fdwrite);
   FD_ZERO(&fdexcep);
-  auto code = curl_multi_fdset(handle_, &fdread, &fdwrite, &fdexcep, &maxfd);
-  // Do something with code.
+  curl_multi_fdset(handle_, &fdread, &fdwrite, &fdexcep, &maxfd);
+  // TODO: Check return value.
 
   return select(maxfd + 1, &fdread, &fdwrite, &fdexcep, &timeout);
 }

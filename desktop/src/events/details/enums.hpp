@@ -18,6 +18,7 @@ enum Klass {
   view3d,
   task,
   connection,
+  execOnMain,
   NUM_TOTAL
 };
 }

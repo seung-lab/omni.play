@@ -58,10 +58,12 @@ bool TracingTask::Submit() {
   }
 
   auto uri = system::Account::endpoint("/1.0/task/submit");
-  network::HTTP::POST(uri, std::make_pair("id", id_),
-                      std::make_pair("plane", "xy"),
-                      std::make_pair("segments", segIDs),
-                      std::make_pair("reap", 0), std::make_pair("status", 0));
+  auto req = network::http::POST(
+      uri, std::make_pair("id", id_), std::make_pair("plane", "xy"),
+      std::make_pair("segments", segIDs), std::make_pair("reap", 0),
+      std::make_pair("status", 0));
+  req.Detach();
+
   return true;
 }
 

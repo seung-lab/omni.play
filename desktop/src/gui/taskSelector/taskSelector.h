@@ -11,6 +11,7 @@
 namespace om {
 namespace task {
 class Dataset;
+class TaskInfo;
 }
 }
 
@@ -44,6 +45,7 @@ Q_SLOTS:
   uint32_t taskID();
   int selectedTaskId();
   void getTasks();
+  void updateTasks(std::shared_ptr<std::vector<om::task::TaskInfo>> tasks);
 
   int oldCellSelection_;
 
@@ -60,4 +62,7 @@ Q_SLOTS:
   std::shared_ptr<om::task::Task> traceTask_;
   std::shared_ptr<om::task::Task> compareTask_;
   std::shared_ptr<std::vector<om::task::Dataset>> datasets_;
+  om::task::TaskManager::TaskInfosRequest tasksRequest_;
+  om::task::TaskManager::TaskRequest taskRequest_;
+  om::task::TaskManager::TaskRequest compTaskRequest_;
 };

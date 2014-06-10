@@ -6,6 +6,8 @@
 #include "datalayer/paths.hpp"
 #include "zi/utility.h"
 #include "network/uri.hpp"
+#include "network/curlCore.h"
+#include "network/http/requests.hpp"
 
 #include "yaml-cpp/yaml.h"
 
@@ -20,15 +22,15 @@ class HTTP : private SingletonBase<HTTP> {
   }
 
   template <typename T>
-  static std::shared_ptr<PutRequest<T>> PUT(const network::Uri& uri,
-                                            const T& data) {
-    return instance().core_.CreateRequest<PutRequest<T>>(uri, data);
+  static std::shared_ptr<PutRequest> PUT(const network::Uri& uri,
+                                         const T& data) {
+    return instance().core_.CreateRequest<TypedPutRequest<T>>(uri, data);
   }
 
   template <typename... Ts>
-  static std::shared_ptr<PostRequest<T>> POST(const network::Uri& uri,
-                                              Ts&&... posts) {
-    return instance().core_.CreateRequest<PostRequest<T>>(
+  static std::shared_ptr<PostRequest> POST(const network::Uri& uri,
+                                           Ts&&... posts) {
+    return instance().core_.CreateRequest<PostRequest>(
         uri, std::forward<Ts>(posts)...);
   }
 
@@ -37,8 +39,22 @@ class HTTP : private SingletonBase<HTTP> {
 
   friend class zi::singleton<HTTP>;
 };
+
+template <typename T>
+static std::shared_ptr<GetRequest<T>> GET(const network::Uri& uri) {
+  return HTTP::GET<T>(uri);
 }
 
-#undef SET_OPT
+template <typename T>
+static std::shared_ptr<PutRequest> PUT(const network::Uri& uri, const T& data) {
+  return HTTP::PUT<T>(uri, data);
+}
+
+template <typename... Ts>
+static std::shared_ptr<PostRequest> POST(const network::Uri& uri,
+                                         Ts&&... posts) {
+  return HTTP::POST(uri, std::forward<Ts>(posts)...);
+}
+}
 }
 }

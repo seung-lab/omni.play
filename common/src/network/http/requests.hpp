@@ -6,7 +6,8 @@
 #include "yaml-cpp/yaml.h"
 
 #define SET_OPT(h, opt, val)                                           \
-  if ((auto err = curl_easy_setopt(h, opt, val)) != CURLE_OK) {        \
+  err = curl_easy_setopt(h, opt, val);                                 \
+  if (err != CURLE_OK) {                                               \
     log_debugs << "Failed to set " << #opt << curl_easy_strerror(err); \
     return;                                                            \
   }
@@ -22,7 +23,6 @@ class GetRequest : public Request,
                    public thread::Continuable<std::shared_ptr<T>> {
  public:
   GetRequest(network::Uri uri) : uri_(uri) {}
-  ~GetRequest();
 
  protected:
   virtual void SetCurlOptions(CURL* h) override {
@@ -63,24 +63,39 @@ class GetRequest<std::string> : public Request,
                                     std::shared_ptr<std::string>> {
  public:
   GetRequest(network::Uri uri) : uri_(uri) {}
-  ~GetRequest();
 
  protected:
   virtual void SetCurlOptions(CURL* h) override {
     internal::GetOptions(h, uri_, &ss_);
   }
-  virtual void Finish(CURL* h) override { do_continuation(result_); }
+  virtual void Finish(CURL* h) override {
+    if (200 <= returnCode_ && returnCode_ < 300) {
+      result_.reset(new std::string(ss_.str()));
+    }
+    do_continuation(result_);
+  }
 
   std::stringstream ss_;
   PROP(network::Uri, uri);
   PROP(std::shared_ptr<std::string>, result);
 };
 
-template <typename T>
 class PutRequest : public Request, public thread::Continuable<void> {
  public:
-  PutRequest(network::Uri uri, T&& data) : uri_(uri), data_(std::move(data)) {}
+  PutRequest(network::Uri uri) : uri_(uri) {}
   ~PutRequest();
+
+ protected:
+  virtual void Finish(CURL* h) override { do_continuation(); }
+
+  PROP(network::Uri, uri);
+};
+
+template <typename T>
+class TypedPutRequest : public PutRequest {
+ public:
+  TypedPutRequest(network::Uri uri, T&& data)
+      : PutRequest(uri), data_(std::move(data)) {}
 
  protected:
   virtual void SetCurlOptions(CURL* h) override {
@@ -89,14 +104,13 @@ class PutRequest : public Request, public thread::Continuable<void> {
     }
     internal::PutOptions(h, uri_, &ss_);
   }
-  virtual void Finish(CURL* h) override { do_continuation(); }
 
   bool toJson() {
     try {
       YAML::Emitter e;
       e.SetSeqFormat(YAML::Flow);
       e.SetMapFormat(YAML::Flow);
-      e << val;
+      e << data_;
       ss_.write(e.c_str(), e.size());
       return true;
     }
@@ -107,44 +121,46 @@ class PutRequest : public Request, public thread::Continuable<void> {
   }
 
   std::stringstream ss_;
-  PROP(network::Uri, uri);
-  PROP_REF(T, data_);
+  PROP_REF(T, data);
 };
 
 template <>
-class PutRequest : public Request, public thread::Continuable<void> {
+class TypedPutRequest<std::string> : public PutRequest {
  public:
-  PutRequest(network::Uri uri, const std::string& data)
-      : uri_(uri), ss_(data) {}
-  ~PutRequest();
+  TypedPutRequest(network::Uri uri, const std::string& data)
+      : PutRequest(uri), ss_(data) {}
 
  protected:
   virtual void SetCurlOptions(CURL* h) override {
     internal::PutOptions(h, uri_, &ss_);
   }
-  virtual void Finish(CURL* h) override { do_continuation(); }
 
   std::stringstream ss_;
-  PROP(network::Uri, uri);
-  PROP_REF(std::string, data_);
+  PROP_REF(std::string, data);
 };
 
-template <typename... TRest>
-class PostRequest : public Request, public thread::Continuable<void> {
+class PostRequest : public Request,
+                    public thread::Continuable<std::shared_ptr<std::string>> {
  public:
+  template <typename... TRest>
   PostRequest(network::Uri uri, TRest&&... rest)
       : uri_(uri), postString_(internal::postString(rest...)) {}
-  ~PostRequest();
 
  protected:
   virtual void SetCurlOptions(CURL* h) override {
     internal::PostOptions(h, uri_, &ss_, postString_);
   }
-  virtual void Finish(CURL* h) override { do_continuation(); }
+  virtual void Finish(CURL* h) override {
+    if (200 <= returnCode_ && returnCode_ < 300) {
+      result_.reset(new std::string(ss_.str()));
+    }
+    do_continuation(result_);
+  }
 
   std::stringstream ss_;
   PROP(network::Uri, uri);
-  PROP_REF(std::string, postString_);
+  PROP_REF(std::string, postString);
+  PROP(std::shared_ptr<std::string>, result);
 };
 }
 }

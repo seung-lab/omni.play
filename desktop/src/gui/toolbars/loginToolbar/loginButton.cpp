@@ -15,39 +15,40 @@ LoginButton::LoginButton(QWidget* parent) : QPushButton("Login", parent) {
 
 void LoginButton::onClicked() {
   LoginDialog dialog(this);
-  if (dialog.exec()) {
-    boost::optional<om::network::Uri> uri =
-        om::network::Uri::Parse(dialog.endpoint());
-    if (!uri) {
-      QMessageBox box(QMessageBox::Warning, "Error Logging In",
-                      "Invalid Endpoint");
-      box.exec();
-      return;
-    }
-    log_infos << "Connecting to: " << uri.get();
-    om::system::Account::set_endpoint(uri.get());
-    auto res = om::system::Account::Login(dialog.username(), dialog.password());
+  if (!dialog.exec()) {
+    return;
+  }
+  boost::optional<om::network::Uri> uri =
+      om::network::Uri::Parse(dialog.endpoint());
+  if (!uri) {
+    QMessageBox box(QMessageBox::Warning, "Error Logging In",
+                    "Invalid Endpoint");
+    box.exec();
+    return;
+  }
+  log_infos << "Connecting to: " << uri.get();
+  om::system::Account::set_endpoint(uri.get());
+  auto request =
+      om::system::Account::Login(dialog.username(), dialog.password());
+
+  request.AddContinuation([](om::system::LoginResult res) {
     QString errorText;
-    typedef om::system::Account::LoginResult LoginResult;
     switch (res) {
-      case LoginResult::SUCCESS:
-        setLabel();
-        OmAppState::OpenTaskSelector();
+      case om::system::LoginResult::SUCCESS:
+        om::event::ExecuteOnMain([]() { OmAppState::OpenTaskSelector(); });
         return;
-      case LoginResult::BAD_USERNAME_PW:
+      case om::system::LoginResult::BAD_USERNAME_PW:
         errorText = tr("Incorrect Username or Password.");
         break;
-      case LoginResult::CONNECTION_ERROR:
+      case om::system::LoginResult::CONNECTION_ERROR:
         errorText = tr("Server Error.");
         break;
       default:
         errorText = tr("Unknown Error.");
         break;
     }
-    setLabel();
     om::event::NonFatalEventOccured(errorText);
-    return;
-  }
+  });
 }
 
 void LoginButton::ConnectionChangeEvent() { setLabel(); }

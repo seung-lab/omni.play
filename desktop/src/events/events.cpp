@@ -11,6 +11,7 @@
 #include "events/details/view3dEvent.h"
 #include "events/details/taskEvent.h"
 #include "events/details/connectionEvent.h"
+#include "events/details/executeOnMainEvent.h"
 #include "events/events.h"
 
 namespace om {
@@ -86,6 +87,10 @@ void NonFatalEventOccured(const QString err) {
 
 void AnnotationObjectModified() {
   Manager::Post(new AnnotationEvent(AnnotationEvent::OBJECT_MODIFIED));
+}
+
+void ExecuteOnMain(std::function<void()> func) {
+  Manager::Post(new ExecuteOnMainEvent(func));
 }
 }
 }  //

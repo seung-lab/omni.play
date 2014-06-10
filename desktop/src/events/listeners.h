@@ -12,6 +12,7 @@ class PreferenceEvent;
 class MSTEvent;
 class SegmentEvent;
 class UIEvent;
+class ExecuteOnMainEvent;
 
 struct AnnotationEventListener : public Listener {
   AnnotationEventListener() : Listener(Klass::annotation) {}
@@ -76,6 +77,11 @@ struct TaskEventListener : public Listener {
 struct ConnectionEventListener : public Listener {
   ConnectionEventListener() : Listener(Klass::connection) {}
   virtual void ConnectionChangeEvent() = 0;
+};
+
+struct ExecuteOnMainEventListener : public Listener {
+  ExecuteOnMainEventListener() : Listener(Klass::execOnMain) {}
+  virtual void ExecuteOnMainEvent(ExecuteOnMainEvent*) = 0;
 };
 }
 }  // om::event::

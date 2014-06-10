@@ -12,8 +12,9 @@ namespace om {
 namespace test {
 
 TEST(HTTP, GET) {
-  auto val = HTTP::GET("http://curl.haxx.se/libcurl");
-  ASSERT_FALSE(val.empty());
+  auto val = http::GET<std::string>("http://curl.haxx.se/libcurl"_uri);
+  val->wait();
+  ASSERT_TRUE((bool)*val);
 }
 
 TEST(HTTP, Put) {}

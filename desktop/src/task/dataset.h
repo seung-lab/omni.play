@@ -12,9 +12,6 @@ namespace task {
 
 class Dataset {
  public:
-  std::vector<Cell>* cells() const;
-  void LoadCells();
-
  private:
   PROP(int, id);
   PROP_CONST_REF(std::string, name);
@@ -25,7 +22,6 @@ class Dataset {
   PROP_CONST_REF(time::time, lastmodified);
   PROP(int, overlap);
   PROP(int, min_overlap_volume);
-  std::shared_ptr<std::vector<Cell>> cells_;
   friend struct YAML::convert<om::task::Dataset>;
 };
 }

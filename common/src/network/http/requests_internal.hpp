@@ -15,12 +15,12 @@ static size_t read_data(char* buffer, size_t size, size_t nmemb,
   }
   return size * nmemb;
 }
-
-#define OMNI_USER_AGENT "Omni " OMNI_DESKTOP_VERSION;
+#define OMNI_USER_AGENT "Omni"
 
 static void GetOptions(CURL* h, const network::Uri& uri,
                        std::stringstream* ss) {
-  SET_OPT(h, CURLOPT_URL, uri.c_str());
+  CURLcode err;
+  SET_OPT(h, CURLOPT_URL, uri.string().c_str());
   SET_OPT(h, CURLOPT_FOLLOWLOCATION, 1);
   SET_OPT(h, CURLOPT_WRITEFUNCTION, &write_data);
   SET_OPT(h, CURLOPT_USERAGENT, OMNI_USER_AGENT);
@@ -32,7 +32,8 @@ static void GetOptions(CURL* h, const network::Uri& uri,
 
 static void PutOptions(CURL* h, const network::Uri& uri,
                        std::stringstream* ss) {
-  SET_OPT(h, CURLOPT_URL, uri.c_str());
+  CURLcode err;
+  SET_OPT(h, CURLOPT_URL, uri.string().c_str());
   SET_OPT(h, CURLOPT_FOLLOWLOCATION, 1);
   SET_OPT(h, CURLOPT_USERAGENT, OMNI_USER_AGENT);
 
@@ -45,7 +46,8 @@ static void PutOptions(CURL* h, const network::Uri& uri,
 
 static void PostOptions(CURL* h, const network::Uri& uri, std::stringstream* ss,
                         const std::string& post) {
-  SET_OPT(h, CURLOPT_URL, uri.c_str());
+  CURLcode err;
+  SET_OPT(h, CURLOPT_URL, uri.string().c_str());
   SET_OPT(h, CURLOPT_FOLLOWLOCATION, 1);
   SET_OPT(h, CURLOPT_USERAGENT, OMNI_USER_AGENT);
 
@@ -131,17 +133,17 @@ static std::string postPair(const std::string& name, std::vector<T> vec) {
   return result;
 }
 
-template <typename T>
-static std::string url_encode(T val) {
-  return url_encode(std::to_string(val).c_str());
-}
-static std::string url_encode(std::string val) {
-  return url_encode(val.c_str());
-}
 static std::string url_encode(const char* str) {
   char* encoded = curl_easy_escape(nullptr, str, 0);
   std::string result(encoded);
   curl_free(encoded);
   return result;
+}
+static std::string url_encode(std::string val) {
+  return url_encode(val.c_str());
+}
+template <typename T>
+static std::string url_encode(T val) {
+  return url_encode(std::to_string(val).c_str());
 }
 }  // end internal

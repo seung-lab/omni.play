@@ -39,5 +39,7 @@ void RefreshMSTthreshold();
 void NonFatalEventOccured(const QString err);
 
 void AnnotationObjectModified();
+
+void ExecuteOnMain(std::function<void()>);
 }
 }  // om::event::

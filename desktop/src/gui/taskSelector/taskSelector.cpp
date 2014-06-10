@@ -1,5 +1,7 @@
 #include "gui/taskSelector/taskSelector.h"
 #include "system/omLocalPreferences.hpp"
+#include "events/events.h"
+#include "gui/exec.hpp"
 
 using namespace om::task;
 
@@ -169,16 +171,22 @@ void TaskSelector::traceClicked() {
   auto id = selectedTaskId();
   log_debugs << "Tracing Task: " << id;
   auto task = TaskManager::GetTaskByID(id);
-  TaskManager::LoadTask(task);
-  accept();
+  task->AddContinuation([this](std::shared_ptr<Task> t) {
+    TaskManager::LoadTask(t);
+    om::event::ExecuteOnMain([this]() { accept(); });
+  });
+  task->Detach();
 }
 
 void TaskSelector::compareClicked() {
   auto id = selectedTaskId();
   log_debugs << "Comparison Task: " << id;
   auto task = TaskManager::GetComparisonTaskByID(id);
-  TaskManager::LoadTask(task);
-  accept();
+  task->AddContinuation([this](std::shared_ptr<Task> t) {
+    TaskManager::LoadTask(t);
+    om::event::ExecuteOnMain([this]() { accept(); });
+  });
+  task->Detach();
 }
 
 void TaskSelector::completedChanged() { getTasks(); }
@@ -242,12 +250,10 @@ QTableWidgetItem* makeTableItem(const T val,
   return item;
 }
 
-void TaskSelector::getTasks() {
-  auto dsid = datasetID();
-  auto cid = cellID();
-  auto tasks = TaskManager::GetTasks(
-      dsid, cid,
-      completedTasksCheckbox_->checkState() == Qt::Unchecked ? 1e6 : 0);
+void TaskSelector::updateTasks(std::shared_ptr<std::vector<TaskInfo>> tasks) {
+  if (!tasks) {
+    return;
+  }
   taskTable_->setSortingEnabled(false);
   taskTable_->setRowCount(tasks->size());
   taskTable_->blockSignals(true);
@@ -279,6 +285,14 @@ void TaskSelector::getTasks() {
   taskTable_->blockSignals(false);
 }
 
+void TaskSelector::getTasks() {
+  tasksRequest_ = TaskManager::GetTasks(
+      datasetID(), cellID(),
+      completedTasksCheckbox_->checkState() == Qt::Unchecked ? 1e6 : 0);
+  tasksRequest_->AddContinuation(om::exec([this](
+      std::shared_ptr<std::vector<TaskInfo>> tasks) { updateTasks(tasks); }));
+}
+
 void TaskSelector::onManualEntry() {
   auto text = taskLineEdit_->text().trimmed();
   if (text.size()) {
@@ -289,21 +303,30 @@ void TaskSelector::onManualEntry() {
 
     // TODO: clean up
     auto taskId = text.toInt();
-    auto task = TaskManager::GetTaskByID(taskId);
-    auto compTask = TaskManager::GetComparisonTaskByID(taskId);
-    task = task ? task : compTask;
-    if (task) {
-      taskTable_->insertRow(0);
-      taskTable_->setItem(0, (int)Columns::Id, makeTableItem(taskId));
-      taskTable_->setItem(0, (int)Columns::Cell, makeTableItem(task->CellId()));
-      taskTable_->setItem(0, (int)Columns::Comparison,
-                          makeTableItem(bool(compTask)));
-      // taskTable_->setItem(i, 4,
-      // makeTableItem(QString::fromStdString(t.path)));
-      taskTable_->setCurrentCell(0, 0);
-    }
+    taskTable_->insertRow(0);
+    taskTable_->setItem(0, (int)Columns::Id, makeTableItem(taskId));
+    taskTable_->setCurrentCell(0, 0);
     taskTable_->blockSignals(false);
+
+    taskRequest_ = TaskManager::GetTaskByID(taskId);
+    compTaskRequest_ = TaskManager::GetComparisonTaskByID(taskId);
+
+    taskRequest_->AddContinuation(
+        om::exec([this](std::shared_ptr<om::task::Task> task) {
+          if (task) {
+            taskTable_->setItem(0, (int)Columns::Cell,
+                                makeTableItem(task->CellId()));
+          }
+        }));
+
+    compTaskRequest_->AddContinuation(
+        om::exec([this](std::shared_ptr<om::task::Task> task) {
+          taskTable_->setItem(0, (int)Columns::Comparison,
+                              makeTableItem((bool)task));
+        }));
   } else {
+    taskRequest_.reset();
+    taskRequest_.reset();
     getTasks();
   }
   updateEnabled();

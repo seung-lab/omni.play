@@ -1,6 +1,7 @@
 #pragma once
 
 #include "precomp.h"
+#include "common/macro.hpp"
 #include "network/http/curlHandle.hpp"
 #include "threads/waitable.hpp"
 #include "threads/continuable.hpp"
@@ -21,11 +22,14 @@ class Request : public thread::Waitable {
     ABORTED
   };
 
- protected:
   ~Request();
 
-  explicit operator bool() { return (bool)lease_; }
+  // Did we complete successfully.
+  explicit operator bool() { return state_ == State::DONE; }
 
+  void Detach() { detachedPtr_ = selfPtr_.lock(); }
+
+ protected:
   virtual void SetCurlOptions(CURL*) = 0;
   virtual void Finish(CURL*) {}
 
@@ -35,9 +39,9 @@ class Request : public thread::Waitable {
   void finish();
   void abort();
 
-  static void ResetHandle(std::shared_ptr<handle> h) {
+  static void ResetHandle(CURLM* mh, std::shared_ptr<CurlHandle> h) {
     if ((bool)h) {
-      curl_multi_remove_handle(h->Handle);
+      curl_multi_remove_handle(mh, h->Handle);
       curl_easy_reset(h->Handle);
     }
   }
@@ -47,6 +51,9 @@ class Request : public thread::Waitable {
 
   PROP(long, returnCode);
   PROP(State, state);
+
+  std::weak_ptr<Request> selfPtr_;
+  std::shared_ptr<Request> detachedPtr_;
 };
 
 class CURLCore {
@@ -55,12 +62,13 @@ class CURLCore {
   ~CURLCore();
 
   template <typename TReq, typename... TArgs>
-  std::enable_if<std::is_base_of<Request, TReq>::value,
-                 std::shared_ptr<TReq>>::type
-  CreateRequest(TArgs&& args...) {
+  typename std::enable_if<std::is_base_of<Request, TReq>::value,
+                          std::shared_ptr<TReq>>::type
+  CreateRequest(TArgs&&... args) {
     auto new_req = std::make_shared<TReq>(std::forward<TArgs>(args)...);
+    new_req->selfPtr_ = std::weak_ptr<TReq>(new_req);
     {
-      std::lock_guard<std::mutex>(pending_mutex_);
+      std::lock_guard<std::mutex> lk(pending_mutex_);
       pending_.push_back(std::weak_ptr<TReq>(new_req));
     }
     return new_req;

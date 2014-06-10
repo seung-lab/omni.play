@@ -24,20 +24,29 @@ class TaskManager : private om::SingletonBase<TaskManager>,
   static const std::shared_ptr<Task>& currentTask() {
     return instance().currentTask_;
   }
+  typedef std::shared_ptr<network::http::GetRequest<Task>> TaskRequest;
+  typedef std::shared_ptr<network::http::GetRequest<std::vector<TaskInfo>>>
+      TaskInfosRequest;
+  typedef std::shared_ptr<network::http::GetRequest<std::vector<Dataset>>>
+      DatasetsRequest;
+  typedef std::shared_ptr<network::http::GetRequest<std::vector<Cell>>>
+      CellsRequest;
+
   // static std::vector<Task*> ListTasks();
   // static std::vector<Task*> ListTasks(int cellID);
-  static std::shared_ptr<Task> GetTask(int cellID = 0);
-  static std::shared_ptr<std::vector<TaskInfo>> GetTasks(int datasetID = 0,
-                                                         int cellID = 0,
-                                                         int maxWeight = 0);
-  static std::shared_ptr<Task> GetTaskByID(int taskID);
+  static TaskRequest GetTask(int cellID = 0);
+  static TaskInfosRequest GetTasks(int datasetID = 0, int cellID = 0,
+                                   int maxWeight = 0);
+  static TaskRequest GetTaskByID(int taskID);
 
-  static std::shared_ptr<Task> GetComparisonTask(int cellID = 0);
-  static std::shared_ptr<Task> GetComparisonTaskByID(int taskID);
+  static TaskRequest GetComparisonTask(int cellID = 0);
+  static TaskRequest GetComparisonTaskByID(int taskID);
 
-  static std::shared_ptr<std::vector<Dataset>> GetDatasets();
-  static std::shared_ptr<std::vector<Cell>> GetCells(int datasetID);
-  static bool UpdateNotes(int taskID, std::string notes);
+  static DatasetsRequest GetDatasets();
+  static CellsRequest GetCells(int datasetID);
+  static std::shared_ptr<network::http::PutRequest> UpdateNotes(
+      int taskID, std::string notes);
+
   static bool LoadTask(const std::shared_ptr<Task>& task);
   static bool AttemptFinishTask();
   static bool SubmitTask();
@@ -52,10 +61,10 @@ class TaskManager : private om::SingletonBase<TaskManager>,
 
   std::shared_ptr<Task> currentTask_;
 
-  network::HTTPCache<Task> taskCache_;
-  network::HTTPCache<std::vector<TaskInfo>> taskInfoCache_;
-  network::HTTPCache<std::vector<Dataset>> datasetCache_;
-  network::HTTPCache<std::vector<Cell>> cellsCache_;
+  network::http::Cache<Task> taskCache_;
+  network::http::Cache<std::vector<TaskInfo>> taskInfoCache_;
+  network::http::Cache<std::vector<Dataset>> datasetCache_;
+  network::http::Cache<std::vector<Cell>> cellsCache_;
 
   friend class zi::singleton<TaskManager>;
 };

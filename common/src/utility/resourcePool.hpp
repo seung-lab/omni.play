@@ -38,10 +38,11 @@ class ResourcePool {
 
   struct Lease {
    public:
+    Lease() : pool_(nullptr) {}
     Lease(ResourcePool& pool, bool spin = false)
-        : pool_(std::ref(pool)), ptr_(pool.get()) {
-      while (spin && !ptr_ && !pool_.closing_) {
-        ptr_ = pool_.get();
+        : pool_(&pool), ptr_(pool.get()) {
+      while (spin && !ptr_ && !pool_->closing_) {
+        ptr_ = pool_->get();
       }
     }
     ~Lease() { release(); }
@@ -51,6 +52,7 @@ class ResourcePool {
     Lease& operator=(Lease&& other) {
       pool_ = std::move(other.pool_);
       ptr_ = std::move(other.ptr_);
+      return *this;
     }
 
     explicit operator T*() { return ptr_.get(); }
@@ -60,13 +62,13 @@ class ResourcePool {
 
     void release() {
       if (ptr_) {  // Threading issues??
-        pool_.release(ptr_);
+        pool_->release(ptr_);
         ptr_.reset();
       }
     }
 
    private:
-    std::reference_wrapper<ResourcePool> pool_;
+    ResourcePool* pool_;
     std::shared_ptr<T> ptr_;
   };
 
