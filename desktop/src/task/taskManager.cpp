@@ -17,12 +17,13 @@ TaskManager::~TaskManager() {}
 
 std::shared_ptr<Task> TaskManager::GetTask(int cellID) {
   auto uri = system::Account::endpoint();
-  uri.set_path("/api/v1/task");
+  uri.set_path("/1.0/task/assign");
   if (cellID) {
-    uri.AppendPath(std::string("/cell/") + std::to_string(cellID));
+    uri.AddQueryParameter("cell", std::to_string(cellID));
   }
   return instance().taskCache_.GET<TracingTask>(uri);
 }
+
 std::shared_ptr<std::vector<TaskInfo>> TaskManager::GetTasks(int datasetID,
                                                              int cellID,
                                                              int maxWeight) {
@@ -40,8 +41,8 @@ std::shared_ptr<std::vector<TaskInfo>> TaskManager::GetTasks(int datasetID,
 }
 
 std::shared_ptr<Task> TaskManager::GetTaskByID(int taskID) {
-  auto uri = system::Account::endpoint(
-      std::string("/api/v1/task/cell/0/task/") + std::to_string(taskID));
+  auto uri = system::Account::endpoint(std::string("/1.0/task/") +
+                                       std::to_string(taskID));
   return instance().taskCache_.GET<TracingTask>(uri);
 }
 
