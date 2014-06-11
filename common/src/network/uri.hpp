@@ -157,7 +157,7 @@ class Uri {
   PROP_CONST_REF(ParameterList, queryParameters);
   PROP_REF_SET(std::string, fragment);
 };
-Uri operator"" _uri(const char* str, size_t sz) { return Uri(str); }
+inline Uri operator"" _uri(const char* str, size_t) { return Uri(str); }
 
 inline std::ostream& operator<<(std::ostream& out, const Uri& uri) {
   return out << uri.string();

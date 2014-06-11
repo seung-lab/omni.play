@@ -95,37 +95,39 @@ QSize TaskSelector::sizeHint() const { return QSize(900, 600); }
 
 void TaskSelector::showEvent(QShowEvent* event) {
   oldCellSelection_ = cellID();
-  auto oldDatasetSelection = datasetID();
 
   TaskManager::Refresh();
-  datasets_ = TaskManager::GetDatasets();
-
-  datasetCombo_->clear();
-  if ((bool)datasets_) {
-    if (!oldDatasetSelection) {
-      oldDatasetSelection = OmLocalPreferences::getDataset();
-    }
-    for (int i = 0; i < datasets_->size(); ++i) {
-      Dataset& ds = (*datasets_)[i];
-      ds.LoadCells();
-      datasetCombo_->addItem(
-          QString::fromStdString(std::to_string(ds.id()) + ". " + ds.name()),
-          ds.id());
-      if (ds.id() == oldDatasetSelection) {
-        datasetCombo_->setCurrentIndex(i);
+  datasetsRequest_ = TaskManager::GetDatasets();
+  *datasetsRequest_ >>= [this](
+      const boost::optional<std::vector<om::task::Dataset>>& datasets) {
+    auto oldDatasetSelection = datasetID();
+    datasetCombo_->clear();
+    if ((bool)datasets) {
+      if (!oldDatasetSelection) {
+        oldDatasetSelection = OmLocalPreferences::getDataset();
+      }
+      int i = 0;
+      for (auto& ds : *datasets) {
+        datasetCombo_->addItem(
+            QString::fromStdString(std::to_string(ds.id()) + ". " + ds.name()),
+            ds.id());
+        if (ds.id() == oldDatasetSelection) {
+          datasetCombo_->setCurrentIndex(i);
+        }
+        i++;
       }
     }
-  }
+  };
 }
 
 void TaskSelector::updateCells() {
   cellCombo_->clear();
   cellCombo_->addItem("", 0);
   if (dataset()) {
-    auto cells = dataset()->cells();
-    if (cells) {
-      for (int i = 0; i < cells->size(); ++i) {
-        Cell& c = (*cells)[i];
+    cellsRequest_ = om::tasks::TaskManager::GetCells(dataset()->id);
+    *cellsRequest_ >>= [this](std::vector<Cell>& cells) {
+      for (int i = 0; i < cells.size(); ++i) {
+        Cell& c = cells[i];
         cellCombo_->addItem(
             QString::fromStdString(std::to_string(c.CellID) + " - " + c.Name),
             i + 1);
@@ -133,7 +135,7 @@ void TaskSelector::updateCells() {
           cellCombo_->setCurrentIndex(i + 1);
         }
       }
-    }
+    };
   }
 }
 
@@ -171,10 +173,10 @@ void TaskSelector::traceClicked() {
   auto id = selectedTaskId();
   log_debugs << "Tracing Task: " << id;
   auto task = TaskManager::GetTaskByID(id);
-  task->AddContinuation([this](std::shared_ptr<Task> t) {
+  *task >> [this](std::shared_ptr<Task> t) {
     TaskManager::LoadTask(t);
     om::event::ExecuteOnMain([this]() { accept(); });
-  });
+  };
   task->Detach();
 }
 
@@ -182,10 +184,10 @@ void TaskSelector::compareClicked() {
   auto id = selectedTaskId();
   log_debugs << "Comparison Task: " << id;
   auto task = TaskManager::GetComparisonTaskByID(id);
-  task->AddContinuation([this](std::shared_ptr<Task> t) {
+  *task >> [this](std::shared_ptr<Task> t) {
     TaskManager::LoadTask(t);
     om::event::ExecuteOnMain([this]() { accept(); });
-  });
+  };
   task->Detach();
 }
 
@@ -289,8 +291,9 @@ void TaskSelector::getTasks() {
   tasksRequest_ = TaskManager::GetTasks(
       datasetID(), cellID(),
       completedTasksCheckbox_->checkState() == Qt::Unchecked ? 1e6 : 0);
-  tasksRequest_->AddContinuation(om::exec([this](
-      std::shared_ptr<std::vector<TaskInfo>> tasks) { updateTasks(tasks); }));
+  *tasksRequest_ >>= [this](std::shared_ptr<std::vector<TaskInfo>> tasks) {
+    updateTasks(tasks);
+  };
 }
 
 void TaskSelector::onManualEntry() {
@@ -311,19 +314,14 @@ void TaskSelector::onManualEntry() {
     taskRequest_ = TaskManager::GetTaskByID(taskId);
     compTaskRequest_ = TaskManager::GetComparisonTaskByID(taskId);
 
-    taskRequest_->AddContinuation(
-        om::exec([this](std::shared_ptr<om::task::Task> task) {
-          if (task) {
-            taskTable_->setItem(0, (int)Columns::Cell,
-                                makeTableItem(task->CellId()));
-          }
-        }));
+    *taskRequest_ >>= [this](om::task::Task& task) {
+      taskTable_->setItem(0, (int)Columns::Cell, makeTableItem(task.CellId()));
+    };
 
-    compTaskRequest_->AddContinuation(
-        om::exec([this](std::shared_ptr<om::task::Task> task) {
-          taskTable_->setItem(0, (int)Columns::Comparison,
-                              makeTableItem((bool)task));
-        }));
+    *compTaskRequest_ >>= [this](om::task::Task& task) {
+      taskTable_->setItem(0, (int)Columns::Comparison,
+                          makeTableItem(true);
+    };
   } else {
     taskRequest_.reset();
     taskRequest_.reset();

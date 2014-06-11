@@ -7,7 +7,7 @@
 #include "zi/utility.h"
 #include "network/uri.hpp"
 #include "network/curlCore.h"
-#include "network/http/requests.hpp"
+#include "network/http/requests.h"
 
 #include "yaml-cpp/yaml.h"
 
@@ -17,8 +17,12 @@ namespace http {
 class HTTP : private SingletonBase<HTTP> {
  public:
   template <typename T>
-  static std::shared_ptr<GetRequest<T>> GET(const network::Uri& uri) {
-    return instance().core_.CreateRequest<GetRequest<T>>(uri);
+  static std::shared_ptr<TypedGetRequest<T>> GET(const network::Uri& uri) {
+    return instance().core_.CreateRequest<TypedGetRequest<T>>(uri);
+  }
+
+  static std::shared_ptr<GetRequest> GET(const network::Uri& uri) {
+    return instance().core_.CreateRequest<GetRequest>(uri);
   }
 
   template <typename T>
@@ -41,8 +45,12 @@ class HTTP : private SingletonBase<HTTP> {
 };
 
 template <typename T>
-static std::shared_ptr<GetRequest<T>> GET(const network::Uri& uri) {
+static std::shared_ptr<TypedGetRequest<T>> GET(const network::Uri& uri) {
   return HTTP::GET<T>(uri);
+}
+
+static std::shared_ptr<GetRequest> GET(const network::Uri& uri) {
+  return HTTP::GET(uri);
 }
 
 template <typename T>

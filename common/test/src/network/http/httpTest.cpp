@@ -12,7 +12,7 @@ namespace om {
 namespace test {
 
 TEST(HTTP, GET) {
-  auto val = http::GET<std::string>("http://curl.haxx.se/libcurl"_uri);
+  auto val = http::GET("http://curl.haxx.se/libcurl"_uri);
   val->wait();
   ASSERT_TRUE((bool)*val);
 }

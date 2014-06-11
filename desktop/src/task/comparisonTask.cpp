@@ -120,7 +120,7 @@ bool ComparisonTask::Submit() {
       uri, std::make_pair("id", id_), std::make_pair("plane", "xy"),
       std::make_pair("segments", segIDs), std::make_pair("reap", "true"),
       std::make_pair("status", 0));
-  req.Detach();
+  req->Detach();
   return true;
 }
 

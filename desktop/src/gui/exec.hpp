@@ -61,4 +61,13 @@ template <typename Func>
 execer<Func> exec(Func&& f) {
   return execer<Func>(std::forward<Func>(f));
 }
+
+namespace thread {
+template <typename T>
+thread::Continuable<T>& operator>>=(thread::Continuable<T>& c,
+                                    std::function<void(T)> f) {
+  c.AddContinuation(exec(f));
+  return c;
+}
+}
 }

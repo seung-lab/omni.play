@@ -15,6 +15,8 @@ class Uri;
 namespace task {
 
 class Task;
+class TracingTask;
+class ComparisonTask;
 
 int confirmSaveAndClose();
 
@@ -24,23 +26,26 @@ class TaskManager : private om::SingletonBase<TaskManager>,
   static const std::shared_ptr<Task>& currentTask() {
     return instance().currentTask_;
   }
-  typedef std::shared_ptr<network::http::GetRequest<Task>> TaskRequest;
-  typedef std::shared_ptr<network::http::GetRequest<std::vector<TaskInfo>>>
+  typedef std::shared_ptr<network::http::TypedGetRequest<TracingTask>>
+      TracingTaskRequest;
+  typedef std::shared_ptr<network::http::TypedGetRequest<ComparisonTask>>
+      ComparisonTaskRequest;
+  typedef std::shared_ptr<network::http::TypedGetRequest<std::vector<TaskInfo>>>
       TaskInfosRequest;
-  typedef std::shared_ptr<network::http::GetRequest<std::vector<Dataset>>>
+  typedef std::shared_ptr<network::http::TypedGetRequest<std::vector<Dataset>>>
       DatasetsRequest;
-  typedef std::shared_ptr<network::http::GetRequest<std::vector<Cell>>>
+  typedef std::shared_ptr<network::http::TypedGetRequest<std::vector<Cell>>>
       CellsRequest;
 
   // static std::vector<Task*> ListTasks();
   // static std::vector<Task*> ListTasks(int cellID);
-  static TaskRequest GetTask(int cellID = 0);
+  static TracingTaskRequest GetTask(int cellID = 0);
   static TaskInfosRequest GetTasks(int datasetID = 0, int cellID = 0,
                                    int maxWeight = 0);
-  static TaskRequest GetTaskByID(int taskID);
+  static TracingTaskRequest GetTaskByID(int taskID);
 
-  static TaskRequest GetComparisonTask(int cellID = 0);
-  static TaskRequest GetComparisonTaskByID(int taskID);
+  static ComparisonTaskRequest GetComparisonTask(int cellID = 0);
+  static ComparisonTaskRequest GetComparisonTaskByID(int taskID);
 
   static DatasetsRequest GetDatasets();
   static CellsRequest GetCells(int datasetID);
@@ -61,10 +66,10 @@ class TaskManager : private om::SingletonBase<TaskManager>,
 
   std::shared_ptr<Task> currentTask_;
 
-  network::http::Cache<Task> taskCache_;
-  network::http::Cache<std::vector<TaskInfo>> taskInfoCache_;
-  network::http::Cache<std::vector<Dataset>> datasetCache_;
-  network::http::Cache<std::vector<Cell>> cellsCache_;
+  network::http::Cache taskCache_;
+  network::http::Cache taskInfoCache_;
+  network::http::Cache datasetCache_;
+  network::http::Cache cellsCache_;
 
   friend class zi::singleton<TaskManager>;
 };

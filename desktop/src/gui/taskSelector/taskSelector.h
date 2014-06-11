@@ -59,10 +59,9 @@ Q_SLOTS:
   QPushButton* refreshButton_;
   QCheckBox* completedTasksCheckbox_;
 
-  std::shared_ptr<om::task::Task> traceTask_;
-  std::shared_ptr<om::task::Task> compareTask_;
-  std::shared_ptr<std::vector<om::task::Dataset>> datasets_;
   om::task::TaskManager::TaskInfosRequest tasksRequest_;
-  om::task::TaskManager::TaskRequest taskRequest_;
-  om::task::TaskManager::TaskRequest compTaskRequest_;
+  om::task::TaskManager::TracingTaskRequest taskRequest_;
+  om::task::TaskManager::ComparisonTaskRequest compTaskRequest_;
+  om::task::TaskManager::DatasetsRequest datasetsRequest_;
+  om::task::TaskManager::CellsRequest cellsRequest_;
 };
