@@ -39,44 +39,13 @@ class usersImpl {
 
   const std::string& CurrentUser() const { return currentUser_; }
 
-  void SetupFolders() {
-    file::MkDir(UserPaths());
-
-    fixSegmentationFolderSymlinks();
-  }
+  void SetupFolders() { file::MkDir(UserPaths()); }
 
   userSettings& UserSettings() { return *settings_; }
 
   file::Paths::Usr UserPaths() { return paths_.UserPaths(currentUser_); }
 
  private:
-  void fixSegmentationFolderSymlinks() {
-    const auto segmentationFolders =
-        fs::VolumeFolders::FindSegmentations(paths_);
-
-    for (auto f : segmentationFolders) {
-      fixSegmentFolderSymlink(f);
-    }
-  }
-
-  void fixSegmentFolderSymlink(fs::volumeFolderInfo folder) {
-    auto up = UserPaths();
-    auto oldSegmentsFolder = folder.path / file::Paths::Seg::SegmentsRel();
-    file::MkDir(up.Segmentation(folder.id));
-    auto userSegmentsFolder = up.Segments(folder.id);
-
-    if (file::IsSymlink(oldSegmentsFolder)) {
-
-    } else if (file::IsFolder(oldSegmentsFolder)) {
-      file::MoveFile(oldSegmentsFolder, userSegmentsFolder);
-      file::Symlink(userSegmentsFolder, oldSegmentsFolder);
-
-    } else {
-      // no symlink present
-      file::Symlink(userSegmentsFolder, oldSegmentsFolder);
-    }
-  }
-
   void loadUserSettings() {
     log_infos << "Reloading User Settings...";
     settings_.reset(new userSettings(UserPaths().Settings().string()));
