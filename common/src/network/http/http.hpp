@@ -25,6 +25,11 @@ class HTTP : private SingletonBase<HTTP> {
     return instance().core_.CreateRequest<GetRequest>(uri);
   }
 
+  static std::shared_ptr<PutRequest> PUT(const network::Uri& uri,
+                                         const std::string& data) {
+    return instance().core_.CreateRequest<PutRequest>(uri, data);
+  }
+
   template <typename T>
   static std::shared_ptr<PutRequest> PUT(const network::Uri& uri,
                                          const T& data) {
@@ -49,13 +54,18 @@ static std::shared_ptr<TypedGetRequest<T>> GET(const network::Uri& uri) {
   return HTTP::GET<T>(uri);
 }
 
-static std::shared_ptr<GetRequest> GET(const network::Uri& uri) {
+inline static std::shared_ptr<GetRequest> GET(const network::Uri& uri) {
   return HTTP::GET(uri);
 }
 
 template <typename T>
 static std::shared_ptr<PutRequest> PUT(const network::Uri& uri, const T& data) {
   return HTTP::PUT<T>(uri, data);
+}
+
+inline static std::shared_ptr<PutRequest> PUT(const network::Uri& uri,
+                                              const std::string& data) {
+  return HTTP::PUT(uri, data);
 }
 
 template <typename... Ts>

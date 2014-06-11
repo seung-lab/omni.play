@@ -32,19 +32,20 @@ class Cache {
   template <typename T>
   TypedRequestType<T> GET(const network::Uri& uri) {
     auto uriString = uri.string();
-    auto ret = cache_get(uriString);
+    auto ret =
+        std::dynamic_pointer_cast<TypedGetRequest<T>>(cache_get(uriString));
     if (ret) {
       return ret;
     }
     try {
-      RequestType req = http::GET<T>(uri);
+      TypedRequestType<T> req = http::GET<T>(uri);
       cache_store(uriString, req);
       return req;
     }
     catch (om::Exception e) {
       log_debugs << "Failed loading task: " << e.what();
     }
-    return RequestType();
+    return TypedRequestType<T>();
   }
 
   void Clear() { cache_.clear(); }

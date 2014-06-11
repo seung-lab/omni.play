@@ -22,20 +22,6 @@ std::string url_encode(T val) {
   return url_encode(std::to_string(val).c_str());
 }
 
-template <typename TKey, typename TVal, typename... TRest>
-std::string postString(std::pair<TKey, TVal> toPost, TRest... rest) {
-  return postPair(url_encode(toPost.first), toPost.second) + "&" +
-         postString(rest...);
-}
-template <typename TKey, typename TVal>
-std::string postString(std::pair<TKey, TVal> toPost) {
-  return postPair(url_encode(toPost.first), toPost.second);
-}
-inline std::string postString() { return ""; }
-inline std::string postString(const file::path& p) {
-  return "@" + boost::filesystem::absolute(p).string();
-}
-
 template <typename TVal>
 std::string postPair(std::string first, TVal second) {
   return first + "=" + url_encode(second);
@@ -87,6 +73,20 @@ std::string postPair(const std::string& name, std::vector<T> vec) {
     result += postPair(std::string(name) + "[]", elem);
   }
   return result;
+}
+
+inline std::string postString() { return ""; }
+inline std::string postString(const file::path& p) {
+  return "@" + boost::filesystem::absolute(p).string();
+}
+template <typename TKey, typename TVal, typename... TRest>
+std::string postString(std::pair<TKey, TVal> toPost, TRest... rest) {
+  return postPair(url_encode(toPost.first), toPost.second) + "&" +
+         postString(rest...);
+}
+template <typename TKey, typename TVal>
+std::string postString(std::pair<TKey, TVal> toPost) {
+  return postPair(url_encode(toPost.first), toPost.second);
 }
 }
 }

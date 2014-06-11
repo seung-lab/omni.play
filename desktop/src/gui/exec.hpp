@@ -58,8 +58,8 @@ class execer<Func,
 };
 
 template <typename Func>
-execer<Func> exec(Func&& f) {
-  return execer<Func>(std::forward<Func>(f));
+execer<Func> exec(Func f) {
+  return execer<Func>(f);
 }
 
 namespace thread {
@@ -72,15 +72,17 @@ thread::Continuable<T>& operator>>=(thread::Continuable<T>& c,
 }
 namespace network {
 namespace http {
-GetRequest& operator>>=(
-    GetRequest& c, std::function<void(const boost::optional<std::string>&)> f) {
+GetRequest& operator>>=(GetRequest& c,
+                        typename thread::Continuable<
+                            const boost::optional<std::string>&>::func_t f) {
   c.AddContinuation(exec(f));
   return c;
 }
 
 template <typename T>
 TypedGetRequest<T>& operator>>=(
-    TypedGetRequest<T>& c, std::function<void(const boost::optional<T>&)> f) {
+    TypedGetRequest<T>& c,
+    typename thread::Continuable<const boost::optional<T>&>::func_t f) {
   c.AddContinuation(exec(f));
   return c;
 }

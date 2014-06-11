@@ -124,10 +124,13 @@ void TaskSelector::updateCells() {
   cellCombo_->clear();
   cellCombo_->addItem("", 0);
   if (dataset()) {
-    cellsRequest_ = om::tasks::TaskManager::GetCells(dataset()->id);
-    *cellsRequest_ >>= [this](std::vector<Cell>& cells) {
-      for (int i = 0; i < cells.size(); ++i) {
-        Cell& c = cells[i];
+    cellsRequest_ = om::task::TaskManager::GetCells(dataset()->id());
+    *cellsRequest_ >>= [this](const boost::optional<std::vector<Cell>>& cells) {
+      if (!cells) {
+        return;
+      }
+      for (int i = 0; i < cells->size(); ++i) {
+        const Cell& c = cells.get()[i];
         cellCombo_->addItem(
             QString::fromStdString(std::to_string(c.CellID) + " - " + c.Name),
             i + 1);
@@ -173,9 +176,11 @@ void TaskSelector::traceClicked() {
   auto id = selectedTaskId();
   log_debugs << "Tracing Task: " << id;
   auto task = TaskManager::GetTaskByID(id);
-  *task >> [this](std::shared_ptr<Task> t) {
-    TaskManager::LoadTask(t);
-    om::event::ExecuteOnMain([this]() { accept(); });
+  *task >> [this](const boost::optional<TracingTask>& t) {
+    if (t) {
+      TaskManager::LoadTask(std::make_shared<TracingTask>(t.get()));
+      om::event::ExecuteOnMain([this]() { accept(); });
+    }
   };
   task->Detach();
 }
@@ -184,9 +189,11 @@ void TaskSelector::compareClicked() {
   auto id = selectedTaskId();
   log_debugs << "Comparison Task: " << id;
   auto task = TaskManager::GetComparisonTaskByID(id);
-  *task >> [this](std::shared_ptr<Task> t) {
-    TaskManager::LoadTask(t);
-    om::event::ExecuteOnMain([this]() { accept(); });
+  *task >> [this](const boost::optional<ComparisonTask>& t) {
+    if (t) {
+      TaskManager::LoadTask(std::make_shared<ComparisonTask>(t));
+      om::event::ExecuteOnMain([this]() { accept(); });
+    }
   };
   task->Detach();
 }

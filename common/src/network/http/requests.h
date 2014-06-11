@@ -63,9 +63,26 @@ class TypedGetRequest
   PROP_REF(boost::optional<T>, result);
 };
 
+template <typename T>
+TypedGetRequest<T>& operator>>(
+    TypedGetRequest<T>& c,
+    typename thread::Continuable<std::string>::func_t f) {
+  c.AddContinuation(f);
+  return c;
+}
+
+template <typename T>
+TypedGetRequest<T>& operator>>(
+    TypedGetRequest<T>& c,
+    typename thread::Continuable<const boost::optional<T>&>::func_t f) {
+  c.AddContinuation(f);
+  return c;
+}
+
 class PutRequest : public HTTPRequest, public thread::Continuable<void> {
  public:
-  PutRequest(network::Uri uri) : HTTPRequest(uri) {}
+  PutRequest(network::Uri uri, const std::string& str)
+      : HTTPRequest(uri), ss_(str) {}
 
  protected:
   virtual void SetCurlOptions(CURL* h) override;
