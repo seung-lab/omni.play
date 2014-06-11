@@ -70,4 +70,20 @@ thread::Continuable<T>& operator>>=(thread::Continuable<T>& c,
   return c;
 }
 }
+namespace network {
+namespace http {
+GetRequest& operator>>=(
+    GetRequest& c, std::function<void(const boost::optional<std::string>&)> f) {
+  c.AddContinuation(exec(f));
+  return c;
+}
+
+template <typename T>
+TypedGetRequest<T>& operator>>=(
+    TypedGetRequest<T>& c, std::function<void(const boost::optional<T>&)> f) {
+  c.AddContinuation(exec(f));
+  return c;
+}
+}
+}
 }

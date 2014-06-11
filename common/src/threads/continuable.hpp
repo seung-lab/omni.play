@@ -54,7 +54,8 @@ class Continuable<void> {
 };
 
 template <typename T>
-Continuable<T>& operator>>(Continuable<T>& c, std::function<void(T)> f) {
+Continuable<T>& operator>>(Continuable<T>& c,
+                           typename Continuable<T>::func_t f) {
   c.AddContinuation(f);
   return c;
 }

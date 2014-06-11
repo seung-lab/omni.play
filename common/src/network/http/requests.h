@@ -115,7 +115,7 @@ class PostRequest
  public:
   template <typename... TRest>
   PostRequest(network::Uri uri, TRest&&... rest)
-      : HTTPRequest(uri), postString_(postString(rest...)) {}
+      : HTTPRequest(uri), postString_(http::postString(rest...)) {}
 
  protected:
   virtual void SetCurlOptions(CURL* h) override;

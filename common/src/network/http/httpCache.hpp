@@ -9,35 +9,18 @@ namespace http {
 class Cache {
  public:
   typedef std::shared_ptr<GetRequest> RequestType;
-
-  RequestType GET(const network::Uri& uri) { return do_get<RequestType>(uri); }
-
   template <typename T>
-  std::shared_ptr<TypedGetRequest<T>> GET(const network::Uri& uri) {
-    return std::dynamic_pointer_cast<TypedGetRequest<T>>(
-        do_get<TypedGetRequest<T>>(uri));
-  }
+  using TypedRequestType = std::shared_ptr<TypedGetRequest<T>>;
 
-  void Clear() { cache_.clear(); }
-
- private:
-  template <typename T>
-  RequestType cached_get(const network::Uri& uri) {
+  RequestType GET(const network::Uri& uri) {
     auto uriString = uri.string();
-    decltype(cache_.find(uriString)) iter;
-    {
-      std::lock_guard<std::mutex> lk(m_);
-      iter = cache_.find(uriString);
-    }
-    if (iter != cache_.end()) {
-      return iter->second;
+    auto ret = cache_get(uriString);
+    if (ret) {
+      return ret;
     }
     try {
-      RequestType req = do_get<T>(uri);
-      {
-        std::lock_guard<std::mutex> lk(m_);
-        cache_[uriString] = req;
-      }
+      RequestType req = http::GET(uri);
+      cache_store(uriString, req);
       return req;
     }
     catch (om::Exception e) {
@@ -47,16 +30,41 @@ class Cache {
   }
 
   template <typename T>
-  RequestType do_get(typename std::enable_if<
-      std::is_same<T, RequestType>::value, const network::Uri&>::type uri) {
-    return network::http::GET(uri);
+  TypedRequestType<T> GET(const network::Uri& uri) {
+    auto uriString = uri.string();
+    auto ret = cache_get(uriString);
+    if (ret) {
+      return ret;
+    }
+    try {
+      RequestType req = http::GET<T>(uri);
+      cache_store(uriString, req);
+      return req;
+    }
+    catch (om::Exception e) {
+      log_debugs << "Failed loading task: " << e.what();
+    }
+    return RequestType();
   }
 
-  template <typename T, typename U>
-  RequestType do_get(
-      typename std::enable_if<!std::is_same<T, TypedGetRequest<U>>::value,
-                              const network::Uri&>::type uri) {
-    return network::http::GET<U>(uri);
+  void Clear() { cache_.clear(); }
+
+ private:
+  RequestType cache_get(const std::string& uriString) {
+    decltype(cache_.find(uriString)) iter;
+    {
+      std::lock_guard<std::mutex> lk(m_);
+      iter = cache_.find(uriString);
+    }
+    if (iter != cache_.end()) {
+      return iter->second;
+    }
+    return RequestType();
+  }
+
+  void cache_store(const std::string& uriString, RequestType req) {
+    std::lock_guard<std::mutex> lk(m_);
+    cache_[uriString] = req;
   }
 
   std::mutex m_;

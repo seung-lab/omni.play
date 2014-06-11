@@ -6,6 +6,22 @@
 namespace om {
 namespace network {
 namespace http {
+inline std::string url_encode(const char* str) {
+  char* encoded = curl_easy_escape(nullptr, str, 0);
+  std::string result(encoded);
+  curl_free(encoded);
+  return result;
+}
+
+inline std::string url_encode(std::string val) {
+  return url_encode(val.c_str());
+}
+
+template <typename T>
+std::string url_encode(T val) {
+  return url_encode(std::to_string(val).c_str());
+}
+
 template <typename TKey, typename TVal, typename... TRest>
 std::string postString(std::pair<TKey, TVal> toPost, TRest... rest) {
   return postPair(url_encode(toPost.first), toPost.second) + "&" +
@@ -71,22 +87,6 @@ std::string postPair(const std::string& name, std::vector<T> vec) {
     result += postPair(std::string(name) + "[]", elem);
   }
   return result;
-}
-
-inline std::string url_encode(const char* str) {
-  char* encoded = curl_easy_escape(nullptr, str, 0);
-  std::string result(encoded);
-  curl_free(encoded);
-  return result;
-}
-
-inline std::string url_encode(std::string val) {
-  return url_encode(val.c_str());
-}
-
-template <typename T>
-std::string url_encode(T val) {
-  return url_encode(std::to_string(val).c_str());
 }
 }
 }
