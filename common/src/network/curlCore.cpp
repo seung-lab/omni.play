@@ -19,14 +19,12 @@ void Request::getResponseCode() {
 }
 
 void Request::start(handle_pool::Lease&& l) {
-  log_debugs << "Request: started";
   lease_ = std::move(l);
   SetCurlOptions(lease_->Handle);
   state_ = State::DOING;
 }
 
 void Request::finish() {
-  log_debugs << "Request: finished";
   getResponseCode();
   Finish(lease_->Handle);
   lease_.release();
@@ -159,7 +157,6 @@ void CURLCore::handle_messages() {
   CURLMsg* msg;
   int msgs_left;
   while ((msg = curl_multi_info_read(handle_, &msgs_left))) {
-    log_debugs << "CURLCore: Request Completed.";
     if (msg->msg == CURLMSG_DONE) {
       auto req = active_[msg->easy_handle].lock();
       if ((bool)req) {
