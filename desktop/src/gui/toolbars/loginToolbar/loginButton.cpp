@@ -30,25 +30,22 @@ void LoginButton::onClicked() {
   om::system::Account::set_endpoint(uri.get());
   auto request =
       om::system::Account::Login(dialog.username(), dialog.password());
-
-  request >> [](om::system::LoginResult res) {
-    QString errorText;
-    switch (res) {
-      case om::system::LoginResult::SUCCESS:
-        om::event::ExecuteOnMain([]() { OmAppState::OpenTaskSelector(); });
-        return;
-      case om::system::LoginResult::BAD_USERNAME_PW:
-        errorText = tr("Incorrect Username or Password.");
-        break;
-      case om::system::LoginResult::CONNECTION_ERROR:
-        errorText = tr("Server Error.");
-        break;
-      default:
-        errorText = tr("Unknown Error.");
-        break;
-    }
-    om::event::NonFatalEventOccured(errorText);
-  };
+  request.wait();
+  QString errorText;
+  switch (request.result()) {
+    case om::system::LoginResult::SUCCESS:
+      OmAppState::OpenTaskSelector();
+      return;
+    case om::system::LoginResult::BAD_USERNAME_PW:
+      errorText = tr("Incorrect Username or Password.");
+      break;
+    case om::system::LoginResult::CONNECTION_ERROR:
+      errorText = tr("Server Error.");
+      break;
+    default:
+      errorText = tr("Unknown Error.");
+      break;
+  }
 }
 
 void LoginButton::ConnectionChangeEvent() { setLabel(); }
