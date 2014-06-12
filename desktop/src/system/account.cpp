@@ -41,14 +41,14 @@ void Account::set_endpoint(network::Uri endpoint) {
   instance().endpoint_.set_scheme("http");
 }
 
-LoginResult Account::parseLoginResult(
-    const boost::optional<std::string>& result, const std::string& username) {
-  if (!result) {
+LoginResult Account::parseLoginResult(std::string& result,
+                                      const std::string& username) {
+  if (result.empty()) {
     om::event::ConnectionChanged();
     return LoginResult::CONNECTION_ERROR;
   }
   try {
-    auto node = YAML::Load(result.get());
+    auto node = YAML::Load(result);
     if (!node["success"].as<bool>(false)) {
       om::event::ConnectionChanged();
       return LoginResult::BAD_USERNAME_PW;
@@ -73,7 +73,7 @@ LoginRequest::LoginRequest(network::Uri endpoint, std::string username,
       endpoint_(endpoint),
       username_(username),
       result_(LoginResult::PENDING) {
-  *request >> [this](const boost::optional<std::string>& str) {
+  *request >> [this](std::string& str) {
     result_ = Account::parseLoginResult(str, username_);
     do_continuation(result_);
   };

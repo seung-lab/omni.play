@@ -31,7 +31,7 @@ void LoginButton::onClicked() {
   auto request =
       om::system::Account::Login(dialog.username(), dialog.password());
 
-  request.AddContinuation([](om::system::LoginResult res) {
+  request >> [](om::system::LoginResult res) {
     QString errorText;
     switch (res) {
       case om::system::LoginResult::SUCCESS:
@@ -48,7 +48,7 @@ void LoginButton::onClicked() {
         break;
     }
     om::event::NonFatalEventOccured(errorText);
-  });
+  };
 }
 
 void LoginButton::ConnectionChangeEvent() { setLabel(); }

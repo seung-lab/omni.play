@@ -49,7 +49,7 @@ class Account : private om::SingletonBase<Account> {
   static void set_endpoint(network::Uri endpoint);
 
  private:
-  static LoginResult parseLoginResult(const boost::optional<std::string>& str,
+  static LoginResult parseLoginResult(std::string& str,
                                       const std::string& username);
   Account();
   ~Account();

@@ -128,7 +128,7 @@ class TypedPutRequest : public PutRequest {
 };
 
 class PostRequest : public HTTPRequest,
-                    public thread::Continuable<std::string> {
+                    public thread::Continuable<std::string&> {
  public:
   template <typename... TRest>
   PostRequest(network::Uri uri, TRest&&... rest)
