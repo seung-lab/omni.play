@@ -40,6 +40,7 @@ void HTTPRequest::SetCurlOptions(CURL* h) {
 }
 
 void GetRequest::SetCurlOptions(CURL* h) {
+  log_debugs << "HTTP GET " << uri_;
   HTTPRequest::SetCurlOptions(h);
   CURLcode err;
   SET_OPT(h, CURLOPT_WRITEFUNCTION, &write_data);
@@ -47,6 +48,7 @@ void GetRequest::SetCurlOptions(CURL* h) {
 }
 
 void PutRequest::SetCurlOptions(CURL* h) {
+  log_debugs << "HTTP PUT " << uri_;
   HTTPRequest::SetCurlOptions(h);
   CURLcode err;
   SET_OPT(h, CURLOPT_READFUNCTION, &read_data);
@@ -55,6 +57,7 @@ void PutRequest::SetCurlOptions(CURL* h) {
 }
 
 void PostRequest::SetCurlOptions(CURL* h) {
+  log_debugs << "HTTP POST " << uri_;
   HTTPRequest::SetCurlOptions(h);
 
   CURLcode err;
@@ -74,6 +77,8 @@ void PostRequest::Finish(CURL* h) {
   if (200 <= returnCode_ && returnCode_ < 300) {
     result_ = ss_.str();
   }
+
+  log_debugs << "HTTP POST " << uri_ << " Complete " << result_;
   do_continuation(result_);
 }
 }

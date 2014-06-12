@@ -29,6 +29,9 @@ class GetRequest : public HTTPRequest {
 
  protected:
   virtual void SetCurlOptions(CURL* h) override;
+  virtual void Finish(CURL*) {
+    log_debugs << "HTTP GET " << uri_ << " Complete " << ss_.str();
+  }
 
  protected:
   std::stringstream ss_;
@@ -41,7 +44,8 @@ class TypedGetRequest : public GetRequest,
   TypedGetRequest(network::Uri uri) : GetRequest(uri) {}
 
  protected:
-  virtual void Finish(CURL*) {
+  virtual void Finish(CURL* c) {
+    GetRequest::Finish(c);
     parse();
     thread::Continuable<std::shared_ptr<T>>::do_continuation(result_);
   }
@@ -72,7 +76,8 @@ class TypedGetRequest<std::string> : public GetRequest,
   TypedGetRequest(network::Uri uri) : GetRequest(uri) {}
 
  protected:
-  virtual void Finish(CURL*) {
+  virtual void Finish(CURL* c) {
+    GetRequest::Finish(c);
     result_ = ss_.str();
     thread::Continuable<std::string&>::do_continuation(result_);
   }
@@ -87,7 +92,10 @@ class PutRequest : public HTTPRequest, public thread::Continuable<void> {
 
  protected:
   virtual void SetCurlOptions(CURL* h) override;
-  virtual void Finish(CURL* h) override { do_continuation(); }
+  virtual void Finish(CURL* h) override {
+    log_debugs << "HTTP PUT " << uri_ << " Complete.";
+    do_continuation();
+  }
   std::string string() { return ss_.str(); }
 
  protected:

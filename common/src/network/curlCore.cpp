@@ -19,12 +19,14 @@ void Request::getResponseCode() {
 }
 
 void Request::start(handle_pool::Lease&& l) {
+  log_debugs << "Request: started";
   lease_ = std::move(l);
   SetCurlOptions(lease_->Handle);
   state_ = State::DOING;
 }
 
 void Request::finish() {
+  log_debugs << "Request: finished";
   getResponseCode();
   Finish(lease_->Handle);
   lease_.release();
@@ -55,6 +57,7 @@ CURLCore::~CURLCore() {
 }
 
 void CURLCore::watch() {
+  log_debugs << "CURLCore: Watcher Thread started.";
   while (!killing_.load()) {
     start_pending();
 
@@ -90,11 +93,13 @@ void CURLCore::watch() {
       active->abort();
     }
   }
+  log_debugs << "CURLCore: Watcher Thread finished.";
 }
 
 void CURLCore::start_pending() {
   handle_pool::Lease lease(pool_, false);
   if (!lease) {
+    log_debugs << "CURLCore: No more leases.";
     return;
   }
 
@@ -110,6 +115,8 @@ void CURLCore::start_pending() {
       r->start(std::move(lease));
       active_[h] = r;
       curl_multi_add_handle(handle_, h);
+    } else {
+      log_debugs << "CURLCore: Request abandoned.";
     }
     lease = handle_pool::Lease(pool_, false);
   }
@@ -152,6 +159,7 @@ void CURLCore::handle_messages() {
   CURLMsg* msg;
   int msgs_left;
   while ((msg = curl_multi_info_read(handle_, &msgs_left))) {
+    log_debugs << "CURLCore: Request Completed.";
     if (msg->msg == CURLMSG_DONE) {
       auto req = active_[msg->easy_handle].lock();
       if ((bool)req) {

@@ -71,6 +71,7 @@ class CURLCore {
       std::lock_guard<std::mutex> lk(pending_mutex_);
       pending_.push_back(std::weak_ptr<TReq>(new_req));
     }
+    log_debugs << "CURLCore Request Created.";
     return new_req;
   }
 
