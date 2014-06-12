@@ -25,7 +25,6 @@ class TaskSelector : public QDialog {
 Q_SLOTS:
   void updateEnabled();
   void updateList();
-  void onManualEntry();
   void updateCells();
   void traceClicked();
   void compareClicked();
@@ -45,7 +44,7 @@ Q_SLOTS:
   uint32_t taskID();
   int selectedTaskId();
   void getTasks();
-  void updateTasks(std::shared_ptr<std::vector<om::task::TaskInfo>> tasks);
+  void updateTasks(const std::vector<om::task::TaskInfo>& tasks);
 
   int oldCellSelection_;
 

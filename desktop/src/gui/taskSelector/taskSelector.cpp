@@ -33,7 +33,7 @@ TaskSelector::TaskSelector(QWidget* p) : QDialog(p) {
   taskLineEdit_ = new QLineEdit(this);
   layout->addWidget(taskLineEdit_, 0, 4);
   om::connect(taskLineEdit_, SIGNAL(textEdited(const QString&)), this,
-              SLOT(onManualEntry()));
+              SLOT(updateList()));
 
   refreshButton_ = new QPushButton(tr("Refresh"), this);
   layout->addWidget(refreshButton_, 0, 5);
@@ -261,15 +261,12 @@ QTableWidgetItem* makeTableItem(const T val,
   return item;
 }
 
-void TaskSelector::updateTasks(std::shared_ptr<std::vector<TaskInfo>> tasks) {
-  if (!tasks) {
-    return;
-  }
+void TaskSelector::updateTasks(const std::vector<TaskInfo>& tasks) {
   taskTable_->setSortingEnabled(false);
-  taskTable_->setRowCount(tasks->size());
+  taskTable_->setRowCount(tasks.size());
   taskTable_->blockSignals(true);
-  for (size_t i = 0; i < tasks->size(); ++i) {
-    auto& t = (*tasks)[i];
+  for (size_t i = 0; i < tasks.size(); ++i) {
+    auto& t = tasks[i];
 
     taskTable_->setItem(i, (int)Columns::Id, makeTableItem(t.id));
     taskTable_->setItem(i, (int)Columns::Cell, makeTableItem(t.cell));
@@ -297,51 +294,35 @@ void TaskSelector::updateTasks(std::shared_ptr<std::vector<TaskInfo>> tasks) {
 }
 
 void TaskSelector::getTasks() {
-  taskTable_->clear();
-  tasksRequest_ = TaskManager::GetTasks(
-      datasetID(), cellID(),
-      completedTasksCheckbox_->checkState() == Qt::Unchecked ? 1e6 : 0);
-  *tasksRequest_ >>= [this](std::shared_ptr<std::vector<TaskInfo>> tasks) {
-    updateTasks(tasks);
-  };
-}
-
-void TaskSelector::onManualEntry() {
+  taskTable_->setRowCount(0);
   auto text = taskLineEdit_->text().trimmed();
-  if (text.size()) {
-    taskTable_->blockSignals(true);
-    taskTable_->setSortingEnabled(false);
-    taskTable_->setRowCount(0);
-    taskTable_->setSortingEnabled(true);
-
-    // TODO: clean up
-    auto taskId = text.toInt();
-    taskTable_->insertRow(0);
-    taskTable_->setItem(0, (int)Columns::Id, makeTableItem(taskId));
-    taskTable_->setCurrentCell(0, 0);
-    taskTable_->blockSignals(false);
-
+  auto taskId = text.toInt();
+  if (taskId) {
+    tasksRequest_.reset();
     taskRequest_ = TaskManager::GetTaskByID(taskId);
     compTaskRequest_ = TaskManager::GetComparisonTaskByID(taskId);
 
     *taskRequest_ >>= [this](std::shared_ptr<om::task::TracingTask> task) {
       if (task) {
-        taskTable_->setItem(0, (int)Columns::Cell,
-                            makeTableItem(task->CellId()));
+        std::vector<TaskInfo> tasks = {
+            TaskInfo{(uint32_t)task->Id(), 0, 0, "", task->CellId(), 0,
+                     0,                    0, 0, "", 0,              ""}};
+        updateTasks(tasks);
       }
-    };
-
-    *compTaskRequest_ >>= [this](
-        std::shared_ptr<om::task::ComparisonTask> task) {
-      taskTable_->setItem(0, (int)Columns::Comparison,
-                          makeTableItem((bool)task));
     };
   } else {
     taskRequest_.reset();
-    taskRequest_.reset();
-    getTasks();
+    compTaskRequest_.reset();
+    tasksRequest_ = TaskManager::GetTasks(
+        datasetID(), cellID(),
+        completedTasksCheckbox_->checkState() == Qt::Unchecked ? 1e6 : 0);
+
+    *tasksRequest_ >>= [this](std::shared_ptr<std::vector<TaskInfo>> tasks) {
+      if (tasks) {
+        updateTasks(*tasks);
+      }
+    };
   }
-  updateEnabled();
 }
 
 void TaskSelector::accept() {
