@@ -31,7 +31,8 @@ MainWindow::MainWindow()
       undoView_(nullptr),
       cacheMonitorDialog_(nullptr),
       mMenuBar(new MenuBar(this)),
-      toolBarManager_(nullptr) {
+      toolBarManager_(nullptr),
+      events_(std::make_unique<MainWindowEvents>()) {
 
   // Toolbars somehow need to be created after the MenuBar and otherwise
   // would not respond to mouse actions before project is loaded...
@@ -422,8 +423,6 @@ void MainWindow::windowTitleSet(QString title) {
 void MainWindow::windowTitleClear() { setWindowTitle(tr("Omni")); }
 
 void MainWindow::updateGuiFromProjectCreateOrOpen(QString fileName) {
-  events_ = std::make_unique<MainWindowEvents>();
-
   vgs_ = std::make_unique<OmViewGroupState>(this);
 
   if (!toolBarManager_) {
