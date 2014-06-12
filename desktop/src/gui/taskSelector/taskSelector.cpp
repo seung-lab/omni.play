@@ -156,9 +156,7 @@ void TaskSelector::updateEnabled() {
     traceButton_->setEnabled(false);
     compareButton_->setEnabled(false);
   } else {
-    // TODO: need backend API facility to clean this up
-    auto task = TaskManager::GetTaskByID(selectedTaskId());
-    traceButton_->setEnabled(bool(task));
+    traceButton_->setEnabled(true);
     compareButton_->setEnabled(
         taskTable_->item(row, (int)Columns::Comparison)->data(0).toBool());
   }
@@ -177,27 +175,25 @@ int TaskSelector::selectedTaskId() {
 void TaskSelector::traceClicked() {
   auto id = selectedTaskId();
   log_debugs << "Tracing Task: " << id;
-  auto task = TaskManager::GetTaskByID(id);
-  *task >> [this](std::shared_ptr<TracingTask> t) {
+  taskRequest_ = TaskManager::GetTaskByID(id);
+  *taskRequest_ >>= [this](std::shared_ptr<TracingTask> t) {
     if (t) {
       TaskManager::LoadTask(std::static_pointer_cast<Task>(t));
-      om::event::ExecuteOnMain([this]() { accept(); });
+      accept();
     }
   };
-  task->Detach();
 }
 
 void TaskSelector::compareClicked() {
   auto id = selectedTaskId();
   log_debugs << "Comparison Task: " << id;
-  auto task = TaskManager::GetComparisonTaskByID(id);
-  *task >> [this](std::shared_ptr<ComparisonTask> t) {
+  compTaskRequest_ = TaskManager::GetComparisonTaskByID(id);
+  *compTaskRequest_ >>= [this](std::shared_ptr<ComparisonTask> t) {
     if (t) {
       TaskManager::LoadTask(std::static_pointer_cast<Task>(t));
-      om::event::ExecuteOnMain([this]() { accept(); });
+      accept();
     }
   };
-  task->Detach();
 }
 
 void TaskSelector::completedChanged() { getTasks(); }
@@ -301,6 +297,7 @@ void TaskSelector::updateTasks(std::shared_ptr<std::vector<TaskInfo>> tasks) {
 }
 
 void TaskSelector::getTasks() {
+  taskTable_->clear();
   tasksRequest_ = TaskManager::GetTasks(
       datasetID(), cellID(),
       completedTasksCheckbox_->checkState() == Qt::Unchecked ? 1e6 : 0);
