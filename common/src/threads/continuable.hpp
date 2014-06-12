@@ -21,7 +21,11 @@ class Continuable {
   }
 
  protected:
-  void do_continuation(T val) { continuation_(val); }
+  void do_continuation(T val) {
+    if (continuation_) {
+      continuation_(val);
+    }
+  }
 
   static void both(func_t a, func_t b, T val) {
     a(val);
@@ -44,7 +48,11 @@ class Continuable<void> {
   }
 
  protected:
-  void do_continuation() { continuation_(); }
+  void do_continuation() {
+    if (continuation_) {
+      continuation_();
+    }
+  }
 
   static void both(func_t a, func_t b) {
     a();
