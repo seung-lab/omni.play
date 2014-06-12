@@ -117,6 +117,7 @@ void TaskSelector::showEvent(QShowEvent* event) {
         }
         i++;
       }
+      getTasks();
     }
   };
 }
@@ -209,6 +210,9 @@ uint8_t TaskSelector::datasetID() {
 }
 
 Dataset* TaskSelector::dataset() {
+  if (!datasetsRequest_) {
+    return nullptr;
+  }
   auto datasets = datasetsRequest_->result();
   if (!datasets) {
     return nullptr;
@@ -221,6 +225,9 @@ Dataset* TaskSelector::dataset() {
 }
 
 uint32_t TaskSelector::cellID() {
+  if (!cellsRequest_) {
+    return 0;
+  }
   auto cells = cellsRequest_->result();
   if (!cells) {
     return 0;
