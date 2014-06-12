@@ -12,6 +12,10 @@ class Continuable {
   typedef std::function<void(T)> func_t;
 
   virtual void AddContinuation(func_t continuation) {
+    if (value_) {
+      continuation(value_.get());
+    }
+
     if (!continuation_) {
       continuation_ = continuation;
     } else {
@@ -22,6 +26,7 @@ class Continuable {
 
  protected:
   void do_continuation(T val) {
+    value_ = val;
     if (continuation_) {
       continuation_(val);
     }
@@ -32,6 +37,7 @@ class Continuable {
     b(val);
   }
   func_t continuation_;
+  boost::optional<T> value_;
 };
 
 template <>
@@ -40,6 +46,9 @@ class Continuable<void> {
   typedef std::function<void()> func_t;
 
   virtual void AddContinuation(func_t continuation) {
+    if (tripped_) {
+      continuation();
+    }
     if (!continuation_) {
       continuation_ = continuation;
     } else {
@@ -59,6 +68,7 @@ class Continuable<void> {
     b();
   }
   func_t continuation_;
+  bool tripped_;
 };
 
 template <typename T>
