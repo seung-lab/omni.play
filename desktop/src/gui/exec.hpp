@@ -65,27 +65,9 @@ execer<Func> exec(Func f) {
 namespace thread {
 template <typename T>
 thread::Continuable<T>& operator>>=(thread::Continuable<T>& c,
-                                    std::function<void(T)> f) {
+                                    typename thread::Continuable<T>::func_t f) {
   c.AddContinuation(exec(f));
   return c;
-}
-}
-namespace network {
-namespace http {
-GetRequest& operator>>=(GetRequest& c,
-                        typename thread::Continuable<
-                            const boost::optional<std::string>&>::func_t f) {
-  c.AddContinuation(exec(f));
-  return c;
-}
-
-template <typename T>
-TypedGetRequest<T>& operator>>=(
-    TypedGetRequest<T>& c,
-    typename thread::Continuable<const boost::optional<T>&>::func_t f) {
-  c.AddContinuation(exec(f));
-  return c;
-}
 }
 }
 }

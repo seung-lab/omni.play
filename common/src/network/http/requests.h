@@ -13,35 +13,37 @@ namespace http {
 class HTTPRequest : public Request {
  public:
   HTTPRequest(network::Uri uri) : uri_(uri) {}
+
+ protected:
   virtual void SetCurlOptions(CURL* h) override;
 
  private:
   PROP(network::Uri, uri);
 };
 
-class GetRequest : public HTTPRequest,
-                   public virtual thread::Continuable<std::string> {
+class GetRequest : public HTTPRequest {
  public:
   GetRequest(network::Uri uri) : HTTPRequest(uri) {}
-  virtual void SetCurlOptions(CURL* h) override;
-  virtual void Finish(CURL*) { do_continuation(string()); }
 
   std::string string() { return ss_.str(); }
 
- private:
+ protected:
+  virtual void SetCurlOptions(CURL* h) override;
+
+ protected:
   std::stringstream ss_;
 };
 
 template <typename T>
-class TypedGetRequest
-    : public GetRequest,
-      public virtual thread::Continuable<const boost::optional<T>&> {
+class TypedGetRequest : public GetRequest,
+                        public thread::Continuable<std::shared_ptr<T>> {
  public:
   TypedGetRequest(network::Uri uri) : GetRequest(uri) {}
 
+ protected:
   virtual void Finish(CURL*) {
     parse();
-    do_continuation(result_);
+    thread::Continuable<std::shared_ptr<T>>::do_continuation(result_);
   }
 
  private:
@@ -53,31 +55,30 @@ class TypedGetRequest
 
     try {
       auto node = YAML::Load(response);
-      result_ = node.as<T>();
+      result_ = std::make_shared<T>(node.as<T>());
     }
     catch (YAML::Exception e) {
       log_debugs << "Failed loading JSON: " << e.what();
     }
   }
 
-  PROP_REF(boost::optional<T>, result);
+  PROP_REF(std::shared_ptr<T>, result);
 };
 
-template <typename T>
-TypedGetRequest<T>& operator>>(
-    TypedGetRequest<T>& c,
-    typename thread::Continuable<std::string>::func_t f) {
-  c.AddContinuation(f);
-  return c;
-}
+template <>
+class TypedGetRequest<std::string> : public GetRequest,
+                                     public thread::Continuable<std::string&> {
+ public:
+  TypedGetRequest(network::Uri uri) : GetRequest(uri) {}
 
-template <typename T>
-TypedGetRequest<T>& operator>>(
-    TypedGetRequest<T>& c,
-    typename thread::Continuable<const boost::optional<T>&>::func_t f) {
-  c.AddContinuation(f);
-  return c;
-}
+ protected:
+  virtual void Finish(CURL*) {
+    result_ = ss_.str();
+    thread::Continuable<std::string&>::do_continuation(result_);
+  }
+
+  PROP_REF(std::string, result);
+};
 
 class PutRequest : public HTTPRequest, public thread::Continuable<void> {
  public:
@@ -126,9 +127,8 @@ class TypedPutRequest : public PutRequest {
   PROP_REF(T, data);
 };
 
-class PostRequest
-    : public HTTPRequest,
-      public thread::Continuable<const boost::optional<std::string>&> {
+class PostRequest : public HTTPRequest,
+                    public thread::Continuable<std::string> {
  public:
   template <typename... TRest>
   PostRequest(network::Uri uri, TRest&&... rest)
@@ -140,7 +140,7 @@ class PostRequest
 
   std::stringstream ss_;
   PROP_REF(std::string, postString);
-  PROP_REF(boost::optional<std::string>, result);
+  PROP_REF(std::string, result);
 };
 }
 }

@@ -98,7 +98,7 @@ std::shared_ptr<om::network::http::PutRequest> TaskManager::UpdateNotes(
 
 void TaskManager::ConnectionChangeEvent() {}
 
-bool TaskManager::LoadTask(const std::shared_ptr<Task>& task) {
+bool TaskManager::LoadTask(std::shared_ptr<Task> task) {
   instance().currentTask_ = task;
   if (task) {
     log_infos << "Changed current task " << task->Id();

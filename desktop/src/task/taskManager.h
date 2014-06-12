@@ -52,7 +52,7 @@ class TaskManager : private om::SingletonBase<TaskManager>,
   static std::shared_ptr<network::http::PutRequest> UpdateNotes(
       int taskID, std::string notes);
 
-  static bool LoadTask(const std::shared_ptr<Task>& task);
+  static bool LoadTask(std::shared_ptr<Task> task);
   static bool AttemptFinishTask();
   static bool SubmitTask();
   static std::shared_ptr<Task> FindInterruptedTask();
