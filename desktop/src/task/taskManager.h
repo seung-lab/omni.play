@@ -66,11 +66,6 @@ class TaskManager : private om::SingletonBase<TaskManager>,
 
   std::shared_ptr<Task> currentTask_;
 
-  network::http::Cache taskCache_;
-  network::http::Cache taskInfoCache_;
-  network::http::Cache datasetCache_;
-  network::http::Cache cellsCache_;
-
   friend class zi::singleton<TaskManager>;
 };
 

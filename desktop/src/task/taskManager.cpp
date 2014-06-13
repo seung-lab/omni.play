@@ -21,7 +21,7 @@ TaskManager::TracingTaskRequest TaskManager::GetTask(int cellID) {
   if (cellID) {
     uri.AddQueryParameter("cell", std::to_string(cellID));
   }
-  return instance().taskCache_.GET<TracingTask>(uri);
+  return network::http::GET<TracingTask>(uri);
 }
 
 TaskManager::TaskInfosRequest TaskManager::GetTasks(int datasetID, int cellID,
@@ -36,13 +36,13 @@ TaskManager::TaskInfosRequest TaskManager::GetTasks(int datasetID, int cellID,
   if (maxWeight) {
     uri.AddQueryParameter("max_weight", std::to_string(maxWeight));
   }
-  return instance().taskInfoCache_.GET<std::vector<TaskInfo>>(uri);
+  return network::http::GET<std::vector<TaskInfo>>(uri);
 }
 
 TaskManager::TracingTaskRequest TaskManager::GetTaskByID(int taskID) {
-  auto uri = system::Account::endpoint(
-      std::string("/api/v1/task/cell/0/task/") + std::to_string(taskID));
-  return instance().taskCache_.GET<TracingTask>(uri);
+  auto uri = system::Account::endpoint(std::string("/1.0/task/") +
+                                       std::to_string(taskID));
+  return network::http::GET<TracingTask>(uri);
 }
 
 TaskManager::ComparisonTaskRequest TaskManager::GetComparisonTask(int cellID) {
@@ -50,7 +50,7 @@ TaskManager::ComparisonTaskRequest TaskManager::GetComparisonTask(int cellID) {
   if (cellID) {
     uri.AddQueryParameter("cell", std::to_string(cellID));
   }
-  return instance().taskCache_.GET<ComparisonTask>(uri);
+  return network::http::GET<ComparisonTask>(uri);
 }
 
 TaskManager::ComparisonTaskRequest TaskManager::GetComparisonTaskByID(
@@ -62,13 +62,13 @@ TaskManager::ComparisonTaskRequest TaskManager::GetComparisonTaskByID(
   auto uri = system::Account::endpoint("/1.0/comparison_task");
   uri.AddQueryParameter("task", std::to_string(taskID));
 
-  return instance().taskCache_.GET<ComparisonTask>(uri);
+  return network::http::GET<ComparisonTask>(uri);
 }
 
 TaskManager::DatasetsRequest TaskManager::GetDatasets() {
   try {
     auto datasetURI = system::Account::endpoint("/1.0/dataset");
-    return instance().datasetCache_.GET<std::vector<Dataset>>(datasetURI);
+    return network::http::GET<std::vector<Dataset>>(datasetURI);
   }
   catch (om::Exception e) {
     log_debugs << "Failed loading datasets: " << e.what();
@@ -80,7 +80,7 @@ TaskManager::CellsRequest TaskManager::GetCells(int datasetID) {
   try {
     auto cellURI = system::Account::endpoint("/1.0/cell");
     cellURI.AddQueryParameter("dataset", std::to_string(datasetID));
-    return instance().cellsCache_.GET<std::vector<Cell>>(cellURI);
+    return network::http::GET<std::vector<Cell>>(cellURI);
   }
   catch (om::Exception e) {
     log_debugs << "Failed loading cells: " << e.what();
@@ -106,8 +106,6 @@ bool TaskManager::LoadTask(std::shared_ptr<Task> task) {
     log_infos << "Changed current task nullptr";
   }
   om::event::TaskChange();
-  instance().taskCache_.Clear();
-  instance().taskInfoCache_.Clear();
   if (!task) {
     return true;
   }
@@ -153,12 +151,7 @@ bool TaskManager::SubmitTask() {
   return LoadTask(nullptr);
 }
 
-void TaskManager::Refresh() {
-  instance().taskCache_.Clear();
-  instance().taskInfoCache_.Clear();
-  instance().datasetCache_.Clear();
-  instance().cellsCache_.Clear();
-}
+void TaskManager::Refresh() {}
 
 std::shared_ptr<Task> TaskManager::FindInterruptedTask() {
   return std::shared_ptr<Task>();
