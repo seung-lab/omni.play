@@ -12,25 +12,33 @@ namespace http {
 
 class HTTPRequest : public Request {
  public:
-  HTTPRequest(network::Uri uri) : uri_(uri) {}
+  HTTPRequest(network::Uri uri, std::shared_ptr<curl_slist> cookies =
+                                    std::shared_ptr<curl_slist>())
+      : uri_(uri), cookies_(cookies) {}
 
  protected:
   virtual void SetCurlOptions(CURL* h) override;
+  virtual void Finish(CURL*);
 
  private:
   PROP(network::Uri, uri);
+  PROP(std::shared_ptr<curl_slist>, cookies);
 };
 
 class GetRequest : public HTTPRequest {
  public:
-  GetRequest(network::Uri uri) : HTTPRequest(uri) {}
+  GetRequest(network::Uri uri, std::shared_ptr<curl_slist> cookies =
+                                   std::shared_ptr<curl_slist>())
+      : HTTPRequest(uri, cookies) {}
 
   std::string string() { return ss_.str(); }
 
  protected:
   virtual void SetCurlOptions(CURL* h) override;
-  virtual void Finish(CURL*) {
-    log_debugs << "HTTP GET " << uri_ << " Complete " << ss_.str();
+  virtual void Finish(CURL* h) {
+    log_debugs << "HTTP GET " << uri_ << " Complete (" << returnCode() << ") "
+               << ss_.str();
+    HTTPRequest::Finish(h);
   }
 
  protected:
@@ -41,7 +49,9 @@ template <typename T>
 class TypedGetRequest : public GetRequest,
                         public thread::Continuable<std::shared_ptr<T>> {
  public:
-  TypedGetRequest(network::Uri uri) : GetRequest(uri) {}
+  TypedGetRequest(network::Uri uri, std::shared_ptr<curl_slist> cookies =
+                                        std::shared_ptr<curl_slist>())
+      : GetRequest(uri, cookies) {}
 
  protected:
   virtual void Finish(CURL* c) {
@@ -73,7 +83,9 @@ template <>
 class TypedGetRequest<std::string> : public GetRequest,
                                      public thread::Continuable<std::string&> {
  public:
-  TypedGetRequest(network::Uri uri) : GetRequest(uri) {}
+  TypedGetRequest(network::Uri uri, std::shared_ptr<curl_slist> cookies =
+                                        std::shared_ptr<curl_slist>())
+      : GetRequest(uri, cookies) {}
 
  protected:
   virtual void Finish(CURL* c) {
@@ -87,13 +99,16 @@ class TypedGetRequest<std::string> : public GetRequest,
 
 class PutRequest : public HTTPRequest, public thread::Continuable<void> {
  public:
-  PutRequest(network::Uri uri, const std::string& str)
-      : HTTPRequest(uri), ss_(str) {}
+  PutRequest(network::Uri uri, const std::string& str,
+             std::shared_ptr<curl_slist> cookies =
+                 std::shared_ptr<curl_slist>())
+      : HTTPRequest(uri, cookies), ss_(str) {}
 
  protected:
   virtual void SetCurlOptions(CURL* h) override;
   virtual void Finish(CURL* h) override {
-    log_debugs << "HTTP PUT " << uri_ << " Complete.";
+    log_debugs << "HTTP PUT " << uri_ << " Complete (" << returnCode() << ")";
+    HTTPRequest::Finish(h);
     do_continuation();
   }
   std::string string() { return ss_.str(); }
@@ -105,8 +120,10 @@ class PutRequest : public HTTPRequest, public thread::Continuable<void> {
 template <typename T>
 class TypedPutRequest : public PutRequest {
  public:
-  TypedPutRequest(network::Uri uri, T&& data)
-      : PutRequest(uri), data_(std::move(data)) {}
+  TypedPutRequest(network::Uri uri, T&& data,
+                  std::shared_ptr<curl_slist> cookies =
+                      std::shared_ptr<curl_slist>())
+      : PutRequest(uri, cookies), data_(std::move(data)) {}
 
  protected:
   virtual void SetCurlOptions(CURL* h) override {
@@ -139,8 +156,9 @@ class PostRequest : public HTTPRequest,
                     public thread::Continuable<std::string&> {
  public:
   template <typename... TRest>
-  PostRequest(network::Uri uri, TRest&&... rest)
-      : HTTPRequest(uri), postString_(http::postString(rest...)) {}
+  PostRequest(network::Uri uri, std::shared_ptr<curl_slist> cookies,
+              TRest&&... rest)
+      : HTTPRequest(uri, cookies), postString_(http::postString(rest...)) {}
 
  protected:
   virtual void SetCurlOptions(CURL* h) override;

@@ -75,6 +75,10 @@ LoginRequest::LoginRequest(network::Uri endpoint, std::string username,
       result_(LoginResult::PENDING) {
   *request >> [this](std::string& str) {
     result_ = Account::parseLoginResult(str, username_);
+    if (result_ == LoginResult::SUCCESS) {
+      log_debugs << "Setting Cookies.";
+      network::http::SetDefaultCookies(*request_);
+    }
     do_continuation(result_);
   };
 }

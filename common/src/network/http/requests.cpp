@@ -36,7 +36,25 @@ void HTTPRequest::SetCurlOptions(CURL* h) {
   SET_OPT(h, CURLOPT_FOLLOWLOCATION, 1);
   SET_OPT(h, CURLOPT_USERAGENT, OMNI_USER_AGENT);
   SET_OPT(h, CURLOPT_COOKIEJAR, file::Paths::CookieFile().c_str());
+  if (cookies_) {
+    auto c = cookies_.get();
+    while (c) {
+      SET_OPT(h, CURLOPT_COOKIELIST, c->data);
+      c = c->next;
+    }
+  }
   SET_OPT(h, CURLOPT_SSL_VERIFYPEER, 0);
+}
+
+void HTTPRequest::Finish(CURL* h) {
+  curl_slist* c = nullptr;
+  auto err = curl_easy_getinfo(h, CURLINFO_COOKIELIST, &c);
+  if (err == CURLE_OK && c) {
+    cookies_ = std::shared_ptr<curl_slist>(
+        c, [](curl_slist* c) { curl_slist_free_all(c); });
+  } else {
+    log_debugs << "Unable to extract cookies: " << curl_easy_strerror(err);
+  }
 }
 
 void GetRequest::SetCurlOptions(CURL* h) {
@@ -74,11 +92,13 @@ void PostRequest::SetCurlOptions(CURL* h) {
 }
 
 void PostRequest::Finish(CURL* h) {
+  HTTPRequest::Finish(h);
   if (200 <= returnCode_ && returnCode_ < 300) {
     result_ = ss_.str();
   }
 
-  log_debugs << "HTTP POST " << uri_ << " Complete " << result_;
+  log_debugs << "HTTP POST " << uri_ << " Complete (" << returnCode() << ") "
+             << result_;
   do_continuation(result_);
 }
 }
