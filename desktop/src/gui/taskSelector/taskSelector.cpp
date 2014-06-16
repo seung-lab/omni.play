@@ -305,8 +305,10 @@ void TaskSelector::getTasks() {
     *taskRequest_ >>= [this](std::shared_ptr<om::task::TracingTask> task) {
       if (task) {
         std::vector<TaskInfo> tasks = {
-            TaskInfo{(uint32_t)task->Id(), 0, 0, "", task->CellId(), 0,
-                     0,                    0, 0, "", 0,              ""}};
+            TaskInfo{(uint32_t)task->Id(), task->Weight(),   task->WeightSum(),
+                     task->Path(),         task->CellId(),   0,
+                     0,                    0,                task->Status(),
+                     task->Users(),        task->ParentID(), task->Notes()}};
         updateTasks(tasks);
       }
     };

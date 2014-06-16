@@ -8,7 +8,7 @@ namespace task {
 
 struct TaskInfo {
   uint32_t id;
-  uint32_t weight;
+  float weight;
   uint32_t inspected_weight;
   std::string path;
   uint32_t cell;
@@ -31,7 +31,7 @@ struct convert<om::task::TaskInfo> {
   static bool decode(const Node& node, om::task::TaskInfo& t) {
     try {
       t.id = node["id"].as<uint32_t>();
-      t.weight = node["weightsum"].as<uint32_t>();
+      t.weight = node["weightsum"].as<float>();
       t.inspected_weight = node["inspected_weight"].as<uint32_t>();
       t.path = node["segmentation_path"].as<std::string>();
       t.cell = node["cell"].as<uint32_t>();
@@ -41,7 +41,7 @@ struct convert<om::task::TaskInfo> {
       t.status = node["status"].as<int>();
       t.users = node["users"].as<std::string>("");
       t.parent = node["parent"].as<int>(0);
-      t.notes = node["notes"].as<std::string>("");
+      t.notes = node["wiki_notes"].as<std::string>("");
     }
     catch (std::exception e) {
       log_debugs << std::string("Error Decoding TaskInfo: ") + e.what();

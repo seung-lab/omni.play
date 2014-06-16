@@ -29,12 +29,20 @@ class ComparisonTask : virtual public Task {
                  std::vector<SegGroup>&& namedGroups);
   virtual ~ComparisonTask();
 
-  virtual int Id() { return id_; }
-  virtual int CellId() { return cellId_; }
-  virtual bool Reaping() { return false; }
+  virtual int Id() const { return id_; }
+  virtual int CellId() const { return cellId_; }
+  virtual bool Reaping() const { return false; }
   virtual bool Start();
   virtual bool Submit();
-  virtual const std::vector<SegGroup>& SegGroups() { return namedGroups_; }
+  virtual const std::vector<SegGroup>& SegGroups() const {
+    return namedGroups_;
+  }
+  virtual uint32_t ParentID() const { return parentID_; }
+  virtual uint32_t Status() const { return status_; }
+  virtual uint32_t Weight() const { return weight_; }
+  virtual uint32_t WeightSum() const { return weightSum_; }
+  virtual std::string Users() const { return users_; }
+  virtual std::string Notes() const { return notes_; }
 
  private:
   static bool chunkHasUserSegments(
@@ -43,8 +51,14 @@ class ComparisonTask : virtual public Task {
       const std::unordered_map<common::SegID, int>& segFlags);
 
   uint32_t id_;
+  uint32_t parentID_;
+  uint32_t status_;
+  uint32_t weight_;
+  uint32_t weightSum_;
   uint32_t cellId_;
   std::string path_;
+  std::string users_;
+  std::string notes_;
   std::vector<SegGroup> namedGroups_;
 
   friend class YAML::convert<ComparisonTask>;
@@ -60,12 +74,18 @@ struct convert<om::task::ComparisonTask> {
   static bool decode(const Node& node, om::task::ComparisonTask& t) {
     try {
       t.id_ = node["id"].as<uint32_t>();
+      t.parentID_ = node["parent"].as<uint32_t>(0);
+      t.status_ = node["status"].as<uint32_t>(0);
+      t.weight_ = node["prior"]["weight"].as<uint32_t>(0);
+      t.weightSum_ = node["weightSum"].as<uint32_t>(0);
       t.cellId_ = node["cell"].as<uint32_t>();
       t.path_ = node["data"]["channel"]["metadata"]["uri"].as<std::string>();
       if (t.path_.compare(t.path_.size() - 7 - 1, std::string::npos,
                           ".files/")) {
         t.path_ = t.path_.substr(0, t.path_.size() - 7);
       }
+      t.users_ = node["users"].as<std::string>("");
+      t.notes_ = node["wiki_notes"].as<std::string>("");
 
       auto groups = node["groups"];
       t.namedGroups_.clear();

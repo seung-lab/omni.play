@@ -24,12 +24,12 @@ struct SegGroup {
 class Task {
  public:
   virtual ~Task() {}
-  virtual int Id() = 0;
-  virtual int CellId() = 0;
-  virtual bool Reaping() = 0;
+  virtual int Id() const = 0;
+  virtual int CellId() const = 0;
+  virtual bool Reaping() const = 0;
   virtual bool Start() = 0;
   virtual bool Submit() = 0;
-  virtual const std::vector<SegGroup>& SegGroups() = 0;
+  virtual const std::vector<SegGroup>& SegGroups() const = 0;
 };
 
 }  // namespace om::task::

@@ -20,17 +20,30 @@ class TracingTask : virtual public Task {
               common::SegIDSet&& seed);
   virtual ~TracingTask();
 
-  virtual int Id() { return id_; }
-  virtual int CellId() { return cellId_; }
-  virtual bool Reaping() { return false; }
-  virtual bool Start();
-  virtual bool Submit();
-  virtual const std::vector<SegGroup>& SegGroups() { return groups_; }
+  virtual int Id() const override { return id_; }
+  virtual int CellId() const override { return cellId_; }
+  virtual bool Reaping() const override { return false; }
+  virtual bool Start() override;
+  virtual bool Submit() override;
+  virtual const std::vector<SegGroup>& SegGroups() const { return groups_; }
+  virtual uint32_t ParentID() const { return parentID_; }
+  virtual uint32_t Status() const { return status_; }
+  virtual float Weight() const { return weight_; }
+  virtual uint32_t WeightSum() const { return weightSum_; }
+  virtual std::string Users() const { return users_; }
+  virtual std::string Notes() const { return notes_; }
+  virtual std::string Path() const { return path_; }
 
  private:
   uint32_t id_;
+  uint32_t parentID_;
+  uint32_t status_;
+  float weight_;
+  uint32_t weightSum_;
   uint32_t cellId_;
   std::string path_;
+  std::string users_;
+  std::string notes_;
   common::SegIDSet seed_;
   std::vector<SegGroup> groups_;
   friend class YAML::convert<TracingTask>;
@@ -46,12 +59,18 @@ struct convert<om::task::TracingTask> {
   static bool decode(const Node& node, om::task::TracingTask& t) {
     try {
       t.id_ = node["id"].as<uint32_t>();
+      t.parentID_ = node["parent"].as<uint32_t>(0);
+      t.status_ = node["status"].as<uint32_t>(0);
+      t.weight_ = node["prior"]["weight"].as<float>(0);
+      t.weightSum_ = node["weightSum"].as<uint32_t>(0);
       t.cellId_ = node["cell"].as<uint32_t>();
       t.path_ = node["data"]["channel"]["metadata"]["uri"].as<std::string>();
       if (t.path_.compare(t.path_.size() - 7 - 1, std::string::npos,
                           ".files/")) {
         t.path_ = t.path_.substr(0, t.path_.size() - 7);
       }
+      t.users_ = node["users"].as<std::string>("");
+      t.notes_ = node["wiki_notes"].as<std::string>("");
 
       auto seedYaml = node["prior"]["segments"];
       t.seed_.clear();
