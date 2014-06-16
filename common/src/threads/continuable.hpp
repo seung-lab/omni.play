@@ -1,6 +1,7 @@
 #pragma once
 
 #include "precomp.h"
+#include "common/logging.h"
 
 namespace om {
 namespace thread {
@@ -29,6 +30,8 @@ class Continuable {
     value_ = val;
     if (continuation_) {
       continuation_(val);
+    } else {
+      log_debugs << "No Continuation.";
     }
   }
 

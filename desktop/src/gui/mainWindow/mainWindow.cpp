@@ -209,8 +209,6 @@ bool MainWindow::closeProjectIfOpen(bool closeTask) {
 
   toolBarManager_->UpdateGuiFromProjectClose();
 
-  events_.reset();  // reset before project close
-
   OmProject::Close();
   windowTitleClear();
 
