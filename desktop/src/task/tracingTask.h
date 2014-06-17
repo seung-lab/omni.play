@@ -20,8 +20,8 @@ class TracingTask : virtual public Task {
               common::SegIDSet&& seed);
   virtual ~TracingTask();
 
-  virtual int Id() const override { return id_; }
-  virtual int CellId() const override { return cellId_; }
+  virtual uint32_t Id() const override { return id_; }
+  virtual uint32_t CellId() const override { return cellId_; }
   virtual bool Reaping() const override { return false; }
   virtual bool Start() override;
   virtual bool Submit() override;

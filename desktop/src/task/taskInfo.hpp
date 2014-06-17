@@ -15,9 +15,9 @@ struct TaskInfo {
   uint32_t depth;
   uint32_t left_edge;
   uint32_t right_edge;
-  int status;
+  uint32_t status;
   std::string users;
-  int parent;
+  uint32_t parent;
   std::string notes;
 };
 

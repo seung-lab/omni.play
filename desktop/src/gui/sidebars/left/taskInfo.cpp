@@ -69,23 +69,38 @@ void TaskInfoWidget::updateInfo() {
         {SegGroup::GroupType::USER_MISSED, 75},
         {SegGroup::GroupType::USER_FOUND, 10},
         {SegGroup::GroupType::DUST, 1},
-        {SegGroup::GroupType::PARTIAL, 50}, };
-    std::vector<std::tuple<int, std::string, size_t, const om::task::SegGroup*>>
-        orderedGroups;
+        {SegGroup::GroupType::PARTIAL, 50}};
+
+    double allsize = 0;
+    std::set<std::tuple<int, bool, std::string, size_t,
+                        const om::task::SegGroup*>> orderedGroups;
     for (const auto& g : groups) {
+      if (g.type == SegGroup::GroupType::ALL) {
+        allsize = g.size ? g.size : getSize(g);
+      }
       if (g.segments.size() > 0) {
-        orderedGroups.push_back(
-            std::make_tuple(typeorder[g.type], g.name, getSize(g), &g));
+        orderedGroups.insert(std::make_tuple(typeorder[g.type], g.dust, g.name,
+                                             g.size ? g.size : getSize(g), &g));
       }
     }
-    std::sort(orderedGroups.begin(), orderedGroups.end());
 
     // Insert largest to smallest
-    auto makeButton = [&](
-        std::tuple<int, std::string, size_t, const om::task::SegGroup*>& tup) {
-      auto text = std::get<1>(tup) + " : " + std::to_string(std::get<2>(tup));
-      return new om::gui::SegListToggleButton(buttons_, text,
-                                              std::get<3>(tup)->segments);
+    auto makeButton = [&](const std::tuple<int, bool, std::string, size_t,
+                                           const om::task::SegGroup*>&
+                              tup) {
+      std::stringstream ss;
+      ss << std::get<2>(tup);
+      if (std::get<0>(tup)) {
+        ss << " : ";
+        if (allsize) {
+          double percent = (double)std::get<3>(tup) * 100 / allsize;
+          ss << std::fixed << std::setprecision(1) << percent << "%";
+        } else {
+          ss << std::get<3>(tup);
+        }
+      }
+      return new om::gui::SegListToggleButton(buttons_, ss.str(),
+                                              std::get<4>(tup)->segments);
     };
     auto iter = orderedGroups.rbegin();
     if (iter != orderedGroups.rend()) {

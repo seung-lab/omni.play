@@ -19,13 +19,15 @@ struct SegGroup {
   std::string name;
   GroupType type;
   common::SegIDSet segments;
+  bool dust;
+  size_t size;
 };
 
 class Task {
  public:
   virtual ~Task() {}
-  virtual int Id() const = 0;
-  virtual int CellId() const = 0;
+  virtual uint32_t Id() const = 0;
+  virtual uint32_t CellId() const = 0;
   virtual bool Reaping() const = 0;
   virtual bool Start() = 0;
   virtual bool Submit() = 0;

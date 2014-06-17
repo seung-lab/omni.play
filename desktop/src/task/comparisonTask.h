@@ -29,8 +29,8 @@ class ComparisonTask : virtual public Task {
                  std::vector<SegGroup>&& namedGroups);
   virtual ~ComparisonTask();
 
-  virtual int Id() const { return id_; }
-  virtual int CellId() const { return cellId_; }
+  virtual uint32_t Id() const { return id_; }
+  virtual uint32_t CellId() const { return cellId_; }
   virtual bool Reaping() const { return false; }
   virtual bool Start();
   virtual bool Submit();
@@ -100,15 +100,15 @@ struct convert<om::task::ComparisonTask> {
           case om::task::SegGroup::GroupType::AGREED:
             name = "Agreed";
             break;
+          case om::task::SegGroup::GroupType::DUST:
+            name = "Dust";
+            break;
           case om::task::SegGroup::GroupType::USER_MISSED:
             name = group["username"].as<std::string>(om::users::defaultUser);
             break;
           case om::task::SegGroup::GroupType::USER_FOUND:
             name = std::string("only ") +
                    group["username"].as<std::string>(om::users::defaultUser);
-            break;
-          case om::task::SegGroup::GroupType::DUST:
-            name = "Dust";
             break;
           case om::task::SegGroup::GroupType::PARTIAL:
             name = "Partial";
@@ -118,14 +118,33 @@ struct convert<om::task::ComparisonTask> {
           om::task::SegGroup sg;
           sg.name = name;
           sg.type = type;
-          sg.segments = g.as<std::set<uint32_t>>(std::set<uint32_t>());
+
+          if (g.IsMap()) {
+            sg.dust = g["dust"].as<bool>(false);
+            if (sg.dust) {
+              sg.name += " dust";
+            }
+
+            sg.segments =
+                g["segments"].as<std::set<uint32_t>>(std::set<uint32_t>());
+            sg.size = g["size"].as<size_t>(0);
+          } else if (g.IsSequence()) {
+            sg.dust = sg.type == om::task::SegGroup::GroupType::DUST;
+            sg.segments = g.as<std::set<uint32_t>>(std::set<uint32_t>());
+            sg.size = 0;
+          } else {
+            log_errors << "Invalid Comparison Task";
+            continue;
+          }
+
           t.namedGroups_.push_back(std::move(sg));
         }
       }
 
       om::task::SegGroup seed;
-      seed.name = "seed";
+      seed.name = "Seed";
       seed.type = om::task::SegGroup::GroupType::SEED;
+      seed.size = 0;
       for (const auto& s : node["prior"]["segments"]) {
         seed.segments.insert(s.first.as<uint32_t>());
       }
