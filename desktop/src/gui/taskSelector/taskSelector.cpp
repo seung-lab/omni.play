@@ -243,9 +243,17 @@ void TaskSelector::itemEdited(QTableWidgetItem* item) {
   if (item->column() == (int)Columns::Notes) {
     auto row = item->row();
     auto id = taskTable_->item(row, (int)Columns::Id)->data(0).toInt();
-    if (!TaskManager::UpdateNotes(id, item->data(0).toString().toStdString())) {
-      item->setData(0, "");
-    }
+    auto req =
+        TaskManager::UpdateNotes(id, item->data(0).toString().toStdString());
+    auto& req_ref = *req;
+    // Very subtle.  Have to pass in a ref instead of a shared_ptr to avoid
+    // leaking memory.
+    req_ref >>= [&req_ref, item]() {
+      if (req_ref.returnCode() < 200 || 300 <= req_ref.returnCode()) {
+        item->setData(0, "");
+      }
+    };
+    req_ref.Detach();
   }
 }
 
