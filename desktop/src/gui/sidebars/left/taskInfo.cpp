@@ -7,6 +7,7 @@
 #include "utility/segmentationDataWrapper.hpp"
 #include "actions/omActions.h"
 #include "segment/omSegment.h"
+#include "gui/exec.hpp"
 
 using namespace om::task;
 
@@ -22,6 +23,11 @@ TaskInfoWidget::TaskInfoWidget(QWidget* parent)
   QLabel* cellID = new QLabel(tr("Cell ID"), this);
   cellIdLabel_ = new QLabel(this);
   layout->addRow(cellID, cellIdLabel_);
+
+  notesField_ = new QTextEdit("", this);
+  om::connect(notesField_, SIGNAL(textChanged()), this,
+              SLOT(notesTextChanged()));
+  layout->addRow(notesField_);
 
   scrollable_ = new QScrollArea(this);
   layout->addRow(scrollable_);
@@ -50,11 +56,37 @@ void TaskInfoWidget::TaskChangeEvent() {
   }
 }
 
+void TaskInfoWidget::resetNotes(std::shared_ptr<om::task::Task> task) {
+  notesField_->setText(task ? QString::fromStdString(task->Notes()) : tr(""));
+}
+
+void TaskInfoWidget::notesTextChanged() {
+  auto task = om::task::TaskManager::currentTask();
+  if (!task) {
+    return;
+  }
+  auto req = TaskManager::UpdateNotes(task->Id(),
+                                      notesField_->toPlainText().toStdString());
+  if (!req) {
+    resetNotes(task);
+    return;
+  }
+
+  auto& req_ref = *req;
+  req_ref >>= [this, &req_ref, task]() {
+    if (req_ref.returnCode() < 200 || 300 <= req_ref.returnCode()) {
+      resetNotes(task);
+    }
+  };
+  req_ref.Detach();
+}
+
 void TaskInfoWidget::updateInfo() {
-  auto task = om::task::TaskManager::currentTask().get();
+  auto task = om::task::TaskManager::currentTask();
 
   idLabel_->setText(task ? QString::number(task->Id()) : tr(""));
   cellIdLabel_->setText(task ? QString::number(task->CellId()) : tr(""));
+  resetNotes(task);
 
   buttons_ = new QFrame(this);
   auto buttonLayout = new QGridLayout(buttons_);

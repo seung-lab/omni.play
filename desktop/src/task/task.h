@@ -28,6 +28,7 @@ class Task {
   virtual ~Task() {}
   virtual uint32_t Id() const = 0;
   virtual uint32_t CellId() const = 0;
+  virtual std::string Notes() const = 0;
   virtual bool Reaping() const = 0;
   virtual bool Start() = 0;
   virtual bool Submit() = 0;

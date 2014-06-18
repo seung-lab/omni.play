@@ -29,12 +29,13 @@ class ComparisonTask : virtual public Task {
                  std::vector<SegGroup>&& namedGroups);
   virtual ~ComparisonTask();
 
-  virtual uint32_t Id() const { return id_; }
-  virtual uint32_t CellId() const { return cellId_; }
-  virtual bool Reaping() const { return false; }
-  virtual bool Start();
-  virtual bool Submit();
-  virtual const std::vector<SegGroup>& SegGroups() const {
+  virtual uint32_t Id() const override { return id_; }
+  virtual uint32_t CellId() const override { return cellId_; }
+  virtual std::string Notes() const override { return notes_; }
+  virtual bool Reaping() const override { return false; }
+  virtual bool Start() override;
+  virtual bool Submit() override;
+  virtual const std::vector<SegGroup>& SegGroups() const override {
     return namedGroups_;
   }
   virtual uint32_t ParentID() const { return parentID_; }
@@ -42,7 +43,6 @@ class ComparisonTask : virtual public Task {
   virtual uint32_t Weight() const { return weight_; }
   virtual uint32_t WeightSum() const { return weightSum_; }
   virtual std::string Users() const { return users_; }
-  virtual std::string Notes() const { return notes_; }
 
  private:
   static bool chunkHasUserSegments(

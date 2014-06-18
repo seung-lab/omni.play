@@ -22,6 +22,7 @@ class TracingTask : virtual public Task {
 
   virtual uint32_t Id() const override { return id_; }
   virtual uint32_t CellId() const override { return cellId_; }
+  virtual std::string Notes() const override { return notes_; }
   virtual bool Reaping() const override { return false; }
   virtual bool Start() override;
   virtual bool Submit() override;
@@ -31,7 +32,6 @@ class TracingTask : virtual public Task {
   virtual float Weight() const { return weight_; }
   virtual uint32_t WeightSum() const { return weightSum_; }
   virtual std::string Users() const { return users_; }
-  virtual std::string Notes() const { return notes_; }
   virtual std::string Path() const { return path_; }
 
  private:
