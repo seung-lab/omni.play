@@ -19,6 +19,11 @@ struct TaskInfo {
   std::string users;
   uint32_t parent;
   std::string notes;
+  uint32_t allSize;
+  uint32_t agreedSize;
+  double agreement() const {
+    return allSize ? (double)agreedSize / (double)allSize : 0;
+  }
 };
 
 }  // namespace om::task::
@@ -42,6 +47,8 @@ struct convert<om::task::TaskInfo> {
       t.users = node["users"].as<std::string>("");
       t.parent = node["parent"].as<int>(0);
       t.notes = node["wiki_notes"].as<std::string>("");
+      t.allSize = node["allSize"].as<uint32_t>(0);
+      t.agreedSize = node["agreedSize"].as<uint32_t>(0);
     }
     catch (std::exception e) {
       log_debugs << std::string("Error Decoding TaskInfo: ") + e.what();

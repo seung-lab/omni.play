@@ -280,9 +280,16 @@ void TaskSelector::updateTasks(const std::vector<TaskInfo>& tasks) {
     taskTable_->setItem(i, (int)Columns::Cell, makeTableItem(t.cell));
     taskTable_->setItem(i, (int)Columns::Parent, makeTableItem(t.parent));
     taskTable_->setItem(i, (int)Columns::Weight, makeTableItem(t.weight));
-    taskTable_->setItem(
-        i, (int)Columns::Comparison,
-        makeTableItem(t.inspected_weight == t.weight && t.weight > 1));
+    if (t.allSize) {
+      std::stringstream ss;
+      ss << std::fixed << std::setprecision(1) << t.agreement() * 100 << "%";
+      taskTable_->setItem(i, (int)Columns::Comparison,
+                          makeTableItem(QString::fromStdString(ss.str())));
+    } else {
+      taskTable_->setItem(
+          i, (int)Columns::Comparison,
+          makeTableItem(t.inspected_weight == t.weight && t.weight > 1));
+    }
     taskTable_->setItem(i, (int)Columns::Path,
                         makeTableItem(QString::fromStdString(t.path)));
     taskTable_->setItem(i, (int)Columns::Users,
