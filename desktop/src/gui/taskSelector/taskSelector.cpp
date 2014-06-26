@@ -315,15 +315,17 @@ void TaskSelector::getTasks() {
   if (taskId) {
     tasksRequest_.reset();
     taskRequest_ = TaskManager::GetTaskByID(taskId);
-    compTaskRequest_ = TaskManager::GetComparisonTaskByID(taskId);
 
     *taskRequest_ >>= [this](std::shared_ptr<om::task::TracingTask> task) {
       if (task) {
+        compTaskRequest_->wait();
+        auto comp = compTaskRequest_->result();
         std::vector<TaskInfo> tasks = {
             TaskInfo{(uint32_t)task->Id(), task->Weight(),   task->WeightSum(),
                      task->Path(),         task->CellId(),   0,
                      0,                    0,                task->Status(),
-                     task->Users(),        task->ParentID(), task->Notes()}};
+                     task->Users(),        task->ParentID(), task->Notes(),
+                     0,                    0}};
         updateTasks(tasks);
       }
     };
