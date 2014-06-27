@@ -190,6 +190,17 @@ void get_seeds(std::vector<std::map<int32_t, int32_t>>& seeds,
     throw ArgException("Bounds do not overlap.");
   }
 
+  // Only have to work in the region where there are segments we care about.
+  coords::DataBbox segBounds(pre.Coords(), 0);
+  auto& segData = pre.SegData();
+  for (auto& segID : selected) {
+    if (segID < segData.size() && segID > 0) {
+      segBounds.merge(segData[segID].bounds);
+    }
+  }
+
+  bounds.intersect(segBounds.ToGlobal());
+
   auto proxyBounds = bounds.ToDataBbox(pre.Coords(), 0);
   const Vector3i range = slab(bounds);
   uint64_t overlap_volume =

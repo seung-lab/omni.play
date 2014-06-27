@@ -111,7 +111,10 @@ class DataBbox : public vmml::AxisAlignedBoundingBox<int> {
     return Data(base_t::getCenter(), *volume_, mipLevel_);
   }
 
+  inline void merge(const DataBbox& other) { base_t::merge(other); }
+  inline void merge(const base_t& other) { base_t::merge(other); }
   inline void intersect(const DataBbox& other) { base_t::intersect(other); }
+  inline void intersect(const base_t& other) { base_t::intersect(other); }
 
   GlobalBbox ToGlobalBbox() const;
   NormBbox ToNormBbox() const;
