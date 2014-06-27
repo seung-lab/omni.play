@@ -13,6 +13,10 @@ class Continuable {
   typedef std::function<void(T)> func_t;
 
   virtual void AddContinuation(func_t continuation) {
+    if (!continuation) {
+      return;
+    }
+
     if (value_) {
       continuation(value_.get());
     }
@@ -49,6 +53,10 @@ class Continuable<void> {
   typedef std::function<void()> func_t;
 
   virtual void AddContinuation(func_t continuation) {
+    if (!continuation) {
+      return;
+    }
+
     if (tripped_) {
       continuation();
     }

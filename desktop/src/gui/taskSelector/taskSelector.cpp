@@ -318,7 +318,6 @@ void TaskSelector::getTasks() {
 
     *taskRequest_ >>= [this](std::shared_ptr<om::task::TracingTask> task) {
       if (task) {
-        compTaskRequest_->wait();
         auto comp = compTaskRequest_->result();
         std::vector<TaskInfo> tasks = {
             TaskInfo{(uint32_t)task->Id(), task->Weight(),   task->WeightSum(),
