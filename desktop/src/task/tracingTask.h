@@ -62,7 +62,7 @@ struct convert<om::task::TracingTask> {
       t.parentID_ = node["parent"].as<uint32_t>(0);
       t.status_ = node["status"].as<uint32_t>(0);
       t.weight_ = node["prior"]["weight"].as<float>(0);
-      t.weightSum_ = node["weightSum"].as<uint32_t>(0);
+      t.weightSum_ = node["weightsum"].as<uint32_t>(0);
       t.cellId_ = node["cell"].as<uint32_t>();
       t.path_ = node["data"]["channel"]["metadata"]["uri"].as<std::string>();
       if (t.path_.compare(t.path_.size() - 7 - 1, std::string::npos,
