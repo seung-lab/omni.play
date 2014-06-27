@@ -199,7 +199,7 @@ void get_seeds(std::vector<std::map<int32_t, int32_t>>& seeds,
     }
   }
 
-  bounds.intersect(segBounds.ToGlobal());
+  bounds.intersect(segBounds.ToGlobalBbox());
 
   auto proxyBounds = bounds.ToDataBbox(pre.Coords(), 0);
   const Vector3i range = slab(bounds);
