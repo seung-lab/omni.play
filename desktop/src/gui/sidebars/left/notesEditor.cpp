@@ -5,7 +5,9 @@
 
 using namespace om::task;
 
-NotesEditor::NotesEditor(QWidget* parent) : QTextEdit(parent) {}
+NotesEditor::NotesEditor(QWidget* parent) : QTextEdit(parent) {
+  setMinimumHeight(100);
+}
 NotesEditor::~NotesEditor() {
   if (updateNotesRequest_) {
     updateNotesRequest_->Detach();

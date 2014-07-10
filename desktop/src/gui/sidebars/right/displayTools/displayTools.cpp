@@ -10,8 +10,6 @@ DisplayTools::DisplayTools(om::sidebars::rightImpl* d, OmViewGroupState& vgs)
   QTabWidget* tabs = new QTabWidget(this);
   tabs->addTab(new om::displayTools::PageLocation(this, GetViewGroupState()),
                "Location");
-  tabs->addTab(new om::displayTools::Page2d(this, GetViewGroupState()), "2D");
-  tabs->addTab(new om::displayTools::Page3d(this, GetViewGroupState()), "3D");
 
   box->addWidget(tabs);
 }
