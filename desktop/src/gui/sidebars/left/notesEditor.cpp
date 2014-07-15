@@ -6,7 +6,7 @@
 using namespace om::task;
 
 NotesEditor::NotesEditor(QWidget* parent) : QTextEdit(parent) {
-  setMinimumHeight(100);
+  setMaximumHeight(100);
 }
 NotesEditor::~NotesEditor() {
   if (updateNotesRequest_) {

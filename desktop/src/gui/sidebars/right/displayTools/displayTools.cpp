@@ -7,11 +7,7 @@ DisplayTools::DisplayTools(om::sidebars::rightImpl* d, OmViewGroupState& vgs)
     : QWidget(d), vgs_(vgs) {
   QVBoxLayout* box = new QVBoxLayout(this);
 
-  QTabWidget* tabs = new QTabWidget(this);
-  tabs->addTab(new om::displayTools::PageLocation(this, GetViewGroupState()),
-               "Location");
-
-  box->addWidget(tabs);
+  box->addWidget(new om::displayTools::PageLocation(this, GetViewGroupState()));
 }
 
 void DisplayTools::updateGui() {
