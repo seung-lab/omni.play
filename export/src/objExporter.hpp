@@ -23,25 +23,30 @@ class Obj : public IMeshExporter {
   void Accumulate(const float* points, const size_t points_length,
                   const uint32_t* indices, const size_t indices_length,
                   const uint32_t* strips, const size_t strips_length) {
-    size_t current = points_.size() + 1;
+    std::vector<uint32_t> transformed_indicies(indices,
+                                               indices + indices_length);
+    std::unordered_map<size_t, size_t> lookup_index;
+
+    size_t hit = 0;
     for (size_t i = 0; i < points_length; i += 6) {
       coords::Norm norm(points[i], points[i + 1], points[i + 2], coords_);
 
       // Deduplicate verticies
       auto iter = lookup_vertex.find(norm);
       if (iter != lookup_vertex.end()) {
-        lookup_index[i + current] = iter->second;
-        continue;
+        hit++;
+        lookup_index[i / 6] = iter->second;
       } else {
-        lookup_vertex[norm] = i + current;
-        lookup_index[i + current] = i + current;
+        points_.push_back(norm.ToGlobal() * scale_);
+        Vector3f normal =
+            normTransform_ *
+            Vector4f(points[i + 3], points[i + 4], points[i + 5], 1);
+        normals_.push_back(normal.getNormalized());
+
+        auto idx = points_.size();
+        lookup_vertex[norm] = idx;
+        lookup_index[i / 6] = idx;
       }
-
-      points_.push_back(norm.ToGlobal() * scale_);
-
-      Vector3f normal = normTransform_ * Vector4f(points[i + 3], points[i + 4],
-                                                  points[i + 5], 1);
-      normals_.push_back(normal.getNormalized());
     }
 
     for (size_t i = 0; i < strips_length; i += 2) {
@@ -51,9 +56,13 @@ class Obj : public IMeshExporter {
 
       bool even = true;
       for (uint32_t j = strips[i]; j < strips[i] + strips[i + 1] - 2; ++j) {
-        auto a = lookup_index[indices[j] + current];
-        auto b = lookup_index[indices[j + 1] + current];
-        auto c = lookup_index[indices[j + 2] + current];
+        auto a = lookup_index[indices[j]];
+        auto b = lookup_index[indices[j + 1]];
+        auto c = lookup_index[indices[j + 2]];
+        if (a == 0 || b == 0 || c == 0) {
+          log_debugs << indices[j] << "/" << indices[j + 1] << "/"
+                     << indices[j + 2] << " = " << a << "/" << b << "/" << c;
+        }
         if (even) {
           faces_.push_back(Vector3i(a, b, c));
         } else {
@@ -64,22 +73,19 @@ class Obj : public IMeshExporter {
     }
   }
 
-  std::string Write() {
-    std::stringstream ss;
-
+  void Write(std::ostream& out) override {
     for (auto& point : points_) {
-      ss << "v " << point.x << ' ' << point.y << ' ' << point.z << '\n';
+      out << "v " << point.x << ' ' << point.y << ' ' << point.z << '\n';
     }
 
     for (auto& normal : normals_) {
-      ss << "vn " << normal.x << ' ' << normal.y << ' ' << normal.z << '\n';
+      out << "vn " << normal.x << ' ' << normal.y << ' ' << normal.z << '\n';
     }
 
     for (auto& face : faces_) {
-      ss << "f " << face[0] << "//" << face[0] << ' ' << face[1] << "//"
-         << face[1] << ' ' << face[2] << "//" << face[2] << '\n';
+      out << "f " << face[0] << "//" << face[0] << ' ' << face[1] << "//"
+          << face[1] << ' ' << face[2] << "//" << face[2] << '\n';
     }
-    return ss.str();
   }
 
  private:
@@ -89,7 +95,6 @@ class Obj : public IMeshExporter {
   std::vector<coords::Global> normals_;
   std::vector<Vector3i> faces_;
   std::unordered_map<coords::Norm, size_t> lookup_vertex;
-  std::unordered_map<size_t, size_t> lookup_index;
   const double scale_;
 };
 }

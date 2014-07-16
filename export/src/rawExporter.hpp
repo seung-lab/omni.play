@@ -46,10 +46,8 @@ class Raw : public IMeshExporter {
     }
   }
 
-  std::string Write() {
-    std::stringstream ss(std::ios_base::out | std::ios_base::binary);
-    ss.write((char*)&points_.front(), points_.size() * sizeof(float));
-    return ss.str();
+  void Write(std::ostream& out) {
+    out.write((char*)&points_.front(), points_.size() * sizeof(float));
   }
 
  private:

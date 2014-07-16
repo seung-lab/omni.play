@@ -31,12 +31,12 @@ class VertexIndexDataSourceImpl {
     DataEntry* entry =
         std::lower_bound(table.begin(), table.end(), target, compareBySegID);
     if (entry == table.end() || entry->segID != coord.segID()) {
-      log_errors << "DataEntry not found in table.";
+      // log_errors << "DataEntry not found in table.";
       return nullptr;
     }
 
     if (!entry || !entry->wasMeshed || !entry->hasMeshData) {
-      log_errors << "DataEntry not found.";
+      // log_errors << "DataEntry not found.";
       return nullptr;
     }
 

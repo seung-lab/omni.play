@@ -9,8 +9,7 @@ class IMeshExporter {
                           const uint32_t* indices, const size_t indices_length,
                           const uint32_t* strips,
                           const size_t strips_length) = 0;
-  virtual std::string Write() = 0;
+  virtual void Write(std::ostream&) = 0;
 };
-
 }
 }

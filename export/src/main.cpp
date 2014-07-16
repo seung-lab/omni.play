@@ -198,7 +198,7 @@ int exportMesh(const Options& opt, int argc, char* argv[]) {
     }
   }
 
-  log_infos << exporter->Write();
+  exporter->Write(std::cout);
 
   return 0;
 }
