@@ -6,7 +6,6 @@
 #include "datalayer/omDataPath.h"
 #include "datalayer/omDataPaths.h"
 #include "datalayer/omDataWrapper.h"
-#include "chunks/omChunk.h"
 #include "utility/omStringHelpers.h"
 #include "threads/taskManager.hpp"
 #include "datalayer/hdf5/omHdf5Manager.h"

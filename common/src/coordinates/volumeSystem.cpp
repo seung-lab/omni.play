@@ -33,6 +33,8 @@ GlobalBbox VolumeSystem::Extent() const {
   return GlobalBbox(abs, abs - Vector3f::ONE + DataDimensions() * Resolution());
 }
 
+DataBbox VolumeSystem::Bounds() const { return Extent().ToDataBbox(*this, 0); }
+
 bool VolumeSystem::ContainsMipChunk(const Chunk& rMipCoord) const {
   // if level is greater than root level
   if (rMipCoord.mipLevel() < 0 || rMipCoord.mipLevel() > RootMipLevel()) {

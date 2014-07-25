@@ -1,9 +1,7 @@
 #pragma once
 #include "precomp.h"
 
-#include "chunks/omSegChunk.h"
 #include "volume/omSegmentation.h"
-#include "chunks/omSegChunkDataInterface.hpp"
 
 /**
  * Rewrite MIP 0 in segmentation so that all segment values are
@@ -32,47 +30,35 @@ class OmCompactVolValues {
 
  private:
   void findUniqueValues(std::unordered_set<uint32_t>& values) {
-    std::shared_ptr<std::deque<om::coords::Chunk> > coordsPtr =
-        vol_->GetMipChunkCoords(0);
-    const uint32_t numChunks = coordsPtr->size();
-
-    int counter = 0;
-
-    FOR_EACH(iter, *coordsPtr) {
-      const om::coords::Chunk& coord = *iter;
-
-      ++counter;
-      log_info("\rreading chunk %d of %d...", counter, numChunks);
-      fflush(stdout);
-
-      OmSegChunk* chunk = vol_->GetChunk(coord);
-
-      std::shared_ptr<uint32_t> dataPtr =
-          chunk->SegData()->GetCopyOfChunkDataAsUint32();
-      uint32_t const* const data = dataPtr.get();
-
-      for (uint32_t v = 0; v < chunk->Mipping().NumVoxels(); ++v) {
-        values.insert(data[v]);
+    for (auto& iter : vol_->Iterate<om::common::SegID>()) {
+      if (iter.value()) {
+        values.insert(iter.value());
       }
     }
   }
 
   void doRewriteVol(const std::unordered_map<uint32_t, uint32_t>& compact) {
-    std::shared_ptr<std::deque<om::coords::Chunk> > coordsPtr =
+    std::shared_ptr<std::deque<om::coords::Chunk>> coordsPtr =
         vol_->GetMipChunkCoords(0);
     const uint32_t numChunks = coordsPtr->size();
 
     int counter = 0;
 
-    FOR_EACH(iter, *coordsPtr) {
-      const om::coords::Chunk& coord = *iter;
-
+    for (auto& cc : *coordsPtr) {
       ++counter;
       log_info("rewriting chunk %d of %d...", counter, numChunks);
 
-      OmSegChunk* chunk = vol_->GetChunk(coord);
-
-      chunk->SegData()->RewriteChunk(compact);
+      auto chunk = vol_->GetChunk(cc);
+      auto typedChunk = boost::get<om::chunk::Chunk<uint32_t>>(chunk.get());
+      if (!typedChunk) {
+        throw om::InvalidOperationException(
+            "Unable to load chunk for rewrite.");
+      }
+      for (int i = 0; i < vol_->Coords().GetNumberOfVoxelsPerChunk(); ++i) {
+        auto& val = (*typedChunk)[i];
+        val = compact.at(val);
+      }
+      vol_->ChunkDS().Put(cc, chunk);
     }
   }
 };

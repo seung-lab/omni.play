@@ -6,7 +6,6 @@
 #include "datalayer/omDataPath.h"
 #include "datalayer/omDataPaths.h"
 #include "mesh/io/omDataForMeshLoad.hpp"
-#include "chunks/omChunk.h"
 #include "volume/omSegmentation.h"
 #include "project/omProject.h"
 

@@ -5,7 +5,6 @@
 #include "common/logging.h"
 #include "utility/omStringHelpers.h"
 #include "datalayer/omDataWrapper.h"
-#include "chunks/omChunk.h"
 #include "volume/omMipVolume.h"
 #include "utility/omTimer.hpp"
 #include "threads/taskManager.hpp"

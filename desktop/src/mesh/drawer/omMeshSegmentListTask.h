@@ -1,5 +1,6 @@
 #pragma once
 #include "precomp.h"
+#include "coordinates/chunk.h"
 
 class OmSegment;
 class OmMeshSegmentList;
@@ -7,16 +8,16 @@ class OmSegmentation;
 
 class OmMeshSegmentListTask : public zi::runnable {
  private:
-  OmSegChunk* mChunk;
+  om::coords::Chunk chunkCoord_;
   OmSegment* const mRootSeg;
   OmMeshSegmentList* const rootSegLists_;
   OmSegmentation* const segmentation_;
 
  public:
-  OmMeshSegmentListTask(OmSegChunk* p_chunk, OmSegment* rootSeg,
+  OmMeshSegmentListTask(om::coords::Chunk chunk, OmSegment* rootSeg,
                         OmMeshSegmentList* rootSegLists,
                         OmSegmentation* segmentation)
-      : mChunk(p_chunk),
+      : chunkCoord_(chunk),
         mRootSeg(rootSeg),
         rootSegLists_(rootSegLists),
         segmentation_(segmentation) {}

@@ -10,15 +10,18 @@
 #include "system/omManageableObject.h"
 #include "volume/omFilter2dManager.h"
 #include "volume/omMipVolume.h"
+#include "chunk/dataSources.hpp"
+#include "volume/iterators.hpp"
 
 class OmTileCacheChannel;
 class OmVolumeData;
-template <typename, typename>
-class OmChunkCache;
 
 namespace om {
 namespace channel {
 class folder;
+}
+namespace chunk {
+class CachedDataSource;
 }
 }
 
@@ -55,14 +58,11 @@ class OmChannelImpl : public OmMipVolume, public OmManageableObject {
 
   void SetVolDataType(const om::common::DataType);
 
-  OmChunk* GetChunk(const om::coords::Chunk& coord);
+  om::chunk::ChunkDS& ChunkDS() const override;
+  std::shared_ptr<om::chunk::ChunkVar> GetChunk(const om::coords::Chunk& coord);
 
   inline std::vector<OmFilter2d*> GetFilters() const {
     return filterManager_.GetFilters();
-  }
-
-  OmChunkCache<OmChannelImpl, OmChunk>* ChunkCache() {
-    return chunkCache_.get();
   }
 
   inline OmTileCacheChannel& TileCache() { return *tileCache_; }
@@ -72,9 +72,9 @@ class OmChannelImpl : public OmMipVolume, public OmManageableObject {
   OmChannelImpl(const OmChannelImpl&);
   OmChannelImpl& operator=(const OmChannelImpl&);
 
-  std::unique_ptr<OmChunkCache<OmChannelImpl, OmChunk> > chunkCache_;
   std::unique_ptr<OmVolumeData> volData_;
   std::unique_ptr<OmTileCacheChannel> tileCache_;
+  std::unique_ptr<om::chunk::CachedDataSource> chunkDS_;
 
   om::file::Paths::Vol paths_;
 

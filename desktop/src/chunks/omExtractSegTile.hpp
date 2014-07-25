@@ -3,7 +3,6 @@
 
 #include "tiles/omTileFilters.hpp"
 #include "chunks/omRawChunkSlicer.hpp"
-#include "chunks/omSegChunk.h"
 #include "tiles/cache/raw/omRawSegTileCache.hpp"
 #include "volume/omSegmentation.h"
 #include "project/omProjectGlobals.h"

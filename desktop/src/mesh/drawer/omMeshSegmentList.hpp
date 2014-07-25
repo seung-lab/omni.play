@@ -1,8 +1,8 @@
 #pragma once
 #include "precomp.h"
 
-#include "chunks/omSegChunk.h"
 #include "common/common.h"
+#include "coordinates/chunk.h"
 #include "common/logging.h"
 #include "mesh/drawer/omMeshSegmentListTask.h"
 #include "mesh/drawer/omMeshSegmentListTypes.hpp"
@@ -28,8 +28,8 @@ class OmMeshSegmentList {
     threadPool_.stop();
   }
 
-  boost::optional<OmSegPtrList> GetFromCacheIfReady(OmSegChunk* chunk,
-                                                    OmSegment* rootSeg) {
+  boost::optional<OmSegPtrList> GetFromCacheIfReady(
+      const om::coords::Chunk& chunk, OmSegment* rootSeg) {
     zi::guard g(lock_);
 
     OmSegPtrListValid& spList = mSegmentListCache[makeKey(chunk, rootSeg)];
@@ -60,7 +60,7 @@ class OmMeshSegmentList {
     return boost::optional<OmSegPtrList>(spList.list);
   }
 
-  void AddToCache(OmSegChunk* chunk, OmSegment* rootSeg,
+  void AddToCache(const om::coords::Chunk& chunk, OmSegment* rootSeg,
                   const OmSegPtrList& segmentsToDraw) {
     zi::guard g(lock_);
 
@@ -73,9 +73,8 @@ class OmMeshSegmentList {
   om::thread::ThreadPool threadPool_;
   zi::mutex lock_;
 
-  OmMeshSegListKey makeKey(OmSegChunk* chunk, OmSegment* rootSeg) {
-    const om::coords::Chunk& c = chunk->GetCoordinate();
+  OmMeshSegListKey makeKey(const om::coords::Chunk& chunk, OmSegment* rootSeg) {
     return OmMeshSegListKey(segmentation_->GetID(), rootSeg->value(),
-                            c.mipLevel(), c.x, c.y, c.z);
+                            chunk.mipLevel(), chunk.x, chunk.y, chunk.z);
   }
 };

@@ -1,17 +1,22 @@
-#include "chunks/omSegChunk.h"
-#include "chunks/omSegChunkDataInterface.hpp"
 #include "segment/omSegments.h"
 #include "threads/taskManager.hpp"
 #include "volume/omSegmentation.h"
 #include "volume/omUpdateBoundingBoxes.h"
+#include "volume/build/omProcessSegmentationChunk.hpp"
 
 OmUpdateBoundingBoxes::OmUpdateBoundingBoxes(OmSegmentation* vol)
     : vol_(vol), segments_(vol->Segments()) {}
 
 void OmUpdateBoundingBoxes::doUpdate(const om::coords::Chunk& coord) {
-  OmSegChunk* chunk = vol_->GetChunk(coord);
+  auto chunk = vol_->GetChunk(coord);
 
-  chunk->SegData()->RefreshBoundingData(segments_);
+  OmProcessSegmentationChunk p(false, vol_->Segments());
+
+  for (auto& dv : vol_->Iterate<uint32_t>(coord.BoundingBox(vol_->Coords()))) {
+    if (dv.value()) {
+      p.processVoxel(dv.value(), dv.coord());
+    }
+  }
 }
 
 void OmUpdateBoundingBoxes::Update() {

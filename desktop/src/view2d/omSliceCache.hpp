@@ -1,10 +1,9 @@
 #pragma once
 #include "precomp.h"
 
-#include "chunks/omSegChunk.h"
 #include "tiles/cache/raw/omRawSegTileCache.hpp"
-#include "chunks/omSegChunkDataInterface.hpp"
 #include "volume/omSegmentation.h"
+#include "chunk/rawChunkSlicer.hpp"
 
 /**
  * unmanaged cache of slices to speed-up brush select tool
@@ -56,9 +55,13 @@ class OmSliceCache {
       return cache_[key];
     }
 
-    OmSegChunk* chunk = vol_->GetChunk(chunkCoord);
-
-    return cache_[key] =
-               chunk->SegData()->ExtractDataSlice32bit(viewType_, depthInChunk);
+    auto chunk = vol_->GetChunk(chunkCoord);
+    auto typedChunk = boost::get<om::chunk::Chunk<uint32_t>>(chunk.get());
+    if (!typedChunk) {
+      throw om::InvalidOperationException("Unable to load chunk for slicing.");
+    }
+    om::chunk::rawChunkSlicer<uint32_t> slicer(chunkDim_,
+                                               typedChunk->data().get());
+    return cache_[key] = slicer.GetCopyOfTile(viewType_, depthInChunk);
   }
 };

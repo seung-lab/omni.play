@@ -1,8 +1,5 @@
 #include "tiles/cache/omTileCacheChannel.hpp"
 #include "actions/omActions.h"
-#include "chunks/omChunk.h"
-#include "chunks/omChunkCache.hpp"
-#include "chunks/omChunkCache.hpp"
 #include "common/common.h"
 #include "common/logging.h"
 
@@ -13,15 +10,13 @@
 #include "volume/io/omVolumeData.h"
 #include "volume/omChannelImpl.h"
 #include "volume/omFilter2d.h"
+#include "chunk/cachedDataSource.hpp"
 
 OmChannelImpl::OmChannelImpl()
-    : chunkCache_(new OmChunkCache<OmChannelImpl, OmChunk>(this)),
-      volData_(new OmVolumeData()),
-      tileCache_(new OmTileCacheChannel()) {}
+    : volData_(new OmVolumeData()), tileCache_(new OmTileCacheChannel()) {}
 
 OmChannelImpl::OmChannelImpl(om::common::ID id)
     : OmManageableObject(id),
-      chunkCache_(new OmChunkCache<OmChannelImpl, OmChunk>(this)),
       volData_(new OmVolumeData()),
       tileCache_(new OmTileCacheChannel()) {
   filterManager_.AddFilter();
@@ -29,7 +24,11 @@ OmChannelImpl::OmChannelImpl(om::common::ID id)
 
 OmChannelImpl::~OmChannelImpl() {}
 
-void OmChannelImpl::LoadPath() { paths_ = OmProject::Paths().Channel(GetID()); }
+void OmChannelImpl::LoadPath() {
+  paths_ = OmProject::Paths().Channel(GetID());
+  chunkDS_.reset(
+      new om::chunk::CachedDataSource(paths_, getVolDataType(), coords_));
+}
 
 std::string OmChannelImpl::GetName() {
   return "channel" + om::string::num(GetID());
@@ -73,10 +72,11 @@ void OmChannelImpl::SetVolDataType(const om::common::DataType type) {
   volData_->SetDataType(this);
 }
 
-OmChunk* OmChannelImpl::GetChunk(const om::coords::Chunk& coord) {
-  return chunkCache_->GetChunk(coord);
+std::shared_ptr<om::chunk::ChunkVar> OmChannelImpl::GetChunk(
+    const om::coords::Chunk& coord) {
+  return chunkDS_->Get(coord);
 }
 
-void OmChannelImpl::UpdateFromVolResize() {
-  chunkCache_->UpdateFromVolResize();
-}
+void OmChannelImpl::UpdateFromVolResize() {}
+
+om::chunk::ChunkDS& OmChannelImpl::ChunkDS() const { return *chunkDS_; }

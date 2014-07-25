@@ -10,7 +10,8 @@ namespace pipeline {
 
 class getTile : public stage {
  public:
-  template <typename T> data_var operator()(const tile::Tile<T>& in) const {
+  template <typename T>
+  data_var operator()(const tile::Tile<T>& in) const {
     return Data<T>(in.data(), in.length());
   }
 };
@@ -42,7 +43,7 @@ class TileSlicer
     int chunkSize = system.ChunkDimensions().x;
     uint64_t offset = coord.chunk().PtrOffset(system, sizeof(T));
     T* chunkPtr = in.GetPtrWithOffset(offset);
-    chunks::rawChunkSlicer<T> slicer(chunkSize, chunkPtr);
+    chunk::rawChunkSlicer<T> slicer(chunkSize, chunkPtr);
     return slicer.GetCopyOfTile(coord.viewType(), coord.depth());
   }
 

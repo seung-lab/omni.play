@@ -1,7 +1,6 @@
 #pragma once
 #include "precomp.h"
 
-#include "chunks/omSegChunk.h"
 #include "mesh/drawer/omFindChunksToDraw.hpp"
 #include "mesh/drawer/omMeshPlan.h"
 #include "mesh/drawer/omMeshSegmentList.hpp"
@@ -20,7 +19,7 @@ class OmMeshDrawPlanner {
   OmMeshSegmentList* const rootSegList_;
 
   OmSegPtrList rootSegs_;
-  std::shared_ptr<std::deque<OmSegChunk*> > chunks_;
+  std::shared_ptr<std::deque<om::coords::Chunk>> chunks_;
   std::shared_ptr<OmMeshPlan> sortedSegments_;
 
   bool notAllSegmentsFound_;
@@ -39,14 +38,16 @@ class OmMeshDrawPlanner {
         notAllSegmentsFound_(false) {}
 
   std::shared_ptr<OmMeshPlan> BuildPlan(
-      std::shared_ptr<std::deque<OmSegChunk*> > chunks) {
+      std::shared_ptr<std::deque<om::coords::Chunk>> chunks) {
     chunks_ = chunks;
     sortedSegments_ = std::make_shared<OmMeshPlan>();
     doBuildPlan();
     return sortedSegments_;
   }
 
-  std::shared_ptr<std::deque<OmSegChunk*> > GetChunkList() { return chunks_; }
+  std::shared_ptr<std::deque<om::coords::Chunk>> GetChunkList() {
+    return chunks_;
+  }
 
   bool SegmentsMissing() const { return notAllSegmentsFound_; }
 
@@ -79,7 +80,7 @@ class OmMeshDrawPlanner {
     }
   }
 
-  void determineSegmentsToDraw(OmSegChunk* chunk) {
+  void determineSegmentsToDraw(const om::coords::Chunk& chunk) {
     FOR_EACH(iter, rootSegs_) {
       OmSegment* rootSeg = (*iter);
 
@@ -95,7 +96,7 @@ class OmMeshDrawPlanner {
         continue;
       }
 
-      addSegmentsToDraw(chunk->GetCoordinate(), *segmentsToDraw);
+      addSegmentsToDraw(chunk, *segmentsToDraw);
     }
   }
 

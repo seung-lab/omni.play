@@ -4,8 +4,8 @@
 #include "volume/omSegmentation.h"
 #include "volume/omAffinityChannel.h"
 #include "segment/omSegments.h"
-#include "chunks/omChunk.h"
 #include "chunks/uniqueValues/omChunkUniqueValuesManager.hpp"
+#include "volume/build/omProcessSegmentationChunk.hpp"
 
 class OmSegmentationChunkBuildTask : public zi::runnable {
  private:
@@ -19,18 +19,17 @@ class OmSegmentationChunkBuildTask : public zi::runnable {
       : coord_(coord), vol_(vol), segments_(segments) {}
 
   void run() {
-    OmSegChunk* chunk = vol_.GetChunk(coord_);
+    auto chunk = vol_.GetChunk(coord_);
 
-    const bool isMIPzero = (0 == coord_.mipLevel());
+    OmProcessSegmentationChunk p(coord_.mipLevel() == 0, segments_);
 
-    chunk->SegData()->ProcessChunk(isMIPzero, segments_);
+    for (auto& dv : vol_.Iterate<uint32_t>(coord_.BoundingBox(vol_.Coords()))) {
+      if (dv.value()) {
+        p.processVoxel(dv.value(), dv.coord());
+      }
+    }
 
     const auto segIDs = vol_.UniqueValuesDS().RereadChunk(coord_, 1);
-
-    if (isMIPzero) {
-      // vol_.updateMinMax(chunk->GetMinValue(),
-      //                    chunk->GetMaxValue());
-    }
   }
 };
 

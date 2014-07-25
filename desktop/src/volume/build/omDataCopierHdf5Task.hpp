@@ -1,7 +1,6 @@
 #pragma once
 #include "precomp.h"
 
-#include "chunks/omChunk.h"
 #include "common/common.h"
 #include "datalayer/hdf5/omHdf5Manager.h"
 #include "datalayer/omDataPath.h"
@@ -26,7 +25,6 @@ class OmDataCopierHdf5Task : public zi::runnable {
 
   OmSimpleProgress* prog_;
 
-  OmChunk* chunk_;
   bool resizedChunk_;
 
  public:
@@ -43,9 +41,7 @@ class OmDataCopierHdf5Task : public zi::runnable {
         mip0fnp_(mip0fnp),
         coord_(coord),
         prog_(prog),
-        resizedChunk_(false) {
-    chunk_ = vol_->GetChunk(coord_);
-  }
+        resizedChunk_(false) {}
 
   virtual ~OmDataCopierHdf5Task() {}
 
@@ -117,16 +113,19 @@ class OmDataCopierHdf5Task : public zi::runnable {
     }
 
     file.seek(chunkOffset);
-    file.write(data->getPtr<const char>(), chunk_->Mipping().NumBytes());
+    auto numBytes =
+        vol_->Coords().GetNumberOfVoxelsPerChunk() * vol_->GetBytesPerVoxel();
+    file.write(data->getPtr<const char>(), numBytes);
   }
 
   OmDataWrapperPtr getChunkData() {
     // get chunk data bbox
-    const om::coords::DataBbox& chunkExtent = chunk_->Mipping().Extent();
+    const om::coords::DataBbox& chunkExtent =
+        coord_.BoundingBox(vol_->Coords());
 
     const om::coords::DataBbox volExtent(
-        om::coords::Data(Vector3i::ZERO, vol_->Coords(), chunk_->GetLevel()),
-        om::coords::Data(volSize_, vol_->Coords(), chunk_->GetLevel()));
+        om::coords::Data(Vector3i::ZERO, vol_->Coords(), coord_.mipLevel()),
+        om::coords::Data(volSize_, vol_->Coords(), coord_.mipLevel()));
 
     // if data extent contains given extent, read full chunk
     if (volExtent.contains(chunkExtent)) {

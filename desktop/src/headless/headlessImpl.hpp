@@ -4,7 +4,6 @@
 #include "datalayer/hdf5/omExportVolToHdf5.hpp"
 #include "actions/io/omActionDumper.h"
 #include "actions/omActions.h"
-#include "chunks/omRawChunk.hpp"
 #include "chunks/uniqueValues/omChunkUniqueValuesManager.hpp"
 #include "chunks/uniqueValues/omChunkUniqueValuesTypes.h"
 #include "mesh/omMeshParams.hpp"
@@ -242,7 +241,7 @@ class HeadlessImpl {
 
       OmTimer timer;
       if (useMeshChunk) {
-        OmRawChunk<uint32_t> chunk(vol, coords[i]);
+        auto chunk = vol.GetChunk(coords[i]);
       } else {
         assert(0 && "fixme!");
       }

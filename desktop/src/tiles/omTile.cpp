@@ -1,6 +1,3 @@
-#include "chunks/omSegChunkDataInterface.hpp"
-#include "chunks/omChunkData.hpp"
-#include "chunks/omSegChunk.h"
 #include "system/cache/omCacheBase.h"
 #include "tiles/omChannelTileFilter.hpp"
 #include "tiles/omTextureID.h"
@@ -9,6 +6,8 @@
 #include "view2d/omView2dConverters.hpp"
 #include "viewGroup/omViewGroupState.h"
 #include "volume/omMipVolume.h"
+#include "chunk/rawChunkSlicer.hpp"
+#include "volume/omSegmentation.h"
 
 OmTile::OmTile(OmCacheBase* cache, const OmTileCoord& key)
     : cache_(cache),
@@ -29,10 +28,19 @@ void OmTile::LoadData() {
 
 void OmTile::load8bitChannelTile() {
   OmChannel& chan = reinterpret_cast<OmChannel&>(getVol());
-  OmChunk* chunk = chan.GetChunk(mipChunkCoord_);
+  auto chunk = chan.GetChunk(mipChunkCoord_);
+  auto* typedChunk = boost::get<om::chunk::Chunk<float>>(chunk.get());
+  if (!typedChunk) {
+    log_errors << "Unable to load chunk for slicing.";
+    return;
+  }
+  om::chunk::rawChunkSlicer<float> slicer(tileLength_,
+                                          typedChunk->data().get());
+  auto rawTile = slicer.GetCopyOfTile(key_.getViewType(), getDepth());
 
+  OmTileFilters<float> filter(128);
   auto tileData =
-      chunk->Data()->ExtractDataSlice8bit(key_.getViewType(), getDepth());
+      filter.rescaleAndCast<uint8_t>(rawTile.get(), 0.0, 1.0, 255.0);
 
   OmChannelTileFilter::Filter(tileData);
 
@@ -41,10 +49,15 @@ void OmTile::load8bitChannelTile() {
 
 void OmTile::load32bitSegmentationTile() {
   OmSegmentation& seg = reinterpret_cast<OmSegmentation&>(getVol());
-  OmSegChunk* chunk = seg.GetChunk(mipChunkCoord_);
-
-  auto imageData =
-      chunk->SegData()->ExtractDataSlice32bit(key_.getViewType(), getDepth());
+  auto chunk = seg.GetChunk(mipChunkCoord_);
+  auto* typedChunk = boost::get<om::chunk::Chunk<uint32_t>>(chunk.get());
+  if (!typedChunk) {
+    log_errors << "Unable to load chunk for slicing.";
+    return;
+  }
+  om::chunk::rawChunkSlicer<uint32_t> slicer(tileLength_,
+                                             typedChunk->data().get());
+  auto imageData = slicer.GetCopyOfTile(key_.getViewType(), getDepth());
 
   auto colorMappedData =
       key_.getViewGroupState().ColorTile(imageData.get(), tileLength_, key_);

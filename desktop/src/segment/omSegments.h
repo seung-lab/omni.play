@@ -1,6 +1,7 @@
 #pragma once
 #include "precomp.h"
 
+#include "common/common.h"
 #include "common/core.hpp"
 #include "datalayer/archive/segmentation.h"
 

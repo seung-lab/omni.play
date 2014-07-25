@@ -5,7 +5,6 @@
 
 #include "mesh/io/v2/chunk/omMeshChunkDataWriterTaskV2.hpp"
 #include "utility/omLockedPODs.hpp"
-#include "chunks/omChunk.h"
 
 class OmMeshChunkDataWriterV2 {
  private:
@@ -24,10 +23,7 @@ class OmMeshChunkDataWriterV2 {
  public:
   OmMeshChunkDataWriterV2(OmSegmentation* seg, const om::coords::Chunk& coord,
                           const double threshold)
-      : vol_(seg),
-        coord_(coord),
-        fnp_(filePath()),
-        curEndOfFile_(0) {
+      : vol_(seg), coord_(coord), fnp_(filePath()), curEndOfFile_(0) {
     openOrCreateFile();
   }
 

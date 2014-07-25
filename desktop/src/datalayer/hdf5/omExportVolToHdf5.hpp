@@ -1,9 +1,6 @@
 #pragma once
 #include "precomp.h"
 
-#include "chunks/omChunkDataImpl.hpp"
-#include "chunks/omSegChunk.h"
-#include "chunks/omSegChunkDataInterface.hpp"
 #include "datalayer/hdf5/omHdf5.h"
 #include "datalayer/hdf5/omHdf5Manager.h"
 #include "datalayer/omDataPath.h"
@@ -53,7 +50,7 @@ class OmExportVolToHdf5 {
       hdfExport->open();
     }
 
-    std::shared_ptr<std::deque<om::coords::Chunk> > coordsPtr =
+    std::shared_ptr<std::deque<om::coords::Chunk>> coordsPtr =
         vol->GetMipChunkCoords(0);
 
     FOR_EACH(iter, *coordsPtr) {
@@ -71,10 +68,20 @@ class OmExportVolToHdf5 {
     log_infos << "export done!";
   }
 
+  struct Wrapper : public boost::static_visitor<OmDataWrapperPtr> {
+    template <typename T>
+    OmDataWrapperPtr operator()(om::chunk::Chunk<T>& c) const {
+      return om::ptrs::Wrap(c.data());
+    }
+  };
+
   OmDataWrapperPtr exportChunk(OmChannel* vol, const om::coords::Chunk& coord,
                                const bool) {
-    OmChunk* chunk = vol->GetChunk(coord);
-    return chunk->Data()->CopyOutChunkData();
+    auto chunk = vol->GetChunk(coord);
+    if (!chunk) {
+      throw om::ArgException("Unable to export chunk");
+    }
+    return boost::apply_visitor(Wrapper(), *chunk);
   }
 
   OmDataWrapperPtr exportChunk(OmSegmentation* vol,
@@ -82,22 +89,25 @@ class OmExportVolToHdf5 {
                                const bool rerootSegments) {
     log_infos << "\r\texporting " << coord << std::flush;
 
-    OmSegChunk* chunk = vol->GetChunk(coord);
-
-    std::shared_ptr<uint32_t> rawDataPtr =
-        chunk->SegData()->GetCopyOfChunkDataAsUint32();
+    auto chunk = vol->GetChunk(coord);
+    auto* typedChunk = boost::get<om::chunk::Chunk<uint32_t>>(chunk.get());
+    if (!typedChunk) {
+      log_errors << "Unable to load chunk for exporting.";
+      return OmDataWrapperPtr();
+    }
 
     if (rerootSegments) {
-      uint32_t* rawData = rawDataPtr.get();
+      uint32_t* rawData = typedChunk->data().get();
       auto& segments = vol->Segments();
+      auto numVoxels = vol->Coords().GetNumberOfVoxelsPerChunk();
 
-      for (uint32_t i = 0; i < chunk->Mipping().NumVoxels(); ++i) {
+      for (uint32_t i = 0; i < numVoxels; ++i) {
         if (0 != rawData[i]) {
           rawData[i] = segments.FindRootID(rawData[i]);
         }
       }
     }
 
-    return om::ptrs::Wrap(rawDataPtr);
+    return om::ptrs::Wrap(typedChunk->data());
   }
 };

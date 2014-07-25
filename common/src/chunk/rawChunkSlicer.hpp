@@ -3,10 +3,11 @@
 #include "utility/malloc.hpp"
 
 namespace om {
-namespace chunks {
+namespace chunk {
 
 // TODO: refactor for non-square chunk dims
-template <typename T> class rawChunkSlicer {
+template <typename T>
+class rawChunkSlicer {
  private:
   const int chunkDim_;         // usually 128
   const int elementsPerTile_;  // chunkDim^2
@@ -21,6 +22,7 @@ template <typename T> class rawChunkSlicer {
 
   std::shared_ptr<T> GetCopyOfTile(const om::common::ViewType viewType,
                                    const int offsetNumTiles) {
+    assert(offsetNumTiles < chunkDim_);
     auto tilePtr =
         mem::Malloc<T>::NumElements(elementsPerTile_, mem::ZeroFill::DONT);
     sliceTile(viewType, offsetNumTiles, tilePtr.get());

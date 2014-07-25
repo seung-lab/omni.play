@@ -1,8 +1,6 @@
 #pragma once
 #include "precomp.h"
 
-#include "chunks/omChunkData.hpp"
-#include "chunks/omSegChunk.h"
 #include "datalayer/hdf5/omHdf5ChunkUtils.hpp"
 #include "utility/dataWrappers.h"
 #include "volume/io/omVolumeData.h"
@@ -62,7 +60,7 @@ class OmUpgradeTo14 {
         continue;
       }
 
-      std::shared_ptr<std::deque<om::coords::Chunk> > coordsPtr =
+      std::shared_ptr<std::deque<om::coords::Chunk>> coordsPtr =
           vol.GetMipChunkCoords(level);
 
       FOR_EACH(iter, *coordsPtr) {
@@ -76,11 +74,28 @@ class OmUpgradeTo14 {
   }
 
   template <typename T>
-  void copyChunk(T& vol, const om::coords::Chunk& coord) {
-    OmChunk* chunk = vol.GetChunk(coord);
+  void putChunk(OmMipVolume& vol, const om::coords::Chunk& coord,
+                std::shared_ptr<T> data) {
+    vol.ChunkDS().Put(coord,
+                      std::make_shared<om::chunk::ChunkVar>(
+                          om::chunk::Chunk<T>(coord, vol.Coords(), data)));
+  }
 
-    OmDataWrapperPtr hdf5 = OmHdf5ChunkUtils::ReadChunkData(&vol, chunk);
-
-    chunk->Data()->CopyInChunkData(hdf5);
+  void copyChunk(OmMipVolume& vol, const om::coords::Chunk& coord) {
+    OmDataWrapperPtr hdf5 = OmHdf5ChunkUtils::ReadChunkData(&vol, coord);
+    switch (vol.getVolDataType().index()) {
+      case om::common::DataType::INT8:
+        putChunk(vol, coord, om::ptrs::UnWrap<int8_t>(hdf5));
+      case om::common::DataType::UINT8:
+        putChunk(vol, coord, om::ptrs::UnWrap<uint8_t>(hdf5));
+      case om::common::DataType::INT32:
+        putChunk(vol, coord, om::ptrs::UnWrap<int>(hdf5));
+      case om::common::DataType::UINT32:
+        putChunk(vol, coord, om::ptrs::UnWrap<uint32_t>(hdf5));
+      case om::common::DataType::FLOAT:
+        putChunk(vol, coord, om::ptrs::UnWrap<float>(hdf5));
+      default:
+        throw om::ArgException("Invalid HDF5 Chunk Data.");
+    }
   }
 };

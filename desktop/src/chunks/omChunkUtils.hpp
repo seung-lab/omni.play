@@ -1,7 +1,6 @@
 #pragma once
 #include "precomp.h"
 
-#include "chunks/omSegChunk.h"
 #include "chunks/uniqueValues/omChunkUniqueValuesManager.hpp"
 #include "utility/image/omImage.hpp"
 #include "utility/segmentationDataWrapper.hpp"
@@ -33,8 +32,8 @@ class OmChunkUtils {
    * extra
    *      voxel of data is included on each dimensions.
    */
-  static OmImage<uint32_t, 3> GetMeshOmImageData(OmSegmentation* vol,
-                                                 OmSegChunk* chunk) {
+  static OmImage<uint32_t, 3> GetMeshOmImageData(
+      OmSegmentation* vol, const om::coords::Chunk& chunkCoord) {
     OmImage<uint32_t, 3> retImage(OmExtents[129][129][129]);
 
     for (int z = 0; z < 2; ++z) {
@@ -44,22 +43,21 @@ class OmChunkUtils {
           const int lenY = y ? 1 : 128;
           const int lenX = x ? 1 : 128;
 
-          // form mip coord
-          const om::coords::Chunk& currentCoord = chunk->GetCoordinate();
-
-          const om::coords::Chunk mip_coord(
-              currentCoord.mipLevel(), currentCoord.x + x, currentCoord.y + y,
-              currentCoord.z + z);
+          const om::coords::Chunk mip_coord(chunkCoord.mipLevel(),
+                                            chunkCoord.x + x, chunkCoord.y + y,
+                                            chunkCoord.z + z);
 
           // skip invalid mip coord
           if (vol->Coords().ContainsMipChunk(mip_coord)) {
-            OmSegChunk* chunk = vol->GetChunk(mip_coord);
-
-            std::shared_ptr<uint32_t> rawDataPtr =
-                chunk->SegData()->GetCopyOfChunkDataAsUint32();
+            auto chunk = vol->GetChunk(mip_coord);
+            auto typedChunk =
+                boost::get<om::chunk::Chunk<uint32_t>>(chunk.get());
+            if (!typedChunk) {
+              continue;
+            }
 
             OmImage<uint32_t, 3> chunkImage(OmExtents[128][128][128],
-                                            rawDataPtr.get());
+                                            typedChunk->data().get());
 
             retImage.copyFrom(chunkImage, OmExtents[z * 128][y * 128][x * 128],
                               OmExtents[0][0][0], OmExtents[lenZ][lenY][lenX]);

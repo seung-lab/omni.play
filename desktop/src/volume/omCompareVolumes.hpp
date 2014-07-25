@@ -1,9 +1,7 @@
 #pragma once
 #include "precomp.h"
 
-#include "chunks/omChunkDataInterface.hpp"
 #include "utility/dataWrappers.h"
-#include "chunks/omChunk.h"
 
 class OmCompareVolumes {
  public:
@@ -62,26 +60,31 @@ class OmCompareVolumes {
     return true;
   }
 
+  struct ComparisonVisitor : public boost::static_visitor<bool> {
+    template <typename T>
+    bool operator()(om::chunk::Chunk<T>& c1, om::chunk::Chunk<T>& c2) const {
+      return std::mismatch(c1.cbegin(), c1.cend(), c2.cbegin()).first ==
+             c1.cend();
+    }
+
+    template <typename T, typename U>
+    bool operator()(om::chunk::Chunk<T>&, om::chunk::Chunk<U>&) const {
+      return false;
+    }
+  };
+
   /*
    * Returns true if two given chunks contain the exact same image data
    */
   template <typename VOL>
   static bool CompareChunks(const om::coords::Chunk& coord, VOL* vol1,
                             VOL* vol2) {
-    OmChunk* chunk1 = vol1->GetChunk(coord);
-
-    OmChunk* chunk2 = vol2->GetChunk(coord);
-
-    if (chunk1->GetCoordinate() != chunk2->GetCoordinate()) {
-      log_infos << "Chunks differ: Different coords.";
-      return false;
+    auto chunk1 = vol1->GetChunk(coord);
+    auto chunk2 = vol2->GetChunk(coord);
+    if (!chunk1) {
+      return !chunk2;
     }
 
-    if (chunk1->GetDimensions() != chunk2->GetDimensions()) {
-      log_infos << "Chunks differ: Different dimensions.";
-      return false;
-    }
-
-    return chunk1->Data()->Compare(chunk2->Data());
+    return boost::apply_visitor(ComparisonVisitor(), *chunk1, *chunk2);
   }
 };

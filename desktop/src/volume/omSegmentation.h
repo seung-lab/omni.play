@@ -8,6 +8,8 @@
 #include "volume/omMipVolume.h"
 #include "datalayer/archive/segmentation.h"
 #include "segment/dataSources.hpp"
+#include "chunk/dataSources.hpp"
+#include "volume/iterators.hpp"
 
 class OmChunk;
 class OmChunkUniqueValuesManager;
@@ -24,8 +26,6 @@ class OmViewGroupState;
 class OmVolumeCuller;
 class OmVolumeData;
 class SegmentationDataWrapper;
-template <typename, typename>
-class OmChunkCache;
 
 namespace om {
 namespace volume {
@@ -42,6 +42,9 @@ namespace segment {
 class FileDataSource;
 class ListTypeFileDataSource;
 class UserEdgeVector;
+}
+namespace chunk {
+class CachedDataSource;
 }
 }
 
@@ -92,7 +95,7 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
 
   void BuildBlankVolume(const Vector3i& dims);
 
-  OmSegChunk* GetChunk(const om::coords::Chunk& coord);
+  std::shared_ptr<om::chunk::ChunkVar> GetChunk(const om::coords::Chunk& coord);
 
   uint32_t GetVoxelValue(const om::coords::Global& vox);
   void SetVoxelValue(const om::coords::Global& vox, const uint32_t value);
@@ -101,8 +104,70 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
 
   void RebuildSegments();
 
+  template <typename T>
+  struct filtered_iterable_volume {
+    typedef om::volume::segment_filtered_dataval_iterator<T> iterator;
+    iterator begin() {
+      return om::volume::make_segment_filtered_dataval_iterator(
+          bounds, vol.ChunkDS(), vol.UniqueValuesDS(), id);
+    }
+    iterator end() { return iterator(); }
+
+    const OmSegmentation& vol;
+    om::coords::DataBbox bounds;
+    T id;
+  };
+
+  template <typename T>
+  filtered_iterable_volume<T> SegIterate(T id) const {
+    return OmSegmentation::filtered_iterable_volume<T>{*this, Coords().Bounds(),
+                                                       id};
+  }
+  template <typename T>
+  filtered_iterable_volume<T> SegIterate(T id,
+                                         om::coords::GlobalBbox bounds) const {
+    return OmSegmentation::filtered_iterable_volume<T>{
+        *this, bounds.ToDataBbox(Coords(), 0), id};
+  }
+  template <typename T>
+  filtered_iterable_volume<T> SegIterate(T id,
+                                         om::coords::DataBbox bounds) const {
+    return OmSegmentation::filtered_iterable_volume<T>{*this, bounds, id};
+  }
+
+  template <typename T>
+  struct filtered_set_iterable_volume {
+    typedef om::volume::segment_filtered_dataval_iterator<T> iterator;
+    iterator begin() {
+      return om::volume::make_segment_filtered_dataval_iterator(
+          bounds, vol.ChunkDS(), vol.UniqueValuesDS(), ids);
+    }
+    iterator end() { return iterator(); }
+
+    const OmSegmentation& vol;
+    om::coords::DataBbox bounds;
+    std::set<T> ids;
+  };
+
+  template <typename T>
+  filtered_set_iterable_volume<T> SegIterate(std::set<T> ids) const {
+    return OmSegmentation::filtered_set_iterable_volume<T>{
+        *this, Coords().Bounds(), ids};
+  }
+  template <typename T>
+  filtered_set_iterable_volume<T> SegIterate(
+      std::set<T> ids, om::coords::GlobalBbox bounds) const {
+    return OmSegmentation::filtered_set_iterable_volume<T>{
+        *this, bounds.ToDataBbox(Coords(), 0), ids};
+  }
+  template <typename T>
+  filtered_set_iterable_volume<T> SegIterate(
+      std::set<T> ids, om::coords::DataBbox bounds) const {
+    return OmSegmentation::filtered_set_iterable_volume<T>{*this, bounds, ids};
+  }
+
  public:
-  inline OmChunkUniqueValuesManager& UniqueValuesDS() {
+  inline OmChunkUniqueValuesManager& UniqueValuesDS() const {
     return *uniqueChunkValues_;
   }
   inline OmMeshDrawer& MeshDrawer() { return *meshDrawer_; }
@@ -111,11 +176,9 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
   inline OmValidGroupNum& ValidGroupNum() { return *validGroupNum_; }
   inline OmVolumeData& VolData() { return *volData_; }
   inline OmRawSegTileCache& SliceCache() { return *volSliceCache_; }
-  inline OmChunkCache<OmSegmentation, OmSegChunk>& ChunkCache() {
-    return *chunkCache_;
-  }
   inline OmTileCacheSegmentation& TileCache() { return *tileCache_; }
   inline om::annotation::manager& Annotations() const { return *annotations_; }
+  om::chunk::ChunkDS& ChunkDS() const override;
 
   om::segment::SegDataVector& SegData() const { return *segData_; }
   om::segment::SegListDataVector& SegListData() const { return *segListData_; }
@@ -129,7 +192,6 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
   std::unique_ptr<OmChunkUniqueValuesManager> uniqueChunkValues_;
   std::unique_ptr<OmMeshDrawer> meshDrawer_;
   std::unique_ptr<OmMeshManagers> meshManagers_;
-  std::unique_ptr<OmChunkCache<OmSegmentation, OmSegChunk> > chunkCache_;
   std::unique_ptr<OmSegments> segments_;
   std::unique_ptr<OmValidGroupNum> validGroupNum_;
   std::unique_ptr<OmVolumeData> volData_;
@@ -145,6 +207,7 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
   std::unique_ptr<om::segment::SegListDataVector> segListData_;
   std::unique_ptr<om::segment::EdgeVector> mst_;
   std::unique_ptr<om::segment::UserEdgeVector> userEdges_;
+  std::unique_ptr<om::chunk::CachedDataSource> chunkDS_;
 
   om::file::Paths::Seg paths_;
 

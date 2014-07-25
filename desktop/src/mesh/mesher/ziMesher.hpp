@@ -2,7 +2,6 @@
 #include "precomp.h"
 
 #include "chunks/omChunkUtils.hpp"
-#include "chunks/omSegChunk.h"
 #include "common/common.h"
 #include "mesh/mesher/MeshCollector.hpp"
 #include "mesh/mesher/TriStripCollector.hpp"
@@ -200,9 +199,8 @@ class ziMesher {
   }
 
   void setupMarchingCube(zi::mesh::marching_cubes<int>& cube_marcher,
-                         OmSegChunk* chunk) {
-    OmImage<uint32_t, 3> chunkData =
-        OmChunkUtils::GetMeshOmImageData(vol_, chunk);
+                         const om::coords::Chunk& c) {
+    OmImage<uint32_t, 3> chunkData = OmChunkUtils::GetMeshOmImageData(vol_, c);
 
     OmChunkUtils::RewriteChunkAtThreshold(vol_, chunkData, threshold_);
 
@@ -213,12 +211,11 @@ class ziMesher {
                         129);
   }
 
-  void processChunk(om::coords::Chunk coord) {
+  void processChunk(const om::coords::Chunk& coord) {
     static const int chunkDim = vol_->Coords().ChunkDimensions().x;
 
-    OmSegChunk* chunk = vol_->GetChunk(coord);
-
-    const om::coords::NormBbox& dstBbox = chunk->Mipping().GetNormExtent();
+    const om::coords::NormBbox& dstBbox =
+        coord.BoundingBox(vol_->Coords()).ToNormBbox();
 
     Vector3f dstDim = dstBbox.getDimensions();
 
@@ -237,7 +234,7 @@ class ziMesher {
 
     if (segIDs.size() > 0) {
       zi::mesh::marching_cubes<int> cube_marcher;
-      setupMarchingCube(cube_marcher, chunk);
+      setupMarchingCube(cube_marcher, coord);
 
       zi::task_manager::simple manager(numThreadsPerChunk_);
       manager.start();

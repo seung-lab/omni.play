@@ -3,8 +3,7 @@
 
 #include "utility/malloc.hpp"
 #include "common/common.h"
-#include "chunks/omSegChunk.h"
-#include "chunks/omSegChunkDataInterface.hpp"
+#include "chunk/chunk.hpp"
 #include "chunks/uniqueValues/omChunkUniqueValuesTypes.h"
 
 #include "utility/image/omImage.hpp"
@@ -75,12 +74,14 @@ class OmChunkUniqueValuesPerThreshold {
   }
 
   void findValues() {
-    OmSegChunk* chunk = segmentation_.GetChunk(coord_);
+    auto chunk = segmentation_.GetChunk(coord_);
+    auto* typedChunk = boost::get<om::chunk::Chunk<uint32_t>>(chunk.get());
+    if (!typedChunk) {
+      log_errors << "Unable to get Segmetation Chunk.";
+      return;
+    }
 
-    std::shared_ptr<uint32_t> rawDataPtr =
-        chunk->SegData()->GetCopyOfChunkDataAsUint32();
-
-    uint32_t const* const rawData = rawDataPtr.get();
+    uint32_t const* const rawData = typedChunk->data().get();
 
     std::unordered_set<uint32_t> segIDs;
 
@@ -88,13 +89,13 @@ class OmChunkUniqueValuesPerThreshold {
       auto& segments = segmentation_.Segments();
       segmentation_.SetDendThreshold(threshold_);
 
-      for (size_t i = 0; i < chunk->Mipping().NumVoxels(); ++i) {
+      for (size_t i = 0; i < typedChunk->length(); ++i) {
         if (0 != rawData[i]) {
           segIDs.insert(segments.FindRootID(rawData[i]));
         }
       }
     } else {
-      for (size_t i = 0; i < chunk->Mipping().NumVoxels(); ++i) {
+      for (size_t i = 0; i < typedChunk->length(); ++i) {
         if (0 != rawData[i]) {
           segIDs.insert(rawData[i]);
         }

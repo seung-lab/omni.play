@@ -18,7 +18,7 @@ class OmMeshPlanCache {
 
   struct CachedData {
     std::shared_ptr<OmVolumeCuller> culler;
-    std::shared_ptr<std::deque<OmSegChunk*> > chunks;
+    std::shared_ptr<std::deque<om::coords::Chunk>> chunks;
     std::map<OmBitfield, CachedDataEnry> dataByBitfield;
   };
 

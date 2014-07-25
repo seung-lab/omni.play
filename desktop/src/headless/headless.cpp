@@ -1,5 +1,4 @@
 #include "actions/omActions.h"
-#include "chunks/omChunk.h"
 #include "common/logging.h"
 #include "datalayer/fs/omMemMappedFileQT.hpp"
 #include "datalayer/omDataPaths.h"
@@ -543,7 +542,7 @@ void Headless::loadChunk() {
 
   OmSegmentation* segmen = sdw.GetSegmentation();
   om::coords::Chunk chunk_coord(0, 0, 0, 0);
-  OmChunk* chunk = segmen->GetChunk(chunk_coord);
+  auto chunk = segmen->GetChunk(chunk_coord);
   assert(chunk);
 }
 

@@ -1,7 +1,6 @@
 #pragma once
 #include "precomp.h"
 
-#include "chunks/omRawChunk.hpp"
 #include "volume/io/omMemMappedVolumeImpl.hpp"
 #include "volume/build/omDownsamplerTypes.hpp"
 
@@ -39,7 +38,12 @@ class DownsampleVoxelTask : public zi::runnable {
   }
 
   void run() {
-    OmRawChunk<T> mip0chunk(*vol_, coord_);
+    auto chunk = vol_->ChunkDS().Get(coord_);
+    auto typedChunk = boost::get<om::chunk::Chunk<T>>(chunk.get());
+    if (!chunk) {
+      log_errors << "Unable to downsample chunk " << coord_;
+      return;
+    }
 
     const int sliceSize = 128 * 128;
 
@@ -49,7 +53,7 @@ class DownsampleVoxelTask : public zi::runnable {
 
           const Vector3i srcVoxelPosInChunk(sx, sy, sz);
 
-          const T srcVoxel = mip0chunk.Get(si);
+          const T srcVoxel = (*typedChunk)[si];
 
           pushVoxelIntoMips(srcChunkStartPos_ + srcVoxelPosInChunk, srcVoxel);
         }

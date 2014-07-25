@@ -35,10 +35,4 @@ class OmAffinityGraph : public OmManageableObject {
   OmAffinityChannel* GetChannel(const om::common::AffinityGraph aff) const;
 
   inline std::string GetName() { return "affinity" + om::string::num(GetID()); }
-
-  OmChunk* MipChunk(const om::common::AffinityGraph aff,
-                    const om::coords::Chunk& coord);
-
-  std::shared_ptr<OmRawChunk<float> > RawChunk(
-      const om::common::AffinityGraph aff, const om::coords::Chunk& coord);
 };

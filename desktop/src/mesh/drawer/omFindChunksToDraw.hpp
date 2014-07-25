@@ -1,7 +1,6 @@
 #pragma once
 #include "precomp.h"
 
-#include "chunks/omSegChunk.h"
 #include "volume/omSegmentation.h"
 
 class OmFindChunksToDraw {
@@ -9,17 +8,13 @@ class OmFindChunksToDraw {
   OmSegmentation* const segmentation_;
   OmVolumeCuller* const culler_;
 
-  std::shared_ptr<std::deque<OmSegChunk*> > chunksToDraw_;
-
  public:
   OmFindChunksToDraw(OmSegmentation* segmentation, OmVolumeCuller* culler)
       : segmentation_(segmentation), culler_(culler) {}
 
-  std::shared_ptr<std::deque<OmSegChunk*> > FindChunksToDraw() {
-    chunksToDraw_ = std::make_shared<std::deque<OmSegChunk*> >();
-    determineChunksToDraw(segmentation_->Coords().RootMipChunkCoordinate(),
-                          true);
-    return chunksToDraw_;
+  std::shared_ptr<std::deque<om::coords::Chunk>> FindChunksToDraw() {
+    return determineChunksToDraw(
+        segmentation_->Coords().RootMipChunkCoordinate(), true);
   }
 
  private:
@@ -29,15 +24,18 @@ class OmFindChunksToDraw {
    *  the visibility of a MipChunk.  If visible, the MipChunk is either
    *  drawn or the recursive draw process is called on its children.
    */
-  void determineChunksToDraw(const om::coords::Chunk& chunkCoord,
-                             bool testVis) {
-    OmSegChunk* chunk = segmentation_->GetChunk(chunkCoord);
+  std::shared_ptr<std::deque<om::coords::Chunk>> determineChunksToDraw(
+      const om::coords::Chunk& chunkCoord, bool testVis) {
+    std::shared_ptr<std::deque<om::coords::Chunk>> ret(
+        new std::deque<om::coords::Chunk>());
+
+    OmChunkMipping mipping(segmentation_, chunkCoord);
 
     if (testVis) {
       // check if frustum contains chunk
-      switch (culler_->TestChunk(chunk->Mipping().GetNormExtent())) {
+      switch (culler_->TestChunk(mipping.GetNormExtent())) {
         case VISIBILITY_NONE:
-          return;
+          return ret;
 
         case VISIBILITY_PARTIAL:
           // continue drawing tree and continue testing children
@@ -50,29 +48,32 @@ class OmFindChunksToDraw {
       }
     }
 
-    if (shouldChunkBeDrawn(chunk)) {
-      chunksToDraw_->push_back(chunk);
+    if (shouldChunkBeDrawn(chunkCoord, mipping)) {
+      ret->push_back(chunkCoord);
 
     } else {
-      FOR_EACH(iter, chunk->Mipping().GetChildrenCoordinates()) {
+      FOR_EACH(iter, mipping.GetChildrenCoordinates()) {
         determineChunksToDraw(*iter, testVis);
       }
     }
+
+    return ret;
   }
 
   /**
    *  Given that the chunk is visible, determine if it should be drawn
    *  or if we should continue refining so as to draw children.
    */
-  bool shouldChunkBeDrawn(OmSegChunk* chunk) {
+  bool shouldChunkBeDrawn(const om::coords::Chunk& chunk,
+                          const OmChunkMipping& mipping) {
     // draw if MIP 0
-    if (0 == chunk->GetCoordinate().mipLevel()) {
+    if (0 == chunk.mipLevel()) {
       return true;
     }
 
-    const om::coords::NormBbox& normExtent = chunk->Mipping().GetNormExtent();
+    const om::coords::NormBbox& normExtent = mipping.GetNormExtent();
     const om::coords::NormBbox& clippedNormExtent =
-        chunk->Mipping().GetClippedNormExtent();
+        mipping.GetClippedNormExtent();
 
     const om::coords::Norm camera = culler_->GetPosition();
     const om::coords::Norm center = clippedNormExtent.getCenter();

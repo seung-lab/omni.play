@@ -1,7 +1,6 @@
 #pragma once
 #include "precomp.h"
 
-#include "chunks/omChunk.h"
 #include "chunks/uniqueValues/omChunkUniqueValuesManager.hpp"
 #include "mesh/io/v2/chunk/omMeshChunkTypes.h"
 #include "utility/omStringHelpers.h"

@@ -2,7 +2,6 @@
 #include "precomp.h"
 #include "mesh/omMeshManagers.hpp"
 #include "chunks/omChunkUtils.hpp"
-#include "chunks/omSegChunk.h"
 #include "common/common.h"
 #include "mesh/mesher/TriStripCollector.hpp"
 #include "mesh/io/omMeshMetadata.hpp"

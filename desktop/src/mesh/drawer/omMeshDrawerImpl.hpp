@@ -18,7 +18,7 @@
 #include "utility/omTimer.hpp"
 #include "view3d.old/om3dPreferences.hpp"
 #include "viewGroup/omViewGroupState.h"
-#include "chunks/omChunk.h"
+#include "chunks/omChunkMipping.hpp"
 
 class OmMeshDrawerImpl {
  private:
@@ -151,7 +151,7 @@ class OmMeshDrawerImpl {
   }
 
   // draw chunk bounding box--broken? (purcaro)
-  void drawClippedExtent(OmChunk* chunk) {
+  void drawClippedExtent(const om::coords::Chunk& chunk) {
     return;  // FIXME!
 
     glPushAttrib(GL_ALL_ATTRIB_BITS);
@@ -160,8 +160,9 @@ class OmMeshDrawerImpl {
     // disable lighting for lines
     glDisable(GL_LIGHTING);
 
+    OmChunkMipping mipping(segmentation_, chunk);
     const om::coords::NormBbox& clippedNormExtent =
-        chunk->Mipping().GetClippedNormExtent();
+        mipping.GetClippedNormExtent();
 
     // translate and scale to chunk norm extent
     const Vector3f translate = clippedNormExtent.getMin();

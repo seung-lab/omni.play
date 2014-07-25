@@ -3,6 +3,7 @@
 #include "precomp.h"
 
 #include "common/common.h"
+#include "common/indexedIterator.hpp"
 #include "coordinates/coordinates.h"
 #include "utility/malloc.hpp"
 
@@ -34,9 +35,17 @@ class Chunk {
 
   std::shared_ptr<T> data() const { return data_; }
 
-  inline size_t length() const { return dims_.x * dims_.y * dims_.z; }
+  size_t length() const { return dims_.x * dims_.y * dims_.z; }
+  size_t size() const { return length() * sizeof(T); }
 
-  inline size_t size() const { return length() * sizeof(T); }
+  typedef indexed_iterator<Chunk<T>, T> iterator;
+  typedef indexed_iterator<const Chunk<T>, const T> const_iterator;
+  iterator begin() { return iterator(*this, 0); }
+  iterator end() { return iterator(*this, length()); }
+  const_iterator cbegin() const { return const_iterator(*this, 0); }
+  const_iterator cend() const { return const_iterator(*this, length()); }
+  const_iterator begin() const { return cbegin(); }
+  const_iterator end() const { return cend(); }
 
  private:
   PROP_CONST_REF(coords::Chunk, coord);

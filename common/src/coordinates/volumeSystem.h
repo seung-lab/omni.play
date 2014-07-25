@@ -61,6 +61,7 @@ class VolumeSystem {
 
   // data properties
   GlobalBbox Extent() const;
+  DataBbox Bounds() const;
 
   bool Contains(coords::Global g) const { return Extent().contains(g); }
   bool Contains(coords::Data dc) const {

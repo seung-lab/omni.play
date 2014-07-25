@@ -1,6 +1,4 @@
 #include "annotation/annotation.h"
-#include "chunks/omChunkCache.hpp"
-#include "chunks/omSegChunk.h"
 #include "chunks/uniqueValues/omChunkUniqueValuesManager.hpp"
 #include "common/common.h"
 #include "common/logging.h"
@@ -24,6 +22,8 @@
 #include "segment/userEdgeVector.hpp"
 #include "segment/selection.hpp"
 #include "users/omUsers.h"
+#include "chunk/cachedDataSource.hpp"
+#include "chunk/voxelGetter.hpp"
 using namespace om;
 
 // used by OmDataArchiveProject
@@ -31,7 +31,6 @@ OmSegmentation::OmSegmentation()
     : uniqueChunkValues_(new OmChunkUniqueValuesManager(this)),
       meshDrawer_(new OmMeshDrawer(this)),
       meshManagers_(new OmMeshManagers(this)),
-      chunkCache_(new OmChunkCache<OmSegmentation, OmSegChunk>(this)),
       volData_(new OmVolumeData()),
       volSliceCache_(new OmRawSegTileCache(this)),
       tileCache_(new OmTileCacheSegmentation()),
@@ -43,7 +42,6 @@ OmSegmentation::OmSegmentation(common::ID id)
       uniqueChunkValues_(new OmChunkUniqueValuesManager(this)),
       meshDrawer_(new OmMeshDrawer(this)),
       meshManagers_(new OmMeshManagers(this)),
-      chunkCache_(new OmChunkCache<OmSegmentation, OmSegChunk>(this)),
       volData_(new OmVolumeData()),
       volSliceCache_(new OmRawSegTileCache(this)),
       tileCache_(new OmTileCacheSegmentation()),
@@ -74,6 +72,9 @@ void OmSegmentation::LoadPath() {
   segListData_.reset(new segment::SegListDataVector(
       *segListDataDS_, segment::PageSize, Metadata().maxSegments() + 1));
 
+  chunkDS_.reset(
+      new chunk::CachedDataSource(paths_, getVolDataType(), coords_));
+
   mst_.reset(new segment::EdgeVector(userPaths.MST(id_)));
   for (auto& edge : *mst_) {
     edge.wasJoined = 0;
@@ -85,7 +86,6 @@ void OmSegmentation::LoadPath() {
 bool OmSegmentation::LoadVolData() {
   if (IsBuilt()) {
     UpdateFromVolResize();
-    volData_->load(this);
     volSliceCache_->Load();
     tileCache_->Load(this);
     annotations_->Load();
@@ -181,18 +181,9 @@ OmMeshManager* OmSegmentation::MeshManager(const double threshold) {
   return meshManagers_->GetManager(threshold);
 }
 
-quint32 OmSegmentation::GetVoxelValue(const coords::Global& vox) {
-  if (!ContainsVoxel(vox)) {
-    return 0;
-  }
-
-  // find mip_coord and offset
-  const coords::Chunk mip0coord = vox.ToChunk(Coords(), 0);
-
-  OmSegChunk* chunk = GetChunk(mip0coord);
-
-  // get voxel data
-  return chunk->GetVoxelValue(vox.ToData(Coords(), 0));
+uint32_t OmSegmentation::GetVoxelValue(const coords::Global& vox) {
+  om::chunk::Voxels<uint32_t> v(*chunkDS_, Coords());
+  return v.GetValue(vox);
 }
 
 void OmSegmentation::SetVoxelValue(const coords::Global& vox,
@@ -200,9 +191,16 @@ void OmSegmentation::SetVoxelValue(const coords::Global& vox,
   if (!ContainsVoxel(vox)) return;
 
   for (int level = 0; level <= coords_.RootMipLevel(); level++) {
-    coords::Chunk leaf_mip_coord = vox.ToChunk(Coords(), level);
-    OmSegChunk* chunk = GetChunk(leaf_mip_coord);
-    chunk->SetVoxelValue(vox.ToData(Coords(), level), val);
+    coords::Chunk mipCoord = vox.ToChunk(Coords(), level);
+    auto chunk = GetChunk(mipCoord);
+    auto typedChunk = boost::get<om::chunk::Chunk<uint32_t>>(chunk.get());
+    if (!typedChunk) {
+      continue;
+    }
+    auto coord = vox.ToData(Coords(), level);
+    auto idx = coord.ToChunkOffset();
+    (*typedChunk)[idx] = val;
+    chunkDS_->Put(mipCoord, chunk);
   }
 }
 
@@ -210,27 +208,20 @@ bool OmSegmentation::SetVoxelValueIfSelected(const coords::Global& vox,
                                              const uint32_t val) {
   const common::SegIDSet selection =
       Segments().Selection().GetSelectedSegmentIDs();
-  if (selection.size() > 0) {
-    coords::Chunk leaf_mip_coord = vox.ToChunk(Coords(), 0);
-    OmSegChunk* chunk = GetChunk(leaf_mip_coord);
-    common::SegID target =
-        Segments().FindRootID(chunk->GetVoxelValue(vox.ToData(Coords(), 0)));
-
-    if (selection.count(target) == 0) {
-      return false;
-    }
+  if (selection.count(GetVoxelValue(vox)) == 0) {
+    return false;
   }
 
   SetVoxelValue(vox, val);
   return true;
 }
 
-OmSegChunk* OmSegmentation::GetChunk(const coords::Chunk& coord) {
-  return chunkCache_->GetChunk(coord);
+std::shared_ptr<om::chunk::ChunkVar> OmSegmentation::GetChunk(
+    const coords::Chunk& coord) {
+  return chunkDS_->Get(coord);
 }
 
 void OmSegmentation::UpdateFromVolResize() {
-  chunkCache_->UpdateFromVolResize();
   uniqueChunkValues_->UpdateFromVolResize();
 }
 
@@ -259,3 +250,5 @@ void OmSegmentation::ClearUserChangesAndSave() {
   OmCacheManager::TouchFreshness();
   OmProject::Save();
 }
+
+om::chunk::ChunkDS& OmSegmentation::ChunkDS() const { return *chunkDS_; }

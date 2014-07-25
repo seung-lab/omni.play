@@ -4,12 +4,11 @@
 #include "segment/omSegments.h"
 #include "segment/omSegmentIterator.h"
 #include "events/events.h"
-#include "chunks/omChunk.h"
 #include "chunks/uniqueValues/omChunkUniqueValuesManager.hpp"
 
 void OmMeshSegmentListTask::run() {
   const ChunkUniqueValues chunkSegIDs =
-      segmentation_->UniqueValuesDS().Values(mChunk->GetCoordinate(), 1);
+      segmentation_->UniqueValuesDS().Values(chunkCoord_, 1);
 
   OmSegmentIterator segIter(segmentation_->Segments());
   segIter.iterOverSegmentID(mRootSeg->value());
@@ -25,6 +24,6 @@ void OmMeshSegmentListTask::run() {
     seg = segIter.getNextSegment();
   }
 
-  rootSegLists_->AddToCache(mChunk, mRootSeg, segmentsToDraw);
+  rootSegLists_->AddToCache(chunkCoord_, mRootSeg, segmentsToDraw);
   om::event::Redraw3d();
 }

@@ -13,6 +13,8 @@
 #include "coordinates/volumeSystem.h"
 #include "volume/omVolumeTypes.hpp"
 #include "datalayer/omDataWrapper.h"
+#include "chunk/dataSources.hpp"
+#include "volume/iterators.hpp"
 
 class OmDataPath;
 class OmHdf5;
@@ -49,8 +51,6 @@ class OmMipVolume {
   void MakeVolFolder() const { om::file::MkDir(VolPaths()); }
   virtual const om::file::Paths::Vol& VolPaths() const = 0;
   virtual std::string GetName() = 0;
-  virtual bool LoadVolData() = 0;
-  virtual OmVolumeData& VolData() = 0;
   virtual om::common::ObjectType getVolumeType() const = 0;
   virtual om::common::ID GetID() const = 0;
 
@@ -76,8 +76,35 @@ class OmMipVolume {
   virtual int GetBytesPerSlice() const = 0;
 
   inline om::coords::VolumeSystem& Coords() { return coords_; }
-
   inline const om::coords::VolumeSystem& Coords() const { return coords_; }
+
+  virtual om::chunk::ChunkDS& ChunkDS() const = 0;
+
+  template <typename T>
+  struct iterable_volume {
+    typedef om::volume::all_dataval_iterator<T> iterator;
+    iterator begin() {
+      return om::volume::make_all_dataval_iterator<T>(bounds, vol.ChunkDS());
+    }
+    iterator end() { return iterator(); }
+
+    const OmMipVolume& vol;
+    om::coords::DataBbox bounds;
+  };
+
+  template <typename T>
+  iterable_volume<T> Iterate() const {
+    return OmMipVolume::iterable_volume<T>{*this, Coords().Bounds()};
+  }
+  template <typename T>
+  iterable_volume<T> Iterate(om::coords::DataBbox bounds) const {
+    return OmMipVolume::iterable_volume<T>{*this, bounds};
+  }
+  template <typename T>
+  iterable_volume<T> Iterate(om::coords::GlobalBbox bounds) const {
+    return OmMipVolume::iterable_volume<T>{*this,
+                                           bounds.ToDataBbox(Coords(), 0)};
+  }
 
  protected:
   om::common::DataType mVolDataType;
@@ -102,9 +129,7 @@ class OmMipVolume {
   template <class T>
   friend class YAMLold::mipVolume;
 
-  friend class OmChunk;
   friend class OmMipVolumeArchiveOld;
-  friend class OmVolumeData;
   friend class OmMemMappedVolume;
   friend class OmUpgradeTo14;
   friend class OmWatershedImporter;

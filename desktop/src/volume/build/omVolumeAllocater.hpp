@@ -26,9 +26,6 @@ class OmVolumeAllocater {
     log_infos << "\tdone allocating volume for all mip levels; data type is "
               << OmVolumeTypeHelpers::GetTypeAsString(type).c_str();
 
-    vol->VolData().load(vol);
-    log_infos << "volumes memory mapped";
-
     return volFiles;
   }
 
@@ -45,9 +42,6 @@ class OmVolumeAllocater {
     }
 
     log_infos << "\tdone reallocating volume for all mip levels";
-
-    vol->VolData().load(vol);
-    log_infos << "volumes memory mapped";
   }
 
  private:
