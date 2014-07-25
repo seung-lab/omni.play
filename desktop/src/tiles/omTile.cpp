@@ -26,25 +26,50 @@ void OmTile::LoadData() {
   }
 }
 
+struct Slice8bit : public boost::static_visitor<std::shared_ptr<uint8_t>> {
+  Slice8bit(int tileLength, om::common::ViewType viewType, int depth)
+      : tileLength_(tileLength), viewType_(viewType), depth_(depth) {}
+  template <typename T>
+  inline std::shared_ptr<T> getRawSlice(T* d) const {
+    om::chunk::rawChunkSlicer<T> slicer(128, d);
+    return slicer.GetCopyOfTile(viewType_, depth_);
+  }
+
+  template <typename T>
+  std::shared_ptr<uint8_t> operator()(const om::chunk::Chunk<T>& chunk) const {
+    auto rawTile = getRawSlice(chunk.data().get());
+    OmTileFilters<T> filter(128);
+    return filter.recastToUint8(rawTile.get());
+  }
+
+  std::shared_ptr<uint8_t> operator()(const om::chunk::Chunk<uint8_t>& chunk)
+      const {
+    return getRawSlice(chunk.data().get());
+  }
+
+  std::shared_ptr<uint8_t> operator()(const om::chunk::Chunk<float>& chunk)
+      const {
+    auto rawTile = getRawSlice(chunk.data().get());
+
+    OmTileFilters<float> filter(128);
+    auto tileData =
+        filter.rescaleAndCast<uint8_t>(rawTile.get(), 0.0, 1.0, 255.0);
+
+    OmChannelTileFilter::Filter(tileData);
+    return tileData;
+  }
+
+  int tileLength_;
+  om::common::ViewType viewType_;
+  int depth_;
+};
+
 void OmTile::load8bitChannelTile() {
   OmChannel& chan = reinterpret_cast<OmChannel&>(getVol());
   auto chunk = chan.GetChunk(mipChunkCoord_);
-  auto* typedChunk = boost::get<om::chunk::Chunk<float>>(chunk.get());
-  if (!typedChunk) {
-    log_errors << "Unable to load chunk " << mipChunkCoord_ << " for slicing.";
-    return;
-  }
-  om::chunk::rawChunkSlicer<float> slicer(tileLength_,
-                                          typedChunk->data().get());
-  auto rawTile = slicer.GetCopyOfTile(key_.getViewType(), getDepth());
-
-  OmTileFilters<float> filter(128);
-  auto tileData =
-      filter.rescaleAndCast<uint8_t>(rawTile.get(), 0.0, 1.0, 255.0);
-
-  OmChannelTileFilter::Filter(tileData);
-
-  texture_.reset(new OmTextureID(tileLength_, tileData));
+  auto tile = boost::apply_visitor(
+      Slice8bit(tileLength_, key_.getViewType(), key_.getDepth()), *chunk);
+  texture_.reset(new OmTextureID(tileLength_, tile));
 }
 
 void OmTile::load32bitSegmentationTile() {
