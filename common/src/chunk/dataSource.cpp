@@ -59,9 +59,45 @@ std::shared_ptr<chunk::ChunkVar> FileDataSource::Get(const coords::Chunk& coord,
   }
 }
 
-bool FileDataSource::Put(const coords::Chunk&, std::shared_ptr<chunk::ChunkVar>,
-                         bool async) {
-  throw om::NotImplementedException("fixme");
+class ChunkWriter : public boost::static_visitor<void> {
+ public:
+  ChunkWriter(coords::Chunk coord, const coords::VolumeSystem& system)
+      : coord_(coord), system_(system) {}
+
+  template <typename T>
+  void operator()(datalayer::MemMappedFile<T>& in,
+                  chunk::Chunk<T>& chunk) const {
+    if (!in.IsMapped()) {
+      throw InvalidOperationException("Invalid volume: " +
+                                      in.GetBaseFileName().string());
+    }
+    uint64_t offset = coord_.PtrOffset(system_, sizeof(T));
+    T* chunkPtr = in.GetPtrWithOffset(offset);
+
+    std::copy(chunk.begin(), chunk.end(), chunkPtr);
+  }
+
+  template <typename T, typename U>
+  void operator()(datalayer::MemMappedFile<T>&, chunk::Chunk<U>&) const {
+    throw InvalidOperationException("Writing incorrect type of data to volume");
+  }
+
+ private:
+  coords::Chunk coord_;
+  const coords::VolumeSystem& system_;
+};
+
+bool FileDataSource::Put(const coords::Chunk& coord,
+                         std::shared_ptr<chunk::ChunkVar> chunk, bool async) {
+  try {
+    auto file = files_.Get(fileName(coord.mipLevel()), dataType_);
+    boost::apply_visitor(ChunkWriter(coord, coordSystem_), file, *chunk);
+    return true;
+  }
+  catch (Exception e) {
+    log_errors << "Unable to write to ChunkDS: " << e.what();
+    return false;
+  }
 }
 }
 }  // namespace om::chunk::
