@@ -63,14 +63,18 @@ void OmTileDumper::saveTile(QDataStream& out, const int mipLevel, const int x,
   OmTilePtr tile;
   OmTileCache::Get(tile, tileCoord, om::common::Blocking::BLOCKING);
 
-  const OmTextureID& texture = tile->GetTexture();
+  const OmTextureID* texture = tile->GetTexture();
+  if (!texture) {
+    log_errors << "Unable to saveTile" << tileCoord;
+    return;
+  }
   const int numBytes = tile->NumBytes();
 
-  const char* tileData = (const char*)texture.GetTileData();
-  const QImage::Format qimageFormat = texture.GetQTimageFormat();
+  const char* tileData = (const char*)texture->GetTileData();
+  const QImage::Format qimageFormat = texture->GetQTimageFormat();
 
-  QImage img = QImage((const uchar*)tileData, texture.GetWidth(),
-                      texture.GetHeight(), qimageFormat);
+  QImage img = QImage((const uchar*)tileData, texture->GetWidth(),
+                      texture->GetHeight(), qimageFormat);
 
   QGLWidget::convertToGLFormat(img);
 

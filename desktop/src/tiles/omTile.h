@@ -22,7 +22,7 @@ class OmTile {
   void LoadData();
   uint32_t NumBytes() const;
 
-  inline OmTextureID& GetTexture() { return *texture_; }
+  inline OmTextureID* GetTexture() { return texture_.get(); }
 
   inline const OmTileCoord& GetTileCoord() const { return key_; }
 

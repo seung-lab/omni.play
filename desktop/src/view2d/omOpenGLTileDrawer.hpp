@@ -10,7 +10,6 @@
 
 class OmOpenGLTileDrawer {
  private:
-
   QGLContext const* context_;
   OmTimer elapsed_;
 
@@ -35,19 +34,23 @@ class OmOpenGLTileDrawer {
  private:
   void drawTile(const OmTilePtr tile, const GLfloatBox& vertices,
                 const TextureVectices& textureVectices) {
-    OmTextureID& texture = tile->GetTexture();
+    OmTextureID* texture = tile->GetTexture();
+    if (!texture) {
+      log_debugs << "Unable to draw tile";
+      return;
+    }
 
-    if (texture.NeedToBuildTexture()) {
-      doBindTileDataToGLid(texture);
+    if (texture->NeedToBuildTexture()) {
+      doBindTileDataToGLid(*texture);
 
     } else {
 // if contexts are different, the text is for the WRONG OpenGL context
 #ifndef ZI_OS_MACOS
-      assert(context_ == texture.Context());
+      assert(context_ == texture->Context());
 #endif
     }
 
-    glBindTexture(GL_TEXTURE_2D, texture.GetTextureID());
+    glBindTexture(GL_TEXTURE_2D, texture->GetTextureID());
 
     //         log_infos << "drawing: " << tile->GetTileCoord() << " - "
     //                   << vertices.lowerLeft << " to " << vertices.upperRight;

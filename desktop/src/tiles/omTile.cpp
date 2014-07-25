@@ -31,7 +31,7 @@ void OmTile::load8bitChannelTile() {
   auto chunk = chan.GetChunk(mipChunkCoord_);
   auto* typedChunk = boost::get<om::chunk::Chunk<float>>(chunk.get());
   if (!typedChunk) {
-    log_errors << "Unable to load chunk for slicing.";
+    log_errors << "Unable to load chunk " << mipChunkCoord_ << " for slicing.";
     return;
   }
   om::chunk::rawChunkSlicer<float> slicer(tileLength_,
