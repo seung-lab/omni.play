@@ -18,12 +18,12 @@ class OmBrushPaintUtils {
 
     std::set<om::coords::Global> voxelCoords;
 
-    FOR_EACH(iter, *pts) {
-      if (!segDataExtent.contains(*iter)) {
+    for (auto& iter : *pts) {
+      if (!segDataExtent.contains(iter)) {
         continue;
       }
 
-      voxelCoords.insert(*iter);
+      voxelCoords.insert(iter);
     }
 
     if (!voxelCoords.size()) {
@@ -40,28 +40,6 @@ class OmBrushPaintUtils {
 
  private:
   static void removeModifiedTiles() {
-    // const int chunkDim = info->chunkDim;
-
-    // std::map<om::coords::Chunk, std::set<Vector3i> > ptsInChunks;
-
-    // FOR_EACH(iter, voxelCoords)
-    // {
-    //     const om::coords::Chunk chunkCoord(0,
-    //                                   iter->x / chunkDim,
-    //                                   iter->y / chunkDim,
-    //                                   iter->z / chunkDim);
-
-    //     const Vector3i chunkPos(iter->x % chunkDim,
-    //                             iter->y % chunkDim,
-    //                             iter->z % chunkDim);
-
-    //     OmTileCache::RemoveDataCoord(Vector3i(iter->x / chunkDim,
-    //                                           iter->y / chunkDim,
-    //                                           iter->z % chunkDim));
-
-    //     ptsInChunks[chunkCoord].insert(chunkPos);
-    // }
-
     for (auto& seg : SegmentationDataWrapper::GetPtrVec()) {
       seg->SliceCache().Clear();
     }

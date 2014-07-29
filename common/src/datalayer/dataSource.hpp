@@ -17,6 +17,7 @@ class IDataSource {
   virtual bool Put(const TKey&, std::shared_ptr<TValue>,
                    bool asnyc = false) = 0;
   virtual void Flush() {}
+  virtual void Invalidate(const TKey&) {}
 
   virtual bool is_cache() const = 0;
   virtual bool is_persisted() const = 0;

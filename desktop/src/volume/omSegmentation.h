@@ -9,6 +9,7 @@
 #include "datalayer/archive/segmentation.h"
 #include "segment/dataSources.hpp"
 #include "chunk/dataSources.hpp"
+#include "tile/dataSources.hpp"
 #include "volume/iterators.hpp"
 
 class OmChunk;
@@ -44,6 +45,9 @@ class ListTypeFileDataSource;
 class UserEdgeVector;
 }
 namespace chunk {
+class CachedDataSource;
+}
+namespace tile {
 class CachedDataSource;
 }
 }
@@ -96,6 +100,8 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
   void BuildBlankVolume(const Vector3i& dims);
 
   std::shared_ptr<om::chunk::ChunkVar> GetChunk(const om::coords::Chunk& coord);
+  std::shared_ptr<om::tile::TileVar> GetTile(const om::coords::Tile& coord);
+  void InvalidateTiles(const om::coords::Chunk& coord);
 
   uint32_t GetVoxelValue(const om::coords::Global& vox);
   void SetVoxelValue(const om::coords::Global& vox, const uint32_t value);
@@ -179,6 +185,7 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
   inline OmTileCacheSegmentation& TileCache() { return *tileCache_; }
   inline om::annotation::manager& Annotations() const { return *annotations_; }
   om::chunk::ChunkDS& ChunkDS() const override;
+  om::tile::TileDS& TileDS() const override;
 
   om::segment::SegDataVector& SegData() const { return *segData_; }
   om::segment::SegListDataVector& SegListData() const { return *segListData_; }
@@ -208,6 +215,7 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
   std::unique_ptr<om::segment::EdgeVector> mst_;
   std::unique_ptr<om::segment::UserEdgeVector> userEdges_;
   std::unique_ptr<om::chunk::CachedDataSource> chunkDS_;
+  std::unique_ptr<om::tile::CachedDataSource> tileDS_;
 
   om::file::Paths::Seg paths_;
 

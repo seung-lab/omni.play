@@ -12,10 +12,10 @@ class rawChunkSlicer {
   const int chunkDim_;         // usually 128
   const int elementsPerTile_;  // chunkDim^2
 
-  T const* const chunkPtr_;
+  T* const chunkPtr_;
 
  public:
-  rawChunkSlicer(const int chunkDim, T const* const chunkPtr)
+  rawChunkSlicer(const int chunkDim, T* chunkPtr)
       : chunkDim_(chunkDim),
         elementsPerTile_(chunkDim * chunkDim),
         chunkPtr_(chunkPtr) {}
@@ -27,6 +27,42 @@ class rawChunkSlicer {
         mem::Malloc<T>::NumElements(elementsPerTile_, mem::ZeroFill::DONT);
     sliceTile(viewType, offsetNumTiles, tilePtr.get());
     return tilePtr;
+  }
+
+  void WriteTileToChunk(const om::common::ViewType viewType,
+                        const int offsetNumTiles, T* tile) {
+    if (!tile) {
+      return;
+    }
+    switch (viewType) {
+      case common::ViewType::XY_VIEW: {
+        // skip to requested XY plane, then copy entire plane
+        T* start = chunkPtr_ + offsetNumTiles * elementsPerTile_;
+        T* end = tile + elementsPerTile_;
+        std::copy(tile, end, start);
+      } break;
+
+      case common::ViewType::XZ_VIEW: {
+        // skip to first scanline, then copy every scanline in XZ plane
+        T* start = chunkPtr_ + chunkDim_ * offsetNumTiles;
+        for (auto i = 0; i < elementsPerTile_; i += chunkDim_) {
+          std::copy(&tile[i], &tile[i] + chunkDim_, start);
+          start += elementsPerTile_;
+        }
+      } break;
+
+      case common::ViewType::ZY_VIEW: {
+        // skip to first voxel in plane, then copy every voxel,
+        //   advancing each time to the next scanline
+        T* start = chunkPtr_ + offsetNumTiles;
+        for (auto i = 0; i < chunkDim_; ++i) {
+          for (auto j = 0; j < chunkDim_; ++j) {
+            *start = tile[j * chunkDim_ + i];
+            start += chunkDim_;
+          }
+        }
+      } break;
+    }
   }
 
  private:
@@ -61,9 +97,6 @@ class rawChunkSlicer {
           }
         }
       } break;
-
-      default:
-        throw ArgException("unknown plane");
     }
   }
 };

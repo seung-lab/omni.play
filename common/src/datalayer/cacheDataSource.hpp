@@ -28,6 +28,8 @@ class CacheDataSource : public IDataSource<TKey, TValue> {
     return true;
   }
 
+  void Invalidate(const TKey& key) { cache_.erase(key.keyStr()); }
+
   bool is_cache() const { return true; }
   bool is_persisted() const { return false; }
 

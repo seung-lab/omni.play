@@ -3,6 +3,7 @@
 #include "precomp.h"
 #include "common/common.h"
 #include "coordinates/coordinates.h"
+#include <mutex>
 
 namespace om {
 namespace tile {
@@ -19,7 +20,7 @@ class Tile {
   }
 
   Tile(coords::Tile coord, coords::VolumeSystem vol, std::shared_ptr<T> data)
-      : coord_(coord), vol_(vol), data_(data) {
+      : data_(data), coord_(coord), vol_(vol) {
     Vector3i dims = common::twist(vol_.ChunkDimensions(), coord_.viewType());
     tileDims_.x = dims.x;
     tileDims_.y = dims.y;
@@ -42,10 +43,10 @@ class Tile {
   inline size_t size() const { return length() * sizeof(T); }
 
  private:
+  std::shared_ptr<T> data_;
   PROP_CONST_REF(coords::Tile, coord);
   PROP_CONST_REF(coords::VolumeSystem, vol);
   PROP_CONST_REF(Vector2i, tileDims);
-  std::shared_ptr<T> data_;
 };
 
 typedef boost::variant<Tile<int8_t>, Tile<uint8_t>, Tile<int32_t>,

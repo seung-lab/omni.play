@@ -23,7 +23,9 @@
 #include "segment/selection.hpp"
 #include "users/omUsers.h"
 #include "chunk/cachedDataSource.hpp"
+#include "tile/cachedDataSource.hpp"
 #include "chunk/voxelGetter.hpp"
+
 using namespace om;
 
 // used by OmDataArchiveProject
@@ -74,6 +76,7 @@ void OmSegmentation::LoadPath() {
 
   chunkDS_.reset(
       new chunk::CachedDataSource(paths_, getVolDataType(), coords_));
+  tileDS_.reset(new om::tile::CachedDataSource(*chunkDS_, coords_));
 
   mst_.reset(new segment::EdgeVector(userPaths.MST(id_)));
   for (auto& edge : *mst_) {
@@ -221,6 +224,15 @@ std::shared_ptr<om::chunk::ChunkVar> OmSegmentation::GetChunk(
   return chunkDS_->Get(coord);
 }
 
+std::shared_ptr<om::tile::TileVar> OmSegmentation::GetTile(
+    const coords::Tile& coord) {
+  return tileDS_->Get(coord);
+}
+
+void OmSegmentation::InvalidateTiles(const om::coords::Chunk& coord) {
+  tileDS_->Invalidate(coord);
+}
+
 void OmSegmentation::UpdateFromVolResize() {
   uniqueChunkValues_->UpdateFromVolResize();
 }
@@ -252,3 +264,4 @@ void OmSegmentation::ClearUserChangesAndSave() {
 }
 
 om::chunk::ChunkDS& OmSegmentation::ChunkDS() const { return *chunkDS_; }
+om::tile::TileDS& OmSegmentation::TileDS() const { return *tileDS_; }

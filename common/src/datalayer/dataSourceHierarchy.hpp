@@ -77,6 +77,14 @@ class DataSourceHierarchy : public IDataSource<TKey, TValue> {
     }
   }
 
+  virtual void Invalidate(const TKey& key) override {
+    for (auto& s : sources_) {
+      if (s->is_cache()) {
+        s->Invalidate(key);
+      }
+    }
+  }
+
   void Flush() {
     for (auto& s : sources_) {
       if (s->is_persisted()) {

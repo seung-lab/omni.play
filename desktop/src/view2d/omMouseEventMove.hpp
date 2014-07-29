@@ -71,8 +71,6 @@ class OmMouseEventMove {
     } else if (middleMouseButton_) {
       if (shouldPan()) {
         doPan();
-        v2d_->Redraw();
-        return;
       }
     }
 
@@ -119,18 +117,11 @@ class OmMouseEventMove {
     state_->SetLastDataPoint(dataClickPoint_);
   }
 
-  void erase() {
-    OmBrushPaint::PaintByClick(state_, dataClickPoint_, 0);
-    OmBrushPaint::PaintByLine(state_, dataClickPoint_, 0);
-  }
+  void erase() { OmBrushPaint::PaintByLine(state_, dataClickPoint_, 0); }
 
   void paint() {
     const om::common::SegID segmentValueToPaint = state_->GetSegIDForPainting();
-
     assert(segmentValueToPaint);
-
-    OmBrushPaint::PaintByClick(state_, dataClickPoint_, segmentValueToPaint);
-
     OmBrushPaint::PaintByLine(state_, dataClickPoint_, segmentValueToPaint);
   }
 

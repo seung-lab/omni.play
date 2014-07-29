@@ -4,6 +4,8 @@
 #include "common/common.h"
 #include "omVoxelSetValueAction.h"
 #include "segment/omSegmentSelected.hpp"
+#include "segment/omSegments.h"
+#include "segment/selection.hpp"
 #include "system/omStateManager.h"
 #include "volume/omSegmentation.h"
 #include "utility/segmentationDataWrapper.hpp"
@@ -46,7 +48,9 @@ class OmVoxelSetValueActionImpl {
 
     // TODO: fixme???? mNewValue == "old value" ??????
     // store old values of voxels
-    FOR_EACH(itr, rVoxels) { mOldVoxelValues[*itr] = mNewValue; }
+    for (auto& itr : rVoxels) {
+      mOldVoxelValues[itr] = mNewValue;
+    }
   }
 
   void Execute() {
@@ -56,22 +60,32 @@ class OmVoxelSetValueActionImpl {
       log_errors << "Unable to execute OmVolxelSetvalueAction";
       return;
     }
+    auto system = sdw.GetSegmentation()->Coords();
+    auto& chunkDS = sdw.GetSegmentation()->ChunkDS();
+    auto selection = sdw.Segments()->Selection().GetSelectedSegmentIDs();
 
-    // modified voxels
-    std::set<om::coords::Global> edited_voxels;
+    std::unordered_map<om::coords::Chunk, std::set<om::coords::Global>> grouped;
+    for (auto& iter : mOldVoxelValues) {
+      grouped[iter.first.ToChunk(system, 0)].insert(iter.first);
+    }
 
-    FOR_EACH(itr, mOldVoxelValues) {
-      // set voxel to new value
-      if (mNewValue == 0)  // erasing
-      {
-        if (sdw.GetSegmentation()->SetVoxelValueIfSelected(itr->first,
-                                                           mNewValue)) {
-          edited_voxels.insert(itr->first);
-        }
-      } else {
-        sdw.GetSegmentation()->SetVoxelValue(itr->first, mNewValue);
-        edited_voxels.insert(itr->first);
+    for (auto& chunkPts : grouped) {
+      auto& cc = chunkPts.first;
+      auto& points = chunkPts.second;
+      auto chunk = chunkDS.Get(cc);
+      auto typedChunk = boost::get<om::chunk::Chunk<uint32_t>>(chunk.get());
+      if (!typedChunk) {
+        log_errors << "Unable to write to chunk " << cc;
+        continue;
       }
+      for (auto& point : points) {
+        auto& ref = (*typedChunk)[point.ToData(system, 0).ToChunkOffset()];
+        if (mNewValue || selection.count(ref)) {
+          ref = mNewValue;
+        }
+      }
+      chunkDS.Put(cc, chunk);
+      sdw.GetSegmentation()->InvalidateTiles(cc);
     }
   }
 
@@ -83,13 +97,8 @@ class OmVoxelSetValueActionImpl {
       return;
     }
 
-    // modified voxels
-    std::set<om::coords::Global> edited_voxels;
-
-    FOR_EACH(itr, mOldVoxelValues) {
-      // set voxel to prev value
-      sdw.GetSegmentation()->SetVoxelValue(itr->first, itr->second);
-      edited_voxels.insert(itr->first);
+    for (auto& itr : mOldVoxelValues) {
+      sdw.GetSegmentation()->SetVoxelValue(itr.first, itr.second);
     }
   }
 

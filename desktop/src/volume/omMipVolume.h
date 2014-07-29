@@ -14,6 +14,7 @@
 #include "volume/omVolumeTypes.hpp"
 #include "datalayer/omDataWrapper.h"
 #include "chunk/dataSources.hpp"
+#include "tile/dataSources.hpp"
 #include "volume/iterators.hpp"
 
 class OmDataPath;
@@ -79,6 +80,7 @@ class OmMipVolume {
   inline const om::coords::VolumeSystem& Coords() const { return coords_; }
 
   virtual om::chunk::ChunkDS& ChunkDS() const = 0;
+  virtual om::tile::TileDS& TileDS() const = 0;
 
   template <typename T>
   struct iterable_volume {

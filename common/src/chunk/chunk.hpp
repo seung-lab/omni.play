@@ -6,6 +6,7 @@
 #include "common/indexedIterator.hpp"
 #include "coordinates/coordinates.h"
 #include "utility/malloc.hpp"
+#include <mutex>
 
 namespace om {
 namespace chunk {
@@ -14,14 +15,14 @@ template <typename T>
 class Chunk {
  public:
   Chunk(coords::Chunk coord, coords::VolumeSystem vol)
-      : coord_(coord),
+      : data_(mem::Malloc<T>::NumElements(dims_.x * dims_.y * dims_.z,
+                                          mem::ZeroFill::DONT)),
+        coord_(coord),
         vol_(vol),
-        dims_(vol.ChunkDimensions()),
-        data_(mem::Malloc<T>::NumElements(dims_.x * dims_.y * dims_.z,
-                                          mem::ZeroFill::DONT)) {}
+        dims_(vol.ChunkDimensions()) {}
 
   Chunk(coords::Chunk coord, coords::VolumeSystem vol, std::shared_ptr<T> data)
-      : coord_(coord), vol_(vol), dims_(vol.ChunkDimensions()), data_(data) {}
+      : data_(data), coord_(coord), vol_(vol), dims_(vol.ChunkDimensions()) {}
 
   const T& operator[](uint i) const {
     assert(i < dims_.x * dims_.y * dims_.z);
@@ -48,12 +49,11 @@ class Chunk {
   const_iterator end() const { return cend(); }
 
  private:
+  std::shared_ptr<T> data_;
+
   PROP_CONST_REF(coords::Chunk, coord);
   PROP_CONST_REF(coords::VolumeSystem, vol);
   PROP_CONST_REF(Vector3i, dims);
-
- private:  // PROP_CONST_REF appears to use protected...
-  std::shared_ptr<T> data_;
 };
 
 extern template class Chunk<int8_t>;

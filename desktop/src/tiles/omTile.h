@@ -8,6 +8,7 @@
  */
 
 #include "tiles/omTileCoord.h"
+#include "coordinates/tile.h"
 
 class OmTextureID;
 class OmMipVolume;
@@ -29,6 +30,7 @@ class OmTile {
  private:
   OmCacheBase* const cache_;
   const OmTileCoord key_;
+  const om::coords::Tile coord_;
   const int tileLength_;
   const om::coords::Chunk mipChunkCoord_;
 

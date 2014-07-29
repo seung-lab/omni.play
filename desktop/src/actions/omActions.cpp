@@ -35,13 +35,6 @@ void OmActions::ChangeSizethreshold(const SegmentationDataWrapper sdw,
 }
 
 // painting-related
-void OmActions::SetVoxel(const om::common::ID segmentationID,
-                         const om::coords::Global& voxel,
-                         const om::common::SegID segmentID) {
-  pool().push_back(zi::run_fn(zi::bind(&OmActionsImpl::SetVoxel, impl(),
-                                       segmentationID, voxel, segmentID)));
-}
-
 void OmActions::SetVoxels(const om::common::ID segmentationID,
                           const std::set<om::coords::Global>& voxels,
                           const om::common::SegID segmentID) {

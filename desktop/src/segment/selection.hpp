@@ -6,6 +6,9 @@
 #include "segment/lists/omSegmentLists.h"
 #include "segment/omSegment.h"
 #include "system/cache/omCacheManager.h"
+#include "datalayer/archive/segmentation.h"
+
+class OmSegmentsImpl;
 
 namespace om {
 namespace segment {

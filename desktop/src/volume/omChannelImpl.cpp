@@ -11,6 +11,7 @@
 #include "volume/omChannelImpl.h"
 #include "volume/omFilter2d.h"
 #include "chunk/cachedDataSource.hpp"
+#include "tile/cachedDataSource.hpp"
 
 OmChannelImpl::OmChannelImpl()
     : volData_(new OmVolumeData()), tileCache_(new OmTileCacheChannel()) {}
@@ -28,6 +29,7 @@ void OmChannelImpl::LoadPath() {
   paths_ = OmProject::Paths().Channel(GetID());
   chunkDS_.reset(
       new om::chunk::CachedDataSource(paths_, getVolDataType(), coords_));
+  tileDS_.reset(new om::tile::CachedDataSource(*chunkDS_, coords_));
 }
 
 std::string OmChannelImpl::GetName() {
@@ -77,6 +79,12 @@ std::shared_ptr<om::chunk::ChunkVar> OmChannelImpl::GetChunk(
   return chunkDS_->Get(coord);
 }
 
+std::shared_ptr<om::tile::TileVar> OmChannelImpl::GetTile(
+    const om::coords::Tile& coord) {
+  return tileDS_->Get(coord);
+}
+
 void OmChannelImpl::UpdateFromVolResize() {}
 
 om::chunk::ChunkDS& OmChannelImpl::ChunkDS() const { return *chunkDS_; }
+om::tile::TileDS& OmChannelImpl::TileDS() const { return *tileDS_; }
