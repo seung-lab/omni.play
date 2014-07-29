@@ -96,9 +96,32 @@ class OmVoxelSetValueActionImpl {
       log_errors << "Unable to execute OmVolxelSetvalueAction";
       return;
     }
+    auto system = sdw.GetSegmentation()->Coords();
+    auto& chunkDS = sdw.GetSegmentation()->ChunkDS();
+    auto selection = sdw.Segments()->Selection().GetSelectedSegmentIDs();
 
-    for (auto& itr : mOldVoxelValues) {
-      sdw.GetSegmentation()->SetVoxelValue(itr.first, itr.second);
+    std::unordered_map<om::coords::Chunk, std::set<om::coords::Global>> grouped;
+    for (auto& iter : mOldVoxelValues) {
+      grouped[iter.first.ToChunk(system, 0)].insert(iter.first);
+    }
+
+    for (auto& chunkPts : grouped) {
+      auto& cc = chunkPts.first;
+      auto& points = chunkPts.second;
+      auto chunk = chunkDS.Get(cc);
+      auto typedChunk = boost::get<om::chunk::Chunk<uint32_t>>(chunk.get());
+      if (!typedChunk) {
+        log_errors << "Unable to write to chunk " << cc;
+        continue;
+      }
+      for (auto& point : points) {
+        auto& ref = (*typedChunk)[point.ToData(system, 0).ToChunkOffset()];
+        if (mNewValue || selection.count(ref)) {
+          ref = mOldVoxelValues[point];
+        }
+      }
+      chunkDS.Put(cc, chunk);
+      sdw.GetSegmentation()->InvalidateTiles(cc);
     }
   }
 
