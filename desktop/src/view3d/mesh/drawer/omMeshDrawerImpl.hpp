@@ -21,19 +21,17 @@ class DrawerImpl {
              const common::ID segmentationID)
       : system_(system),
         segmentationID_(segmentationID),
-        context_(QGLContext::currentContext()),
-        meshes_(segmentationID) {
-    if (!context_) {
-      log_infos << "WARNING: QLContext was 0";
-      //   throw VerifyException("QGLContext should never be 0");
-    }
-  }
+        context_(nullptr),
+        meshes_(segmentationID) {}
 
   /**
    * Draw the mesh plan. Filters for relevant data values to be
    *   drawn depending on culler draw options
    */
   void Draw(const MeshPlan& meshPlan, const int allowedDrawTimeMS) {
+    if (!context_) {
+      context_ = QGLContext::currentContext();
+    }
     perc_done_.Reset(meshPlan.size());
     utility::timer elapsed;
 
@@ -75,9 +73,11 @@ class DrawerImpl {
     auto mesh = meshes_.Get(coord, segID);
 
     if (!mesh) {
+      log_debugs << "Lost";
       perc_done_.missingMesh();
       return;
     }
+    log_debugs << "Found";
 
     // apply segment color
     glColor3fv(color.array);
@@ -94,7 +94,7 @@ class DrawerImpl {
   // mesh::DisplayListCachedDataSource& meshes_;
   const om::coords::VolumeSystem& system_;
   const common::ID segmentationID_;
-  QGLContext const* const context_;
+  const QGLContext* context_;
   v3d::PercDone perc_done_;
   om::v3d::mesh::CacheWrapper meshes_;
 };
