@@ -31,7 +31,6 @@ using namespace om;
 // used by OmDataArchiveProject
 OmSegmentation::OmSegmentation()
     : uniqueChunkValues_(new OmChunkUniqueValuesManager(this)),
-      meshDrawer_(new OmMeshDrawer(this)),
       meshManagers_(new OmMeshManagers(this)),
       volData_(new OmVolumeData()),
       volSliceCache_(new OmRawSegTileCache(this)),
@@ -42,7 +41,6 @@ OmSegmentation::OmSegmentation()
 OmSegmentation::OmSegmentation(common::ID id)
     : OmManageableObject(id),
       uniqueChunkValues_(new OmChunkUniqueValuesManager(this)),
-      meshDrawer_(new OmMeshDrawer(this)),
       meshManagers_(new OmMeshManagers(this)),
       volData_(new OmVolumeData()),
       volSliceCache_(new OmRawSegTileCache(this)),

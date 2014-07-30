@@ -176,7 +176,6 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
   inline OmChunkUniqueValuesManager& UniqueValuesDS() const {
     return *uniqueChunkValues_;
   }
-  inline OmMeshDrawer& MeshDrawer() { return *meshDrawer_; }
   inline OmMeshManagers& MeshManagers() { return *meshManagers_; }
   inline OmSegments& Segments() { return *segments_; }
   inline OmValidGroupNum& ValidGroupNum() { return *validGroupNum_; }
@@ -197,7 +196,6 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
 
  private:
   std::unique_ptr<OmChunkUniqueValuesManager> uniqueChunkValues_;
-  std::unique_ptr<OmMeshDrawer> meshDrawer_;
   std::unique_ptr<OmMeshManagers> meshManagers_;
   std::unique_ptr<OmSegments> segments_;
   std::unique_ptr<OmValidGroupNum> validGroupNum_;
