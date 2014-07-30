@@ -1,7 +1,7 @@
 #pragma once
 #include "precomp.h"
 
-#include "view3d.old/gl.h"
+#include "view3d/3dPreferences.hpp"
 #include "common/common.h"
 #include "common/logging.h"
 #include "utility/glInclude.h"
@@ -16,7 +16,7 @@
 #include "system/omPreferenceDefinitions.h"
 #include "system/omPreferences.h"
 #include "utility/omTimer.hpp"
-#include "view3d.old/om3dPreferences.hpp"
+#include "view3d/gl.h"
 #include "viewGroup/omViewGroupState.h"
 #include "chunks/omChunkMipping.hpp"
 
@@ -67,7 +67,7 @@ class OmMeshDrawerImpl {
 
     // draw volume axis
     if (checkDrawOption(DRAWOP_DRAW_VOLUME_AXIS)) {
-      om::gl::old::glDrawPositiveAxis();
+      om::gl::glDrawPositiveAxis();
     }
 
     // return if no chunk level drawing
@@ -170,8 +170,8 @@ class OmMeshDrawerImpl {
         clippedNormExtent.getMax() - clippedNormExtent.getMin();
 
     // transform model view
-    om::gl::old::glTranslatefv(translate.array);
-    om::gl::old::glScalefv(scale.array);
+    om::gl::glTranslatefv(translate.array);
+    om::gl::glScalefv(scale.array);
 
     glTranslatef(0.5, 0.5, 0.5);
     glColor3f(0.5, 0.5, 0.5);
@@ -217,7 +217,7 @@ class OmMeshDrawerImpl {
                      .array);
 
     } else if (checkDrawOption(DRAWOP_SEGMENT_COLOR_TRANSPARENT)) {
-      om::gl::old::glColor3fva(
+      om::gl::glColor3fva(
           hyperColor.array,
           OmPreferences::GetFloat(om::PREF_VIEW3D_TRANSPARENT_ALPHA_FLT));
 
@@ -234,7 +234,7 @@ class OmMeshDrawerImpl {
     static float dir = 1;
 
     glEnable(GL_BLEND);
-    om::gl::old::glColor3fva(hyperColor.array, s / 200. + .4);
+    om::gl::glColor3fva(hyperColor.array, s / 200. + .4);
 
     s += .1 * dir;
 

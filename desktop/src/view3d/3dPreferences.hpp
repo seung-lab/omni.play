@@ -10,6 +10,7 @@ class Om3dPreferences : private om::SingletonBase<Om3dPreferences> {
   int mCrosshairValue_;
   bool m2DViewFrameIn3D_;
   bool mDrawCrosshairsIn3D_;
+  bool mDoDiscoBall;
   bool m2DViewPaneIn3D_;
   double scrollRate_;
 
@@ -38,6 +39,12 @@ class Om3dPreferences : private om::SingletonBase<Om3dPreferences> {
   static void setDrawCrosshairsIn3D(const bool value) {
     instance().mDrawCrosshairsIn3D_ = value;
     LocalPrefFiles::writeSettingBool("DrawCrosshairsIn3D", value);
+  }
+
+  static bool getDoDiscoBall() { return instance().mDoDiscoBall; }
+  static void setDoDiscoBall(const bool value) {
+    instance().mDoDiscoBall = value;
+    LocalPrefFiles::writeSettingBool("DoDiscoBall", value);
   }
 
   static double getScrollRate() { return instance().scrollRate_; }

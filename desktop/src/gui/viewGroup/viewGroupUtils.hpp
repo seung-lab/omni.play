@@ -7,7 +7,7 @@
 #include "gui/widgets/omTellInfo.hpp"
 #include "utility/dataWrappers.h"
 #include "view2d/omView2d.h"
-#include "view3d.old/omView3d.h"
+#include "view3d/view3d.h"
 #include "viewGroup/omViewGroupState.h"
 #include "volume/omSegmentation.h"
 
@@ -204,7 +204,7 @@ class ViewGroupUtils {
       delete getDockWidget(makeObjectName(vgw));
     }
 
-    vgw.widget = new OmView3d(mainWindow_, vgs_);
+    vgw.widget = new om::v3d::View3d(mainWindow_, vgs_);
 
     return vgw;
   }

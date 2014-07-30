@@ -15,7 +15,6 @@
 #include "system/cache/omCacheManager.h"
 #include "system/omStateManager.h"
 #include "utility/dataWrappers.h"
-#include "view3d.old/omSegmentPickPoint.h"
 #include "viewGroup/omSplitting.hpp"
 #include "viewGroup/omViewGroupState.h"
 
@@ -40,7 +39,7 @@ void OmSegmentContextMenu::Refresh(const SegmentDataWrapper& sdw,
   doRefresh();
 }
 
-void OmSegmentContextMenu::Refresh(const OmSegmentPickPoint& pickPoint,
+void OmSegmentContextMenu::Refresh(const om::landmarks::sdwAndPt& pickPoint,
                                    OmViewGroupState& vgs) {
   sdw_ = pickPoint.sdw;
   coord_ = pickPoint.coord;

@@ -4,7 +4,7 @@
 #include "common/logging.h"
 #include "system/omLocalPreferences.hpp"
 #include "events/events.h"
-#include "view3d.old/om3dPreferences.hpp"
+#include "view3d/3dPreferences.hpp"
 
 LocalPreferences3d::LocalPreferences3d(QWidget* parent) : QWidget(parent) {
   QVBoxLayout* overallContainer = new QVBoxLayout(this);
