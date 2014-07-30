@@ -32,11 +32,8 @@ class OmActionsImpl {
                            const double threshold);
 
   // painting-related
-  void SetVoxel(const om::common::ID segmentationId,
-                const om::coords::Global rVoxel, const om::common::SegID value);
-
   void SetVoxels(const om::common::ID segmentationId,
-                 const std::set<om::coords::Global> rVoxels,
+                 const std::set<om::coords::Data> rVoxels,
                  const om::common::SegID value);
 
   // segment-related

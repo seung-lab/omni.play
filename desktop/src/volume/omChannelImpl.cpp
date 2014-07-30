@@ -32,11 +32,11 @@ void OmChannelImpl::LoadPath() {
   tileDS_.reset(new om::tile::CachedDataSource(*chunkDS_, coords_));
 }
 
-std::string OmChannelImpl::GetName() {
+std::string OmChannelImpl::GetName() const {
   return "channel" + om::string::num(GetID());
 }
 
-std::string OmChannelImpl::GetNameHyphen() {
+std::string OmChannelImpl::GetNameHyphen() const {
   return "channel-" + om::string::num(GetID());
 }
 

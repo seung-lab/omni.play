@@ -11,62 +11,36 @@
 #include "utility/segmentationDataWrapper.hpp"
 
 class OmVoxelSetValueActionImpl {
- private:
-  // segmentation of voxels
-  om::common::ID mSegmentationId;
-
-  // map of voxels to old values
-  std::map<om::coords::Global, om::common::SegID> mOldVoxelValues;
-
-  // new value of voxels
-  om::common::SegID mNewValue;
-
  public:
   OmVoxelSetValueActionImpl() {}
 
   OmVoxelSetValueActionImpl(const om::common::ID segmentationId,
-                            const om::coords::Global& rVoxel,
+                            const std::set<om::coords::Data>& rVoxels,
                             const om::common::SegID value) {
     // store segmentation id
-    mSegmentationId = segmentationId;
+    segmentationID_ = segmentationId;
 
     // store new value
-    mNewValue = value;
+    newSegmentID_ = value;
 
-    // store old value of voxel
-    mOldVoxelValues[rVoxel] = mNewValue;
-  }
-
-  OmVoxelSetValueActionImpl(const om::common::ID segmentationId,
-                            const std::set<om::coords::Global>& rVoxels,
-                            const om::common::SegID value) {
-    // store segmentation id
-    mSegmentationId = segmentationId;
-
-    // store new value
-    mNewValue = value;
-
-    // TODO: fixme???? mNewValue == "old value" ??????
-    // store old values of voxels
     for (auto& itr : rVoxels) {
-      mOldVoxelValues[itr] = mNewValue;
+      oldVoxels_[itr] = 0;
     }
   }
 
   void Execute() {
     // set voxel
-    SegmentationDataWrapper sdw(mSegmentationId);
+    SegmentationDataWrapper sdw(segmentationID_);
     if (!sdw.IsValidWrapper()) {
       log_errors << "Unable to execute OmVolxelSetvalueAction";
       return;
     }
-    auto system = sdw.GetSegmentation()->Coords();
     auto& chunkDS = sdw.GetSegmentation()->ChunkDS();
     auto selection = sdw.Segments()->Selection().GetSelectedSegmentIDs();
 
-    std::unordered_map<om::coords::Chunk, std::set<om::coords::Global>> grouped;
-    for (auto& iter : mOldVoxelValues) {
-      grouped[iter.first.ToChunk(system, 0)].insert(iter.first);
+    std::unordered_map<om::coords::Chunk, std::set<om::coords::Data>> grouped;
+    for (auto& iter : oldVoxels_) {
+      grouped[iter.first.ToChunk()].insert(iter.first);
     }
 
     for (auto& chunkPts : grouped) {
@@ -79,9 +53,13 @@ class OmVoxelSetValueActionImpl {
         continue;
       }
       for (auto& point : points) {
-        auto& ref = (*typedChunk)[point.ToData(system, 0).ToChunkOffset()];
-        if (mNewValue || selection.count(ref)) {
-          ref = mNewValue;
+        auto& ref = (*typedChunk)[point.ToChunkOffset()];
+        if (ref == newSegmentID_) {
+          continue;
+        }
+        oldVoxels_[point] = ref;
+        if (newSegmentID_ || selection.count(ref)) {
+          ref = newSegmentID_;
         }
       }
       chunkDS.Put(cc, chunk);
@@ -91,18 +69,17 @@ class OmVoxelSetValueActionImpl {
 
   void Undo() {
     // set voxel
-    SegmentationDataWrapper sdw(mSegmentationId);
+    SegmentationDataWrapper sdw(segmentationID_);
     if (!sdw.IsValidWrapper()) {
       log_errors << "Unable to execute OmVolxelSetvalueAction";
       return;
     }
-    auto system = sdw.GetSegmentation()->Coords();
     auto& chunkDS = sdw.GetSegmentation()->ChunkDS();
     auto selection = sdw.Segments()->Selection().GetSelectedSegmentIDs();
 
-    std::unordered_map<om::coords::Chunk, std::set<om::coords::Global>> grouped;
-    for (auto& iter : mOldVoxelValues) {
-      grouped[iter.first.ToChunk(system, 0)].insert(iter.first);
+    std::unordered_map<om::coords::Chunk, std::set<om::coords::Data>> grouped;
+    for (auto& iter : oldVoxels_) {
+      grouped[iter.first.ToChunk()].insert(iter.first);
     }
 
     for (auto& chunkPts : grouped) {
@@ -115,9 +92,9 @@ class OmVoxelSetValueActionImpl {
         continue;
       }
       for (auto& point : points) {
-        auto& ref = (*typedChunk)[point.ToData(system, 0).ToChunkOffset()];
-        if (mNewValue || selection.count(ref)) {
-          ref = mOldVoxelValues[point];
+        auto& ref = (*typedChunk)[point.ToChunkOffset()];
+        if (newSegmentID_ || selection.count(ref)) {
+          ref = oldVoxels_[point];
         }
       }
       chunkDS.Put(cc, chunk);
@@ -127,11 +104,11 @@ class OmVoxelSetValueActionImpl {
 
   std::string Description() const {
     std::string plurlize;
-    if (mOldVoxelValues.size() > 1) {
+    if (oldVoxels_.size() > 1) {
       plurlize = "s";
     }
 
-    if (!mNewValue) {
+    if (!newSegmentID_) {
       return "Remove Voxel" + plurlize;
     } else {
       return "Set Voxel" + plurlize;
@@ -141,6 +118,10 @@ class OmVoxelSetValueActionImpl {
   QString classNameForLogFile() const { return "OmVolxelSetvalueAction"; }
 
  private:
+  om::common::ID segmentationID_;
+  std::map<om::coords::Data, om::common::SegID> oldVoxels_;
+  om::common::SegID newSegmentID_;
+
   template <typename T>
   friend class OmActionLoggerThread;
   friend class QDataStream& operator<<(QDataStream&,

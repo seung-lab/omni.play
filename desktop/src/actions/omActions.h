@@ -40,7 +40,7 @@ class OmActions : om::singletonBase<OmActions> {
 
   // painting-related
   static void SetVoxels(const om::common::ID segmentationId,
-                        const std::set<om::coords::Global>& rVoxels,
+                        const std::set<om::coords::Data>& rVoxels,
                         const om::common::SegID value);
 
   // segment-related

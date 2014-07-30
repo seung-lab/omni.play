@@ -21,6 +21,6 @@ class OmBrushPaintCircle {
 
     std::shared_ptr<om::pt3d_list_t> pts = circleOpp.GetPts(coord);
 
-    OmBrushPaintUtils::PaintPts(info_.get(), pts.get(), segIDtoPaint_);
+    OmBrushPaintUtils::PaintPts(info_, pts.get(), segIDtoPaint_);
   }
 };

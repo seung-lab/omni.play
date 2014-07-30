@@ -11,11 +11,7 @@ class OmVoxelSetValueAction : public OmUndoCommand {
       : impl_(impl) {}
 
   OmVoxelSetValueAction(const om::common::ID segmentationId,
-                        const om::coords::Global& rVoxel,
-                        const om::common::SegID value);
-
-  OmVoxelSetValueAction(const om::common::ID segmentationId,
-                        const std::set<om::coords::Global>& rVoxels,
+                        const std::set<om::coords::Data>& rVoxels,
                         const om::common::SegID value);
 
  private:

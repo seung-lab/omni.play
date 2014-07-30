@@ -11,27 +11,33 @@
 
 class OmBrushPaintUtils {
  public:
-  static void PaintPts(OmBrushOppInfo* info, om::pt3d_list_t* pts,
+  static void PaintPts(std::shared_ptr<OmBrushOppInfo> info,
+                       om::pt3d_list_t* pts,
                        const om::common::SegID segIDtoPaint) {
-    const om::coords::GlobalBbox& segDataExtent =
-        info->segmentation->Coords().Extent();
+    if (!info) {
+      throw om::ArgException("invalid OmBrushOppInfo");
+    }
+    auto& coords = info->segmentation.Coords();
+    auto segDataExtent = coords.Extent();
 
-    std::set<om::coords::Global> voxelCoords;
+    std::set<om::coords::Data> voxelCoords;
 
     for (auto& iter : *pts) {
       if (!segDataExtent.contains(iter)) {
         continue;
       }
-
-      voxelCoords.insert(iter);
+      auto dc = om::coords::Data(iter, coords, 0);
+      voxelCoords.insert(dc);
+      for (int level = 1; level <= coords.RootMipLevel(); level++) {
+        voxelCoords.insert(dc.AtDifferentLevel(level));
+      }
     }
 
     if (!voxelCoords.size()) {
       return;
     }
 
-    OmActions::SetVoxels(info->segmentation->GetID(), voxelCoords,
-                         segIDtoPaint);
+    OmActions::SetVoxels(info->segmentation.GetID(), voxelCoords, segIDtoPaint);
 
     removeModifiedTiles();
 

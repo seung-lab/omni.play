@@ -51,7 +51,7 @@ class OmMipVolume {
 
   void MakeVolFolder() const { om::file::MkDir(VolPaths()); }
   virtual const om::file::Paths::Vol& VolPaths() const = 0;
-  virtual std::string GetName() = 0;
+  virtual std::string GetName() const = 0;
   virtual om::common::ObjectType getVolumeType() const = 0;
   virtual om::common::ID GetID() const = 0;
 

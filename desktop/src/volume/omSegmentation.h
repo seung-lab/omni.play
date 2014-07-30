@@ -58,8 +58,8 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
   OmSegmentation(om::common::ID id);
   virtual ~OmSegmentation();
 
-  std::string GetName();
-  std::string GetNameHyphen();
+  std::string GetName() const;
+  std::string GetNameHyphen() const;
 
   const om::file::Paths::Vol& VolPaths() const { return paths_; }
   const om::file::Paths::Seg& SegPaths() const { return paths_; }

@@ -320,9 +320,9 @@ QDataStream& operator>>(QDataStream& in,
 QDataStream& operator<<(QDataStream& out, const OmVoxelSetValueActionImpl& a) {
   int version = 1;
   out << version;
-  out << a.mSegmentationId;
+  out << a.segmentationID_;
   // out << a.mOldVoxelValues;  //FIXME
-  out << a.mNewValue;
+  out << a.newSegmentID_;
 
   return out;
 }
@@ -330,9 +330,9 @@ QDataStream& operator<<(QDataStream& out, const OmVoxelSetValueActionImpl& a) {
 QDataStream& operator>>(QDataStream& in, OmVoxelSetValueActionImpl& a) {
   int version;
   in >> version;
-  in >> a.mSegmentationId;
+  in >> a.segmentationID_;
   // in >> a.mOldVoxelValues; //FIXME
-  in >> a.mNewValue;
+  in >> a.newSegmentID_;
 
   return in;
 }

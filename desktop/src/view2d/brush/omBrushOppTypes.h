@@ -5,6 +5,7 @@
 #include "coordinates/global.h"
 #include "common/enums.hpp"
 #include "common/point2d.hpp"
+#include "volume/omSegmentation.h"
 
 class OmSegmentation;
 
@@ -14,14 +15,14 @@ typedef std::deque<om::coords::Global> pt3d_list_t;
 };  // namespace om
 
 struct OmBrushOppInfo {
-  OmSegmentation* const segmentation;
+  OmSegmentation& segmentation;
   const om::common::ViewType viewType;
   const int brushDia;
   const int depth;
   const std::vector<om::point2di>& ptsInCircle;
   const om::common::AddOrSubtract addOrSubract;
 
-  OmBrushOppInfo(OmSegmentation* segmentation,
+  OmBrushOppInfo(OmSegmentation& segmentation,
                  const om::common::ViewType viewType, const int brushDia,
                  const int depth, const std::vector<om::point2di>& ptsInCircle,
                  om::common::AddOrSubtract addOrSubract)

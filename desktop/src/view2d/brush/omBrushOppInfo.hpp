@@ -14,6 +14,11 @@ class OmBrushOppInfoFactory {
       const om::common::AddOrSubtract addOrSubract) {
     SegmentationDataWrapper sdw(state->GetSegmentationID());
     OmSegmentation* segmentation = sdw.GetSegmentation();
+    if (!segmentation) {
+      throw om::InvalidOperationException(
+          std::string("Unable to find segmentation ") +
+          std::to_string(state->GetSegmentationID()));
+    }
 
     const om::common::ViewType viewType = state->getViewType();
     const int brushSize = state->getBrushSize()->Diameter();
@@ -22,7 +27,7 @@ class OmBrushOppInfoFactory {
     const std::vector<om::point2di>& ptsInCircle =
         state->getBrushSize()->GetPtsInCircle();
 
-    return std::make_shared<OmBrushOppInfo>(segmentation, viewType, brushSize,
+    return std::make_shared<OmBrushOppInfo>(*segmentation, viewType, brushSize,
                                             depth, ptsInCircle, addOrSubract);
   }
 };

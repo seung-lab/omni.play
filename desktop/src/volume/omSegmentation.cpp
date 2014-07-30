@@ -98,11 +98,11 @@ bool OmSegmentation::LoadVolData() {
   return false;
 }
 
-std::string OmSegmentation::GetName() {
+std::string OmSegmentation::GetName() const {
   return "segmentation" + string::num(GetID());
 }
 
-std::string OmSegmentation::GetNameHyphen() {
+std::string OmSegmentation::GetNameHyphen() const {
   return "segmentation-" + string::num(GetID());
 }
 

@@ -40,8 +40,8 @@ class OmChannelImpl : public OmMipVolume, public OmManageableObject {
 
   OmVolumeData& VolData() { return *volData_; }
 
-  std::string GetName();
-  std::string GetNameHyphen();
+  std::string GetName() const;
+  std::string GetNameHyphen() const;
   const om::file::Paths::Vol& VolPaths() const { return paths_; }
   void LoadPath();
 
