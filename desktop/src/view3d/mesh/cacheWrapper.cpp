@@ -19,7 +19,6 @@ CacheWrapper::~CacheWrapper() { meshManager_->CloseDownThreads(); }
 
 OmMeshPtr CacheWrapper::Get(const om::coords::Chunk& coord,
                             const om::common::SegID segID) {
-  log_infos << "getting mesh: " << coord << "; segID: " << segID;
   OmMeshPtr mesh;
   om::coords::Mesh meshCoord(coord, segID);
   meshManager_->GetMesh(mesh, meshCoord, om::common::Blocking::NON_BLOCKING);

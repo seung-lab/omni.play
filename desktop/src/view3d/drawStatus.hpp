@@ -31,7 +31,9 @@ class DrawStatus {
     if (pd.noMeshData()) {
       return "No meshes";
     }
-    return om::string::num(pd.percentDone());
+    std::stringstream ss;
+    ss << std::fixed << std::setprecision(2) << pd.percentDone() * 100 << '%';
+    return ss.str();
   }
 };
 }
