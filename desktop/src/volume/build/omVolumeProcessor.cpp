@@ -4,8 +4,8 @@
 #include "volume/omSegmentation.h"
 #include "volume/omAffinityChannel.h"
 #include "segment/omSegments.h"
-#include "chunks/uniqueValues/omChunkUniqueValuesManager.hpp"
 #include "volume/build/omProcessSegmentationChunk.hpp"
+#include "chunk/chunkUtils.hpp"
 
 class OmSegmentationChunkBuildTask : public zi::runnable {
  private:
@@ -29,7 +29,9 @@ class OmSegmentationChunkBuildTask : public zi::runnable {
       }
     }
 
-    const auto segIDs = vol_.UniqueValuesDS().RereadChunk(coord_, 1);
+    auto uv = om::chunk::utils::MakeUniqueValues(vol_.ChunkDS(), coord_,
+                                                 vol_.Coords());
+    vol_.UniqueValuesDS().Put(coord_, uv);
   }
 };
 

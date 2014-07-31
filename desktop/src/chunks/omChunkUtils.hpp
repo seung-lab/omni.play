@@ -1,9 +1,10 @@
 #pragma once
 #include "precomp.h"
 
-#include "chunks/uniqueValues/omChunkUniqueValuesManager.hpp"
 #include "utility/image/omImage.hpp"
 #include "utility/segmentationDataWrapper.hpp"
+#include "segment/omSegments.h"
+#include "chunk/chunkUtils.hpp"
 
 class OmChunkUtils {
  public:
@@ -82,14 +83,13 @@ class OmChunkUtils {
 
     int counter = 0;
 
-    FOR_EACH(iter, *coordsPtr) {
-      const om::coords::Chunk& coord = *iter;
-
+    for (auto& coord : *coordsPtr) {
       ++counter;
       log_info("\rfinding values in chunk %d of %d...", counter, numChunks);
-      fflush(stdout);
 
-      vol.UniqueValuesDS().RereadChunk(coord, 1);
+      auto uv = om::chunk::utils::MakeUniqueValues(vol.ChunkDS(), coord,
+                                                   vol.Coords());
+      vol.UniqueValuesDS().Put(coord, uv);
     }
   }
 };

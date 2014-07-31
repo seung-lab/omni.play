@@ -1,5 +1,6 @@
 #pragma once
 #include "precomp.h"
+#include "common/common.h"
 
 struct OmMeshFilePart {
   uint64_t offsetIntoFile;

@@ -13,7 +13,6 @@
 #include "volume/iterators.hpp"
 
 class OmChunk;
-class OmChunkUniqueValuesManager;
 class OmMeshDrawer;
 class OmMeshManager;
 class OmMeshManagers;
@@ -46,6 +45,7 @@ class UserEdgeVector;
 }
 namespace chunk {
 class CachedDataSource;
+class CachedUniqueValuesDataSource;
 }
 namespace tile {
 class CachedDataSource;
@@ -173,9 +173,6 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
   }
 
  public:
-  inline OmChunkUniqueValuesManager& UniqueValuesDS() const {
-    return *uniqueChunkValues_;
-  }
   inline OmMeshManagers& MeshManagers() { return *meshManagers_; }
   inline OmSegments& Segments() { return *segments_; }
   inline OmValidGroupNum& ValidGroupNum() { return *validGroupNum_; }
@@ -185,6 +182,7 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
   inline om::annotation::manager& Annotations() const { return *annotations_; }
   om::chunk::ChunkDS& ChunkDS() const override;
   om::tile::TileDS& TileDS() const override;
+  om::chunk::UniqueValuesDS& UniqueValuesDS() const;
 
   om::segment::SegDataVector& SegData() const { return *segData_; }
   om::segment::SegListDataVector& SegListData() const { return *segListData_; }
@@ -195,7 +193,6 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
   void ClearUserChangesAndSave();
 
  private:
-  std::unique_ptr<OmChunkUniqueValuesManager> uniqueChunkValues_;
   std::unique_ptr<OmMeshManagers> meshManagers_;
   std::unique_ptr<OmSegments> segments_;
   std::unique_ptr<OmValidGroupNum> validGroupNum_;
@@ -214,6 +211,7 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
   std::unique_ptr<om::segment::UserEdgeVector> userEdges_;
   std::unique_ptr<om::chunk::CachedDataSource> chunkDS_;
   std::unique_ptr<om::tile::CachedDataSource> tileDS_;
+  std::unique_ptr<om::chunk::CachedUniqueValuesDataSource> uniqueChunkValues_;
 
   om::file::Paths::Seg paths_;
 

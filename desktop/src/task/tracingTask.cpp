@@ -13,7 +13,6 @@
 #include "segment/omSegmentCenter.hpp"
 #include "segment/lists/omSegmentLists.h"
 #include "segment/omSegmentSelector.h"
-#include "chunks/uniqueValues/omChunkUniqueValuesManager.hpp"
 #include "segment/lowLevel/children.hpp"
 
 namespace om {

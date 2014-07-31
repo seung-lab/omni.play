@@ -1,5 +1,4 @@
 #include "annotation/annotation.h"
-#include "chunks/uniqueValues/omChunkUniqueValuesManager.hpp"
 #include "common/common.h"
 #include "common/logging.h"
 #include "datalayer/omDataPaths.h"
@@ -22,6 +21,7 @@
 #include "segment/selection.hpp"
 #include "users/omUsers.h"
 #include "chunk/cachedDataSource.hpp"
+#include "chunk/cachedUniqueValuesDataSource.hpp"
 #include "tile/cachedDataSource.hpp"
 #include "chunk/voxelGetter.hpp"
 
@@ -29,8 +29,7 @@ using namespace om;
 
 // used by OmDataArchiveProject
 OmSegmentation::OmSegmentation()
-    : uniqueChunkValues_(new OmChunkUniqueValuesManager(this)),
-      meshManagers_(new OmMeshManagers(this)),
+    : meshManagers_(new OmMeshManagers(this)),
       volData_(new OmVolumeData()),
       volSliceCache_(new OmRawSegTileCache(this)),
       tileCache_(new OmTileCacheSegmentation()),
@@ -39,7 +38,6 @@ OmSegmentation::OmSegmentation()
 // used by OmGenericManager
 OmSegmentation::OmSegmentation(common::ID id)
     : OmManageableObject(id),
-      uniqueChunkValues_(new OmChunkUniqueValuesManager(this)),
       meshManagers_(new OmMeshManagers(this)),
       volData_(new OmVolumeData()),
       volSliceCache_(new OmRawSegTileCache(this)),
@@ -74,6 +72,7 @@ void OmSegmentation::LoadPath() {
   chunkDS_.reset(
       new chunk::CachedDataSource(paths_, getVolDataType(), coords_));
   tileDS_.reset(new om::tile::CachedDataSource(*chunkDS_, coords_));
+  uniqueChunkValues_.reset(new chunk::CachedUniqueValuesDataSource(paths_));
 
   mst_.reset(new segment::EdgeVector(userPaths.MST(id_)));
   for (auto& edge : *mst_) {
@@ -230,9 +229,7 @@ void OmSegmentation::InvalidateTiles(const om::coords::Chunk& coord) {
   tileDS_->Invalidate(coord);
 }
 
-void OmSegmentation::UpdateFromVolResize() {
-  uniqueChunkValues_->UpdateFromVolResize();
-}
+void OmSegmentation::UpdateFromVolResize() {}
 
 void OmSegmentation::ClearUserChangesAndSave() {
   for (uint32_t i = 0; i < MST().size(); ++i) {
@@ -262,3 +259,6 @@ void OmSegmentation::ClearUserChangesAndSave() {
 
 om::chunk::ChunkDS& OmSegmentation::ChunkDS() const { return *chunkDS_; }
 om::tile::TileDS& OmSegmentation::TileDS() const { return *tileDS_; }
+om::chunk::UniqueValuesDS& OmSegmentation::UniqueValuesDS() const {
+  return *uniqueChunkValues_;
+}

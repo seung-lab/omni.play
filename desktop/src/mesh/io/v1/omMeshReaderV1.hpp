@@ -22,9 +22,12 @@ class OmMeshReaderV1 {
   bool IsAnyMeshDataPresent() {
     const om::coords::Chunk coord(0, 0, 0, 0);
 
-    const auto segIDs = segmentation_->UniqueValuesDS().Values(coord, 1);
-
-    FOR_EACH(iter, segIDs) {
+    const auto segIDs = segmentation_->UniqueValuesDS().Get(coord);
+    if (!segIDs) {
+      log_debugs << "Unable to load UniqueValues";
+      return false;
+    }
+    FOR_EACH(iter, *segIDs) {
       if (isMeshDataPresent(*iter, coord)) {
         return true;
       }

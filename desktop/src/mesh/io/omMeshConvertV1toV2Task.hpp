@@ -46,10 +46,12 @@ class OmMeshConvertV1toV2Task : public zi::runnable {
 
  private:
   bool processChunk(const om::coords::Chunk& coord) {
-    const ChunkUniqueValues segIDs =
-        segmentation_->UniqueValuesDS().Values(coord, 1);
-
-    FOR_EACH(segID, segIDs) {
+    const auto segIDs = segmentation_->UniqueValuesDS().Get(coord);
+    if (!segIDs) {
+      log_debugs << "Unable to load UniqueValues.";
+      return false;
+    }
+    FOR_EACH(segID, *segIDs) {
       if (OmCacheManager::AmClosingDown()) {
         // TODO: note that mesh conversion was not done?
         return false;

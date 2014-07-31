@@ -3,8 +3,8 @@
 #include "precomp.h"
 #include "utility/image_traits.hpp"
 #include "common/common.h"
-#include "utility/smartPtr.hpp"
 #include "zi/utility.h"
+#include "utility/malloc.hpp"
 
 namespace om {
 namespace utility {
@@ -143,7 +143,7 @@ class image {
     }
 
     const int numBytes = d_.data_->num_elements() * sizeof(T);
-    std::shared_ptr<T> ret = smartPtr<T>::MallocNumBytes(numBytes);
+    std::shared_ptr<T> ret = om::mem::Malloc<T>::NumBytes(numBytes);
     memcpy(ret.get(), d_.data_->data(), numBytes);
     return ret;
   }

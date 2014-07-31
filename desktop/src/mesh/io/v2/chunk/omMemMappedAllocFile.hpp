@@ -1,7 +1,6 @@
 #pragma once
 #include "precomp.h"
 
-#include "chunks/uniqueValues/omChunkUniqueValuesManager.hpp"
 #include "mesh/io/v2/chunk/omMeshChunkTypes.h"
 #include "utility/omStringHelpers.h"
 #include "volume/omSegmentation.h"
@@ -107,10 +106,8 @@ class OmMemMappedAllocFile {
   }
 
   void setupFile() {
-    const ChunkUniqueValues segIDs =
-        segmentation_->UniqueValuesDS().Values(coord_, threshold_);
-
-    if (!segIDs.size()) {
+    auto segIDs = segmentation_->UniqueValuesDS().Get(coord_);
+    if (!segIDs || !segIDs->size()) {
       log_infos << "No unique values in " << coord_;
       return;
     }
@@ -121,7 +118,7 @@ class OmMemMappedAllocFile {
       throw om::IoException("could not open");
     }
 
-    file_->resize(segIDs.size() * sizeof(OmMeshDataEntry));
+    file_->resize(segIDs->size() * sizeof(OmMeshDataEntry));
 
     uchar* map = file_->map(0, file_->size());
     if (!map) {
@@ -131,9 +128,9 @@ class OmMemMappedAllocFile {
     file_->close();
 
     table_ = reinterpret_cast<OmMeshDataEntry*>(map);
-    numEntries_ = segIDs.size();
+    numEntries_ = segIDs->size();
 
-    resetTable(segIDs);
+    resetTable(*segIDs);
     sortTable();
   }
 
@@ -143,7 +140,7 @@ class OmMemMappedAllocFile {
     }
   };
 
-  void resetTable(const ChunkUniqueValues& segIDs) {
+  void resetTable(const om::chunk::UniqueValues& segIDs) {
     assert(table_);
 
     zi::transform(segIDs.begin(), segIDs.end(), table_, ResetEntry());

@@ -2,50 +2,29 @@
 
 #include "utility/image.hpp"
 #include "volume/volume.h"
+#include "chunk/dataSources.hpp"
+#include "volume/iterators.hpp"
 
 namespace om {
-namespace chunks {
+namespace chunk {
 
 class utils {
  public:
-  /**
-   *      Returns new utility::image containing the entire extent of data needed
-   *      to form continuous meshes with adjacent MipChunks.  This means an
-   * extra
-   *      voxel of data is included on each dimensions.
-   */
-  static utility::image<uint32_t, 3> GetMeshImageData(
-      const volume::Volume& vol, const coords::Chunk& chunk) {
-    utility::image<uint32_t, 3> retImage(utility::extents[129][129][129]);
-
-    for (auto z = 0; z < 2; ++z) {
-      for (auto y = 0; y < 2; ++y) {
-        for (auto x = 0; x < 2; ++x) {
-          const int lenZ = z ? 1 : 128;
-          const int lenY = y ? 1 : 128;
-          const int lenX = x ? 1 : 128;
-
-          // form mip coord
-          const coords::Chunk mip_coord(chunk.mipLevel(), chunk.x + x,
-                                        chunk.y + y, chunk.z + z);
-
-          // skip invalid mip coord
-          if (vol.CoordSystem().ContainsMipChunk(mip_coord)) {
-            const std::shared_ptr<uint32_t> rawDataPtr =
-                vol.GetChunk<uint32_t>(mip_coord);
-
-            utility::image<uint32_t, 3> chunkImage(
-                utility::extents[128][128][128], rawDataPtr.get());
-
-            retImage.copyFrom(
-                chunkImage, utility::extents[z * 128][y * 128][x * 128],
-                utility::extents[0][0][0], utility::extents[lenZ][lenY][lenX]);
-          }
-        }
+  static std::shared_ptr<UniqueValues> MakeUniqueValues(
+      ChunkDS& ds, const coords::Chunk& cc,
+      const coords::VolumeSystem& system) {
+    common::SegIDSet voxels;
+    auto iter =
+        volume::make_all_dataval_iterator<uint32_t>(cc.BoundingBox(system), ds);
+    auto end = volume::all_dataval_iterator<uint32_t>();
+    for (; iter != end; ++iter) {
+      if (iter->value()) {
+        voxels.insert(iter->value());
       }
     }
-
-    return retImage;
+    auto ret = std::make_shared<UniqueValues>(cc, voxels.begin(), voxels.end());
+    std::sort(ret->Values.begin(), ret->Values.end());
+    return ret;
   }
 };
 }

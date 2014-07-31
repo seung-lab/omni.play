@@ -94,8 +94,8 @@ class ziMesher {
   }
 
   void addValuesFromChunkAndDownsampledChunks(const coords::Chunk& mip0coord) {
-    const ChunkUniqueValues segIDs =
-        vol_.ChunkUniqueValues()->Values(mip0coord, threshold_);
+    const om::chunk::UniqueValues segIDs =
+        vol_.om::chunk::UniqueValues()->Values(mip0coord, threshold_);
 
     chunkCollectors_.insert(std::make_pair(
         mip0coord, new MeshCollector(mip0coord, meshWriter_.get())));
@@ -110,8 +110,9 @@ class ziMesher {
     // downsampleSegThroughViewableMipLevels(mip0coord, segIDs);
   }
 
-  void downsampleSegThroughAllMipLevels(const coords::Chunk& mip0coord,
-                                        const ChunkUniqueValues& segIDsMip0) {
+  void downsampleSegThroughAllMipLevels(
+      const coords::Chunk& mip0coord,
+      const om::chunk::UniqueValues& segIDsMip0) {
     coords::Chunk c = mip0coord.ParentCoord();
 
     // corner case: no MIP levels >0
@@ -123,14 +124,15 @@ class ziMesher {
   }
 
   void downsampleSegThroughViewableMipLevels(
-      const coords::Chunk& mip0coord, const ChunkUniqueValues& segIDsMip0) {
+      const coords::Chunk& mip0coord,
+      const om::chunk::UniqueValues& segIDsMip0) {
     coords::Chunk c = mip0coord.ParentCoord();
 
     corner case : no MIP levels > 0 while (c.mipLevel() <= rootMipLevel_) {
       std::deque<common::SegID> commonIDs;
 
-      const ChunkUniqueValues segIDs =
-          vol_.ChunkUniqueValues()->Values(c, threshold_);
+      const om::chunk::UniqueValues segIDs =
+          vol_.om::chunk::UniqueValues()->Values(c, threshold_);
 
       FOR_EACH(cid, segIDsMip0) {
         if (segIDs.contains(*cid)) {
@@ -228,8 +230,8 @@ class ziMesher {
     scale /= maxScale;
     scale *= 0.5;
 
-    const ChunkUniqueValues segIDs =
-        vol_.ChunkUniqueValues()->Values(coord, threshold_);
+    const om::chunk::UniqueValues segIDs =
+        vol_.om::chunk::UniqueValues()->Values(coord, threshold_);
 
     zi::mesh::marching_cubes<int> cube_marcher;
     setupMarchingCube(cube_marcher, chunk);

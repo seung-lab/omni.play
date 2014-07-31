@@ -2,6 +2,7 @@
 #include "precomp.h"
 
 #include "common/common.h"
+#include "common/container.hpp"
 #include "zi/omUtility.h"
 
 template <typename T>

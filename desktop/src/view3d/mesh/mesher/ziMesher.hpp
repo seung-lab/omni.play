@@ -95,7 +95,7 @@ class ziMesher {
   void addValuesFromChunkAndDownsampledChunks(
       const om::coords::Chunk& mip0coord) {
     const std::shared_ptr<om::chunk::UniqueValues> segIDs =
-        segmentation_.ChunkUniqueValues()->Get(mip0coord);
+        segmentation_.om::chunk::UniqueValues()->Get(mip0coord);
 
     if (!segIDs) {
       return;
@@ -137,7 +137,7 @@ class ziMesher {
       std::deque<om::common::SegID> commonIDs;
 
       const std::shared_ptr<om::chunk::UniqueValues> segIDs =
-          segmentation_.ChunkUniqueValues()->Get(c);
+          segmentation_.om::chunk::UniqueValues()->Get(c);
 
       if (!segIDs) {
         return;
@@ -238,7 +238,7 @@ class ziMesher {
     scale *= 0.5;
 
     const std::shared_ptr<om::chunk::UniqueValues> segIDs =
-        segmentation_.ChunkUniqueValues()->Get(coord);
+        segmentation_.om::chunk::UniqueValues()->Get(coord);
 
     if (segIDs && segIDs.get().Values->size() > 0) {
       zi::mesh::marching_cubes<int> cube_marcher;

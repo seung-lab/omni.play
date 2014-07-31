@@ -44,9 +44,9 @@ class MeshTest {
 
     auto coords = segmentation_->GetMipChunkCoords(0);
 
-    FOR_EACH(cc, *coords) {
+    for (auto& cc : *coords) {
       manager.push_back(
-          zi::run_fn(zi::bind(&MeshTest::processChunk, this, *cc)));
+          zi::run_fn(zi::bind(&MeshTest::processChunk, this, cc)));
     }
 
     manager.join();
@@ -66,7 +66,12 @@ class MeshTest {
   om::utility::LockedVector<std::shared_ptr<MockTriStripCollector> > tris_;
 
   void processChunk(om::coords::Chunk coord) {
-    FOR_EACH(id, segmentation_->UniqueValuesDS().Values(coord, threshold_)) {
+    auto segIDs = segmentation_->UniqueValuesDS().Get(coord, threshold_);
+    if (!segIDs) {
+      log_errors << "Unable to process " << coord << " can't load UniqueValues";
+      return;
+    }
+    FOR_EACH(id, *segIDs) {
       auto t = std::make_shared<MockTriStripCollector>(*id);
       tris_.push_back(t);
       TriStripCollector* pt = t.get();
@@ -96,10 +101,15 @@ class MeshTest {
 
     auto coords = segmentation_->GetMipChunkCoords(0);
 
-    FOR_EACH(cc, *coords) {
-      FOR_EACH(id, segmentation_->UniqueValuesDS().Values(*cc, 1)) {
+    for (auto& cc : *coords) {
+      auto segIDs = segmentation_->UniqueValuesDS().Get(cc);
+      if (!segIDs) {
+        log_errors << "Unable to check " << cc << " cannot load UniqueValues";
+        continue;
+      }
+      for (auto& id : *segIDs) {
         OmMeshPtr mesh;
-        segmentation_->MeshManagers().GetMesh(mesh, *cc, *id, 1,
+        segmentation_->MeshManagers().GetMesh(mesh, cc, id, 1,
                                               om::common::Blocking::BLOCKING);
         if (!mesh) {
           throw om::IoException("no mesh found");
@@ -110,15 +120,15 @@ class MeshTest {
         uint32_t* vi = data->VertexIndex();
         uint32_t* sd = data->StripData();
 
-        for (int i = 0; i < *id; ++i) {
-          float ff = *id + 0.1;
+        for (int i = 0; i < id; ++i) {
+          float ff = id + 0.1;
           if (!qFuzzyCompare(vd[i], ff)) {
             throw om::IoException("bad vertex data");
           }
-          if (vi[i] != (*id + 1)) {
+          if (vi[i] != (id + 1)) {
             throw om::IoException("bad vertex index data");
           }
-          if (sd[i] != (*id + 2)) {
+          if (sd[i] != (id + 2)) {
             throw om::IoException("bad strip data");
           }
         }

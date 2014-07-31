@@ -1,5 +1,4 @@
 #include "chunk/voxelGetter.hpp"
-#include "chunks/uniqueValues/omChunkUniqueValuesManager.hpp"
 #include "comparisonTask.h"
 #include "network/http/http.hpp"
 #include "project/omProject.h"
@@ -86,11 +85,14 @@ bool ComparisonTask::Start() {
 }
 
 bool ComparisonTask::chunkHasUserSegments(
-    OmChunkUniqueValuesManager& uniqueValues, const om::coords::Chunk& chunk,
+    om::chunk::UniqueValuesDS& uniqueValues, const om::coords::Chunk& chunk,
     const std::unordered_map<common::SegID, int>& segFlags) {
 
   const auto uv = uniqueValues.Get(chunk);
-  for (auto& segID : uv) {
+  if (!uv) {
+    return false;
+  }
+  for (auto& segID : *uv) {
     if (segFlags.find(segID) != segFlags.end()) {
       return true;
     }

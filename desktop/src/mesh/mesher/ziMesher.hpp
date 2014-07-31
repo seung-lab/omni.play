@@ -97,24 +97,28 @@ class ziMesher {
 
   void addValuesFromChunkAndDownsampledChunks(
       const om::coords::Chunk& mip0coord) {
-    const ChunkUniqueValues segIDs =
-        vol_->UniqueValuesDS().Values(mip0coord, threshold_);
+    const auto segIDs = vol_->UniqueValuesDS().Get(mip0coord);
+    if (!segIDs) {
+      log_debugs << "Cannot load UniqueValues";
+      return;
+    }
 
     chunkCollectors_.insert(std::make_pair(
         mip0coord, new MeshCollector(mip0coord, meshWriter_.get())));
 
     occurances_[mip0coord].push_back(chunkCollectors_[mip0coord]);
 
-    FOR_EACH(cid, segIDs) {
+    FOR_EACH(cid, *segIDs) {
       chunkCollectors_[mip0coord]->registerMeshPart(*cid);
     }
 
-    downsampleSegThroughAllMipLevels(mip0coord, segIDs);
+    downsampleSegThroughAllMipLevels(mip0coord, *segIDs);
     // downsampleSegThroughViewableMipLevels(mip0coord, segIDs);
   }
 
-  void downsampleSegThroughAllMipLevels(const om::coords::Chunk& mip0coord,
-                                        const ChunkUniqueValues& segIDsMip0) {
+  void downsampleSegThroughAllMipLevels(
+      const om::coords::Chunk& mip0coord,
+      const om::chunk::UniqueValues& segIDsMip0) {
     om::coords::Chunk c = mip0coord.ParentCoord();
 
     // corner case: no MIP levels >0
@@ -126,18 +130,22 @@ class ziMesher {
   }
 
   void downsampleSegThroughViewableMipLevels(
-      const om::coords::Chunk& mip0coord, const ChunkUniqueValues& segIDsMip0) {
+      const om::coords::Chunk& mip0coord,
+      const om::chunk::UniqueValues& segIDsMip0) {
     om::coords::Chunk c = mip0coord.ParentCoord();
 
     // corner case: no MIP levels >0
     while (c.mipLevel() <= rootMipLevel_) {
       std::deque<om::common::SegID> commonIDs;
 
-      const ChunkUniqueValues segIDs =
-          vol_->UniqueValuesDS().Values(c, threshold_);
+      const auto segIDs = vol_->UniqueValuesDS().Get(c);
+      if (!segIDs) {
+        log_errors << "Unable to load UniqueValues " << c;
+        return;
+      }
 
       FOR_EACH(cid, segIDsMip0) {
-        if (segIDs.contains(*cid)) {
+        if (segIDs->contains(*cid)) {
           commonIDs.push_back(*cid);
         }
       }
@@ -230,9 +238,9 @@ class ziMesher {
     scale /= maxScale;
     scale *= 0.5;
 
-    const auto segIDs = vol_->UniqueValuesDS().Values(coord, threshold_);
+    const auto segIDs = vol_->UniqueValuesDS().Get(coord);
 
-    if (segIDs.size() > 0) {
+    if (segIDs->size() > 0) {
       zi::mesh::marching_cubes<int> cube_marcher;
       setupMarchingCube(cube_marcher, coord);
 
@@ -242,7 +250,7 @@ class ziMesher {
       FOR_EACH(it, cube_marcher.meshes()) {
         const om::common::SegID segID = it->first;
 
-        if (segIDs.contains(segID)) {
+        if (segIDs->contains(segID)) {
           zi::shared_ptr<zi::mesh::simplifier<double> > spfy(
               new zi::mesh::simplifier<double>(0));
 

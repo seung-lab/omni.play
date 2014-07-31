@@ -17,8 +17,6 @@ namespace om {
 class chunkCoord;
 }
 
-class OmChunkUniqueValuesManager;
-
 namespace om {
 namespace task {
 
@@ -46,8 +44,7 @@ class ComparisonTask : virtual public Task {
 
  private:
   static bool chunkHasUserSegments(
-      OmChunkUniqueValuesManager& uniqueValuesDS,
-      const om::coords::Chunk& chunk,
+      om::chunk::UniqueValuesDS& uniqueValuesDS, const om::coords::Chunk& chunk,
       const std::unordered_map<common::SegID, int>& segFlags);
 
   uint32_t id_;

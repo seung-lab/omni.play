@@ -3,7 +3,7 @@
 
 #include "view3d/mesh/drawer/struct.hpp"
 #include "omMeshSegmentListTask.h"
-#include "chunks/uniqueValues/omChunkUniqueValuesManager.hpp"
+#include "chunk/dataSources.hpp"
 
 class OmSegment;
 class OmSegments;
@@ -16,8 +16,7 @@ class MeshSegmentList;
 class MeshSegmentListTask : public zi::runnable {
  private:
   MeshSegmentList& rootSegLists_;
-  // om::chunk::CachedUniqueValuesDataSource& chunkUniqueValues_;
-  OmChunkUniqueValuesManager& chunkUniqueValues_;
+  om::chunk::UniqueValuesDS& chunkUniqueValues_;
   OmSegments& segments_;
 
   const om::coords::Chunk coord_;
@@ -27,8 +26,7 @@ class MeshSegmentListTask : public zi::runnable {
 
  public:
   MeshSegmentListTask(MeshSegmentList& rootSegLists,
-                      // om::chunk::CachedUniqueValuesDataSource& cuvds,
-                      OmChunkUniqueValuesManager& cuvds, OmSegments& segments,
+                      om::chunk::UniqueValuesDS& cuvds, OmSegments& segments,
                       om::coords::Chunk coord, OmSegment& rootSeg,
                       const om::v3d::key& key)
       : rootSegLists_(rootSegLists),
