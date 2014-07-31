@@ -1,8 +1,8 @@
 #pragma once
 #include "precomp.h"
 
-#include "mesh/drawer/omMeshDrawerImpl.hpp"
-#include "mesh/drawer/omMeshPlanCache.hpp"
+#include "view3d/mesh/drawer/omMeshDrawerImpl.hpp"
+#include "view3d/mesh/drawer/omMeshPlanCache.hpp"
 
 namespace om {
 namespace v3d {

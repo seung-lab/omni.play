@@ -34,6 +34,7 @@ class MeshDrawPlanner {
 
     auto rootSegs = segments_.Selection().GetSelectedSegmentIDs();
     if (!rootSegs.size()) {
+      log_debugs << "No Root Segs.";
       return plan;
     }
 

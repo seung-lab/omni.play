@@ -2,7 +2,6 @@
 #include "precomp.h"
 
 #include "common/common.h"
-#include "mesh/drawer/omSegmentPointers.h"
 
 class OmSegment;
 class OmSegments;

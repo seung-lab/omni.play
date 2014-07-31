@@ -5,7 +5,6 @@
 #include "view3d/mesh/drawer/omMeshPlan.h"
 #include "view3d/mesh/drawer/percDone.hpp"
 #include "view3d/mesh/omVolumeCuller.h"
-#include "mesh/drawer/omSegmentPointers.h"
 #include "system/omOpenGLGarbageCollector.hpp"
 #include "utility/timer.hpp"
 #include "view3d/gl.h"
@@ -73,11 +72,9 @@ class DrawerImpl {
     auto mesh = meshes_.Get(coord, segID);
 
     if (!mesh) {
-      log_debugs << "Lost";
       perc_done_.missingMesh();
       return;
     }
-    log_debugs << "Found";
 
     // apply segment color
     glColor3fv(color.array);
