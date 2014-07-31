@@ -49,6 +49,12 @@ class Tile {
   PROP_CONST_REF(Vector2i, tileDims);
 };
 
+extern template class Tile<int8_t>;
+extern template class Tile<uint8_t>;
+extern template class Tile<int32_t>;
+extern template class Tile<uint32_t>;
+extern template class Tile<float>;
+
 typedef boost::variant<Tile<int8_t>, Tile<uint8_t>, Tile<int32_t>,
                        Tile<uint32_t>, Tile<float>> TileVar;
 

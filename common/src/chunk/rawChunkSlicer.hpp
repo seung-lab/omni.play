@@ -101,5 +101,11 @@ class rawChunkSlicer {
   }
 };
 
+extern template class rawChunkSlicer<int8_t>;
+extern template class rawChunkSlicer<uint8_t>;
+extern template class rawChunkSlicer<int32_t>;
+extern template class rawChunkSlicer<uint32_t>;
+extern template class rawChunkSlicer<float>;
+
 }  // namespace chunks
 }  // namespace om

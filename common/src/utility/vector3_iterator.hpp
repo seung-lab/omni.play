@@ -70,5 +70,7 @@ class vector3_iterator
   Vector3<T> val_;
   bool valid_;
 };
+
+extern template class vector3_iterator<int>;
 }
 }  // namespace om::utility::

@@ -4,6 +4,16 @@
 #include "chunk/dataSources.hpp"
 #include "coordinates/chunk.h"
 
+namespace boost {
+extern template class boost::transform_iterator<
+    std::function<om::coords::Chunk(const Vector3i&)>,
+    om::utility::vector3_iterator<int>>;
+extern template class boost::filter_iterator<
+    std::function<bool(const om::coords::Chunk&)>,
+    boost::transform_iterator<std::function<om::coords::Chunk(const Vector3i&)>,
+                              om::utility::vector3_iterator<int>>>;
+}
+
 namespace om {
 namespace chunk {
 // Iterates over chunks in a given range at a given mip level.  Built using the
