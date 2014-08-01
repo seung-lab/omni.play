@@ -4,8 +4,7 @@
 #include "common/logging.h"
 
 #include "datalayer/fs/omMemMappedFileQT.hpp"
-#include "datalayer/omIDataVolume.hpp"
-#include "datalayer/omIDataVolume.hpp"
+#include "datalayer/IDataVolume.hpp"
 #include "project/omProject.h"
 #include "utility/omStringHelpers.h"
 #include "volume/io/omChunkOffset.hpp"
@@ -18,10 +17,10 @@ namespace datalayer {
 template <typename T>
 class IOnDiskFile;
 }
-}  // namespace om::datalayer::
+}
 
 template <typename T>
-class OmMemMappedVolumeImpl : public IDataVolume<T> {
+class OmMemMappedVolumeImpl : public om::datalayer::IDataVolume<T> {
  private:
   OmMipVolume* vol_;
   std::vector<std::shared_ptr<om::datalayer::IOnDiskFile<T>>> maps_;
