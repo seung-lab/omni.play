@@ -1,7 +1,7 @@
 #pragma once
 
 #include "mesh/vertexIndex/chunkTypes.hpp"
-#include "datalayer/readOnlyMemMappedFile.hpp"
+#include "datalayer/memMappedFile.hpp"
 
 namespace om {
 namespace mesh {
@@ -47,7 +47,7 @@ class memMappedAllocFile {
     return a.segID < b.segID;
   }
 
-  datalayer::ReadOnlyMemMappedFile<DataEntry> file_;
+  datalayer::MemMappedFile<const DataEntry> file_;
   const DataEntry* table_;
   uint32_t numEntries_;
 };
