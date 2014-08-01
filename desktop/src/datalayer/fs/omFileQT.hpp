@@ -65,11 +65,11 @@ class OmFileQTbase : public om::datalayer::IOnDiskFile<T> {
 
   uint64_t FileSizeBytes() const { return file_->size(); }
 
-  std::string GetBaseFileName() const {
+  om::file::path GetBaseFileName() const {
     return "\"" + QFileInfo(*file_).fileName().toStdString() + "\"";
   }
 
-  std::string GetAbsFileName() const {
+  om::file::path GetAbsFileName() const {
     return "\"" + QFileInfo(*file_).absoluteFilePath().toStdString() + "\"";
   }
 };

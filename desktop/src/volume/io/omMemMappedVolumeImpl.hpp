@@ -13,14 +13,18 @@
 #include "volume/omSegmentation.h"
 #include "volume/omVolumeTypes.hpp"
 
+namespace om {
+namespace datalayer {
 template <typename T>
-class OmIOnDiskFile;
+class IOnDiskFile;
+}
+}  // namespace om::datalayer::
 
 template <typename T>
 class OmMemMappedVolumeImpl : public IDataVolume<T> {
  private:
   OmMipVolume* vol_;
-  std::vector<std::shared_ptr<OmIOnDiskFile<T> > > maps_;
+  std::vector<std::shared_ptr<om::datalayer::IOnDiskFile<T>>> maps_;
 
   typedef OmMemMappedFileReadQT<T> reader_t;
   typedef OmMemMappedFileWriteQT<T> writer_t;

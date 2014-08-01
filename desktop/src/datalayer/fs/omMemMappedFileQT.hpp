@@ -44,11 +44,11 @@ class OmMemMappedFileQTbase : public om::datalayer::IOnDiskFile<T> {
     return reinterpret_cast<T*>(map_ + offset);
   }
 
-  std::string GetBaseFileName() const {
+  om::file::path GetBaseFileName() const {
     return "\"" + QFileInfo(*file_).fileName().toStdString() + "\"";
   }
 
-  std::string GetAbsFileName() const {
+  om::file::path GetAbsFileName() const {
     return "\"" + QFileInfo(*file_).absoluteFilePath().toStdString() + "\"";
   }
 };
