@@ -2,12 +2,12 @@
 #include "precomp.h"
 
 #include "datalayer/compressedFile.h"
-#include "datalayer/fs/omIOnDiskFile.h"
+#include "datalayer/IOnDiskFile.h"
 #include "datalayer/fs/omFile.hpp"
 #include "utility/omTempFile.hpp"
 
 template <typename T>
-class OmMemMapCompressedFile : public OmIOnDiskFile<T> {
+class OmMemMapCompressedFile : public om::datalayer::IOnDiskFile<T> {
  public:
   static std::shared_ptr<OmMemMapCompressedFile<T> > CreateNumElements(
       const std::string& fnp, const int64_t numElements) {

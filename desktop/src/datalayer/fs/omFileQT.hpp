@@ -2,11 +2,11 @@
 #include "precomp.h"
 
 #include "common/logging.h"
-#include "datalayer/fs/omIOnDiskFile.h"
+#include "datalayer/IOnDiskFile.h"
 #include "utility/malloc.hpp"
 
 template <typename T>
-class OmFileQTbase : public OmIOnDiskFile<T> {
+class OmFileQTbase : public om::datalayer::IOnDiskFile<T> {
  protected:
   const std::string fnp_;
   std::shared_ptr<QFile> file_;

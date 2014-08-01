@@ -5,10 +5,10 @@
 #include "common/enums.hpp"
 #include "common/logging.h"
 #include "common/string.hpp"
-#include "datalayer/fs/omIOnDiskFile.h"
+#include "datalayer/IOnDiskFile.h"
 
 template <typename T>
-class OmMemMappedFileQTbase : public OmIOnDiskFile<T> {
+class OmMemMappedFileQTbase : public om::datalayer::IOnDiskFile<T> {
  protected:
   const std::string fnp_;
   std::shared_ptr<QFile> file_;

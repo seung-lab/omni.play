@@ -1,11 +1,11 @@
 #pragma once
 #include "precomp.h"
 
-#include "datalayer/fs/omIOnDiskFile.h"
+#include "datalayer/IOnDiskFile.h"
 #include "datalayer/fs/omFile.hpp"
 
 template <typename T>
-class OmMemMappedFileQTNew : public OmIOnDiskFile<T> {
+class OmMemMappedFileQTNew : public om::datalayer::IOnDiskFile<T> {
  public:
   static std::shared_ptr<OmMemMappedFileQTNew<T> > CreateNumElements(
       const std::string& fnp, const int64_t numElements) {
