@@ -1,7 +1,7 @@
 #pragma once
 #include "precomp.h"
 
-#include "tiles/omTileFilters.hpp"
+#include "tile/tileFilters.hpp"
 #include "chunks/omRawChunkSlicer.hpp"
 #include "tiles/cache/raw/omRawSegTileCache.hpp"
 #include "volume/omSegmentation.h"
@@ -56,7 +56,7 @@ class OmExtractSegTile {
     auto rawTile = slicer.GetCopyOfTile(plane_, depth_);
     OmProject::Globals().FileReadSemaphore().release(1);
 
-    OmTileFilters<T> filter(128);
+    om::tile::Filters<T> filter(128);
 
     return filter.recastToUint32(rawTile.get());
   }

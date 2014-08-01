@@ -5,7 +5,8 @@
 namespace om {
 namespace tile {
 
-template <typename T> class Filters {
+template <typename T>
+class Filters {
  private:
   const int chunkDim_;
   const int elementsPerTile_;
@@ -14,23 +15,22 @@ template <typename T> class Filters {
   Filters(const int chunkDim)
       : chunkDim_(chunkDim), elementsPerTile_(chunkDim * chunkDim) {}
 
-  void Brightness(std::shared_ptr<T> tile, const T absMax,
-                  const int32_t shift) {
+  void Brightness(T* tile, const T absMax, const int32_t shift) {
     zi::transform(tile, tile + elementsPerTile_, tile,
                   ChangeBrightness<T>(absMax, shift));
   }
 
-  void Contrast(std::shared_ptr<T> tile, const T absMax,
-                const double contrast) {
+  void Contrast(T* tile, const T absMax, const double contrast) {
     zi::transform(tile, tile + elementsPerTile_, tile,
                   ChangeContrast<T>(absMax, contrast));
   }
 
-  void Gamma(std::shared_ptr<T> tile, const double gamma) {
+  void Gamma(T* tile, const double gamma) {
     zi::transform(tile, tile + elementsPerTile_, tile, ChangeGamma<T>(gamma));
   }
 
-  template <class C> void recast(const T* oldTile, C* newTile) const {
+  template <class C>
+  void recast(const T* oldTile, C* newTile) const {
     std::copy(oldTile, oldTile + elementsPerTile_, newTile);
   }
 
@@ -46,7 +46,8 @@ template <typename T> class Filters {
   }
 
  private:
-  template <typename U, typename C> class Rescale {
+  template <typename U, typename C>
+  class Rescale {
    private:
     const U rangeMin_, rangeMax_, absMax_;
 
@@ -55,7 +56,7 @@ template <typename T> class Filters {
         : rangeMin_(rangeMin), rangeMax_(rangeMax), absMax_(absMax) {}
 
     C operator()(U val) const {
-      return (val - rangeMin_) * ((double) absMax_ / (rangeMax_ - rangeMin_));
+      return (val - rangeMin_) * ((double)absMax_ / (rangeMax_ - rangeMin_));
     }
   };
 
@@ -64,7 +65,8 @@ template <typename T> class Filters {
 
   // TODO: clamp should not be needed
 
-  template <typename U> inline static T clamp(T absMax, U val) {
+  template <typename U>
+  inline static T clamp(T absMax, U val) {
     if (val > absMax) {
       return absMax;
     }
@@ -76,7 +78,8 @@ template <typename T> class Filters {
     return val;
   }
 
-  template <typename U> class ChangeBrightness {
+  template <typename U>
+  class ChangeBrightness {
    public:
     ChangeBrightness(const U absMax, const int32_t shift)
         : absMax_(absMax), shift_(shift) {}
@@ -94,7 +97,8 @@ template <typename T> class Filters {
     int32_t shift_;
   };
 
-  template <typename U> class ChangeContrast {
+  template <typename U>
+  class ChangeContrast {
    public:
     ChangeContrast(const double absMax, const double contrast)
         : absMax_(absMax), halfAbsMax_(absMax_ / 2.0), contrast_(contrast) {}
@@ -110,7 +114,8 @@ template <typename T> class Filters {
     const double contrast_;
   };
 
-  template <typename U> class ChangeGamma {
+  template <typename U>
+  class ChangeGamma {
    public:
     ChangeGamma(const double gamma) : gamma_(gamma) {}
 

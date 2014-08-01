@@ -1,7 +1,7 @@
 #pragma once
 #include "precomp.h"
 
-#include "tiles/omTileFilters.hpp"
+#include "tile/tileFilters.hpp"
 #include "zi/omUtility.h"
 
 class OmChannelTileFilter : private om::singletonBase<OmChannelTileFilter> {
@@ -14,7 +14,7 @@ class OmChannelTileFilter : private om::singletonBase<OmChannelTileFilter> {
  public:
   static void Filter(std::shared_ptr<uint8_t> slice) {
     // TODO: don't recreate filter every time
-    OmTileFilters<uint8_t> filter(128);
+    om::tile::Filters<uint8_t> filter(128);
 
     if (defaultBrightness_ != instance().brightnessShift_) {
       filter.Brightness(slice.get(), absMax_, instance().brightnessShift_);

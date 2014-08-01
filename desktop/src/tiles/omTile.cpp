@@ -8,6 +8,8 @@
 #include "volume/omMipVolume.h"
 #include "chunk/rawChunkSlicer.hpp"
 #include "volume/omSegmentation.h"
+#include "tile/tileFilters.hpp"
+#include "tiles/make_tile.hpp"
 
 OmTile::OmTile(OmCacheBase* cache, const OmTileCoord& key)
     : cache_(cache),
@@ -31,8 +33,10 @@ struct Slice8bit : public boost::static_visitor<std::shared_ptr<uint8_t>> {
   Slice8bit() {}
   template <typename T>
   std::shared_ptr<uint8_t> operator()(const om::tile::Tile<T>& tile) const {
-    OmTileFilters<T> filter(128);
-    return filter.recastToUint8(tile.data().get());
+    om::tile::Filters<T> filter(128);
+    auto ret = om::tile::Make<uint8_t>();
+    filter.recast(tile.data().get(), ret.get());
+    return ret;
   }
 
   std::shared_ptr<uint8_t> operator()(const om::tile::Tile<uint8_t>& tile)
@@ -41,9 +45,10 @@ struct Slice8bit : public boost::static_visitor<std::shared_ptr<uint8_t>> {
   }
 
   std::shared_ptr<uint8_t> operator()(const om::tile::Tile<float>& tile) const {
-    OmTileFilters<float> filter(128);
-    auto tileData =
-        filter.rescaleAndCast<uint8_t>(tile.data().get(), 0.0, 1.0, 255.0);
+    om::tile::Filters<float> filter(128);
+    auto tileData = om::tile::Make<uint8_t>();
+    filter.rescaleAndCast<uint8_t>(tile.data().get(), 0.0, 1.0, 255.0,
+                                   tileData.get());
 
     OmChannelTileFilter::Filter(tileData);
     return tileData;

@@ -1,7 +1,7 @@
 #pragma once
 #include "precomp.h"
 
-#include "tiles/omTileFilters.hpp"
+#include "tile/tileFilters.hpp"
 #include "chunks/omRawChunkSlicer.hpp"
 #include "volume/omMipVolume.h"
 #include "project/omProject.h"
@@ -30,7 +30,7 @@ class extractChanTile {
   template <typename T>
   std::shared_ptr<uint8_t> extractDataSlice8bit(T* d) {
     auto rawTile = getRawSlice(d);
-    OmTileFilters<T> filter(128);
+    om::tile::Filters<T> filter(128);
     return filter.recastToUint8(rawTile.get());
   }
 
@@ -41,7 +41,7 @@ class extractChanTile {
   std::shared_ptr<uint8_t> extractDataSlice8bit(float* d) {
     std::shared_ptr<float> rawTile = getRawSlice(d);
 
-    OmTileFilters<float> filter(128);
+    om::tile::Filters<float> filter(128);
 
     float mn = 0.0;
     float mx = 1.0;
