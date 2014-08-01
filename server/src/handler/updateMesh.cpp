@@ -4,7 +4,6 @@
 #include "common/string.hpp"
 #include "handler/handler.h"
 #include "pipeline/filter.hpp"
-#include "pipeline/unchunk.hpp"
 #include "rtm_constants.h"
 #include "tile/cachedDataSource.hpp"
 #include "volume/metadataManager.h"
@@ -23,9 +22,8 @@ typedef std::function<MesherPtr()> ConnectionFunc;
 
 class Sender : public boost::static_visitor<> {
  public:
-  Sender(const coords::Data& min,
-         const coords::Data& max, ConnectionFunc connect,
-         const std::set<uint32_t> addedSegIds,
+  Sender(const coords::Data& min, const coords::Data& max,
+         ConnectionFunc connect, const std::set<uint32_t> addedSegIds,
          const std::set<uint32_t> modifiedSegIds, int32_t segId)
       : min_(min),
         max_(max),
