@@ -73,7 +73,7 @@ bool Store::IsSegmentValid(const common::SegID value) {
 }
 }
 namespace data {
-template class template class dynarray<
+template class dynarray<
     OmSegment, MemPagedStoragePolicy<OmSegment, DEFAULT_MEM_PAGE_SIZE>>;
 ;
 }
