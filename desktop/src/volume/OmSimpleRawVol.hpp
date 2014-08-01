@@ -1,7 +1,7 @@
 #pragma once
 #include "precomp.h"
 
-#include "datalayer/fs/omFile.hpp"
+#include "datalayer/file.h"
 
 class OmSimpleRawVol {
  public:
@@ -13,7 +13,9 @@ class OmSimpleRawVol {
     std::shared_ptr<QFile> file =
         std::make_shared<QFile>(QString::fromStdString(fname));
 
-    om::file::old::openFileRW(*file);
+    if (!file->open(QIODevice::ReadWrite)) {
+      throw om::IoException("could not open file read/write");
+    }
 
     return file;
   }

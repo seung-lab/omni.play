@@ -1,13 +1,13 @@
 #include "users/userSettings.h"
 
-#include "datalayer/fs/omFile.hpp"
+#include "datalayer/file.h"
 
 namespace om {
 
 void userSettings::Load() {
   using namespace YAMLold;
 
-  if (om::file::old::exists(filename_)) {
+  if (om::file::exists(filename_)) {
     Node in;
     om::yaml::util::Read(filename_, in);
 

@@ -1,7 +1,7 @@
 #pragma once
 #include "precomp.h"
 
-#include "datalayer/fs/omFile.hpp"
+#include "datalayer/file.h"
 #include "gui/inspectors/segmentation/exportPage/pageExport.h"
 #include "gui/widgets/omButton.hpp"
 #include "segment/omSegments.h"
@@ -25,7 +25,9 @@ class ExportSegmentList : public OmButton<PageExport> {
     const QString outFile = OmProject::OmniFile() + ".segments.txt";
 
     QFile file(outFile);
-    om::file::old::openFileWO(file);
+    if (!file.open(QIODevice::WriteOnly | QFile::Truncate)) {
+      throw om::IoException("could not open file for write");
+    }
 
     log_infos << "writing segment file " << qPrintable(outFile);
 

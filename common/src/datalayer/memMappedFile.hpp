@@ -19,24 +19,30 @@ namespace datalayer {
 template <typename T>
 class MemMappedFile : public IOnDiskFile<T> {
  public:
-  static MemMappedFile<T> CreateNumElements(const std::string& fnp,
+  static MemMappedFile<T> CreateNumElements(const file::path& fnp,
                                             const int64_t numElements) {
     file::createFileNumElements<T>(fnp, numElements);
 
     return MemMappedFile<T>(fnp);
   }
 
-  static MemMappedFile<T> CreateNumBytes(const std::string& fnp,
+  static MemMappedFile<T> CreateNumBytes(const file::path& fnp,
                                          const int64_t numBytes) {
     file::resizeFileNumBytes(fnp, numBytes);
 
     return MemMappedFile<T>(fnp);
   }
 
-  static MemMappedFile<T> CreateFromData(const std::string& fnp,
+  static MemMappedFile<T> CreateFromData(const file::path& fnp,
                                          std::shared_ptr<T> d,
                                          const int64_t numElements) {
     file::writeNumElements<T>(fnp, d, numElements);
+
+    return MemMappedFile<T>(fnp);
+  }
+  static MemMappedFile<T> CreateFromData(const file::path& fnp,
+                                         const std::vector<T> data) {
+    file::writeAll<T>(fnp, data);
 
     return MemMappedFile<T>(fnp);
   }

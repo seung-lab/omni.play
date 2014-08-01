@@ -8,7 +8,7 @@
 #include "view2d/omView2dManagerImpl.hpp"
 
 OmProjectGlobals::OmProjectGlobals(const om::file::Paths& paths)
-    : randColorFile_(std::make_unique<OmRandColorFile>(paths)),
+    : randColorFile_(std::make_unique<om::utility::RandColorFile>(paths)),
       users_(std::make_unique<om::users>(paths)),
       v2dManagerImpl_(std::make_unique<OmView2dManagerImpl>()),
       stateMan_(std::make_unique<OmStateManagerImpl>()),
@@ -19,6 +19,5 @@ OmProjectGlobals::~OmProjectGlobals() {}
 void OmProjectGlobals::Init() {
   fileReadThrottle_.set(4);
 
-  randColorFile_->createOrLoad();
   users_->SetupFolders();
 }

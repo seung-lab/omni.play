@@ -3,7 +3,7 @@
 
 #include "datalayer/compressedFile.h"
 #include "datalayer/IOnDiskFile.h"
-#include "datalayer/fs/omFile.hpp"
+#include "datalayer/file.h"
 #include "utility/omTempFile.hpp"
 
 template <typename T>
@@ -50,9 +50,9 @@ class OmMemMapCompressedFile : public om::datalayer::IOnDiskFile<T> {
 
     // overwrite old version (don't use mvFile: temp file could be on different
     // volume...)
-    om::file::old::cpFile(tmpFileName, fnp_);
+    om::file::cpFile(tmpFileName, fnp_);
 
-    om::file::old::rmFile(tmpFileName);
+    om::file::rmFile(tmpFileName);
   }
 
   virtual T* GetPtr() const { return data_; }

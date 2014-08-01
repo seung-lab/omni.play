@@ -11,7 +11,7 @@
 namespace om {
 namespace gui {
 
-class progressBarDialog : public QDialog {
+class progressBarDialog : public QDialog, public common::IProgress {
   Q_OBJECT;
 
  private:
@@ -55,8 +55,10 @@ class progressBarDialog : public QDialog {
   std::shared_ptr<progress> Progress() { return progress_; }
 
   void SetTotal(const uint32_t total) { progress_->SetTotal(total); }
+  uint32_t GetTotal() const { return progress_->GetTotal(); }
 
   void SetDone(const uint32_t numDid) { progress_->SetDone(numDid); }
+  uint32_t GetDone() const { return progress_->GetDone(); }
 
   template <typename T>
   void push_back(const T& task) {

@@ -3,7 +3,7 @@
 
 #include "gui/widgets/omButton.hpp"
 #include "system/omAlphaVegasMode.hpp"
-#include "datalayer/fs/omFile.hpp"
+#include "datalayer/file.h"
 #include "viewGroup/omViewGroupView2dState.hpp"
 
 namespace om {

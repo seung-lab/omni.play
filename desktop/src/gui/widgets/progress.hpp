@@ -2,11 +2,12 @@
 #include "precomp.h"
 
 #include "utility/omLockedPODs.hpp"
+#include "common/IProgress.hpp"
 
 namespace om {
 namespace gui {
 
-class progress : public QObject {
+class progress : public QObject, public common::IProgress {
   Q_OBJECT;
 
  private:
@@ -23,7 +24,7 @@ class progress : public QObject {
 
   void SetTotal(const uint32_t total) { numTotal_.set(total); }
 
-  uint32_t GetDone() { return numDone_.get(); }
+  uint32_t GetDone() const { return numDone_.get(); }
 
   void SetDone(const uint32_t numDid) {
     numDone_.add(numDid);

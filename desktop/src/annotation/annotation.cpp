@@ -7,6 +7,7 @@
 #include "project/omProject.h"
 #include "project/omProjectGlobals.h"
 #include "users/omUsers.h"
+#include "datalayer/file.h"
 
 namespace om {
 namespace annotation {
@@ -53,7 +54,7 @@ data* manager::parse(const YAMLold::Node& n) {
 
 void manager::Load() {
   std::string fnp = filePathV1();
-  if (!file::old::exists(fnp)) {
+  if (!file::exists(fnp)) {
     log_infos << "Unable to find Annotations file.  Will create new one.";
     return;
   }

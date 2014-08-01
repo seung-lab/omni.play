@@ -1,7 +1,7 @@
 #pragma once
 #include "precomp.h"
 
-#include "datalayer/fs/omFile.hpp"
+#include "datalayer/file.h"
 
 namespace om {
 namespace yaml {
@@ -12,7 +12,7 @@ class util {
   // http://code.google.com/p/yaml-cpp/wiki/HowToParseADocument#A_Complete_Example
   template <typename T>
   static std::vector<T> Parse(const std::string& fnp) {
-    if (!om::file::old::exists(fnp)) {
+    if (!om::file::exists(fnp)) {
       throw om::IoException("could not find file");
     }
 
@@ -38,7 +38,7 @@ class util {
   // based on
   // http://code.google.com/p/yaml-cpp/wiki/HowToParseADocument#A_Complete_Example
   static void Read(const std::string& fnp, YAMLold::Node& node) {
-    if (!om::file::old::exists(fnp)) {
+    if (!om::file::exists(fnp)) {
       throw om::IoException("could not find file");
     }
 

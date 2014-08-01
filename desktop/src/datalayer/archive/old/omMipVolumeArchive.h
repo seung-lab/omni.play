@@ -2,7 +2,7 @@
 #include "precomp.h"
 
 #include "datalayer/archive/old/utilsOld.hpp"
-#include "datalayer/fs/omFile.hpp"
+#include "datalayer/file.h"
 #include "utility/yaml/coords.h"
 
 #include "volume/omMipVolume.h"
@@ -90,7 +90,9 @@ class OmMipVolumeArchive {
 
     QFile file(filePath);
 
-    om::file::old::openFileWO(file);
+    if (!file.open(QIODevice::WriteOnly | QFile::Truncate)) {
+      throw om::IoException("could not open file for write");
+    }
 
     QDataStream out(&file);
     out.setByteOrder(QDataStream::LittleEndian);

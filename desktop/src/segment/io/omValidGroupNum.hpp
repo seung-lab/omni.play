@@ -3,7 +3,6 @@
 
 #include "segment/omSegment.h"
 #include "segment/omSegments.h"
-#include "datalayer/fs/qtFile.hpp"
 #include "datalayer/archive/std_vector.hpp"
 #include "datalayer/file.h"
 
@@ -69,7 +68,9 @@ class OmValidGroupNum {
       return;
     }
 
-    om::file::openFileRO(file);
+    if (!file.open(QIODevice::ReadOnly)) {
+      throw om::IoException("could not open file read only");
+    }
 
     QDataStream in(&file);
     in.setByteOrder(QDataStream::LittleEndian);
@@ -92,7 +93,9 @@ class OmValidGroupNum {
 
     QFile file(filePath);
 
-    om::file::openFileWO(file);
+    if (!file.open(QIODevice::WriteOnly | QFile::Truncate)) {
+      throw om::IoException("could not open file for write");
+    }
 
     QDataStream out(&file);
     out.setByteOrder(QDataStream::LittleEndian);

@@ -214,8 +214,7 @@ void OmSegmentContextMenu::addPropertiesActions() {
 }
 
 void OmSegmentContextMenu::printChildren() {
-  std::shared_ptr<std::deque<std::string> > children =
-      OmSegmentUtils::GetChildrenInfo(sdw_);
+  auto children = OmSegmentUtils::GetChildrenInfo(sdw_);
 
   OmAskYesNoQuestion fileExport("Export children list to file?");
 
@@ -229,8 +228,9 @@ void OmSegmentContextMenu::printChildren() {
 
     om::gui::progressBarDialog* dialog =
         new om::gui::progressBarDialog(nullptr);
-    dialog->push_back(zi::run_fn(zi::bind(
-        OmSegmentContextMenu::writeChildrenFile, fnp, dialog, children)));
+    dialog->push_back(
+        zi::run_fn(zi::bind(OmSegmentContextMenu::writeChildrenFile,
+                            fnp.toStdString(), dialog, children)));
 
   } else {
     FOR_EACH(iter, *children) { log_infos << iter->c_str(); }
@@ -238,17 +238,15 @@ void OmSegmentContextMenu::printChildren() {
 }
 
 void OmSegmentContextMenu::writeChildrenFile(
-    const QString fnp, om::gui::progressBarDialog* dialog,
-    std::shared_ptr<std::deque<std::string> > children) {
+    const om::file::path fnp, om::gui::progressBarDialog* dialog,
+    std::shared_ptr<std::vector<std::string>> children) {
   try {
-    QFile file(fnp);
-    om::file::old::openFileWO(file);
-    om::file::old::writeStrings(file, *children, dialog);
+    om::file::writeStrings(fnp, *children, dialog);
 
-    dialog->TellDone("wrote file " + fnp);
+    dialog->TellDone(QString("wrote file ") + fnp.c_str());
   }
   catch (...) {
-    dialog->TellDone("failed writing file " + fnp);
+    dialog->TellDone(QString("failed writing file ") + fnp.c_str());
   }
 }
 

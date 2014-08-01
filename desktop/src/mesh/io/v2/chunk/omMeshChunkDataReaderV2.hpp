@@ -2,7 +2,7 @@
 #include "precomp.h"
 
 #include "common/common.h"
-#include "datalayer/fs/omFile.hpp"
+#include "datalayer/file.h"
 #include "volume/omSegmentation.h"
 #include "mesh/io/v2/chunk/omMeshChunkTypes.h"
 
@@ -32,7 +32,9 @@ class OmMeshChunkDataReaderV2 {
 
     QFile reader(fnp_);
 
-    om::file::old::openFileRO(reader);
+    if (!reader.open(QIODevice::ReadOnly)) {
+      throw om::IoException("could not open file read only");
+    }
 
     if (!reader.seek(entry.offsetIntoFile)) {
       throw om::IoException("could not seek to " +

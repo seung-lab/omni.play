@@ -2,7 +2,7 @@
 #include "precomp.h"
 
 #include "actions/omActions.h"
-#include "datalayer/fs/omFile.hpp"
+#include "datalayer/file.h"
 #include "gui/widgets/omButton.hpp"
 #include "landmarks/omLandmarksTypes.h"
 #include "landmarks/omLandmarksDialog.h"
@@ -54,7 +54,9 @@ class LongRangeConnectionButton : public OmButton<om::landmarks::widget> {
 
     QFile file(fpath);
 
-    om::file::old::openFileAppend(file);
+    if (!file.open(QIODevice::Append)) {
+      throw om::IoException("could not open file for write");
+    }
 
     QTextStream out(&file);
 

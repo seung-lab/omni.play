@@ -64,6 +64,6 @@ Q_SLOTS:
   void doRefresh();
 
   static void writeChildrenFile(
-      const QString fnp, om::gui::progressBarDialog* dialog,
-      std::shared_ptr<std::deque<std::string> > children);
+      const om::file::path fnp, om::gui::progressBarDialog* dialog,
+      std::shared_ptr<std::vector<std::string> > children);
 };

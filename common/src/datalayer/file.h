@@ -3,6 +3,7 @@
 #include "precomp.h"
 
 #include "common/exception.h"
+#include "common/IProgress.hpp"
 #include "zi/concurrency/rwmutex.hpp"
 
 namespace boost {
@@ -119,25 +120,20 @@ void writeNumElements(const path& fnp, const std::shared_ptr<T> ptr,
 }
 
 template <typename T>
-void writeStrings(const path& file, const T& strings) {
-  std::ofstream out(file.c_str());
-  log_debugs << "Writing: " << file.string();
-  for (auto& s : strings) {
-    out << s << std::endl;
+void writeStrings(const path& file, const T& strings,
+                  common::IProgress* progress = nullptr) {
+  if (progress) {
+    progress->SetTotal(strings.size());
   }
-  out.close();
-}
-
-template <typename T, typename PROGRESS>
-void writeStrings(const path& file, const T& strings, PROGRESS* progress) {
-  progress->SetTotal(strings.size());
 
   std::ofstream out(file.c_str());
   log_debugs << "Writing: " << file.string();
 
   for (auto& s : strings) {
     out << s << std::endl;
-    progress->SetDone(1);
+    if (progress) {
+      progress->SetDone(1);
+    }
   }
   out.close();
 }

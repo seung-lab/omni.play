@@ -2,7 +2,7 @@
 #include "precomp.h"
 
 #include "segment/omSegmentIterator.h"
-#include "datalayer/fs/omFile.hpp"
+#include "datalayer/file.h"
 #include "gui/inspectors/segmentation/exportPage/pageExport.h"
 #include "gui/widgets/omButton.hpp"
 #include "segment/omSegments.h"
@@ -29,7 +29,9 @@ class ExportDescendantList : public OmButton<PageExport> {
 
     QFile file(outFile);
 
-    om::file::old::openFileWO(file);
+    if (!file.open(QIODevice::WriteOnly | QFile::Truncate)) {
+      throw om::IoException("could not open file for write");
+    }
 
     log_infos << "writing segment file " << qPrintable(outFile);
 

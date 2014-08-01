@@ -3,7 +3,7 @@
 #include "datalayer/archive/segmentation.h"
 #include "common/common.h"
 #include "utility/omFileHelpers.h"
-#include "datalayer/fs/omFile.hpp"
+#include "datalayer/file.h"
 #include "project/omProject.h"
 #include "system/omPreferences.h"
 #include "project/omProjectImpl.hpp"
@@ -76,7 +76,9 @@ void project::Write(const QString& fnp, OmProjectImpl* project) {
 
   QFile file(fnp);
 
-  om::file::old::openFileWO(file);
+  if (!file.open(QIODevice::WriteOnly | QFile::Truncate)) {
+    throw om::IoException("could not open file for write");
+  }
 
   QTextStream out(&file);
 

@@ -26,7 +26,7 @@ class OmOnDiskBoostUnorderedMap {
     create();
   }
 
-  ~OmOnDiskBoostUnorderedMap() { om::file::old::rmFile(fnp_); }
+  ~OmOnDiskBoostUnorderedMap() { om::file::rmFile(fnp_); }
 
   void insert(const KEY& key, const VAL& val) {
     if (file_->get_free_memory() < MinNumBytesBeforeGrowing) {
@@ -79,7 +79,7 @@ class OmOnDiskBoostUnorderedMap {
   void grow() {
     close();
 
-    const uint64_t oldSize = om::file::old::numBytes(fnp_);
+    const uint64_t oldSize = om::file::numBytes(fnp_);
     const uint64_t newSize = 5 * oldSize;
 
     log_infos << "\tgrowing file from " << om::string::bytesToMB(oldSize)

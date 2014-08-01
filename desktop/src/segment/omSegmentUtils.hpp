@@ -75,9 +75,9 @@ class OmSegmentUtils {
     return segWalker;
   }
 
-  std::shared_ptr<std::deque<std::string>> static GetChildrenInfo(
+  std::shared_ptr<std::vector<std::string>> static GetChildrenInfo(
       const SegmentDataWrapper& sdw) {
-    auto ret = std::make_shared<std::deque<std::string>>();
+    auto ret = std::make_shared<std::vector<std::string>>();
 
     if (!sdw.IsSegmentValid()) {
       return ret;

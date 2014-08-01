@@ -22,8 +22,8 @@ struct DataEntry {
   FilePart trianData;
 };
 
-static DataEntry MakeEmptyEntry(const common::SegID segID) {
-  static const FilePart empty = { 0, 0, 0, 0 };
+static inline DataEntry MakeEmptyEntry(const common::SegID segID) {
+  static const FilePart empty = {0, 0, 0, 0};
 
   DataEntry entry;
   entry.segID = segID;

@@ -2,7 +2,6 @@
 #include "precomp.h"
 
 #include "volume/omSegmentation.h"
-#include "datalayer/fs/omVecInFile.hpp"
 
 class OmMSTImportWatershed {
  private:
@@ -16,26 +15,29 @@ class OmMSTImportWatershed {
     if (32 != bitsPerNode) {
       throw om::IoException("only know how to process 32-bit node values");
     }
+    om::file::path path(fnp.toStdString());
+    if (!om::file::exists(path)) {
+      return false;
+    }
+    std::vector<om::segment::ImportEdge> edges;
+    om::file::readAll(fnp.toStdString(), edges);
 
-    OmVectorInFile<om::segment::ImportEdge> edges(fnp);
-    edges.Load();
-
-    if (edges.Vector().size() != numEdges) {
+    if (edges.size() != numEdges) {
       const QString err =
           QString("number of edges mismatch: have %1, but expected %2")
-              .arg(edges.Vector().size())
+              .arg(edges.size())
               .arg(numEdges);
       throw om::IoException(err.toStdString());
     }
 
     auto& mst = vol_->MST();
 
-    mst.resize(edges.Vector().size());
-    for (size_t i = 0; i < edges.Vector().size(); ++i) {
+    mst.resize(edges.size());
+    for (size_t i = 0; i < edges.size(); ++i) {
       mst[i].number = i;
-      mst[i].node1ID = edges.Vector()[i].seg1;
-      mst[i].node2ID = edges.Vector()[i].seg2;
-      mst[i].threshold = edges.Vector()[i].threshold;
+      mst[i].node1ID = edges[i].seg1;
+      mst[i].node2ID = edges[i].seg2;
+      mst[i].threshold = edges[i].threshold;
       mst[i].userJoin = 0;
       mst[i].userSplit = 0;
       mst[i].wasJoined = 0;
