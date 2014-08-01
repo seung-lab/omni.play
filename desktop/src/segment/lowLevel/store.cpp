@@ -72,4 +72,9 @@ bool Store::IsSegmentValid(const common::SegID value) {
   return value == seg->value();
 }
 }
-}  // namespace om::segment::
+namespace data {
+template class template class dynarray<
+    OmSegment, MemPagedStoragePolicy<OmSegment, DEFAULT_MEM_PAGE_SIZE>>;
+;
+}
+}

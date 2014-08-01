@@ -30,4 +30,8 @@ class Store {
   zi::spinlock pagesLock_;
 };
 }
-}  // namespace om::segment::
+namespace data {
+extern template class dynarray<
+    OmSegment, MemPagedStoragePolicy<OmSegment, DEFAULT_MEM_PAGE_SIZE>>;
+}
+}

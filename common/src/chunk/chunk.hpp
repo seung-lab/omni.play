@@ -66,3 +66,19 @@ typedef boost::variant<Chunk<int8_t>, Chunk<uint8_t>, Chunk<int32_t>,
                        Chunk<uint32_t>, Chunk<float>> ChunkVar;
 }
 }  // namespace om::chunk::
+
+extern template class indexed_iterator<om::chunk::Chunk<int8_t>, int8_t>;
+extern template class indexed_iterator<om::chunk::Chunk<uint8_t>, uint8_t>;
+extern template class indexed_iterator<om::chunk::Chunk<int32_t>, int32_t>;
+extern template class indexed_iterator<om::chunk::Chunk<uint32_t>, uint32_t>;
+extern template class indexed_iterator<om::chunk::Chunk<float>, float>;
+extern template class indexed_iterator<om::chunk::Chunk<const int8_t>,
+                                       const int8_t>;
+extern template class indexed_iterator<om::chunk::Chunk<const uint8_t>,
+                                       const uint8_t>;
+extern template class indexed_iterator<om::chunk::Chunk<const int32_t>,
+                                       const int32_t>;
+extern template class indexed_iterator<om::chunk::Chunk<const uint32_t>,
+                                       const uint32_t>;
+extern template class indexed_iterator<om::chunk::Chunk<const float>,
+                                       const float>;

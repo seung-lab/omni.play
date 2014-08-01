@@ -84,5 +84,10 @@ class Voxels {
   std::deque<coords::Chunk> cacheQueue_;
   std::mutex mutex_;
 };
+extern template class Voxels<int8_t>;
+extern template class Voxels<uint8_t>;
+extern template class Voxels<int32_t>;
+extern template class Voxels<uint32_t>;
+extern template class Voxels<float>;
 }
 }  // namespace om::chunk::

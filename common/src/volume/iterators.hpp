@@ -201,7 +201,7 @@ chunk_filtered_dataval_iterator<T> make_chunk_filtered_dataval_iterator(
 
 template <typename T>
 using segment_filtered_dataval_iterator =
-    boost::filter_iterator<std::function<bool(const CoordValue<T>& p)>,
+    boost::filter_iterator<std::function<bool(const CoordValue<T>&)>,
                            chunk_filtered_dataval_iterator<T>>;
 
 template <typename T>
@@ -222,30 +222,77 @@ segment_filtered_dataval_iterator<T> make_segment_filtered_dataval_iterator(
       make_chunk_filtered_dataval_iterator<T>(bounds, ds, uvm, set));
 }
 
-template <typename T>
-using filtered_all_dataval_iterator = boost::filter_iterator<
-    std::function<bool(const CoordValue<T>& p)>, all_dataval_iterator<T>>;
+// template <typename T>
+// using filtered_all_dataval_iterator = boost::filter_iterator<
+//     std::function<bool(const CoordValue<T>&)>, all_dataval_iterator<T>>;
 
-template <typename T>
-filtered_all_dataval_iterator<T> make_filtered_all_dataval_iterator(
-    const coords::DataBbox& bounds, const chunk::ChunkDS& ds,
-    const chunk::UniqueValuesDS& uvm, T id) {
-  return filtered_all_dataval_iterator<T>([id](const CoordValue<T>& p) {
-                                            return p.value() == id;
-                                          },
-                                          make_all_dataval_iterator<T>(bounds,
-                                                                       ds));
-}
+// template <typename T>
+// filtered_all_dataval_iterator<T> make_filtered_all_dataval_iterator(
+//     const coords::DataBbox& bounds, const chunk::ChunkDS& ds,
+//     const chunk::UniqueValuesDS& uvm, T id) {
+//   return filtered_all_dataval_iterator<T>([id](const CoordValue<T>& p) {
+//                                             return p.value() == id;
+//                                           },
+//                                           make_all_dataval_iterator<T>(bounds,
+//                                                                        ds));
+// }
 
-template <typename T>
-filtered_all_dataval_iterator<T> make_filtered_all_dataval_iterator(
-    const coords::DataBbox& bounds, const chunk::ChunkDS& ds,
-    const chunk::UniqueValuesDS& uvm, std::set<T> set) {
-  return filtered_all_dataval_iterator<T>([set](const CoordValue<T>& p) {
-                                            return set.count(p.value());
-                                          },
-                                          make_all_dataval_iterator<T>(bounds,
-                                                                       ds));
+// template <typename T>
+// filtered_all_dataval_iterator<T> make_filtered_all_dataval_iterator(
+//     const coords::DataBbox& bounds, const chunk::ChunkDS& ds,
+//     const chunk::UniqueValuesDS& uvm, std::set<T> set) {
+//   return filtered_all_dataval_iterator<T>([set](const CoordValue<T>& p) {
+//                                             return set.count(p.value());
+//                                           },
+//                                           make_all_dataval_iterator<T>(bounds,
+//                                                                        ds));
+// }
+
+extern template class dataval_iterator<int8_t, chunk::iterator>;
+extern template class dataval_iterator<uint8_t, chunk::iterator>;
+extern template class dataval_iterator<int32_t, chunk::iterator>;
+extern template class dataval_iterator<uint32_t, chunk::iterator>;
+extern template class dataval_iterator<float, chunk::iterator>;
+
+extern template class dataval_iterator<int8_t, chunk::filtered_iterator>;
+extern template class dataval_iterator<uint8_t, chunk::filtered_iterator>;
+extern template class dataval_iterator<int32_t, chunk::filtered_iterator>;
+extern template class dataval_iterator<uint32_t, chunk::filtered_iterator>;
+extern template class dataval_iterator<float, chunk::filtered_iterator>;
 }
+}  // namespace
+
+namespace boost {
+// BOOST static assert failing for some reason.
+// extern template class boost::filter_iterator<
+//     std::function<bool(const om::volume::CoordValue<int8_t>&)>,
+//     om::volume::chunk_filtered_dataval_iterator<int8_t>>;
+// extern template class boost::filter_iterator<
+//     std::function<bool(const om::volume::CoordValue<uint8_t>&)>,
+//     om::volume::chunk_filtered_dataval_iterator<uint8_t>>;
+// extern template class boost::filter_iterator<
+//     std::function<bool(const om::volume::CoordValue<int32_t>&)>,
+//     om::volume::chunk_filtered_dataval_iterator<int32_t>>;
+// extern template class boost::filter_iterator<
+//     std::function<bool(const om::volume::CoordValue<uint32_t>&)>,
+//     om::volume::chunk_filtered_dataval_iterator<uint32_t>>;
+// extern template class boost::filter_iterator<
+//     std::function<bool(const om::volume::CoordValue<float>&)>,
+//     om::volume::chunk_filtered_dataval_iterator<float>>;
+
+// extern template class boost::filter_iterator<
+//     std::function<bool(const om::volume::CoordValue<int8_t>&)>,
+//     om::volume::all_dataval_iterator<int8_t>>;
+// extern template class boost::filter_iterator<
+//     std::function<bool(const om::volume::CoordValue<uint8_t>&)>,
+//     om::volume::all_dataval_iterator<uint8_t>>;
+// extern template class boost::filter_iterator<
+//     std::function<bool(const om::volume::CoordValue<int32_t>&)>,
+//     om::volume::all_dataval_iterator<int32_t>>;
+// extern template class boost::filter_iterator<
+//     std::function<bool(const om::volume::CoordValue<uint32_t>&)>,
+//     om::volume::all_dataval_iterator<uint32_t>>;
+// extern template class boost::filter_iterator<
+//     std::function<bool(const om::volume::CoordValue<float>&)>,
+//     om::volume::all_dataval_iterator<float>>;
 }
-}  // namespace om::volume::

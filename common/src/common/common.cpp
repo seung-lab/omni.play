@@ -33,3 +33,10 @@ std::ostream& operator<<(std::ostream& out, const ViewType& vt) {
 
 }  // namespace common
 }  // namespace om
+
+namespace std {
+template class std::unordered_set<om::common::ID>;
+
+template class std::deque<om::common::SegID>;
+template class std::set<om::common::SegID>;
+}

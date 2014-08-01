@@ -71,3 +71,10 @@ T twist(T vec, ViewType view) {
 
 }  // common
 }  // om
+
+namespace std {
+extern template class std::unordered_set<om::common::ID>;
+
+extern template class std::deque<om::common::SegID>;
+extern template class std::set<om::common::SegID>;
+}
