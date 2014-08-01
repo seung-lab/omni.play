@@ -1,13 +1,11 @@
 #pragma once
 
 #include "threads/taskManagerContainerDeque.hpp"
+#include "threads/taskManager.hpp"
 
 namespace om {
 namespace thread {
-
-class TaskManagerContainerMipSorted;
-template <class> class TaskManager;
-
 typedef TaskManager<TaskManagerContainerDeque> ThreadPool;
+extern template class TaskManager<TaskManagerContainerDeque>;
 }
 }

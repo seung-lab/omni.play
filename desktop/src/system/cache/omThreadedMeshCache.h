@@ -9,7 +9,7 @@
 #include "cache/lockedObjects.hpp"
 #include "utility/lockedObjects.hpp"
 #include "utility/omLockedPODs.hpp"
-#include "threads/taskManager.hpp"
+#include "threads/taskManagerTypes.h"
 
 #include "common/enums.hpp"
 

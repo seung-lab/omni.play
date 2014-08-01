@@ -8,7 +8,7 @@
 #include "segment/lowLevel/omSegmentLowLevelTypes.h"
 #include "segment/lowLevel/store.h"
 #include "segment/omSegments.h"
-#include "threads/taskManager.hpp"
+#include "threads/taskManagerTypes.h"
 #include "utility/timer.hpp"
 #include "utility/segmentationDataWrapper.hpp"
 #include "common/string.hpp"

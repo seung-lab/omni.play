@@ -20,7 +20,6 @@
 
 #include "precomp.h"
 #include "threads/taskManagerImpl.hpp"
-#include "threads/taskManagerTypes.h"
 #include "utility/systemInformation.h"
 
 namespace om {
@@ -43,15 +42,9 @@ class TaskManager {
   ~TaskManager() { join(); }
 
   std::size_t empty() { return tasks_.empty(); }
-
-  std::size_t idle() { return manager_->empty(); }
-
   std::size_t size() { return tasks_.size(); }
-
   std::size_t worker_count() { return manager_->worker_count(); }
-
   std::size_t worker_limit() { return manager_->worker_limit(); }
-
   std::size_t idle_workers() { return manager_->idle_workers(); }
 
   void start() {

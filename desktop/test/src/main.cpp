@@ -1,7 +1,7 @@
 #include "precomp.h"
 #include "gtest/gtest.h"
 #include "project/omProject.h"
-#include "datalayer/fs/omFile.hpp"
+#include "datalayer/file.h"
 #include "utility/omUUID.hpp"
 #include "utility/dataWrappers.h"
 #include "meshTest.hpp"

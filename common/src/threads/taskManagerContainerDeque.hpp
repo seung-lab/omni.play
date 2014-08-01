@@ -94,4 +94,41 @@ class TaskManagerContainerDeque {
     zi::guard g(lock_);
     queue_.push_back(wrapFunction(task));
   }
+
+  // insert
+  void insert(task_t task) {
+    zi::guard g(lock_);
+    queue_.push_back(task);
+  }
+
+  template <typename Runnable>
+  void insert(std::shared_ptr<Runnable> task) {
+    zi::guard g(lock_);
+    queue_.push_back(task);
+  }
+
+  template <typename Function>
+  void insert(const Function& task) {
+    zi::guard g(lock_);
+    queue_.push_back(wrapFunction(task));
+  }
+
+  // insert w/ arg
+  template <typename ARG>
+  void insert(const ARG&, task_t task) {
+    zi::guard g(lock_);
+    queue_.push_back(task);
+  }
+
+  template <typename ARG, class Runnable>
+  void insert(const ARG&, std::shared_ptr<Runnable> task) {
+    zi::guard g(lock_);
+    queue_.push_back(task);
+  }
+
+  template <typename ARG, class Function>
+  void insert(const ARG&, const Function& task) {
+    zi::guard g(lock_);
+    queue_.push_back(wrapFunction(task));
+  }
 };

@@ -1,7 +1,7 @@
 #pragma once
 #include "precomp.h"
 
-#include "threads/taskManager.hpp"
+#include "threads/taskManagerTypes.h"
 
 class OmTileDrawer;
 
