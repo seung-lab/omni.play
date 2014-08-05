@@ -8,8 +8,6 @@
 #include "datalayer/IOnDiskFile.h"
 #include "datalayer/file.h"
 
-typedef boost::iostreams::mapped_file mapped_file;
-
 namespace om {
 namespace mesh {
 struct DataEntry;
@@ -18,6 +16,8 @@ namespace datalayer {
 
 template <typename T>
 class MemMappedFile : public IOnDiskFile<T> {
+  typedef boost::iostreams::mapped_file mapped_file;
+
  public:
   static MemMappedFile<T> CreateNumElements(const file::path& fnp,
                                             const int64_t numElements) {
@@ -60,7 +60,13 @@ class MemMappedFile : public IOnDiskFile<T> {
 
   MemMappedFile(const file::path& fnp)
       : fnp_(fnp), numBytes_(boost::filesystem::file_size(fnp_)) {
-    file_.reset(new mapped_file(fnp_.string()));
+    try {
+      file_.reset(new mapped_file(fnp_.string()));
+    }
+    catch (std::exception e) {
+      log_errors << "Unable to map " << fnp_.string() << ": " << e.what();
+      throw;
+    }
   }
 
   virtual ~MemMappedFile() {}

@@ -29,7 +29,7 @@ void RandColorFile::createOrLoad() {
 }
 
 void RandColorFile::map() {
-  file_ = datalayer::MemMappedFile<common::Color>(fnp_);
+  file_ = datalayer::ROMemMappedFile<common::Color>(fnp_);
   values_ = file_.GetPtr();
 }
 
@@ -66,8 +66,8 @@ void RandColorFile::setupFile() {
   std::vector<common::Color> colorTable;
 
   buildColorTable(colorTable);
-  file_ =
-      datalayer::MemMappedFile<common::Color>::CreateFromData(fnp_, colorTable);
+  file_ = datalayer::ROMemMappedFile<common::Color>::CreateFromData(fnp_,
+                                                                    colorTable);
   values_ = file_.GetPtr();
 }
 }
@@ -75,6 +75,6 @@ void RandColorFile::setupFile() {
 
 namespace om {
 namespace datalayer {
-template class MemMappedFile<common::Color>;
+template class ROMemMappedFile<common::Color>;
 }
 }

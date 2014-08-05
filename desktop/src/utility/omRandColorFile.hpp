@@ -4,7 +4,7 @@
 #include "common/colors.h"
 #include "common/common.h"
 #include "datalayer/paths.hpp"
-#include "datalayer/memMappedFile.hpp"
+#include "datalayer/roMemMappedFile.hpp"
 
 namespace om {
 namespace utility {
@@ -26,8 +26,8 @@ class RandColorFile {
 
   const om::file::path fnp_;
 
-  om::datalayer::MemMappedFile<om::common::Color> file_;
-  om::common::Color* values_;
+  om::datalayer::ROMemMappedFile<om::common::Color> file_;
+  const om::common::Color* values_;
   int64_t numEntries_;
 
   friend class OmProjectGlobals;
@@ -35,6 +35,6 @@ class RandColorFile {
 }
 
 namespace datalayer {
-extern template class MemMappedFile<om::common::Color>;
+extern template class ROMemMappedFile<om::common::Color>;
 }
 }
