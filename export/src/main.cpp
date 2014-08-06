@@ -34,7 +34,7 @@ class Options {
         "mip,m", po::value<uint8_t>()->default_value(0),
         "Mip level at which to export")("id", po::value<uint32_t>(),
                                         "Segment ID to export")(
-        "obj,o", po::value<bool>()->default_value(true), "Export as obj");
+        "obj,o", po::bool_switch(), "Export as obj");
   }
 
   po::options_description MainOD;
@@ -47,26 +47,9 @@ class Options {
   po::positional_options_description HelpPD;
 };
 
-int getHelp(const Options& opt, int argc, char* argv[]) {
-  po::variables_map helpVM;
-  po::store(po::command_line_parser(argc, argv)
-                .options(opt.HelpOD)
-                .positional(opt.HelpPD)
-                .allow_unregistered()
-                .run(),
-            helpVM);
-  // po::notify(helpVM);
-
-  std::cerr << "Usage: " << argv[0] << " mode [options] path" << std::endl
+int printHelp(const Options& opt, std::string mode) {
+  std::cerr << "Usage: omni.export mode [options] path" << std::endl
             << "  Modes: help version mesh tile mst" << std::endl;
-
-  std::string mode;
-
-  if (helpVM.count("helpMode")) {
-    mode = helpVM["helpMode"].as<std::string>();
-  } else if (helpVM.count("mode")) {
-    mode = helpVM["mode"].as<std::string>();
-  }
 
   if (mode == "mesh") {
     std::cerr << opt.MeshOD << std::endl;
@@ -82,6 +65,32 @@ int getHelp(const Options& opt, int argc, char* argv[]) {
   return 1;
 }
 
+int getHelp(const Options& opt, int argc, char* argv[]) {
+  po::variables_map helpVM;
+  try {
+    po::store(po::command_line_parser(argc, argv)
+                  .options(opt.HelpOD)
+                  .positional(opt.HelpPD)
+                  .allow_unregistered()
+                  .run(),
+              helpVM);
+    po::notify(helpVM);
+  }
+  catch (po::error e) {
+    std::cerr << "Parsing Error: " << e.what() << std::endl << std::endl;
+    return printHelp(opt, "help");
+  }
+  std::string mode;
+
+  if (helpVM.count("helpMode")) {
+    mode = helpVM["helpMode"].as<std::string>();
+  } else if (helpVM.count("mode")) {
+    mode = helpVM["mode"].as<std::string>();
+  }
+
+  return printHelp(opt, mode);
+}
+
 int exportMesh(const Options& opt, int argc, char* argv[]) {
   po::variables_map meshVM;
   try {
@@ -94,8 +103,9 @@ int exportMesh(const Options& opt, int argc, char* argv[]) {
               meshVM);
     po::notify(meshVM);
   }
-  catch (std::exception e) {
-    return getHelp(opt, argc, argv);
+  catch (po::error e) {
+    std::cerr << "Parsing Error: " << e.what() << std::endl << std::endl;
+    return printHelp(opt, "mesh");
   }
 
   std::string path;
@@ -103,7 +113,7 @@ int exportMesh(const Options& opt, int argc, char* argv[]) {
     path = meshVM["path"].as<std::string>();
   } else {
     log_debugs << "Failed path";
-    return getHelp(opt, argc, argv);
+    return printHelp(opt, "mesh");
   }
 
   std::string resolutionStr;
@@ -116,28 +126,28 @@ int exportMesh(const Options& opt, int argc, char* argv[]) {
 
     if (strs.size() != 3) {
       log_debugs << "Failed res size " << strs.size() << " : " << resolutionStr;
-      return getHelp(opt, argc, argv);
+      return printHelp(opt, "mesh");
     }
 
     int x = std::stoi(strs[0]);
     if (!x) {
       log_debugs << "Failed resolution x";
-      return getHelp(opt, argc, argv);
+      return printHelp(opt, "mesh");
     }
     int y = std::stoi(strs[1]);
     if (!y) {
       log_debugs << "Failed resolution y";
-      return getHelp(opt, argc, argv);
+      return printHelp(opt, "mesh");
     }
     int z = std::stoi(strs[2]);
     if (!z) {
       log_debugs << "Failed resolution z";
-      return getHelp(opt, argc, argv);
+      return printHelp(opt, "mesh");
     }
     resolution = Vector3i(x, y, z);
   } else {
     log_debugs << "Failed resolution";
-    return getHelp(opt, argc, argv);
+    return printHelp(opt, "mesh");
   }
 
   float scale;
@@ -145,7 +155,7 @@ int exportMesh(const Options& opt, int argc, char* argv[]) {
     scale = meshVM["scale"].as<float>();
   } else {
     log_debugs << "Failed scale";
-    return getHelp(opt, argc, argv);
+    return printHelp(opt, "mesh");
   }
 
   uint8_t mip;
@@ -153,7 +163,7 @@ int exportMesh(const Options& opt, int argc, char* argv[]) {
     mip = meshVM["mip"].as<uint8_t>();
   } else {
     log_debugs << "Failed mip";
-    return getHelp(opt, argc, argv);
+    return printHelp(opt, "mesh");
   }
 
   uint32_t id;
@@ -161,7 +171,7 @@ int exportMesh(const Options& opt, int argc, char* argv[]) {
     id = meshVM["id"].as<uint32_t>();
   } else {
     log_debugs << "Failed id";
-    return getHelp(opt, argc, argv);
+    return printHelp(opt, "mesh");
   }
 
   bool obj;
@@ -169,7 +179,7 @@ int exportMesh(const Options& opt, int argc, char* argv[]) {
     obj = meshVM["obj"].as<bool>();
   } else {
     log_debugs << "Failed obj";
-    return getHelp(opt, argc, argv);
+    return printHelp(opt, "mesh");
   }
 
   file::Paths p(path);
@@ -217,8 +227,9 @@ int exportMST(const Options& opt, int argc, char* argv[]) {
               mstVM);
     po::notify(mstVM);
   }
-  catch (std::exception e) {
-    return getHelp(opt, argc, argv);
+  catch (po::error e) {
+    std::cerr << "Parsing Error: " << e.what() << std::endl << std::endl;
+    return printHelp(opt, "mst");
   }
 
   std::string path;
@@ -226,7 +237,7 @@ int exportMST(const Options& opt, int argc, char* argv[]) {
     path = mstVM["path"].as<std::string>();
   } else {
     log_debugs << "Failed path";
-    return getHelp(opt, argc, argv);
+    return printHelp(opt, "mst");
   }
 
   file::Paths p(path);
@@ -242,47 +253,35 @@ int exportMST(const Options& opt, int argc, char* argv[]) {
 
 int main(int argc, char* argv[]) {
   logging::initLogging("", false);
-
   Options opt;
 
-  po::variables_map mainVM;
-  try {
-    po::options_description od;
-    po::store(po::command_line_parser(argc, argv)
-                  .options(opt.MainOD)
-                  .positional(opt.MainPD)
-                  .allow_unregistered()
-                  .run(),
-              mainVM);
-    po::notify(mainVM);
-  }
-  catch (std::exception e) {
+  if (argc <= 1) {
+    log_debugs << "Not enough args.";
     return getHelp(opt, argc, argv);
   }
 
-  auto mode = mainVM["mode"].as<std::string>();
-
-  log_variable(mode);
-  if (mode == "help") {
+  if (strcmp(argv[1], "help") == 0) {
+    log_debugs << "Help Help";
     return getHelp(opt, argc, argv);
   }
 
-  if (mode == "version") {
+  if (strcmp(argv[1], "version") == 0) {
     std::cout << "omni.export version " << OMNI_EXPORT_VERSION << std::endl;
     return 0;
   }
 
-  if (mode == "mesh") {
+  if (strcmp(argv[1], "mesh") == 0) {
     return exportMesh(opt, argc, argv);
   }
 
-  if (mode == "tile") {
+  if (strcmp(argv[1], "tile") == 0) {
     return exportTile(opt, argc, argv);
   }
 
-  if (mode == "mst") {
+  if (strcmp(argv[1], "mst") == 0) {
     return exportMST(opt, argc, argv);
   }
 
+  log_debugs << "Failed All. " << argv[1];
   return getHelp(opt, argc, argv);
 }
