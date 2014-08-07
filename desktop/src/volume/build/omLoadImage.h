@@ -119,7 +119,7 @@ class OmLoadImage {
     // if chunk was not in map, assume chunk is unallocated...
     // TODO: just use OmRawChunk...
     const uint64_t offset =
-        OmChunkOffset::ComputeChunkPtrOffsetBytes(*vol_, coord);
+        coord.PtrOffset(vol_->Coords(), vol_->GetBytesPerVoxel());
 
     if (shouldPreallocate_) {
       preallocateChunk(offset);

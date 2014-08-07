@@ -7,7 +7,6 @@
 #include "datalayer/IDataVolume.hpp"
 #include "project/omProject.h"
 #include "utility/omStringHelpers.h"
-#include "volume/io/omChunkOffset.hpp"
 #include "volume/omChannel.h"
 #include "volume/omSegmentation.h"
 #include "volume/omVolumeTypes.hpp"
@@ -74,7 +73,7 @@ class OmMemMappedVolumeImpl : public om::datalayer::IDataVolume<T> {
   T* GetChunkPtr(const om::coords::Chunk& coord) const {
     const int level = coord.mipLevel();
     const uint64_t offset =
-        OmChunkOffset::ComputeChunkPtrOffsetBytes(*vol_, coord);
+        coord.PtrOffset(vol_->Coords(), vol_->GetBytesPerVoxel());
     T* ret = maps_[level]->GetPtrWithOffset(offset);
     assert(ret);
     return ret;

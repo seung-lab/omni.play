@@ -105,8 +105,7 @@ class OmDataCopierHdf5Task : public zi::runnable {
     OmDataWrapperPtr data = getChunkData();
 
     const uint64_t chunkOffset =
-        OmChunkOffset::ComputeChunkPtrOffsetBytes(*vol_, coord_);
-
+        coord_.PtrOffset(vol_->Coords(), vol_->GetBytesPerVoxel());
     QFile file(mip0fnp_);
     if (!file.open(QIODevice::ReadWrite)) {
       throw om::IoException("could not open file");
