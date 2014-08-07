@@ -18,12 +18,14 @@ void OmSegment::setParent(OmSegment* parent, const double threshold) {
 ///////     Color
 void OmSegment::RandomizeColor() {
   data_->color = om::utils::color::GetRandomColor(data_->color);
+  touchFreshnessForMeshes();
 }
 
 void OmSegment::reRandomizeColor() { RandomizeColor(); }
 
 void OmSegment::SetColor(const om::common::Color& color) {
   data_->color = color;
+  touchFreshnessForMeshes();
 }
 
 void OmSegment::SetColor(const Vector3i& color) {
