@@ -1,7 +1,7 @@
 #pragma once
 #include "precomp.h"
 
-#include "view2d/omSliceCache.hpp"
+#include "chunk/voxelGetter.hpp"
 
 class OmChunksAndPts {
  private:
@@ -29,13 +29,13 @@ class OmChunksAndPts {
   }
 
   std::shared_ptr<om::common::SegIDSet> GetSegIDs() {
-    OmSliceCache sliceCache(&vol_, viewType_);
+    om::chunk::Voxels<uint32_t> voxels(vol_.ChunkDS(), vol_.Coords());
 
     std::shared_ptr<om::common::SegIDSet> ret =
         std::make_shared<om::common::SegIDSet>();
 
-    FOR_EACH(pt, pts_) {
-      om::common::SegID id = sliceCache.GetVoxelValue(*pt);
+    for (auto& pt : pts_) {
+      om::common::SegID id = voxels.GetValue(pt);
       if (id) {
         ret->insert(id);
       }

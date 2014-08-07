@@ -3,7 +3,6 @@
 
 #include "view2d/brush/omBrushOppLine.hpp"
 #include "view2d/brush/omBrushOppTypes.h"
-#include "view2d/omSliceCache.hpp"
 #include "segment/omSegmentSelector.h"
 
 class OmBrushSelectLine {
