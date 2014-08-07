@@ -31,6 +31,7 @@ void RandColorFile::createOrLoad() {
 void RandColorFile::map() {
   file_ = datalayer::ROMemMappedFile<common::Color>(fnp_);
   values_ = file_.GetPtr();
+  numEntries_ = file_.Length();
 }
 
 void RandColorFile::buildColorTable(std::vector<common::Color>& colorTable) {
