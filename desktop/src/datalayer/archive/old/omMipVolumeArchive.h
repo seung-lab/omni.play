@@ -3,7 +3,7 @@
 
 #include "datalayer/archive/old/utilsOld.hpp"
 #include "datalayer/file.h"
-#include "utility/yaml/coords.h"
+#include "coordinates/yaml.hpp"
 
 #include "volume/omMipVolume.h"
 #include "volume/omVolumeTypes.hpp"
@@ -44,7 +44,8 @@ class OmMipVolumeArchive {
 
     QString volDataType;
     in >> volDataType;
-    vol_.mVolDataType = OmVolumeTypeHelpers::GetTypeFromString(volDataType);
+    vol_.mVolDataType =
+        OmVolumeTypeHelpers::GetTypeFromString(volDataType.toStdString());
 
     vol_.LoadPath();
 

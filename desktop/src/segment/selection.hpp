@@ -147,9 +147,7 @@ class Selection {
     lists_.TouchRecent(seg);
   }
 
-  friend YAMLold::Emitter& YAMLold::operator<<(YAMLold::Emitter& out,
-                                               const OmSegmentsImpl& sc);
-  friend void YAMLold::operator>>(const YAMLold::Node& in, OmSegmentsImpl& sc);
+  friend class YAML::convert<OmSegmentsImpl>;
 };
 }
 }

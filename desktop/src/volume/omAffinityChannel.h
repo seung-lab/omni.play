@@ -7,12 +7,6 @@
 class OmAffinityGraph;
 
 class OmAffinityChannel : public OmChannel {
- private:
-  const om::common::AffinityGraph affinity_;
-
-  friend YAMLold::Emitter& YAMLold::operator<<(YAMLold::Emitter& out,
-                                               const OmAffinityGraph& chan);
-
  public:
   OmAffinityChannel(const om::common::AffinityGraph aff)
       : OmChannel(), affinity_(aff) {
@@ -44,4 +38,7 @@ class OmAffinityChannel : public OmChannel {
         throw om::ArgException("unknown arg");
     }
   }
+
+ private:
+  const om::common::AffinityGraph affinity_;
 };

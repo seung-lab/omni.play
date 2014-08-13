@@ -24,13 +24,22 @@ class project {
 }  // namespace data
 }  // namespace om
 
-namespace YAMLold {
+namespace YAML {
 
-YAMLold::Emitter& operator<<(YAMLold::Emitter& out, const OmProjectImpl& p);
-void operator>>(const YAMLold::Node& in, OmProjectImpl& p);
-YAMLold::Emitter& operator<<(YAMLold::Emitter& out, const OmPreferences& p);
-void operator>>(const YAMLold::Node& in, OmPreferences& p);
-YAMLold::Emitter& operator<<(YAMLold::Emitter& out, const OmProjectVolumes& p);
-void operator>>(const YAMLold::Node& in, OmProjectVolumes& p);
+template <>
+struct convert<OmProjectImpl> {
+  static Node encode(const OmProjectImpl&);
+  static bool decode(const Node& node, OmProjectImpl&);
+};
+template <>
+struct convert<OmPreferences> {
+  static Node encode(const OmPreferences&);
+  static bool decode(const Node& node, OmPreferences&);
+};
+template <>
+struct convert<OmProjectVolumes> {
+  static Node encode(const OmProjectVolumes&);
+  static bool decode(const Node& node, OmProjectVolumes&);
+};
 
-}  // namespace YAMLold
+}  // namespace YAML

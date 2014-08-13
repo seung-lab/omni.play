@@ -27,10 +27,7 @@ class OmSegmentationManager {
  private:
   OmGenericManager<OmSegmentation> manager_;
 
-  friend YAMLold::Emitter& YAMLold::operator<<(YAMLold::Emitter& out,
-                                               const OmSegmentationManager&);
-  friend void YAMLold::operator>>(const YAMLold::Node& in,
-                                  OmSegmentationManager&);
+  friend class YAML::convert<OmSegmentationManager>;
   friend QDataStream& operator<<(QDataStream& out,
                                  const OmSegmentationManager&);
   friend QDataStream& operator>>(QDataStream& in, OmSegmentationManager&);

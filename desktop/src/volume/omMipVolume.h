@@ -23,14 +23,15 @@ class OmChunk;
 class OmVolume;
 class OmVolumeData;
 
-namespace YAMLold {
-template <class T>
-class mipVolume;
-}
-
 namespace om {
 namespace rebuilder {
 class segmentation;
+}
+namespace data {
+namespace archive {
+template <typename VOL>
+class mipVolume;
+}
 }
 }
 
@@ -129,7 +130,7 @@ class OmMipVolume {
   template <class T>
   friend class OmMipVolumeArchive;
   template <class T>
-  friend class YAMLold::mipVolume;
+  friend class om::data::archive::mipVolume;
 
   friend class OmMipVolumeArchiveOld;
   friend class OmMemMappedVolume;

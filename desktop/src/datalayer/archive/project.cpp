@@ -13,28 +13,22 @@
 #include "utility/segmentDataWrapper.hpp"
 #include "volume/omFilter2d.h"
 #include "mesh/omMeshManagers.hpp"
+#include "utility/yaml/baseTypes.hpp"
 
 namespace om {
 namespace data {
 namespace archive {
 
 void project::Read(const QString& fnp, OmProjectImpl* project) {
-  using namespace YAMLold;
-
-  std::ifstream fin(fnp.toStdString().c_str());
+  using namespace YAML;
 
   try {
-    Parser parser(fin);
+    auto docs = YAML::LoadAllFromFile(fnp.toStdString());
 
-    Node doc;
-    parser.GetNextDocument(doc);
-
-    int ver;
-    doc["version"] >> ver;
+    auto ver = docs[0]["version"].as<int>();
     OmProject::setFileVersion(ver);
 
-    parser.GetNextDocument(doc);
-    doc >> (*project);
+    YAML::convert<OmProjectImpl>::decode(docs[1], *project);
   }
   catch (Exception e) {
     /*
@@ -52,17 +46,7 @@ void project::Read(const QString& fnp, OmProjectImpl* project) {
 }
 
 void project::Write(const QString& fnp, OmProjectImpl* project) {
-  using namespace YAMLold;
-
-  Emitter emitter;
-
-  emitter << BeginDoc << BeginMap;
-  emitter << Key << "version" << Value << Latest_Project_Version;
-  emitter << EndMap << EndDoc;
-
-  emitter << BeginDoc;
-  emitter << *project;
-  emitter << EndDoc;
+  using namespace YAML;
 
   const QString fnpOld = fnp + ".old";
 
@@ -74,17 +58,13 @@ void project::Write(const QString& fnp, OmProjectImpl* project) {
   catch (...) {
   }
 
-  QFile file(fnp);
-
-  if (!file.open(QIODevice::WriteOnly | QFile::Truncate)) {
-    throw om::IoException("could not open file for write");
-  }
-
-  QTextStream out(&file);
-
   OmProject::setFileVersion(Latest_Project_Version);
 
-  out << emitter.c_str();
+  std::ofstream fout(fnp.toAscii());
+  YAML::Emitter e(fout);
+  e << YAML::BeginDoc << YAML::Node(Latest_Project_Version) << YAML::EndDoc;
+  e << YAML::BeginDoc << YAML::convert<OmProjectImpl>::encode(*project)
+    << YAML::EndDoc;
 }
 
 void project::postLoad() {
@@ -112,51 +92,65 @@ void project::postLoad() {
 }  // namespace data
 }  // namespace om
 
-namespace YAMLold {
-
-Emitter& operator<<(Emitter& out, const OmProjectImpl& p) {
-  out << BeginMap;
-  out << Key << "Preferences" << Value << OmPreferences::instance();
-  out << Key << "Volumes" << Value << p.volumes_;
-  out << EndMap;
-  return out;
+namespace YAML {
+Node convert<OmProjectImpl>::encode(const OmProjectImpl& p) {
+  Node n;
+  n["Preferences"] = OmPreferences::instance();
+  n["Volumes"] = p.volumes_;
+  return n;
 }
 
-void operator>>(const Node& in, OmProjectImpl& p) {
-  in["Preferences"] >> OmPreferences::instance();
-  in["Volumes"] >> p.volumes_;
+bool convert<OmProjectImpl>::decode(const Node& node, OmProjectImpl& p) {
+  if (!node.IsMap()) {
+    return false;
+  }
+  YAML::convert<OmPreferences>::decode(node["Preferences"],
+                                       OmPreferences::instance());
+  YAML::convert<OmProjectVolumes>::decode(node["Volumes"], p.volumes_);
+  return true;
 }
 
-Emitter& operator<<(Emitter& out, const OmPreferences& p) {
-  out << BeginMap;
-  out << Key << "String Preferences" << Value << p.stringPrefs_;
-  out << Key << "Float Preferences" << Value << p.floatPrefs_;
-  out << Key << "Int Preferences" << Value << p.intPrefs_;
-  out << Key << "Bool Preferences" << Value << p.boolPrefs_;
-  out << Key << "V3f Preferences" << Value << p.v3fPrefs_;
-  out << EndMap;
-  return out;
+Node convert<OmPreferences>::encode(const OmPreferences& p) {
+  Node n;
+  n["String Preferences"] = p.stringPrefs_;
+  n["Float Preferences"] = p.floatPrefs_;
+  n["Int Preferences"] = p.intPrefs_;
+  n["Bool Preferences"] = p.boolPrefs_;
+  n["V3f Preferences"] = p.v3fPrefs_;
+  return n;
+}
+bool convert<OmPreferences>::decode(const Node& node, OmPreferences& p) {
+  if (!node.IsMap()) {
+    return false;
+  }
+
+  YAML::convert<QHash<int, QString>>::decode(node["String Preferences"],
+                                             p.stringPrefs_);
+  YAML::convert<QHash<int, float>>::decode(node["Float Preferences"],
+                                           p.floatPrefs_);
+  YAML::convert<QHash<int, int>>::decode(node["Int Preferences"], p.intPrefs_);
+  YAML::convert<QHash<int, bool>>::decode(node["Bool Preferences"],
+                                          p.boolPrefs_);
+  YAML::convert<QHash<int, Vector3f>>::decode(node["V3f Preferences"],
+                                              p.v3fPrefs_);
+  return true;
 }
 
-void operator>>(const Node& in, OmPreferences& p) {
-  in["String Preferences"] >> p.stringPrefs_;
-  in["Float Preferences"] >> p.floatPrefs_;
-  in["Int Preferences"] >> p.intPrefs_;
-  in["Bool Preferences"] >> p.boolPrefs_;
-  in["V3f Preferences"] >> p.v3fPrefs_;
+Node convert<OmProjectVolumes>::encode(const OmProjectVolumes& p) {
+  Node n;
+  n["Channels"] = *p.channels_;
+  n["Segmentations"] = *p.segmentations_;
+  return n;
 }
 
-Emitter& operator<<(Emitter& out, const OmProjectVolumes& p) {
-  out << BeginMap;
-  out << Key << "Channels" << Value << *p.channels_;
-  out << Key << "Segmentations" << Value << *p.segmentations_;
-  out << EndMap;
-  return out;
+bool convert<OmProjectVolumes>::decode(const Node& node, OmProjectVolumes& p) {
+  if (!node.IsMap()) {
+    return false;
+  }
+  YAML::convert<OmChannelManager>::decode(node["Channels"], *p.channels_);
+  YAML::convert<OmSegmentationManager>::decode(node["Segmentations"],
+                                               *p.segmentations_);
+  return true;
 }
 
-void operator>>(const Node& in, OmProjectVolumes& p) {
-  in["Channels"] >> *p.channels_;
-  in["Segmentations"] >> *p.segmentations_;
-}
-
-}  // namespace YAMLold
+}  // namespace YAML

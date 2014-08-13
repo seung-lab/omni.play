@@ -32,11 +32,11 @@ template <>
 struct convert<om::coords::VolumeSystem> {
   static Node encode(const om::coords::VolumeSystem& c) {
     Node node;
+
     node["dataDimensions"] = c.DataDimensions();
     node["dataResolution"] = c.Resolution();
     node["chunkDim"] = c.ChunkDimensions().x;
-    // node["mMipLeafDim"] = c.mMipLeafDim;
-    // node["mMipRootLevel"] = c.mMipRootLevel;
+    node["mMipRootLevel"] = c.RootMipLevel();
     node["absOffset"] = c.AbsOffset();
     return node;
   }
@@ -46,17 +46,17 @@ struct convert<om::coords::VolumeSystem> {
       return false;
     }
 
-    auto extent = node["dataExtent"].as<om::coords::GlobalBbox>();
-    if (!extent.isEmpty()) {
-      c.SetDataDimensions(extent.getDimensions());
+    om::coords::Global dims;
+    if (node["dataDimensions"].IsDefined()) {
+      dims = node["dataDimensions"].as<om::coords::Global>();
     } else {
-      c.SetDataDimensions(node["dataDimensions"].as<Vector3i>());
+      dims = node["dataExtent"]["max"].as<om::coords::Global>() -
+             node["dataExtent"]["min"].as<om::coords::Global>();
     }
+    c.SetDataDimensions(dims);
 
     c.SetResolution(node["dataResolution"].as<Vector3i>(Vector3i::ONE));
     c.SetChunkDimensions(Vector3i(node["chunkDim"].as<int>(128)));
-    // in["mMipLeafDim"] >> c.mMipLeafDim;
-    // in["mMipRootLevel"] >> c.mMipRootLevel;
     c.SetAbsOffset(node["absOffset"].as<Vector3i>(Vector3i::ZERO));
     c.UpdateRootLevel();
     return true;

@@ -45,7 +45,7 @@ class manager : public system::Manager<data> {
   void Save() const;
 
  protected:
-  data* parse(const YAMLold::Node& n);
+  data* parse(const YAML::Node& n);
   std::string getFileName() { return filePathV1(); }
 
  private:

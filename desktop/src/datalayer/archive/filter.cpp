@@ -1,42 +1,44 @@
-
 #include "datalayer/archive/filter.h"
+#include "utility/yaml/genericManager.hpp"
 #include "volume/omFilter2dManager.h"
 #include "volume/omFilter2d.h"
-#include "utility/yaml/genericManager.hpp"
 
-namespace YAMLold {
-
-Emitter& operator<<(Emitter& out, const OmFilter2dManager& fm) {
-  out << BeginMap;
-  genericManager::Save(out, fm.filters_);
-  out << EndMap;
-  return out;
+namespace YAML {
+Node convert<OmFilter2dManager>::encode(const OmFilter2dManager& fm) {
+  return genericManager::Save(fm.filters_);
+}
+bool convert<OmFilter2dManager>::decode(const Node& node,
+                                        OmFilter2dManager& fm) {
+  return genericManager::Load(node, fm.filters_);
 }
 
-void operator>>(const Node& in, OmFilter2dManager& fm) {
-  genericManager::Load(in, fm.filters_);
+Node convert<OmFilter2d>::encode(const OmFilter2d& f) {
+  Node n;
+  n["id"] = f.GetID();
+  n["note"] = f.GetNote().toStdString();
+  n["custom name"] = f.GetCustomName().toStdString();
+  n["alpha"] = f.alpha_;
+  n["chan id"] = f.chanID_;
+  n["seg id"] = f.segID_;
+  return n;
+}
+bool convert<OmFilter2d>::decode(const Node& node, OmFilter2d& f) {
+  if (!node.IsMap()) {
+    return false;
+  }
+  try {
+    f.id_ = node["id"].as<om::common::ID>(0);
+    f.note_ = node["note"].as<QString>("");
+    f.customName_ = node["custom name"].as<QString>("");
+    f.alpha_ = node["alpha"].as<double>(0);
+    f.chanID_ = node["chan id"].as<om::common::ID>(0);
+    f.segID_ = node["seg id"].as<om::common::ID>(0);
+  }
+  catch (YAML::Exception e) {
+    log_debugs << "Error Decoding OmFilter2d: " << e.what();
+    return false;
+  }
+  return true;
 }
 
-Emitter& operator<<(Emitter& out, const OmFilter2d& f) {
-  out << BeginMap;
-  out << Key << "id" << Value << f.GetID();
-  out << Key << "note" << Value << f.GetNote().toStdString();
-  out << Key << "custom name" << Value << f.GetCustomName().toStdString();
-  out << Key << "alpha" << Value << f.alpha_;
-  out << Key << "chan id" << Value << f.chanID_;
-  out << Key << "seg id" << Value << f.segID_;
-  out << EndMap;
-
-  return out;
-}
-
-void operator>>(const Node& in, OmFilter2d& f) {
-  in["id"] >> f.id_;
-  in["note"] >> f.note_;
-  in["custom name"] >> f.customName_;
-  in["alpha"] >> f.alpha_;
-  in["chan id"] >> f.chanID_;
-  in["seg id"] >> f.segID_;
-}
-
-}  // namespace YAMLold
+}  // namespace YAML

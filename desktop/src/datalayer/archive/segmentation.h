@@ -8,19 +8,30 @@ class OmSegmentsImpl;
 class DummyGroups;
 class DummyGroup;
 
-namespace YAMLold {
+namespace YAML {
 
-YAMLold::Emitter& operator<<(YAMLold::Emitter& out,
-                             const OmSegmentationManager& m);
-void operator>>(const YAMLold::Node& in, OmSegmentationManager& m);
-YAMLold::Emitter& operator<<(YAMLold::Emitter& out, const OmSegmentation& seg);
-void operator>>(const YAMLold::Node& in, OmSegmentation& seg);
-YAMLold::Emitter& operator<<(YAMLold::Emitter& out, const OmSegments& sc);
-void operator>>(const YAMLold::Node& in, OmSegments& sc);
-YAMLold::Emitter& operator<<(YAMLold::Emitter& out, const OmSegmentsImpl& sc);
-void operator>>(const YAMLold::Node& in, OmSegmentsImpl& sc);
+template <>
+struct convert<OmSegmentationManager> {
+  static Node encode(const OmSegmentationManager& fm);
+  static bool decode(const Node& node, OmSegmentationManager& fm);
+};
 
-YAMLold::Emitter& operator<<(YAMLold::Emitter& out, const DummyGroups& g);
-YAMLold::Emitter& operator<<(YAMLold::Emitter& out, const DummyGroup& g);
+template <>
+struct convert<OmSegmentation> {
+  static Node encode(const OmSegmentation& fm);
+  static bool decode(const Node& node, OmSegmentation& fm);
+};
 
-}  // namespace YAMLold
+template <>
+struct convert<OmSegments> {
+  static Node encode(const OmSegments& fm);
+  static bool decode(const Node& node, OmSegments& fm);
+};
+
+template <>
+struct convert<OmSegmentsImpl> {
+  static Node encode(const OmSegmentsImpl& fm);
+  static bool decode(const Node& node, OmSegmentsImpl& fm);
+};
+
+}  // namespace YAML

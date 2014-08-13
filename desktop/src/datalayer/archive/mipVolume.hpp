@@ -2,9 +2,8 @@
 #include "precomp.h"
 
 #include "volume/omVolumeTypes.hpp"
-#include "datalayer/fs/omFileNames.hpp"
-#include "volume/omChannelFolder.h"
-#include "volume/omSegmentationFolder.h"
+#include "coordinates/volumeSystem.h"
+#include "volume/omMipVolume.h"
 
 namespace om {
 namespace data {
@@ -18,34 +17,36 @@ class mipVolume {
  public:
   mipVolume(VOL& vol) : vol_(vol) {}
 
-  void Store(YAMLold::Emitter& out) const {
-    out << YAMLold::Key << "id" << YAMLold::Value << vol_.id_;
-    out << YAMLold::Key << "custom name" << YAMLold::Value << vol_.customName_;
-    out << YAMLold::Key << "note" << YAMLold::Value << vol_.note_;
+  void Store(YAML::Node& node) const {
+    node["id"] = vol_.id_;
+    node["custom name"] = vol_.customName_;
+    node["note"] = vol_.note_;
 
-    out << YAMLold::Key << "coords" << YAMLold::Value << vol_.Coords();
+    node["coords"] = vol_.Coords();
 
-    out << YAMLold::Key << "build state" << YAMLold::Value << vol_.mBuildState;
+    node["build state"] = vol_.mBuildState;
 
     const std::string type =
         OmVolumeTypeHelpers::GetTypeAsString(vol_.mVolDataType);
-    out << YAMLold::Key << "type" << YAMLold::Value << type;
+    node["type"] = type;
   }
 
-  void Load(const YAMLold::Node& in) {
-    in["id"] >> vol_.id_;
-    in["custom name"] >> vol_.customName_;
-    in["note"] >> vol_.note_;
+  void Load(const YAML::Node& in) {
+    try {
+      vol_.id_ = in["id"].as<om::common::ID>();
+      vol_.customName_ = in["custom name"].as<QString>("");
+      vol_.note_ = in["note"].as<QString>("");
+      vol_.coords_ = in["coords"].as<om::coords::VolumeSystem>();
+      vol_.mBuildState = (MipVolumeBuildState)in["build state"].as<int>();
 
-    in["coords"] >> vol_.Coords();
+      auto volDataType = in["type"].as<std::string>();
+      vol_.mVolDataType = OmVolumeTypeHelpers::GetTypeFromString(volDataType);
 
-    in["build state"] >> vol_.mBuildState;
-
-    QString volDataType;
-    in["type"] >> volDataType;
-    vol_.mVolDataType = OmVolumeTypeHelpers::GetTypeFromString(volDataType);
-
-    vol_.LoadPath();
+      vol_.LoadPath();
+    }
+    catch (YAML::Exception e) {
+      log_errors << "Error loading mip Volume: " << e.what();
+    }
   }
 };
 

@@ -18,18 +18,32 @@ struct ManagedObject {
 }
 }
 
-namespace YAMLold {
+namespace YAML {
 
 template <typename T>
-Emitter& operator<<(Emitter& out, const om::system::ManagedObject<T>& data) {
-  out << BeginMap;
-  out << Key << "id" << Value << data.ID;
-  out << Key << "enabled" << Value << data.Enabled;
-  out << Key << "value" << Value << *data.Object;
-  out << EndMap;
-
-  return out;
-}
+struct convert<om::system::ManagedObject<T>> {
+  static Node encode(const om::system::ManagedObject<T>& data) {
+    Node n;
+    n["id"] = data.ID;
+    n["enabled"] = data.Enabled;
+    n["value"] = *data.Object;
+    return n;
+  }
+  static bool decode(const Node& node, om::system::ManagedObject<T>& data) {
+    if (!node.IsMap()) {
+      return false;
+    }
+    try {
+      data.ID = node["id"].as<om::common::ID>(0);
+      data.Enabled = node["enabled"].as<bool>(true);
+      *data.Object = node["value"].as<T>();
+    }
+    catch (std::exception e) {
+      log_errors << "Unable to decode ManagedObject: " << e.what();
+      return false;
+    }
+  }
+};
 }
 
 namespace om {
@@ -119,32 +133,30 @@ class Manager {
     }
   }
 
-  void Save(YAMLold::Emitter& out) const {
-    out << YAMLold::BeginSeq;
-    FOR_EACH(iter, objs_) { out << iter->second; }
-    out << YAMLold::EndSeq;
+  void Save(YAML::Node& node) const {
+    for (auto& iter : objs_) {
+      node.push_back(iter.second);
+    }
   }
 
-  void Load(const YAMLold::Node& in) {
-    if (in.FindValue("size"))  // Old Manager Format
-    {
-      om::common::SegIDSet valid, enabled;
-      in["valid set"] >> valid;
-      in["enabled set"] >> enabled;
+  void Load(const YAML::Node& in) {
+    if (in["size"].IsDefined()) {
+      auto valid = in["valid set"].as<om::common::SegIDSet>();
+      auto enabled = in["enabled set"].as<om::common::SegIDSet>();
 
       int idx = 0;
-      FOR_EACH(i, valid) {
+      for (auto& i : valid) {
         T* obj = parse(in["values"][idx]);
-        Add(obj, *i, enabled.count(*i) > 0);
+        Add(obj, i, enabled.count(i) > 0);
         idx++;
       }
     } else {
-      for (int i = 0; i < in.size(); ++i) {
+      for (auto& iter : in) {
         size_t id;
-        in[i]["id"] >> id;
+        id = iter["id"].as<om::common::ID>();
         bool enabled;
-        in[i]["enabled"] >> enabled;
-        T* obj = parse(in[i]["value"]);
+        enabled = iter["enabled"].as<bool>(true);
+        T* obj = parse(iter["value"]);
         Add(obj, id, enabled);
       }
     }
@@ -185,7 +197,7 @@ class Manager {
   inline enabled Enabled() { return enabled(this); }
 
  protected:
-  virtual T* parse(const YAMLold::Node& in) = 0;
+  virtual T* parse(const YAML::Node& in) = 0;
 
   inline bool isValid(om::common::ID id) { return objs_.count(id) > 0; }
 

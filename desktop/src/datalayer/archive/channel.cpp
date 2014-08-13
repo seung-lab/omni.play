@@ -2,38 +2,35 @@
 #include "datalayer/archive/filter.h"
 #include "project/details/omChannelManager.h"
 #include "utility/yaml/genericManager.hpp"
-#include "utility/yaml/mipVolume.hpp"
+#include "coordinates/yaml.hpp"
+#include "datalayer/archive/mipVolume.hpp"
 #include "utility/yaml/omBaseTypes.hpp"
 #include "utility/yaml/omYaml.hpp"
 
-namespace YAMLold {
+namespace YAML {
 
-Emitter& operator<<(Emitter& out, const OmChannelManager& cm) {
-  out << BeginMap;
-  genericManager::Save(out, cm.manager_);
-  out << EndMap;
-  return out;
+Node convert<OmChannelManager>::encode(const OmChannelManager& m) {
+  return genericManager::Save(m.manager_);
+}
+bool convert<OmChannelManager>::decode(const Node& node, OmChannelManager& m) {
+  return genericManager::Load(node, m.manager_);
 }
 
-void operator>>(const Node& in, OmChannelManager& cm) {
-  genericManager::Load(in, cm.manager_);
+Node convert<OmChannel>::encode(const OmChannel& chan) {
+  Node n;
+  om::data::archive::mipVolume<const OmChannel> volArchive(chan);
+  volArchive.Store(n);
+  n["Filters"] = chan.filterManager_;
+
+  return n;
 }
 
-Emitter& operator<<(Emitter& out, const OmChannel& chan) {
-  out << BeginMap;
-  mipVolume<const OmChannel> volArchive(chan);
-  volArchive.Store(out);
-
-  out << Key << "Filters" << Value << chan.filterManager_;
-  out << EndMap;
-  return out;
-}
-
-void operator>>(const Node& in, OmChannel& chan) {
-  mipVolume<OmChannel> volArchive(chan);
-  volArchive.Load(in);
-
-  in["Filters"] >> chan.filterManager_;
+bool convert<OmChannel>::decode(const Node& node, OmChannel& chan) {
+  om::data::archive::mipVolume<OmChannel> volArchive(chan);
+  volArchive.Load(node);
   chan.LoadVolDataIfFoldersExist();
+  YAML::convert<OmFilter2dManager>::decode(node["Filters"],
+                                           chan.filterManager_);
+  return true;
 }
-}  // namespace YAMLold
+}  // namespace YAML

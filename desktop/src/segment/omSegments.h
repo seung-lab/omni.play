@@ -83,12 +83,7 @@ class OmSegments {
   om::volume::MetadataManager& meta_;
   std::unique_ptr<OmSegmentsImpl> impl_;
 
-  friend YAMLold::Emitter& YAMLold::operator<<(YAMLold::Emitter& out,
-                                               const OmSegments& sc);
-  friend void YAMLold::operator>>(const YAMLold::Node& in, OmSegments& sc);
-  friend YAMLold::Emitter& YAMLold::operator<<(YAMLold::Emitter& out,
-                                               const OmSegmentsImpl& sc);
-  friend void YAMLold::operator>>(const YAMLold::Node& in, OmSegmentsImpl& sc);
+  friend class YAML::convert<OmSegments>;
   friend QDataStream& operator<<(QDataStream& out, const OmSegments& sc);
   friend QDataStream& operator>>(QDataStream& in, OmSegments& sc);
 };

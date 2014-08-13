@@ -4,21 +4,18 @@
 #include "annotation/annotation.h"
 
 #include "utility/yaml/omBaseTypes.hpp"
-#include "utility/yaml/coords.h"
+#include "coordinates/yaml.hpp"
 
-namespace YAMLold {
-
-Emitter& operator<<(Emitter& out, const om::annotation::data& data) {
-  out << Flow;
-
-  out << BeginMap;
-  out << Key << "coord" << Value << data.coord.ToGlobal();
-  out << Key << "comment" << Value << data.comment;
-  out << Key << "color" << Value << data.color;
-  out << Key << "size" << Value << data.size;
-  out << EndMap;
-
-  return out;
-}
-
-}  // namespace YAMLold
+namespace YAML {
+template <>
+struct convert<om::annotation::data> {
+  static Node encode(const om::annotation::data& data) {
+    Node n;
+    n["coord"] = data.coord.ToGlobal();
+    n["comment"] = data.comment;
+    n["color"] = data.color;
+    n["size"] = data.size;
+    return n;
+  }
+};
+}  // namespace YAML

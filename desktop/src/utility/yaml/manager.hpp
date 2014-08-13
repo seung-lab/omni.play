@@ -6,4 +6,4 @@
 #include "system/manager.hpp"
 #include "utility/yaml/omBaseTypes.hpp"
 
-namespace YAMLold {}  // namespace YAMLold
+namespace YAML {}  // namespace YAML

@@ -13,15 +13,6 @@ template <typename T>
 class OmRawChunk;
 
 class OmAffinityGraph : public OmManageableObject {
- private:
-  std::map<om::common::AffinityGraph, std::shared_ptr<OmAffinityChannel> >
-      channels_;
-
-  friend YAMLold::Emitter& YAMLold::operator<<(YAMLold::Emitter& out,
-                                               const OmAffinityGraph& chan);
-  friend void YAMLold::operator>>(const YAMLold::Node& in,
-                                  OmAffinityGraph& chan);
-
  public:
   OmAffinityGraph();
   OmAffinityGraph(const om::common::ID id);
@@ -35,4 +26,10 @@ class OmAffinityGraph : public OmManageableObject {
   OmAffinityChannel* GetChannel(const om::common::AffinityGraph aff) const;
 
   inline std::string GetName() { return "affinity" + om::string::num(GetID()); }
+
+ private:
+  std::map<om::common::AffinityGraph, std::shared_ptr<OmAffinityChannel> >
+      channels_;
+
+  friend class YAML::convert<OmAffinityGraph>;
 };

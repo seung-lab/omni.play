@@ -5,33 +5,31 @@
 namespace om {
 
 void userSettings::Load() {
-  using namespace YAMLold;
+  using namespace YAML;
 
   if (om::file::exists(filename_)) {
-    Node in;
-    om::yaml::util::Read(filename_, in);
+    Node in = YAML::LoadFile(filename_);
 
-    om::yaml::util::OptionalRead(in, "threshold", threshold_,
-                                 defaultThreshold_);
-    om::yaml::util::OptionalRead(in, "sizeThreshold", sizeThreshold_,
-                                 defaultSizeThreshold_);
-    om::yaml::util::OptionalRead(in, "showAnnotations", showAnnotations_,
-                                 defaultShowAnnotations_);
+    threshold_ = in["threshold"].as<double>(defaultThreshold_);
+    sizeThreshold_ = in["sizeThreshold"].as<double>(defaultSizeThreshold_);
+    showAnnotations_ = in["showAnnotations"].as<bool>(defaultShowAnnotations_);
   }
 }
 
 void userSettings::Save() {
-  using namespace YAMLold;
+  using namespace YAML;
 
-  Emitter out;
-
-  out << BeginDoc << BeginMap;
-  out << Key << "threshold" << Value << threshold_;
-  out << Key << "sizeThreshold" << Value << sizeThreshold_;
-  out << Key << "showAnnotations" << Value << showAnnotations_;
-  out << EndMap << EndDoc;
-
-  om::yaml::util::Write(filename_, out);
+  try {
+    std::ofstream fout(filename_);
+    Node n;
+    n["threshold"] = threshold_;
+    n["sizeThreshold"] = sizeThreshold_;
+    n["showAnnotations"] = showAnnotations_;
+    fout << n;
+  }
+  catch (std::exception e) {
+    log_errors << "Error writing userSettings: " << e.what();
+  }
 }
 
 }  // namespace om

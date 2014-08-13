@@ -4,11 +4,17 @@
 class OmFilter2dManager;
 class OmFilter2d;
 
-namespace YAMLold {
+namespace YAML {
+template <>
+struct convert<OmFilter2dManager> {
+  static Node encode(const OmFilter2dManager& fm);
+  static bool decode(const Node& node, OmFilter2dManager& fm);
+};
 
-Emitter& operator<<(Emitter& out, const OmFilter2dManager& fm);
-void operator>>(const Node& in, OmFilter2dManager& fm);
-Emitter& operator<<(Emitter& out, const OmFilter2d& f);
-void operator>>(const Node& in, OmFilter2d& f);
+template <>
+struct convert<OmFilter2d> {
+  static Node encode(const OmFilter2d& f);
+  static bool decode(const Node& node, OmFilter2d& f);
+};
 
-}  // namespace YAMLold
+}  // namespace YAML

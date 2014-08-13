@@ -89,8 +89,17 @@ struct convert<AxisAlignedBoundingBox<T>> {
       return false;
     }
 
-    aabb.setMin(node["min"].as<T>());
-    aabb.setMax(node["max"].as<T>());
+    Vector3<T> min, max;
+    if (convert<Vector3<T>>::decode(node["min"], min)) {
+      log_debugs << "Bad Min.";
+      return false;
+    }
+    if (convert<Vector3<T>>::decode(node["max"], max)) {
+      log_debugs << "Bad Max.";
+      return false;
+    }
+    aabb.setMin(min);
+    aabb.setMax(max);
     return true;
   }
 };

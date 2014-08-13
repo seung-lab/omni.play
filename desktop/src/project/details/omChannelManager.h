@@ -20,9 +20,7 @@ class OmChannelManager {
  private:
   OmGenericManager<OmChannel> manager_;
 
-  friend YAMLold::Emitter& YAMLold::operator<<(YAMLold::Emitter& out,
-                                               const OmChannelManager&);
-  friend void YAMLold::operator>>(const YAMLold::Node& in, OmChannelManager&);
   friend QDataStream& operator<<(QDataStream& out, const OmChannelManager&);
   friend QDataStream& operator>>(QDataStream& in, OmChannelManager&);
+  friend class YAML::convert<OmChannelManager>;
 };

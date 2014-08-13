@@ -18,7 +18,7 @@ class OmBlockingGetTiles {
 
   void GetAll(OmTileCoordsAndLocationsPtr tileCoordsAndLocations) {
     using std::placeholders::_1;
-    for (auto& iter : tileCoordsAndLocations) {
+    for (auto& iter : *tileCoordsAndLocations) {
       getTile(iter);
     }
   }

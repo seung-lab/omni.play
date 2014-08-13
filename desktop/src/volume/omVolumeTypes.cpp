@@ -49,9 +49,9 @@ QString OmVolumeTypeHelpers::GetTypeAsQString(const om::common::DataType type) {
 }
 
 om::common::DataType OmVolumeTypeHelpers::GetTypeFromString(
-    const QString& type) {
+    const std::string& type) {
   boost::optional<om::common::DataType> ret =
-      om::common::DataType::get_by_value(type.toStdString());
+      om::common::DataType::get_by_value(type);
 
   if (ret) {
     return *ret;

@@ -5,64 +5,69 @@
 #include "volume/omChannel.h"
 #include "project/details/omAffinityGraphManager.h"
 #include "datalayer/archive/affinity.h"
+#include "datalayer/archive/mipVolume.hpp"
 #include "utility/yaml/genericManager.hpp"
-#include "utility/yaml/mipVolume.hpp"
+#include "coordinates/yaml.hpp"
 
-namespace YAMLold {
+namespace YAML {
 
-Emitter& operator<<(Emitter& out, const OmAffinityGraphManager& cm) {
-  out << BeginMap;
-  genericManager::Save(out, cm.graphs_);
-  out << EndMap;
-  return out;
+Node convert<OmAffinityGraphManager>::encode(const OmAffinityGraphManager& m) {
+  return genericManager::Save(m.graphs_);
+}
+bool convert<OmAffinityGraphManager>::decode(const Node& node,
+                                             OmAffinityGraphManager& m) {
+  return genericManager::Load(node, m.graphs_);
 }
 
-void operator>>(const Node& in, OmAffinityGraphManager& cm) {
-  genericManager::Load(in, cm.graphs_);
+Node convert<OmAffinityGraph>::encode(const OmAffinityGraph& graph) {
+  Node n;
+  n["X Affinity"] = *graph.GetChannel(om::common::AffinityGraph::X_AFFINITY);
+  n["Y Affinity"] = *graph.GetChannel(om::common::AffinityGraph::Y_AFFINITY);
+  n["Z Affinity"] = *graph.GetChannel(om::common::AffinityGraph::Z_AFFINITY);
+  return n;
 }
 
-Emitter& operator<<(Emitter& out, const OmAffinityGraph& graph) {
-  out << BeginMap;
-  out << Key << "X Affinity" << Value
-      << *graph.GetChannel(om::common::AffinityGraph::X_AFFINITY);
-  out << Key << "Y Affinity" << Value
-      << *graph.GetChannel(om::common::AffinityGraph::Y_AFFINITY);
-  out << Key << "Z Affinity" << Value
-      << *graph.GetChannel(om::common::AffinityGraph::Z_AFFINITY);
-  out << EndMap;
-  return out;
+bool convert<OmAffinityGraph>::decode(const Node& node,
+                                      OmAffinityGraph& graph) {
+
+  std::shared_ptr<OmAffinityChannel> xaff(new OmAffinityChannel(
+      graph.GetID(), om::common::AffinityGraph::X_AFFINITY));
+  if (!convert<OmAffinityChannel>::decode(node["X Affinity"], *xaff)) {
+    return false;
+  }
+
+  std::shared_ptr<OmAffinityChannel> yaff(new OmAffinityChannel(
+      graph.GetID(), om::common::AffinityGraph::Y_AFFINITY));
+  if (!convert<OmAffinityChannel>::decode(node["Y Affinity"], *yaff)) {
+    return false;
+  }
+
+  std::shared_ptr<OmAffinityChannel> zaff(new OmAffinityChannel(
+      graph.GetID(), om::common::AffinityGraph::Z_AFFINITY));
+  if (!convert<OmAffinityChannel>::decode(node["Z Affinity"], *zaff)) {
+    return false;
+  }
+
+  graph.channels_[om::common::AffinityGraph::X_AFFINITY] = xaff;
+  graph.channels_[om::common::AffinityGraph::Y_AFFINITY] = yaff;
+  graph.channels_[om::common::AffinityGraph::Z_AFFINITY] = zaff;
+  return true;
 }
 
-void operator>>(const Node& in, OmAffinityGraph& graph) {
-  graph.channels_[om::common::AffinityGraph::X_AFFINITY] =
-      std::make_shared<OmAffinityChannel>(
-          graph.GetID(), om::common::AffinityGraph::X_AFFINITY);
-  in["X Affinity"] >> *graph.GetChannel(om::common::AffinityGraph::X_AFFINITY);
+Node convert<OmAffinityChannel>::encode(const OmAffinityChannel& chan) {
+  Node n;
+  om::data::archive::mipVolume<const OmAffinityChannel> volArchive(chan);
+  volArchive.Store(n);
 
-  graph.channels_[om::common::AffinityGraph::Y_AFFINITY] =
-      std::make_shared<OmAffinityChannel>(
-          graph.GetID(), om::common::AffinityGraph::Y_AFFINITY);
-  in["Y Affinity"] >> *graph.GetChannel(om::common::AffinityGraph::Y_AFFINITY);
-
-  graph.channels_[om::common::AffinityGraph::Z_AFFINITY] =
-      std::make_shared<OmAffinityChannel>(
-          graph.GetID(), om::common::AffinityGraph::Z_AFFINITY);
-  in["Z Affinity"] >> *graph.GetChannel(om::common::AffinityGraph::Z_AFFINITY);
+  return n;
 }
 
-Emitter& operator<<(Emitter& out, const OmAffinityChannel& c) {
-  out << BeginMap;
-  mipVolume<const OmAffinityChannel> volArchive(c);
-  volArchive.Store(out);
-  out << EndMap;
-  return out;
+bool convert<OmAffinityChannel>::decode(const Node& node,
+                                        OmAffinityChannel& chan) {
+  om::data::archive::mipVolume<OmAffinityChannel> volArchive(chan);
+  volArchive.Load(node);
+  chan.LoadVolDataIfFoldersExist();
+  return true;
 }
 
-void operator>>(const Node& in, OmAffinityChannel& c) {
-  mipVolume<OmAffinityChannel> volArchive(c);
-  volArchive.Load(in);
-
-  c.LoadVolDataIfFoldersExist();
-}
-
-}  // namespace YAMLold
+}  // namespace YAML

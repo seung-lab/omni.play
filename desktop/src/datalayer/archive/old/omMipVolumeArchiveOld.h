@@ -73,7 +73,8 @@ class OmMipVolumeArchiveOld {
     if (fileVersion_ > 13) {
       QString volDataType;
       in >> volDataType;
-      vol.mVolDataType = OmVolumeTypeHelpers::GetTypeFromString(volDataType);
+      vol.mVolDataType =
+          OmVolumeTypeHelpers::GetTypeFromString(volDataType.toStdString());
 
     } else {
       vol.mVolDataType = om::common::DataType::UNKNOWN;

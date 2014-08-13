@@ -10,9 +10,13 @@
 #include "datalayer/archive/segmentation.h"
 #include "datalayer/archive/filter.h"
 
-namespace YAMLold {
-template <class T>
+namespace om {
+namespace data {
+namespace archive {
+template <typename VOL>
 class mipVolume;
+}
+}
 }
 
 class OmManageableObject {
@@ -40,6 +44,5 @@ class OmManageableObject {
   friend class OmMipVolumeArchive;
   friend class OmMipVolumeArchiveOld;
   template <class T>
-  friend class YAMLold::mipVolume;
-  friend void YAMLold::operator>>(const YAMLold::Node& in, OmFilter2d& f);
+  friend class om::data::archive::mipVolume;
 };

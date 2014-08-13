@@ -129,7 +129,6 @@ TEST_INCLUDES = -I$(GMOCK)/include \
 			   -I$(GMOCK)/gtest \
 
 YAML_SOURCES = $(shell find common/include/yaml-cpp/src -iname "*.cpp" )
-YAML_SOURCES += $(shell find desktop/include/yaml-cpp-old/src -iname "*.cpp" )
 YAML_DEPS = $(YAML_SOURCES:.cpp=.o)
 
 LIB64_DEPS = $(BASE64)/src/cencode.o
@@ -149,7 +148,6 @@ clean:
 	$(ECHO) Cleaning...
 	$(RM) -rf bin build
 	$(RM) -f common/include/yaml-cpp/src/*.o common/include/yaml-cpp/src/*.d
-	$(RM) -f desktop/include/yaml-cpp-old/src/*.o desktop/include/yaml-cpp-old/src/*.d
 	$(RM) -f desktop/lib/strnatcmp.o
 	$(FIND) desktop/src -iname "*\.moc\.cpp" -delete 2> /dev/null
 	$(FIND) common/include -iname "*\.o" -delete 2> /dev/null

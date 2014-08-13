@@ -5,13 +5,24 @@ class OmAffinityGraphManager;
 class OmAffinityGraph;
 class OmAffinityChannel;
 
-namespace YAMLold {
+namespace YAML {
 
-Emitter& operator<<(Emitter& out, const OmAffinityGraphManager& cm);
-void operator>>(const Node& in, OmAffinityGraphManager& cm);
-Emitter& operator<<(Emitter& out, const OmAffinityGraph& chan);
-void operator>>(const Node& in, OmAffinityGraph& chan);
-Emitter& operator<<(Emitter& out, const OmAffinityChannel& c);
-void operator>>(const Node& in, OmAffinityChannel& c);
+template <>
+struct convert<OmAffinityGraphManager> {
+  static Node encode(const OmAffinityGraphManager& fm);
+  static bool decode(const Node& node, OmAffinityGraphManager& fm);
+};
 
-}  // namespace YAMLold
+template <>
+struct convert<OmAffinityGraph> {
+  static Node encode(const OmAffinityGraph& fm);
+  static bool decode(const Node& node, OmAffinityGraph& fm);
+};
+
+template <>
+struct convert<OmAffinityChannel> {
+  static Node encode(const OmAffinityChannel& fm);
+  static bool decode(const Node& node, OmAffinityChannel& fm);
+};
+
+}  // namespace YAML

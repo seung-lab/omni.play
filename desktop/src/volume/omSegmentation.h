@@ -231,9 +231,7 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
   friend class SegmentTests1;
 
   friend class OmDataArchiveProjectImpl;
-  friend void YAMLold::operator>>(const YAMLold::Node& in, OmSegmentation&);
-  friend YAMLold::Emitter& YAMLold::operator<<(YAMLold::Emitter& out,
-                                               const OmSegmentation&);
+  friend class YAML::convert<OmSegmentation>;
   friend QDataStream& operator>>(QDataStream& in, OmSegmentation&);
   friend QDataStream& operator<<(QDataStream& out, const OmSegmentation&);
 };

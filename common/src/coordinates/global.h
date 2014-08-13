@@ -1,5 +1,5 @@
-#pragma once
 
+#pragma once
 #include "vmmlib/vmmlib.h"
 using namespace vmml;
 
@@ -54,8 +54,7 @@ class GlobalBbox : public AxisAlignedBoundingBox<float> {
   friend std::ostream& operator<<(std::ostream& os, const GlobalBbox& bbox) {
     os << "min:" << bbox._min << " max:" << bbox._max;
     return os;
-  }
-  ;
+  };
 };
 
 }  // namespace coords

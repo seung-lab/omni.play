@@ -38,9 +38,7 @@ class OmFilter2dManager {
  private:
   OmGenericManager<OmFilter2d> filters_;
 
-  friend YAMLold::Emitter& YAMLold::operator<<(YAMLold::Emitter&,
-                                               const OmFilter2dManager&);
-  friend void YAMLold::operator>>(const YAMLold::Node&, OmFilter2dManager&);
+  friend class YAML::convert<OmFilter2dManager>;
   friend QDataStream& operator<<(QDataStream&, const OmFilter2dManager&);
   friend QDataStream& operator>>(QDataStream&, OmFilter2dManager&);
 };

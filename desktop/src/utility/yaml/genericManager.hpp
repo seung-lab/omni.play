@@ -5,41 +5,49 @@
 
 #include "system/omGenericManager.hpp"
 #include "utility/yaml/omBaseTypes.hpp"
+#include "utility/yaml/baseTypes.hpp"
 
-namespace YAMLold {
+namespace YAML {
 
 class genericManager {
  public:
   template <typename T>
-  static void Save(Emitter& out, const OmGenericManager<T>& gm) {
-    out << Key << "size" << Value << gm.size_;
-    out << Key << "valid set" << Value << gm.validSet_;
-    out << Key << "enabled set" << Value << gm.enabledSet_;
-    out << Key << "next id" << Value << gm.nextId_;
+  static Node Save(const OmGenericManager<T>& gm) {
+    Node n;
+    n["size"] = gm.size_;
+    n["valid set"] = gm.validSet_;
+    n["enabled set"] = gm.enabledSet_;
+    n["next id"] = gm.nextId_;
 
-    out << Key << "values" << Value << BeginSeq;
-    FOR_EACH(iter, gm.validSet_) { out << *gm.vec_[*iter]; }
-    out << EndSeq;
+    for (auto& iter : gm.validSet_) {
+      n["values"][iter] = *gm.vec_[iter];
+    }
+    return n;
   }
 
   template <typename T>
-  static void Load(const Node& in, OmGenericManager<T>& gm) {
-    in["size"] >> gm.size_;
-    in["valid set"] >> gm.validSet_;
-    in["enabled set"] >> gm.enabledSet_;
-    in["next id"] >> gm.nextId_;
+  static bool Load(const Node& in, OmGenericManager<T>& gm) {
+    if (!in.IsMap()) {
+      return false;
+    }
+    gm.size_ = in["size"].as<size_t>(0);
+    gm.validSet_ = in["valid set"].as<om::common::IDSet>(om::common::IDSet());
+    gm.enabledSet_ =
+        in["enabled set"].as<om::common::IDSet>(om::common::IDSet());
+    gm.nextId_ = in["next id"].as<om::common::ID>(0);
     gm.vec_.resize(gm.size_, nullptr);
 
     int idx = 0;
-    FOR_EACH(i, gm.validSet_) {
-      T* t = new T(*i);
-      in["values"][idx] >> *t;
+    for (auto& i : gm.validSet_) {
+      T* t = new T(i);
+      YAML::convert<T>::decode(in["values"][idx], *t);
       gm.vec_[t->GetID()] = t;
 
       gm.vecValidPtrs_.push_back(t);
       idx++;
     }
+    return true;
   }
 };
 
-}  // namespace YAMLold
+}  // namespace YAML

@@ -168,7 +168,7 @@
 #include <utility>
 #include <vector>
 #include <vmmlib/vmmlib.h>
-#include <yaml-cpp-old/yaml.h>
+#include <yaml-cpp/yaml.h>
 #include <zi/array.hpp>
 #include <zi/assert.hpp>
 #include <zi/atomic/atomic.hpp>

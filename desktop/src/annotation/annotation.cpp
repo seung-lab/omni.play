@@ -3,7 +3,7 @@
 #include "volume/omSegmentation.h"
 #include "utility/yaml/omYaml.hpp"
 #include "utility/yaml/manager.hpp"
-#include "utility/yaml/coords.h"
+#include "coordinates/yaml.hpp"
 #include "project/omProject.h"
 #include "project/omProjectGlobals.h"
 #include "users/omUsers.h"
@@ -31,24 +31,23 @@ void manager::Add(coords::Global coord, const std::string& comment,
 void manager::Save() const {
   std::string fnp = filePathV1();
 
-  YAMLold::Emitter e;
+  YAML::Node n;
+  base_t::Save(n);
 
-  e << YAMLold::BeginDoc;
-  base_t::Save(e);
-  e << YAMLold::EndDoc;
-
-  yaml::util::Write(fnp, e);
+  try {
+    std::ofstream file(fnp);
+    file << n;
+  }
+  catch (std::exception e) {
+    log_errors << "Error writing Annotation file: " << e.what();
+  }
 }
 
-data* manager::parse(const YAMLold::Node& n) {
-  coords::Global c;
-  n["coord"] >> c;
-  std::string comment;
-  n["comment"] >> comment;
-  common::Color color;
-  n["color"] >> color;
-  double size;
-  yaml::util::OptionalRead(n, "size", size, 3.0);
+data* manager::parse(const YAML::Node& n) {
+  auto c = n["coord"].as<coords::Global>();
+  auto comment = n["comment"].as<std::string>();
+  auto color = n["color"].as<common::Color>();
+  auto size = n["size"].as<size_t>(3.0);
   return new data(c.ToData(vol_->Coords(), 0), comment, color, size);
 }
 
@@ -59,12 +58,11 @@ void manager::Load() {
     return;
   }
 
-  YAMLold::Node n;
   try {
-    yaml::util::Read(fnp, n);
+    YAML::Node n = YAML::LoadFile(fnp);
     base_t::Load(n);
   }
-  catch (YAMLold::Exception e) {
+  catch (YAML::Exception e) {
     std::stringstream ss;
     ss << "Error Loading Annotations: " << e.what() << ".\n";
     throw IoException(ss.str());

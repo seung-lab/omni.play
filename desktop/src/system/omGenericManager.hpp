@@ -11,7 +11,7 @@ class OmSegmentation;
 class OmFilter2d;
 class OmGroup;
 
-namespace YAMLold {
+namespace YAML {
 class genericManager;
 }
 
@@ -157,5 +157,5 @@ class OmGenericManager {
   }
 
   friend class OmGenericManagerArchive;
-  friend class YAMLold::genericManager;
+  friend class YAML::genericManager;
 };
