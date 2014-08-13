@@ -158,7 +158,7 @@ int exportMesh(const Options& opt, int argc, char* argv[]) {
     return printHelp(opt, "mesh");
   }
 
-  uint8_t mip;
+  uint8_t mip = 0;
   if (meshVM.count("mip")) {
     mip = meshVM["mip"].as<uint8_t>();
   } else {
