@@ -299,55 +299,46 @@ QT_BEGIN_NAMESPACE class Ui_preferences3d {
 
   void retranslateUi(QWidget *preferences3d) {
     preferences3d->setWindowTitle(QString());
-    groupBox_2->setTitle(QApplication::translate("preferences3d", "Camera", 0,
-                                                 QApplication::UnicodeUTF8));
-    fovLabel->setText(QApplication::translate("preferences3d", "Field of View:",
-                                              0, QApplication::UnicodeUTF8));
+    groupBox_2->setTitle(QApplication::translate("preferences3d", "Camera"));
+    fovLabel->setText(
+        QApplication::translate("preferences3d", "Field of View:"));
     fovSliderLabel->setText(QString());
-    nearplaneLabel->setText(QApplication::translate(
-        "preferences3d", "Near Plane:", 0, QApplication::UnicodeUTF8));
+    nearplaneLabel->setText(
+        QApplication::translate("preferences3d", "Near Plane:"));
     nearplaneSliderLabel->setText(QString());
-    farplaneLabel->setText(QApplication::translate(
-        "preferences3d", "Far Plane:", 0, QApplication::UnicodeUTF8));
+    farplaneLabel->setText(
+        QApplication::translate("preferences3d", "Far Plane:"));
     farplaneSliderLabel->setText(QString());
-    groupBox_3->setTitle(QApplication::translate("preferences3d", "Options", 0,
-                                                 QApplication::UnicodeUTF8));
-    styleLabel->setText(QApplication::translate("preferences3d", "Style:", 0,
-                                                QApplication::UnicodeUTF8));
+    groupBox_3->setTitle(QApplication::translate("preferences3d", "Options"));
+    styleLabel->setText(QApplication::translate("preferences3d", "Style:"));
     styleComboBox->clear();
     styleComboBox->insertItems(
         0,
-        QStringList() << QApplication::translate("preferences3d", "Crosshairs",
-                                                 0, QApplication::UnicodeUTF8)
-                      << QApplication::translate("preferences3d", "Ball", 0,
-                                                 QApplication::UnicodeUTF8));
-    infoCheckBox->setText(QApplication::translate(
-        "preferences3d", "Show Information", 0, QApplication::UnicodeUTF8));
-    axisCheckBox->setText(QApplication::translate(
-        "preferences3d", "Show Axis", 0, QApplication::UnicodeUTF8));
-    chunksCheckBox->setText(QApplication::translate(
-        "preferences3d", "Show Chunks", 0, QApplication::UnicodeUTF8));
-    focusCheckBox->setText(QApplication::translate(
-        "preferences3d", "Show Focus", 0, QApplication::UnicodeUTF8));
-    groupBox->setTitle(QApplication::translate("preferences3d", "Drawing", 0,
-                                               QApplication::UnicodeUTF8));
-    antiAliasingCheckBox->setText(QApplication::translate(
-        "preferences3d", "Anti-aliasing", 0, QApplication::UnicodeUTF8));
-    bgColorLabel->setText(QApplication::translate(
-        "preferences3d", "Background Color:", 0, QApplication::UnicodeUTF8));
+        QStringList() << QApplication::translate("preferences3d", "Crosshairs")
+                      << QApplication::translate("preferences3d", "Ball"));
+    infoCheckBox->setText(
+        QApplication::translate("preferences3d", "Show Information"));
+    axisCheckBox->setText(
+        QApplication::translate("preferences3d", "Show Axis"));
+    chunksCheckBox->setText(
+        QApplication::translate("preferences3d", "Show Chunks"));
+    focusCheckBox->setText(
+        QApplication::translate("preferences3d", "Show Focus"));
+    groupBox->setTitle(QApplication::translate("preferences3d", "Drawing"));
+    antiAliasingCheckBox->setText(
+        QApplication::translate("preferences3d", "Anti-aliasing"));
+    bgColorLabel->setText(
+        QApplication::translate("preferences3d", "Background Color:"));
     bgColorPicker->setText(QString());
-    highlightCheckBox->setText(QApplication::translate(
-        "preferences3d", "Highlight Selected", 0, QApplication::UnicodeUTF8));
-    colorLabel->setText(QApplication::translate("preferences3d", "Color:", 0,
-                                                QApplication::UnicodeUTF8));
+    highlightCheckBox->setText(
+        QApplication::translate("preferences3d", "Highlight Selected"));
+    colorLabel->setText(QApplication::translate("preferences3d", "Color:"));
     highlightColorPicker->setText(QString());
     transparentCheckBox->setText(QApplication::translate(
-        "preferences3d", "Transparent Unselected Segments", 0,
-        QApplication::UnicodeUTF8));
-    alphaLabel->setText(QApplication::translate("preferences3d", "Alpha:", 0,
-                                                QApplication::UnicodeUTF8));
-    transparencySliderLabel->setText(QApplication::translate(
-        "preferences3d", "0", 0, QApplication::UnicodeUTF8));
+        "preferences3d", "Transparent Unselected Segments"));
+    alphaLabel->setText(QApplication::translate("preferences3d", "Alpha:"));
+    transparencySliderLabel->setText(
+        QApplication::translate("preferences3d", "0"));
     Q_UNUSED(preferences3d);
   }  // retranslateUi
 };

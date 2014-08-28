@@ -29,8 +29,19 @@ endif
 CC       =  $(AT)gcc
 CXX      =  $(AT)g++
 THRIFT   =  $(AT)$(EXTERNAL)/thrift/bin/thrift
-MOC      =  $(AT)$(EXTERNAL)/qt/bin/moc
-RCC      =  $(AT)$(EXTERNAL)/qt/bin/rcc
+
+ifneq (,$(wildcard $(EXTERNAL)/qt/bin/moc))
+  LOCAL_QT =  true
+  MOC      =  $(AT)$(EXTERNAL)/qt/bin/moc
+  RCC      =  $(AT)$(EXTERNAL)/qt/bin/rcc
+else
+  MOC      =  $(AT)moc
+  RCC      =  $(AT)rcc
+endif
+
+ifneq (,$(wildcard $(EXTERNAL)/boost/lib/libboost_log.a))
+  LOCAL_BOOST = true
+endif
 
 DUMPSYMS =  $(AT)$(EXTERNAL)/breakpad/bin/dump_syms
 
@@ -59,9 +70,18 @@ COMMON_LDFLAGS     =    -g -fPIC -Wl,--eh-frame-hdr -lm
 DBG_LDFLAGS        =    $(COMMON_LDFLAGS)
 OPT_LDFLAGS        =    $(COMMON_LDFLAGS) -O2 -fno-omit-frame-pointer
 
+ifdef LOCAL_BOOST
+#-DBOOST_FILESYSTEM_NO_DEPRECATED -DBOOST_SYSTEM_NO_DEPRECATED
+# Appears no longer necessary?
+else
+BOOST_DEFINES = -DBOOST_NO_CXX11_SCOPED_ENUMS -DBOOST_LOG_DYN_LINK
+# BOOST_NO_CXX11_SCOPED_ENUMS is for linking w non-C++11 boost_filesystem
+# BOOST_LOG_DYN_LINK is for dynamically linking to boost_log
+endif
+
 DEFINES = -DQT_NO_KEYWORDS -DQT_OPENGL_LIB -DQT_GUI_LIB -DQT_CORE_LIB \
 -DQT_SHARED -DQT_USE_FAST_CONCATENATION -DQT_USE_FAST_OPERATOR_PLUS \
--DBOOST_FILESYSTEM_NO_DEPRECATED -DBOOST_SYSTEM_NO_DEPRECATED
+$(BOOST_DEFINES)
 
 # comment out for clang until it supports openmp
 EXTRA_CXXFLAGS = -DZI_USE_OPENMP -fopenmp
@@ -185,17 +205,22 @@ INCLUDES    =   -I$(HERE) \
 		-I$(EXTERNAL)/boost/include \
 		$(CURL_INCLUDES)
 
-LIBS = $(EXTERNAL)/boost/lib/libboost_filesystem.a \
-	   $(EXTERNAL)/boost/lib/libboost_iostreams.a \
-	   $(EXTERNAL)/boost/lib/libboost_log.a \
-	   $(EXTERNAL)/boost/lib/libboost_system.a \
-	   $(EXTERNAL)/boost/lib/libboost_thread.a \
-	   $(EXTERNAL)/boost/lib/libboost_regex.a \
-	   $(EXTERNAL)/boost/lib/libboost_date_time.a \
-	   $(EXTERNAL)/libjpeg/lib/libturbojpeg.a \
+#If we want to force the system to prefer static libs, we can use  
+#BOOST_LIBS = -Wl,-Bstatic -l... -Wl,-Bdynamic
+BOOST_LIBS = -L$(EXTERNAL)/boost/lib/ \
+	   -lboost_filesystem \
+	   -lboost_iostreams \
+	   -lboost_log \
+	   -lboost_system \
+	   -lboost_thread \
+	   -lboost_regex \
+	   -lboost_date_time
+
+LIBS = $(BOOST_LIBS) \
+	   -L$(EXTERNAL)/libjpeg/lib/ -lturbojpeg \
 	   -lpthread -lrt -lGLU -lGL -lz \
 	   $(CURL_LIBS) \
-		 /usr/local/lib/libtcmalloc_minimal.a
+		 /usr/lib/libtcmalloc_minimal.a
 
 COMMON_INCLUDES = $(INCLUDES) -include common/src/precomp.h
 
@@ -249,6 +274,9 @@ SERVERLIBS = $(EXTERNAL)/thrift/lib/libthrift.a \
 			 $(EXTERNAL)/libpng/lib/libpng.a \
 			 $(LIBS) \
 			 -levent -lz
+# libpng in Ubuntu 14 apt repository is still version 1.2. 
+# There doesn't seem to be any compatibility issue though
+#			 -L$(EXTERNAL)/libpng/lib/ -lpng
 
 $(BUILDDIR)/server/%.o: server/src/%.cpp $(THRIFT_PROXY_DEPS)
 	$(call build_cpp, $(SERVER_INCLUDES))
@@ -275,13 +303,13 @@ server: common $(BINDIR)/omni.server $(BINDIR)/omni.server.test
 # Desktop  #################################################
 # QT_LIBRARIES = QtGui QtNetwork QtCore QtOpenGL
 ifdef OSX
-QTINCLUDES = -I$(EXTERNAL)/qt/lib/Qt.framework/Headers \
+QT_INCLUDES = -I$(EXTERNAL)/qt/lib/Qt.framework/Headers \
 				            -I$(EXTERNAL)/qt/lib/QtCore.framework/Headers \
 				            -I$(EXTERNAL)/qt/lib/QtOpenGL.framework/Headers \
 				            -I$(EXTERNAL)/qt/lib/QtGui.framework/Headers \
 				            -I$(EXTERNAL)/qt/lib/QtNetwork.framework/Headers \
 
-QTLIBS = -F$(EXTERNAL)/qt/lib \
+QT_LIBS = -F$(EXTERNAL)/qt/lib \
 				       -framework QtCore \
 				       -framework QtOpenGL \
 				       -framework QtGui \
@@ -289,34 +317,54 @@ QTLIBS = -F$(EXTERNAL)/qt/lib \
 				       -framework OpenGL \
 				       -framework GLUT
 else
-QTINCLUDES = -I$(EXTERNAL)/qt/include/Qt \
+
+  ifdef LOCAL_QT
+    # Qt4.8 built from the bootstrap script
+    QT_INCLUDES = -I$(EXTERNAL)/qt/include/Qt \
 				            -I$(EXTERNAL)/qt/include/QtCore \
 				            -I$(EXTERNAL)/qt/include/QtOpenGL \
 				            -I$(EXTERNAL)/qt/include/QtGui \
-				            -I$(EXTERNAL)/qt/include/QtNetwork \
-					
-
-QTLIBS = -L$(EXTERNAL)/qt/lib \
+				            -I$(EXTERNAL)/qt/include/QtNetwork
+    QT_LIBS = -L$(EXTERNAL)/qt/lib \
 					     -lQtGui \
 					     -lQtNetwork \
 					     -lQtCore \
 					     -lQtOpenGL
-endif
+  else
+    #Qt5
+    QT_INCLUDES = $(shell pkg-config --cflags \
+    				Qt5Core Qt5OpenGL Qt5Gui Qt5Widgets Qt5Network 2>/dev/null)
+    QT_LIBS = $(shell pkg-config --libs \
+    				Qt5Core Qt5OpenGL Qt5Gui Qt5Widgets Qt5Network 2>/dev/null)
 
+    #Qt4
+    ifeq ($(QT_INCLUDES), )
+      QT_INCLUDES = $(shell pkg-config --cflags \
+      				QtCore QtOpenGL QtGui QtNetwork 2>/dev/null)
+      QT_LIBS = $(shell pkg-config --libs \
+      				QtCore QtOpenGL QtGui QtNetwork 2>/dev/null)
+    endif
+  endif
+
+endif #OSX
+
+HDF5_INCLUDES = -I$(EXTERNAL)/hdf5/include \
+				-I/usr/lib/openmpi/include -I/usr/include/
+HDF5_LIBS = -L$(EXTERNAL)/hdf5/lib/ -l hdf5
 DESKTOP_INCLUDES = -I$(HERE)/desktop/src \
 					$(INCLUDES) \
 				  -I$(HERE)/desktop/include \
 				  -I$(HERE)/desktop/lib \
 				  -I$(HERE)/desktop \
 				  -I$(EXTERNAL)/qt/include \
-				  -I$(EXTERNAL)/hdf5/include \
+				  $(HDF5_INCLUDES) \
 				  -I$(BASE64)/include \
-			    $(QTINCLUDES) \
+				  $(QT_INCLUDES) \
 			    -include desktop/src/precomp.h
 
 DESKTOPLIBS = $(LIBS) \
-					$(EXTERNAL)/hdf5/lib/libhdf5.a \
-					$(QTLIBS)
+					$(HDF5_LIBS) \
+					$(QT_LIBS)
 
 
 $(BUILDDIR)/desktop/%.o: desktop/src/%.cpp desktop/src/precomp.h.gch
@@ -460,8 +508,10 @@ valid: common $(BINDIR)/omni.valid
 EXPORT_INCLUDES = $(INCLUDES) \
 				 -I$(HERE)/export/src
 
+#BOOST_LIBS_EXPORT = -Wl,-Bstatic -lboost_program_options -Wl,-Bdynamic
+BOOST_LIBS_EXPORT = -lboost_program_options 
 EXPORTLIBS = $(LIBS) \
-					$(EXTERNAL)/boost/lib/libboost_program_options.a \
+					$(BOOST_LIBS_EXPORT)
 
 $(BUILDDIR)/export/%.o: export/src/%.cpp
 	$(call build_cpp, $(EXPORT_INCLUDES))
