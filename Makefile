@@ -168,6 +168,7 @@ endif
 clean:
 	$(ECHO) Cleaning...
 	$(RM) -rf bin build
+	$(RM) -rf common/src/precomp.h.gch desktop/src/precomp.h.gch
 	$(RM) -f common/include/yaml-cpp/src/*.o common/include/yaml-cpp/src/*.d
 	$(RM) -f desktop/include/yaml-cpp-old/src/*.o desktop/include/yaml-cpp-old/src/*.d
 	$(RM) -f desktop/lib/strnatcmp.o
