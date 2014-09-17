@@ -40,6 +40,8 @@
 
 #include <zlib.h>
 
+#include "fmesh_cache.hpp"
+
 namespace zi {
 namespace mesh {
 
@@ -49,15 +51,15 @@ private:
     uint32_t    id_    ;
     std::string prefix_;
 
-    std::map<vec4u, mesh_type_ptr> map_;
-    zi::mutex                      m_  ;
+    //std::map<vec4u, mesh_type_ptr> map_;
+    //zi::mutex                      m_  ;
 
 public:
     fmesh_io( uint32_t id )
         : id_(id)
         , prefix_()
-        , map_()
-        , m_()
+          //, map_()
+          //, m_()
     {
         file_io.create_dir("./data/" + boost::lexical_cast<std::string>(id));
         prefix_ = "./data/" + boost::lexical_cast<std::string>(id) + "/fmesh";
@@ -77,15 +79,7 @@ private:
         std::string s = boost::str( boost::format("%s/%d/%d/%d/%d/fmesh")
                                     % prefix_ % c[3] % c[0] % c[1] % c[2] );
 
-        mesh_type_ptr toadd;
-
-        {
-            zi::mutex::guard g(m_);
-            if ( map_.count(c) )
-            {
-                toadd = map_[c];
-            }
-        }
+        mesh_type_ptr toadd = fmesh_cache.get(id_, c);
 
         if ( toadd )
         {
@@ -126,10 +120,12 @@ private:
             toadd->add(pts, nps, sizes[0], fcs, sizes[1], x, y, z);
             m->add(pts, nps, sizes[0], fcs, sizes[1], x, y, z);
 
-            {
-                zi::mutex::guard g(m_);
-                map_[c] = toadd;
-            }
+            fmesh_cache.set(id_, c, toadd);
+
+            // {
+            //     zi::mutex::guard g(m_);
+            //     map_[c] = toadd;
+            // }
 
             delete [] buff;
 
@@ -157,18 +153,25 @@ public:
         std::string s = boost::str( boost::format("%s/%d/%d/%d/%d/fmesh")
                                     % prefix_ % c[3] % c[0] % c[1] % c[2] );
         file_io.remove(s);
-        {
-            zi::mutex::guard g(m_);
-            map_.erase(c);
-        }
+
+        fmesh_cache.remove(id_,c);
+
+        //fmesh_cache.clear();
+
+        // {
+        //     zi::mutex::guard g(m_);
+        //     map_.erase(c);
+        // }
     }
 
     bool write(mesh_type_ptr m, const vec4u& c)
     {
-        {
-            zi::mutex::guard g(m_);
-            map_[c] = m;
-        }
+
+        fmesh_cache.set(id_, c, m);
+        // {
+        //     zi::mutex::guard g(m_);
+        //     map_[c] = m;
+        // }
 
         vec4u cp(c[3], c[0], c[1], c[2]);
         if ( !file_io.create_path<4>(prefix_, cp) )
@@ -253,9 +256,8 @@ public:
 
     void erase_all()
     {
-        zi::mutex::guard g(m_);
-        map_.clear();
         file_io.remove_dir(prefix_);
+        fmesh_cache.clear();
     }
 
 
