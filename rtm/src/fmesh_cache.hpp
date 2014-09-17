@@ -43,6 +43,8 @@ private:
     zi::lru<vec5u> lru_ ;
     zi::mutex      m_   ;
     std::size_t    size_;
+    std::size_t    max_memory_;
+    std::size_t    cur_memory_;
 
     std::map<vec5u, mesh_type_ptr> map_;
 
@@ -54,7 +56,20 @@ private:
             std::size_t x = size_ * 3 / 4;
             while ( lru_.size() > x )
             {
-                map_.erase(lru_.pop_lr_used());
+                vec5u to_erase = lru_.pop_lr_used();
+                cur_memory_ -= map_[to_erase]->mem_size();
+                map_.erase(to_erase);
+            }
+        }
+
+        if ( max_memory_ < cur_memory_ )
+        {
+            std::size_t target_memory = max_memory_ * 3 / 4;
+            while ( cur_memory_ > target_memory )
+            {
+                vec5u to_erase = lru_.pop_lr_used();
+                cur_memory_ -= map_[to_erase]->mem_size();
+                map_.erase(to_erase);
             }
         }
     }
@@ -63,7 +78,9 @@ public:
     fmesh_cache_impl()
         : lru_()
         , m_()
-        , size_(5000)
+        , size_(500000)
+        , max_memory_(10000000000ULL) // 10G
+        , cur_memory_(0)
         , map_()
     {}
 
@@ -85,6 +102,13 @@ public:
         vec5u id(c, mip);
         zi::mutex::guard g(m_);
 
+        if ( map_.count(id) )
+        {
+            cur_memory_ -= map_[id]->mem_size();
+        }
+
+        cur_memory_ += m->mem_size();
+
         map_[id] = m;
         lru_.poke(id);
 
@@ -95,6 +119,10 @@ public:
     {
         vec5u id(c, mip);
         zi::mutex::guard g(m_);
+        if ( map_.count(id) )
+        {
+            cur_memory_ -= map_[id]->mem_size();
+        }
         lru_.erase(id);
         map_.erase(id);
     }
@@ -102,6 +130,7 @@ public:
     void clear()
     {
         zi::mutex::guard g(m_);
+        cur_memory_ = 0;
         map_.clear();
         lru_.clear();
     }
