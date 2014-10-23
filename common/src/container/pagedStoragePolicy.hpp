@@ -98,10 +98,7 @@ class PagedStoragePolicy {
       pages_[pageNum] = pagedDS_.Get(pageNum);
     }
     if (!pages_[pageNum]) {
-      pages_[pageNum] = std::make_shared<page_type>(pageNum);
-      auto newPageSize =
-          (pageNum == numPages() - 1) ? size_ % pageSize_ : pageSize_;
-      pages_[pageNum]->Values.resize(newPageSize);
+      throw IoException("Unable to get paged data.");
     }
     return pages_[pageNum];
   }
