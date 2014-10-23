@@ -99,6 +99,9 @@ class PagedStoragePolicy {
     }
     if (!pages_[pageNum]) {
       pages_[pageNum] = std::make_shared<page_type>(pageNum);
+      auto newPageSize =
+          (pageNum == numPages() - 1) ? size_ % pageSize_ : pageSize_;
+      pages_[pageNum]->Values.resize(newPageSize);
     }
     return pages_[pageNum];
   }
