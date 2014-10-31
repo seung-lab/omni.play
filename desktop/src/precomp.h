@@ -87,12 +87,10 @@
 #include <mutex>
 #include <QAction>
 #include <QApplication>
-#include <QButtonGroup>
 #include <QColor>
 #include <QCoreApplication>
 #include <QDataStream>
 #include <QDateTime>
-#include <QDialog>
 #include <QDir>
 #include <QEvent>
 #include <QFile>
@@ -100,27 +98,18 @@
 #include <QFileInfo>
 #include <QFileInfoList>
 #include <QFont>
-#include <QFrame>
 #include <QGLContext>
 #include <QGLPixelBuffer>
 #include <QGLWidget>
-#include <QGridLayout>
-#include <QGroupBox>
 #include <QHash>
 #include <QImage>
 #include <QKeyEvent>
 #include <QLabel>
-#include <QLineEdit>
 #include <QList>
-#include <QListWidget>
-#include <QMainWindow>
-#include <QMenu>
-#include <QMessageBox>
 #include <QMouseEvent>
 #include <QObject>
 #include <QPainter>
 #include <QPixmap>
-#include <QPushButton>
 #include <QSet>
 #include <QShortcut>
 #include <QSize>
@@ -130,29 +119,20 @@
 #include <QtCore/QVariant>
 #include <QTextStream>
 #include <QtGlobal>
-#include <QtGui/QAction>
-#include <QtGui/QApplication>
-#include <QtGui/QButtonGroup>
-#include <QtGui/QCheckBox>
-#include <QtGui/QComboBox>
-#include <QtGui/QGridLayout>
-#include <QtGui/QGroupBox>
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QLabel>
-#include <QtGui/QPushButton>
-#include <QtGui/QSlider>
-#include <QtGui/QSpacerItem>
-#include <QtGui/QWidget>
+
+#if (QT_VERSION >= 0x050000)
+#include <QtWidgets>
+#else
 #include <QtGui>
+#endif
+
 #include <QThread>
 #include <QTimer>
 #include <QToolBox>
 #include <QUndoCommand>
 #include <QUndoStack>
 #include <QUndoView>
-#include <QVBoxLayout>
 #include <QVector>
-#include <QWidget>
 #include <set>
 #include <sstream>
 #include <stdint.h>

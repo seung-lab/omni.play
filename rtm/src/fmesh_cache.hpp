@@ -1,6 +1,5 @@
-#pragma once
 //
-// Copyright (C) 2012  Aleksandar Zlateski <zlateski@mit.edu>
+// Copyright (C) 2012-2014  Aleksandar Zlateski <zlateski@mit.edu>
 // ----------------------------------------------------------
 //
 // This program is free software: you can redistribute it and/or modify
@@ -21,120 +20,130 @@
 #define ZI_MESHING_FMESH_CACHE_HPP
 
 #include "types.hpp"
-#include "detail/garbage.hpp"
 
 #include <zi/utility/non_copyable.hpp>
 #include <zi/concurrency.hpp>
+#include <zi/utility/singleton.hpp>
 
 #include <boost/multi_index_container.hpp>
 #include <boost/multi_index/ordered_index.hpp>
 #include <boost/multi_index/sequenced_index.hpp>
 #include <boost/multi_index/member.hpp>
 
+#include <map>
+
+#include "detail/lru.hpp"
 
 namespace zi {
 namespace mesh {
 
-class fmesh_cache: non_copyable
+class fmesh_cache_impl: non_copyable
 {
 private:
-    struct entry
+    zi::lru<vec5u> lru_ ;
+    zi::mutex      m_   ;
+    std::size_t    size_;
+    std::size_t    max_memory_;
+    std::size_t    cur_memory_;
+
+    std::map<vec5u, mesh_type_ptr> map_;
+
+private:
+    void try_evict_nl()
     {
-        vec4u                 id_  ;
-        mutable mesh_type_ptr mesh_;
-
-        entry(const vec4u& id, const mesh_type_ptr& mesh)
-            : id_(id)
-            , mesh_(mesh)
-        { }
-
-        void update( const mesh_type_ptr& mesh ) const
+        if ( lru_.size() > size_ )
         {
-            // make sure the memory freeing is done in a different thread
-            garbage.add(mesh_);
-            mesh_ = mesh;
-        }
-    };
-
-    typedef boost::multi_index_container<
-        entry,
-        boost::multi_index::indexed_by<
-            boost::multi_index::sequenced<>
-            , boost::multi_index::ordered_unique<
-                  BOOST_MULTI_INDEX_MEMBER(entry,vec4u,id_)
-                  >
-            >
-        > item_list;
-
-    typedef item_list::iterator iterator;
-
-    item_list   list_    ;
-    zi::mutex   mutex_   ;
-    std::size_t max_size_;
-    std::size_t size_    ;
-
-    void insert( const entry& item )
-    {
-        std::pair< iterator, bool > p = list_.push_front(item);
-
-        size_ += item.mesh_ ? item.mesh_->mem_size() : 0;
-
-        if( !p.second )
-        {
-            list_.relocate(list_.begin(), p.first);
-            size_ -= p.first->mesh_ ? p.first->mesh_->mem_size() : 0;
-            p.first->update(item.mesh_);
-        }
-        else
-        {
-            while ( size_ > max_size_ )
+            std::size_t x = size_ * 3 / 4;
+            while ( lru_.size() > x )
             {
-                size_ -= list_.back().mesh_ ? list_.back().mesh_->mem_size() : 0;
-                garbage.add(list_.back().mesh_);
-                list_.pop_back();
+                vec5u to_erase = lru_.pop_lr_used();
+                cur_memory_ -= map_[to_erase]->mem_size();
+                map_.erase(to_erase);
+            }
+        }
+
+        if ( max_memory_ < cur_memory_ )
+        {
+            std::size_t target_memory = max_memory_ * 3 / 4;
+            while ( cur_memory_ > target_memory )
+            {
+                vec5u to_erase = lru_.pop_lr_used();
+                cur_memory_ -= map_[to_erase]->mem_size();
+                map_.erase(to_erase);
             }
         }
     }
 
 public:
+    fmesh_cache_impl()
+        : lru_()
+        , m_()
+        , size_(500000)
+        , max_memory_(10000000000ULL) // 10G
+        , cur_memory_(0)
+        , map_()
+    {}
 
-    fmesh_cache( std::size_t s )
-        : list_()
-        , mutex_()
-        , max_size_( s * 1024 * 1024 )
-        , size_(0)
-
-    void insert( const vec4u& k, const mesh_type_ptr& v )
+    mesh_type_ptr get(uint32_t mip, const vec4u& c)
     {
-        zi::mutex::guard g(mutex_);
-        insert( entry(k,v) );
-    }
-
-    mesh_type_ptr get( const vec4u& k )
-    {
-        zi::mutex::guard g(mutex_);
-        typedef item_list::nth_index<1>::type key_index;
-
-        key_index& index = list_.get<1>();
-
-        key_index::iterator it = index.find(k);
-
-        if ( it != index.end() )
+        mesh_type_ptr ret;
+        vec5u id(c, mip);
+        zi::mutex::guard g(m_);
+        if ( map_.count(id) )
         {
-            return it->mesh_;
+            ret = map_[id];
         }
 
-        insert( entry(k, mesh_type_ptr() ) );
-
-        return mesh_type_ptr();
+        return ret;
     }
 
+    void set(uint32_t mip, const vec4u& c, const mesh_type_ptr& m)
+    {
+        vec5u id(c, mip);
+        zi::mutex::guard g(m_);
+
+        if ( map_.count(id) )
+        {
+            cur_memory_ -= map_[id]->mem_size();
+        }
+
+        cur_memory_ += m->mem_size();
+
+        map_[id] = m;
+        lru_.poke(id);
+
+        try_evict_nl();
+    }
+
+    void remove(uint32_t mip, const vec4u& c)
+    {
+        vec5u id(c, mip);
+        zi::mutex::guard g(m_);
+        if ( map_.count(id) )
+        {
+            cur_memory_ -= map_[id]->mem_size();
+        }
+        lru_.erase(id);
+        map_.erase(id);
+    }
+
+    void clear()
+    {
+        zi::mutex::guard g(m_);
+        cur_memory_ = 0;
+        map_.clear();
+        lru_.clear();
+    }
 
 }; // class fmesh_cache
 
+
+namespace {
+fmesh_cache_impl& fmesh_cache = zi::singleton<fmesh_cache_impl>::instance();
+}
 
 } // namespace mesh
 } // namespace zi
 
 
-#endif // ZI_MESHING_FMESH_IO_HPP
+#endif // ZI_MESHING_FMESH_CACHE_HPP

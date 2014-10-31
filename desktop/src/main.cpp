@@ -80,8 +80,13 @@ class Omni {
   }
 
   int runGUI() {
+#if (QT_VERSION >= 0x050000)
+    QApplication appl(argc_, argv_);
+    auto *app = &appl;
+#else
     // leak QApplication to avoid "~QX11PixmapData(): QPixmap objects" error
-    auto *app = new QApplication(argc_, argv_, this);
+    auto *app = new QApplication(argc_, argv_, bool(this));
+#endif
     Q_INIT_RESOURCE(resources);
     registerTypes();
 

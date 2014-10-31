@@ -58,6 +58,7 @@ TEST_F(ServerHandlerTest, get_seg_list_data) {
   segIds.insert(11);
 
   handler::get_seg_list_data(ret, seg, segIds);
+  EXPECT_EQ(4, ret.size());
   for (const auto& pair : ret) {
     const auto& data = pair.second;
 
