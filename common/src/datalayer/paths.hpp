@@ -11,7 +11,7 @@ namespace file {
 
 class Paths {
  public:
-  Paths(const path& file);
+  Paths(const path& file, bool newFile=false);
 
   static bool IsValid(const path& file);
   path OmniFile() const { return omniFile_; }

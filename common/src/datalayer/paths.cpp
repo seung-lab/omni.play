@@ -11,9 +11,9 @@ path normalize(const path& file) {
   return absolute;
 }
 
-Paths::Paths(const path& file) {
+Paths::Paths(const path& file, bool newFile) {
   auto normal = normalize(file);
-  if (!exists(normal)) {
+  if (!exists(normal) && !newFile) {
     throw ArgException(std::string("Invalid omni Path: ") + normal.string());
   }
 
@@ -25,7 +25,7 @@ Paths::Paths(const path& file) {
     filesFolder_ = omniFile_;
     filesFolder_ += ".files";
   } else {
-    throw ArgException(std::string("Invalid omni Path: ") + normal.string());
+    throw ArgException(std::string("Invalid omni extension: ") + normal.string());
   }
 
   filesFolder_ = omniFile_;
