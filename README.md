@@ -1,6 +1,9 @@
 All of everything OMNI
 ======================
 
+There is a work in progress documentation which can be found in documentation/html/index.html
+To recompile it run doxygen Doxyfile , inside documentation/ folder.
+
 Dependencies:
 -------------
 *	Boost >= 1.49.0
