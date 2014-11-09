@@ -1,8 +1,8 @@
 All of everything OMNI
 ======================
 
-There is a work in progress documentation which can be found in documentation/html/index.html
-To recompile it run doxygen Doxyfile , inside documentation/ folder.
+There is a work in progress documentation which can be found in documentation/documentation.html
+To compile it run doxygen Doxyfile , inside documentation/ folder.
 
 Dependencies:
 -------------
