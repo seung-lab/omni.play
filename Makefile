@@ -60,7 +60,7 @@ THRIFT_CXXFLAGS    =    -DHAVE_CONFIG_H
 COMMON_CXXFLAGS    =    -g -fPIC $(CXXWARN) $(THRIFT_CXXFLAGS) -std=c++11 -MMD -MP -MT "$(@)" -MF $(@:.o=.d)
 
 DBG_CFLAGS         =    $(COMMON_CFLAGS) -DDEBUG_MODE=1
-DBG_CXXFLAGS       =    $(COMMON_CXXFLAGS) -DDEBUG_MODE=1 -Og -gstabs+
+DBG_CXXFLAGS       =    $(COMMON_CXXFLAGS) -DDEBUG_MODE=1 -g -gstabs+
 OPTIMIZATION_FLAGS =    -O2
 OPT_CFLAGS         =    $(COMMON_CFLAGS) -DNDEBUG \
 						$(OPTIMIZATION_FLAGS) -fno-omit-frame-pointer
