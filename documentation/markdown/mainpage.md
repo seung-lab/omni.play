@@ -11,7 +11,7 @@ more efficient corrections and improvements.
 Documentation keeps software-quality at high levels.
 
 
-\subsection md_mainpage_req Requirements
+\subsection md_mainpage_requirements Requirements
 
 Requirements documentation is the description of what a particular software does or shall do. It is also used as an agreement or as the foundation for agreement on what the software shall do. \ref md_requirements "Read requirements documentation"
 
