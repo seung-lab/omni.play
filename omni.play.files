@@ -1479,7 +1479,6 @@ desktop/src/view3d.old/omMacOSXgestures.hpp
 desktop/src/view3d.old/omSegmentPickPoint.h
 desktop/src/view3d.old/omView3d.cpp
 desktop/src/view3d.old/omView3d.h
-desktop/src/view3d.old/omView3d.moc.cpp
 desktop/src/view3d.old/omView3dUi.cpp
 desktop/src/view3d.old/omView3dUi.h
 desktop/src/view3d.old/omView3dWidget.h
@@ -2641,3 +2640,4 @@ zi_lib/zi/typeof.hpp
 zi_lib/zi/unittest.hpp
 zi_lib/zi/unordered_map.hpp
 zi_lib/zi/unordered_set.hpp
+desktop/src/gui/resources.qrc

@@ -54,6 +54,7 @@ MainWindow::MainWindow()
 
   createStatusBar();
 
+  setWindowIcon(QIcon(":/images/icon.jpeg"));
   windowTitleClear();
   resize(1000, 1000);
 

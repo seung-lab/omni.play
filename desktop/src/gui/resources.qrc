@@ -1,34 +1,35 @@
-<!DOCTYPE RCC><RCC version="1.0">
-<qresource>
-<file>toolbars/mainToolbar/icons/1277961998_3floppy_unmount.png</file>
-<file>toolbars/mainToolbar/icons/1277962293_restart-1.png</file>
-<file>toolbars/mainToolbar/icons/1278015539_color_fill.png</file>
-<file>toolbars/mainToolbar/icons/1277962300_paint.png</file>
-<file>toolbars/mainToolbar/icons/1277962354_package-purge.png</file>
-<file>toolbars/mainToolbar/icons/1277962376_target.png</file>
-<file>toolbars/mainToolbar/icons/1277962393_poke.png</file>
-<file>toolbars/mainToolbar/icons/1277962397_cursor_hand.png</file>
-<file>toolbars/mainToolbar/icons/1277962552_highlight.png</file>
-<file>toolbars/mainToolbar/icons/1278008421_search.png</file>
-<file>toolbars/mainToolbar/icons/1278008858_cursor_arrow.png</file>
-<file>toolbars/mainToolbar/icons/1278009384_kllckety.png</file>
-<file>toolbars/mainToolbar/icons/1299635956_window_new.png</file>
-<file>toolbars/mainToolbar/icons/1278008555_agt_softwareD.png</file>
-<file>toolbars/mainToolbar/icons/1301504581_emblem-art2.png</file>
-<file>toolbars/mainToolbar/icons/ajax-loader.gif</file>
-<file>toolbars/mainToolbar/icons/1304368359_MyNetworkPlaces.png</file>
-<file>toolbars/mainToolbar/icons/1308021634_keditbookmarks.png</file>
-<file>toolbars/mainToolbar/icons/1308183310_Scissors.png</file>
-<file>toolbars/mainToolbar/icons/kcmfontinst.png</file>
-<file>toolbars/mainToolbar/icons/folder_documents.png</file>
-<file>inspectors/segmentation/icons/1302814771_advancedsettings.png</file>
-<file>inspectors/segmentation/icons/1302822648_filesaveas.png</file>
-<file>inspectors/segmentation/icons/1305228725_package_graphics.png</file>
-<file>inspectors/segmentation/icons/1308789372_Service_Manager.png</file>
-<file>inspectors/segmentation/icons/1308789338_file_doc.png</file>
-<file>inspectors/segmentation/icons/1308786126_kchart_chrt.png</file>
-<file>inspectors/channel/icons/1302814771_advancedsettings.png</file>
-<file>inspectors/channel/icons/1302822648_filesaveas.png</file>
-<file>inspectors/channel/icons/1305228725_package_graphics.png</file>
-</qresource>
+<RCC>
+    <qresource prefix="/">
+        <file>toolbars/mainToolbar/icons/1277961998_3floppy_unmount.png</file>
+        <file>toolbars/mainToolbar/icons/1277962293_restart-1.png</file>
+        <file>toolbars/mainToolbar/icons/1278015539_color_fill.png</file>
+        <file>toolbars/mainToolbar/icons/1277962300_paint.png</file>
+        <file>toolbars/mainToolbar/icons/1277962354_package-purge.png</file>
+        <file>toolbars/mainToolbar/icons/1277962376_target.png</file>
+        <file>toolbars/mainToolbar/icons/1277962393_poke.png</file>
+        <file>toolbars/mainToolbar/icons/1277962397_cursor_hand.png</file>
+        <file>toolbars/mainToolbar/icons/1277962552_highlight.png</file>
+        <file>toolbars/mainToolbar/icons/1278008421_search.png</file>
+        <file>toolbars/mainToolbar/icons/1278008858_cursor_arrow.png</file>
+        <file>toolbars/mainToolbar/icons/1278009384_kllckety.png</file>
+        <file>toolbars/mainToolbar/icons/1299635956_window_new.png</file>
+        <file>toolbars/mainToolbar/icons/1278008555_agt_softwareD.png</file>
+        <file>toolbars/mainToolbar/icons/1301504581_emblem-art2.png</file>
+        <file>toolbars/mainToolbar/icons/ajax-loader.gif</file>
+        <file>toolbars/mainToolbar/icons/1304368359_MyNetworkPlaces.png</file>
+        <file>toolbars/mainToolbar/icons/1308021634_keditbookmarks.png</file>
+        <file>toolbars/mainToolbar/icons/1308183310_Scissors.png</file>
+        <file>toolbars/mainToolbar/icons/kcmfontinst.png</file>
+        <file>toolbars/mainToolbar/icons/folder_documents.png</file>
+        <file>inspectors/segmentation/icons/1302814771_advancedsettings.png</file>
+        <file>inspectors/segmentation/icons/1302822648_filesaveas.png</file>
+        <file>inspectors/segmentation/icons/1305228725_package_graphics.png</file>
+        <file>inspectors/segmentation/icons/1308789372_Service_Manager.png</file>
+        <file>inspectors/segmentation/icons/1308789338_file_doc.png</file>
+        <file>inspectors/segmentation/icons/1308786126_kchart_chrt.png</file>
+        <file>inspectors/channel/icons/1302814771_advancedsettings.png</file>
+        <file>inspectors/channel/icons/1302822648_filesaveas.png</file>
+        <file>inspectors/channel/icons/1305228725_package_graphics.png</file>
+        <file>images/icon.jpeg</file>
+    </qresource>
 </RCC>
