@@ -60,7 +60,7 @@ void project::Write(const QString& fnp, OmProjectImpl* project) {
 
   OmProject::setFileVersion(Latest_Project_Version);
 
-  std::ofstream fout(fnp.toAscii());
+  std::ofstream fout(fnp.toLatin1());
   YAML::Emitter e(fout);
   e << YAML::BeginDoc << YAML::Node(Latest_Project_Version) << YAML::EndDoc;
   e << YAML::BeginDoc << YAML::convert<OmProjectImpl>::encode(*project)
