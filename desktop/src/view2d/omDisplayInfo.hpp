@@ -11,8 +11,12 @@ class OmDisplayInfo {
         pen_(pen),
         yTopOfText_(initialHeight),
         xoffset_(xoffset),
-        yHeightDec_(10),
+        yHeightDec_(13),
         oldPenColor_(pen.color()) {
+    QFont font;
+    font.setWeight(QFont::Bold);
+    font.setItalic(true);
+    painter_.setFont(font);
     pen_.setColor(QColor(Qt::white));
     painter_.setPen(pen_);
   }
