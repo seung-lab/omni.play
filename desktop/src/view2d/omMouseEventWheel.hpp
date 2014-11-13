@@ -53,6 +53,9 @@ class OmMouseEventWheel {
         state_->MoveDownStackFartherFromViewer(Om2dPreferences::ScrollRate());
       }
 
+      ///Update the other views2d
+      om::event::ViewCenterChanged();
+
     } else if (changeAlpha) {
 
       if (numSteps >= 0) {
