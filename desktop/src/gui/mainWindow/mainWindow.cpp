@@ -371,6 +371,14 @@ void MainWindow::open3dView() {
   }
 }
 
+void MainWindow::openAboutDialog(){
+
+  QString major = "1.3"; //from desktop/version/major
+  QString minor = ".2";  //from desktop/version/minor
+  QMessageBox::about(this, "Omni","Omni\nVersion " + major + minor + " \n\nMade with love by a bunch of geeks");
+
+}
+
 void MainWindow::closeEvent(QCloseEvent* event) {
   try {
     // QMainWindow::saveState() and restoreState()

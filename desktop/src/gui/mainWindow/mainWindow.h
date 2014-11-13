@@ -58,6 +58,7 @@ Q_SLOTS:
   void openCacheMonitor();
 
   void open3dView();
+  void openAboutDialog();
 
   void showEditPreferencesDialog();
   void showEditLocalPreferencesDialog();

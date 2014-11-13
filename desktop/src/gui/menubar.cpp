@@ -42,6 +42,9 @@ void MenuBar::createMenus() {
 
   windowMenu_ = mainWindow_->menuBar()->addMenu(tr("&Window"));
   windowMenu_->addAction(open3DAct_);
+
+  helpMenu_ = mainWindow_->menuBar()->addMenu(tr("&Help"));
+  helpMenu_->addAction(about_);
 }
 
 void MenuBar::createActions() {
@@ -128,6 +131,11 @@ void MenuBar::createActions() {
   open3DAct_->setShortcut(tr("Ctrl+3"));
   open3DAct_->setStatusTip(tr("Opens the 3D view"));
   om::connect(open3DAct_, SIGNAL(triggered()), mainWindow_, SLOT(open3dView()));
+
+  // Menu
+  about_ = new QAction(tr("&About Omni"), mainWindow_);
+  om::connect(about_, SIGNAL(triggered()), mainWindow_, SLOT(openAboutDialog()));
+
 }
 
 void MenuBar::UpdateReadOnlyRelatedWidgets() {

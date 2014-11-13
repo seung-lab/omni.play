@@ -29,6 +29,7 @@ class MenuBar : public QWidget {
   QMenu* projectMenu_;
   QMenu* toolMenu_;
   QMenu* windowMenu_;
+  QMenu* helpMenu_;
 
   QAction* newAct_;
   QAction* openAct_;
@@ -48,6 +49,8 @@ class MenuBar : public QWidget {
   QAction* openCacheMonitorAct_;
 
   QAction* open3DAct_;
+
+  QAction* about_;
 
   RecentFileList recentFiles_;
 };
