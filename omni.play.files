@@ -870,7 +870,6 @@ desktop/src/gui/inspectors/volInspector.moc.cpp
 desktop/src/gui/mainWindow/centralWidget.hpp
 desktop/src/gui/mainWindow/mainWindow.cpp
 desktop/src/gui/mainWindow/mainWindow.h
-desktop/src/gui/mainWindow/mainWindow.moc.cpp
 desktop/src/gui/mainWindow/mainWindowEvents.hpp
 desktop/src/gui/preferences/checkboxHideCrosshairs.hpp
 desktop/src/gui/preferences/localPreferences2d.cpp

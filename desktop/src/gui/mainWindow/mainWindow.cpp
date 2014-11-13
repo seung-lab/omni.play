@@ -314,13 +314,14 @@ void MainWindow::openInspector() {
     inspector_->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Expanding);
 
     inspectorDock_->setAllowedAreas(Qt::AllDockWidgetAreas);
-    inspectorDock_->setFeatures(QDockWidget::NoDockWidgetFeatures);
 
     inspector_->setParent(inspectorDock_.get());
     inspectorDock_->setWidget(inspector_);
 
     addDockWidget(Qt::LeftDockWidgetArea, inspectorDock_.get());
     mMenuBar->GetWindowMenu()->addAction(inspectorDock_->toggleViewAction());
+
+    inspectorDock_->toggleViewAction()->setCheckable(true);
   }
   catch (om::Exception& e) {
     spawnErrorDialog(e);
