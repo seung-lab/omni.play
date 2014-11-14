@@ -994,7 +994,6 @@ desktop/src/gui/sidebars/right/rightImpl.h
 desktop/src/gui/sidebars/right/rightImpl.moc.cpp
 desktop/src/gui/taskSelector/taskSelector.cpp
 desktop/src/gui/taskSelector/taskSelector.h
-desktop/src/gui/taskSelector/taskSelector.moc.cpp
 desktop/src/gui/toolbars/loginToolbar/loginButton.cpp
 desktop/src/gui/toolbars/loginToolbar/loginButton.h
 desktop/src/gui/toolbars/loginToolbar/loginButton.moc.cpp
