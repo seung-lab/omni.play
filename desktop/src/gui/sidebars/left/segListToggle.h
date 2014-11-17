@@ -18,7 +18,7 @@ class SegListToggleButton : public OmButton<QWidget> {
   SegListToggleButton(QWidget* d, std::string name, common::SegIDSet segIDs)
       : OmButton<QWidget>(d, QString::fromStdString(name), "", false),
         segIDs_(segIDs) {
-      if (name.find('seed')){
+      if (name.find("Seed") != std::string::npos){
           this->setCheckable(true);
           this->setChecked(true);
       }
