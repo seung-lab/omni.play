@@ -73,6 +73,8 @@ class Selection {
     }
 
     OmCacheManager::TouchFreshness();
+    om::event::SegmentSelected();
+
   }
 
   void ToggleSegmentSelection(const om::common::SegIDSet& ids) {
@@ -97,6 +99,7 @@ class Selection {
     }
 
     OmCacheManager::TouchFreshness();
+    om::event::SegmentSelected();
   }
 
   void RerootSegmentList() {

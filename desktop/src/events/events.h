@@ -17,7 +17,7 @@ void Redraw3d();
 void SegmentGUIlist(const SegmentationDataWrapper& sdw, const bool stayOnPage);
 void SegmentModified();
 void SegmentModified(std::shared_ptr<OmSelectSegmentsParams> params);
-void SegmentSelected(std::shared_ptr<OmSelectSegmentsParams> params);
+void SegmentSelected();
 void SegmentBrush();
 void ViewCenterChanged();
 void View3dRecenter();

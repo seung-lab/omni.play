@@ -32,7 +32,7 @@ Q_SLOTS:
 
   void UpdateSegmentPropWidgetEvent(om::event::UIEvent*);
   void SegmentGUIlistEvent(om::event::SegmentEvent*) {}
-  void SegmentSelectedEvent(om::event::SegmentEvent* , std::shared_ptr<OmSelectSegmentsParams> params) {}
+  void SegmentSelectedEvent(om::event::SegmentEvent*) {}
   void SegmentBrushEvent(om::event::SegmentEvent*) {}
   void SegmentModificationEvent(om::event::SegmentEvent* event);
 };

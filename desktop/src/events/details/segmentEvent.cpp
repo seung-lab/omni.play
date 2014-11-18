@@ -36,7 +36,7 @@ void SegmentEvent::Dispatch(Listener* base) {
 
   if (type_ == MODIFIED) return list->SegmentModificationEvent(this);
   if (type_ == SEGMENT_GUI_LIST) return list->SegmentGUIlistEvent(this);
-  if (type_ == SEGMENT_SELECTED) return list->SegmentSelectedEvent(this , params_);
+  if (type_ == SEGMENT_SELECTED) return list->SegmentSelectedEvent(this);
   if (type_ == SEGMENT_BRUSH) return list->SegmentBrushEvent(this);
   throw om::ArgException("unknown event type");
 }

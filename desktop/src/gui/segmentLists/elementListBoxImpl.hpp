@@ -108,7 +108,7 @@ class ElementListBoxImpl : public QGroupBox,
     }
   }
 
-  void SegmentSelectedEvent(om::event::SegmentEvent*, std::shared_ptr<OmSelectSegmentsParams> params) {}
+  void SegmentSelectedEvent(om::event::SegmentEvent*) {}
 
   void SegmentBrushEvent(om::event::SegmentEvent*) {}
 

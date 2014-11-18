@@ -18,8 +18,8 @@ class SegListToggleButton : public OmButton<QWidget>,
                             public om::event::SegmentEventListener {
  public:
   SegListToggleButton(QWidget* d, std::string name, common::SegIDSet segIDs)
-      : OmButton<QWidget>(d, QString::fromStdString(name), "", false),
-        parent_(d),
+      : parent_(d),
+        OmButton<QWidget>(d, QString::fromStdString(name), "", false),
         segIDs_(segIDs) {
       if (name.find("Seed") != std::string::npos){
           this->setCheckable(true);
@@ -31,11 +31,14 @@ class SegListToggleButton : public OmButton<QWidget>,
 
   void SegmentModificationEvent(om::event::SegmentEvent*) {}
   void SegmentGUIlistEvent(om::event::SegmentEvent*) {}
-  void SegmentSelectedEvent(om::event::SegmentEvent* event, std::shared_ptr<OmSelectSegmentsParams> params) {
+  void SegmentSelectedEvent(om::event::SegmentEvent* event) {
+      SegmentationDataWrapper sdw(1); //TODO correct this segmentation id hack
+      segment::Selection &currentSelection = sdw.Segments()->Selection();
+
       if(objectName() == "seed"){
           bool seedOn = true;
           for( auto &seg : segIDs_ ){
-              if(params->newSelectedIDs.find(seg) == params->newSelectedIDs.end()){
+              if(!currentSelection.IsSegmentSelected(seg)){
                   seedOn = false;
                   break;
               }
@@ -50,7 +53,7 @@ class SegListToggleButton : public OmButton<QWidget>,
   QWidget* parent_;
 
   void doAction() override {
-    SegmentationDataWrapper sdw(1);
+    SegmentationDataWrapper sdw(1); //TODO correct this segmentation id hack
     if (!sdw.IsValidWrapper()) {
       return;
     }
@@ -71,8 +74,7 @@ class SegListToggleButton : public OmButton<QWidget>,
     om::event::Redraw3d();
 
     if(objectName() != "seed"){
-        SegListToggleButton * seedButton = parent_->findChild<SegListToggleButton *>("seed");
-        seedButton->setChecked(false);
+        om::event::SegmentSelected();
     }
 
   }

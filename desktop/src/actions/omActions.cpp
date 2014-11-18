@@ -2,6 +2,7 @@
 #include "actions/omActionsImpl.h"
 #include "utility/dataWrappers.h"
 #include "threads/taskManager.hpp"
+#include "events/events.h"
 
 om::thread::ThreadPool& OmActions::pool() {
   return OmProject::Globals().Actions().ThreadPool();
@@ -99,4 +100,5 @@ void OmActions::CutSegment(const SegmentDataWrapper& sdw) {
 void OmActions::SelectSegments(std::shared_ptr<OmSelectSegmentsParams> params) {
   pool().push_back(
       zi::run_fn(zi::bind(&OmActionsImpl::SelectSegments, impl(), params)));
+    om::event::SegmentSelected();
 }

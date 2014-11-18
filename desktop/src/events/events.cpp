@@ -29,8 +29,8 @@ void Redraw2dBlocking() {
 
 void Redraw3d() { Manager::Post(new View3dEvent(View3dEvent::REDRAW)); }
 
-void SegmentSelected(std::shared_ptr<OmSelectSegmentsParams> params) {
-  Manager::Post(new SegmentEvent(SegmentEvent::SEGMENT_SELECTED, params));
+void SegmentSelected() {
+  Manager::Post(new SegmentEvent(SegmentEvent::SEGMENT_SELECTED));
 }
 
 void SegmentBrush() {
