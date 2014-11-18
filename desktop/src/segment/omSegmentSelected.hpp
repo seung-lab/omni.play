@@ -20,9 +20,13 @@ class OmSegmentSelected : private om::SingletonBase<OmSegmentSelected> {
     return instance().sdwForPainting_;
   }
 
+  /**
+   * @brief SetSegmentForPainting Emit the signal for openning the brush dialog
+   * @param sdw
+   */
   static void SetSegmentForPainting(const SegmentDataWrapper& sdw) {
     instance().sdwForPainting_ = sdw;
-    om::event::SegmentSelected();
+    om::event::SegmentBrush();
   }
 
   static void RandomizeColor() {

@@ -8,7 +8,7 @@ class OmViewGroupState;
 class InspectorProperties : public QDialog,
                             public om::event::UIEventListener,
                             public om::event::SegmentEventListener {
-  Q_OBJECT;
+  Q_OBJECT
 
  public:
   InspectorProperties(QWidget* parent, OmViewGroupState& vgs);
@@ -32,6 +32,7 @@ Q_SLOTS:
 
   void UpdateSegmentPropWidgetEvent(om::event::UIEvent*);
   void SegmentGUIlistEvent(om::event::SegmentEvent*) {}
-  void SegmentSelectedEvent(om::event::SegmentEvent*) {}
+  void SegmentSelectedEvent(om::event::SegmentEvent* , std::shared_ptr<OmSelectSegmentsParams> params) {}
+  void SegmentBrushEvent(om::event::SegmentEvent*) {}
   void SegmentModificationEvent(om::event::SegmentEvent* event);
 };

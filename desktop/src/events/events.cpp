@@ -29,13 +29,16 @@ void Redraw2dBlocking() {
 
 void Redraw3d() { Manager::Post(new View3dEvent(View3dEvent::REDRAW)); }
 
-void SegmentSelected() {
-  Manager::Post(new SegmentEvent(SegmentEvent::SEGMENT_SELECTED));
+void SegmentSelected(std::shared_ptr<OmSelectSegmentsParams> params) {
+  Manager::Post(new SegmentEvent(SegmentEvent::SEGMENT_SELECTED, params));
+}
+
+void SegmentBrush() {
+   Manager::Post(new SegmentEvent(SegmentEvent::SEGMENT_BRUSH));
 }
 
 void SegmentGUIlist(const SegmentationDataWrapper& sdw, const bool stayOnPage) {
-  Manager::Post(
-      new SegmentEvent(SegmentEvent::SEGMENT_GUI_LIST, sdw, stayOnPage));
+  Manager::Post(new SegmentEvent(SegmentEvent::SEGMENT_GUI_LIST, sdw, stayOnPage));
 }
 
 void SegmentModified() {
@@ -90,7 +93,10 @@ void AnnotationObjectModified() {
 }
 
 void ExecuteOnMain(std::function<void()> func) {
-  Manager::Post(new ExecuteOnMainEvent(func));
+    Manager::Post(new ExecuteOnMainEvent(func));
 }
+
+
+
 }
 }  //

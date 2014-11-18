@@ -25,7 +25,8 @@ class OmniEventListener : public om::event::PreferenceEventListener,
   // omni events
   void SegmentModificationEvent(om::event::SegmentEvent*);
   void SegmentGUIlistEvent(om::event::SegmentEvent*) {}
-  void SegmentSelectedEvent(om::event::SegmentEvent*) {}
+  void SegmentSelectedEvent(om::event::SegmentEvent* , std::shared_ptr<OmSelectSegmentsParams> params) {}
+  void SegmentBrushEvent(om::event::SegmentEvent*) {}
   void PreferenceChangeEvent(om::event::PreferenceEvent*);
   void ViewBoxChangeEvent();
   void View3dRedrawEvent();

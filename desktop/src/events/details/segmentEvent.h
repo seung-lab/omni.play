@@ -16,6 +16,8 @@ class SegmentEvent : public Event {
   static const QEvent::Type MODIFIED;
   static const QEvent::Type SEGMENT_GUI_LIST;
   static const QEvent::Type SEGMENT_SELECTED;
+  static const QEvent::Type SEGMENT_BRUSH;
+
 
   SegmentEvent(QEvent::Type type);
   SegmentEvent(QEvent::Type, const SegmentationDataWrapper&, const bool);

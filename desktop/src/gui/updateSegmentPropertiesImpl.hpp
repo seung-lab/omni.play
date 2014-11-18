@@ -21,6 +21,8 @@ class UpdateSegmentPropertiesDialogImpl
 
   void SegmentSelectedEvent(om::event::SegmentEvent*) {}
 
+  void SegmentBrushEvent(om::event::SegmentEvent*) {}
+
   void SegmentModificationEvent(om::event::SegmentEvent* event) {
     if (!ip_ || !ip_->WidgetIsViewable()) {
       return;

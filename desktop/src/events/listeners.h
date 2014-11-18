@@ -2,6 +2,7 @@
 #include "precomp.h"
 
 #include "events/details/listener.h"
+#include "actions/omSelectSegmentParams.hpp"
 
 namespace om {
 namespace event {
@@ -39,7 +40,8 @@ struct SegmentEventListener : public Listener {
   // add/remove segment, change state, change selection
   virtual void SegmentModificationEvent(SegmentEvent*) = 0;
   virtual void SegmentGUIlistEvent(SegmentEvent*) = 0;
-  virtual void SegmentSelectedEvent(SegmentEvent*) = 0;
+  virtual void SegmentSelectedEvent(SegmentEvent*, std::shared_ptr<OmSelectSegmentsParams> params) = 0;
+  virtual void SegmentBrushEvent(SegmentEvent*) = 0;
 };
 
 struct ToolModeEventListener : public Listener {

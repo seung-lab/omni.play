@@ -108,7 +108,9 @@ class ElementListBoxImpl : public QGroupBox,
     }
   }
 
-  void SegmentSelectedEvent(om::event::SegmentEvent*) {}
+  void SegmentSelectedEvent(om::event::SegmentEvent*, std::shared_ptr<OmSelectSegmentsParams> params) {}
+
+  void SegmentBrushEvent(om::event::SegmentEvent*) {}
 
   void updateValidBar(const SegmentationDataWrapper& sdw) {
     const uint64_t valid =

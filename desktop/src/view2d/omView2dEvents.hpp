@@ -23,7 +23,9 @@ class OmView2dEvents : public om::event::SegmentEventListener,
 
   void SegmentGUIlistEvent(om::event::SegmentEvent*) {}
 
-  void SegmentSelectedEvent(om::event::SegmentEvent*) {}
+  void SegmentSelectedEvent(om::event::SegmentEvent* , std::shared_ptr<OmSelectSegmentsParams> params) {}
+
+  void SegmentBrushEvent(om::event::SegmentEvent*) {}
 
   void ViewBoxChangeEvent() {
     state_->Coords().UpdateTransformationMatrices();

@@ -152,6 +152,8 @@ bool OmSegmentSelector::sendEvent() {
     OmActions::SelectSegments(params_);
   }
 
+  om::event::SegmentSelected(params_);
+
   return true;
 }
 

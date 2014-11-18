@@ -1,5 +1,7 @@
 #pragma once
 #include "precomp.h"
+#include "events/events.h"
+
 
 #include "segment/lowLevel/graph.h"
 #include "segment/lowLevel/store.h"

@@ -78,7 +78,7 @@ struct convert<om::task::TracingTask> {
         t.seed_.insert(s.first.as<uint32_t>());
       }
       om::task::SegGroup seed;
-      seed.name = "seed";
+      seed.name = "Seed";
       seed.type = om::task::SegGroup::GroupType::SEED;
       seed.segments = t.seed_;
       t.groups_.push_back(seed);
