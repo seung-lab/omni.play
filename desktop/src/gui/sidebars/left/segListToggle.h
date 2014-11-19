@@ -27,12 +27,12 @@ class SegListToggleButton : public OmButton<QWidget>,
                             public om::event::SegmentEventListener {
  public:
   SegListToggleButton(QWidget* d, std::string name, common::SegIDSet segIDs)
-      : OmButton<QWidget>(d, QString::fromStdString(name), "", false),
+      : OmButton<QWidget>(d, QString::fromStdString(name), "", true),
         segIDs_(segIDs) {
+
+      //The seed button starts always pressed
       if (name.find("Seed") != std::string::npos){
-          setCheckable(true);
           setChecked(true);
-          setObjectName("seed");
       }
   }
 
@@ -48,19 +48,19 @@ class SegListToggleButton : public OmButton<QWidget>,
    * we set this button as checked or not.
    */
   void SegmentSelectedEvent(om::event::SegmentEvent* event) {
-      if(objectName() == "seed"){
-          SegmentationDataWrapper sdw(1); //TODO correct this segmentation id hack
-          segment::Selection &currentSelection = sdw.Segments()->Selection();
 
-          bool seedOn = true;
-          for( auto &seg : segIDs_ ){
-              if(!currentSelection.IsSegmentSelected(seg)){
-                  seedOn = false;
-                  break;
-              }
+      SegmentationDataWrapper sdw(1); //TODO correct this segmentation id hack
+      segment::Selection &currentSelection = sdw.Segments()->Selection();
+
+      bool seedOn = true;
+      for( auto &seg : segIDs_ ){
+          if(!currentSelection.IsSegmentSelected(seg)){
+              seedOn = false;
+              break;
           }
-          setChecked(seedOn);
-     }
+      }
+      setChecked(seedOn);
+
   }
   void SegmentBrushEvent(om::event::SegmentEvent*) {}
   common::SegIDSet segIDs_;
@@ -69,10 +69,9 @@ class SegListToggleButton : public OmButton<QWidget>,
   void doAction() override {
 
       //Resets the button state after manually clicking on it
-      if(objectName() == "seed"){
-          setChecked(false);
-          setDown(false);
-        }
+      setChecked(false);
+      setDown(false);
+
 
       SegmentationDataWrapper sdw(1); //TODO correct this segmentation id hack
       if (!sdw.IsValidWrapper()) {
