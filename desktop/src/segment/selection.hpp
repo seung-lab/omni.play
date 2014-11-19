@@ -52,6 +52,7 @@ class Selection {
     zi::guard g(mutex_);
     setSegmentSelectedBatch(segID, isSelected, addToRecentList);
     OmCacheManager::TouchFreshness();
+    om::event::SegmentSelected();
   }
 
   void UpdateSegmentSelection(const common::SegIDSet& ids,
@@ -64,6 +65,7 @@ class Selection {
     }
 
     OmCacheManager::TouchFreshness();
+    om::event::SegmentSelected();
   }
 
   void AddToSegmentSelection(const common::SegIDSet& ids) {
@@ -74,22 +76,21 @@ class Selection {
 
     OmCacheManager::TouchFreshness();
     om::event::SegmentSelected();
-
   }
 
   void ToggleSegmentSelection(const om::common::SegIDSet& ids) {
-    bool toggle = false;
-    for (auto& id : ids) {
-      if (!IsSegmentSelected(id)) {
-        toggle = true;
-        break;
+      bool toggle = false;
+      for (auto& id : ids) {
+          if (!IsSegmentSelected(id)) {
+              toggle = true;
+              break;
+          }
       }
-    }
-    for (auto& id : ids) {
-      setSegmentSelectedBatch(id, toggle, true);
-    }
+      for (auto& id : ids) {
+          setSegmentSelectedBatch(id, toggle, true);
+      }
 
-    OmCacheManager::TouchFreshness();
+      OmCacheManager::TouchFreshness();
   }
 
   void RemoveFromSegmentSelection(const common::SegIDSet& ids) {
@@ -140,11 +141,13 @@ class Selection {
     if (addToRecentList) {
       addToRecentMap(segID);
     }
+    om::event::SegmentSelected();
   }
 
   inline void doSelectedSetRemove(const common::SegID segID) {
     selected_.erase(segID);
     addToRecentMap(segID);
+    om::event::SegmentSelected();
   }
 
   inline void addToRecentMap(const common::SegID segID) {
