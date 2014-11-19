@@ -79,7 +79,6 @@ Q_SLOTS:
 
   void tellDone(const QString str) {
     hide();
-    OmTellInfo tell(str);
     deleteLater();
   }
 };
