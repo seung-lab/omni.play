@@ -30,17 +30,8 @@ void project::Read(const QString& fnp, OmProjectImpl* project) {
 
     YAML::convert<OmProjectImpl>::decode(docs[1], *project);
   }
-  catch (Exception e) {
-    /*
-            std::stringstream ss;
-            ss << e.what() << "\n";
-            ss << fnp.toStdString();
-            ss << " line: " << e.mark.line;
-            ss << " col: " << e.mark.column;
-            ss << " pos: " << e.mark.pos;
-            throw om::IoException(ss.str());
-    */
-    throw;
+  catch (YAML::Exception& e) {
+    throw om::IoException(e.what() + ("\n" + fnp.toStdString()));
   }
   postLoad();
 }
