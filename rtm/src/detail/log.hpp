@@ -72,7 +72,6 @@ public:
         , d_(false)
         , t_(zi::run_fn(zi::bind(&log_output_impl::loop,this)))
     {
-        t_.start();
     }
 
     ~log_output_impl()
@@ -81,7 +80,14 @@ public:
             zi::mutex::guard g(m_);
             d_ = true;
         }
-        t_.join();
+        if (t_.get_id()) {
+            t_.join();
+        }
+    }
+
+    void start()
+    {
+        t_.start();
     }
 
     void reg(std::ostringstream* o)
