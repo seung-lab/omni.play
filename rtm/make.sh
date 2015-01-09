@@ -17,5 +17,6 @@ src/im_server.cpp ../thrift/src/rtm*.cpp ../thrift/src/RealTimeMesher.cpp \
 ../external/libs/thrift/lib/libthrift.a \
 ../external/libs/thrift/lib/libthriftnb.a \
 -lrt -lpthread -lz -levent -DNDEBUG \
+-std=c++11 \
 -O2 \
 -o ../bin/release/rtmxz

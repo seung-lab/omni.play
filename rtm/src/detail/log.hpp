@@ -29,6 +29,7 @@
 #include <iostream>
 #include <sstream>
 #include <list>
+#include <memory>
 
 namespace zi {
 namespace mesh {
@@ -39,7 +40,7 @@ private:
     zi::mutex                      m_;
     std::list<std::ostringstream*> o_;
     bool                           d_;
-    zi::thread                     t_;
+    std::unique_ptr<zi::thread>    t_;
 
     void loop()
     {
@@ -70,7 +71,6 @@ public:
         : m_()
         , o_()
         , d_(false)
-        , t_(zi::run_fn(zi::bind(&log_output_impl::loop,this)))
     {
     }
 
@@ -80,14 +80,16 @@ public:
             zi::mutex::guard g(m_);
             d_ = true;
         }
-        if (t_.get_id()) {
-            t_.join();
+        if (t_) {
+            t_->join();
         }
     }
 
     void start()
     {
-        t_.start();
+        t_ = std::unique_ptr<zi::thread>(new zi::thread(
+                    zi::run_fn(zi::bind(&log_output_impl::loop,this))));
+        t_->start();
     }
 
     void reg(std::ostringstream* o)
