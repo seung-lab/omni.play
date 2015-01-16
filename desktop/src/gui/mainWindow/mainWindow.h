@@ -23,7 +23,7 @@ class MainWindow : public QMainWindow {
   ~MainWindow();
 
   bool openProject(const std::string& fileNameAndPath,
-                   const std::string& username);
+                   const std::string& username, bool closeTask = false);
 
   void cleanViewsOnVolumeChange(om::common::ObjectType objectType,
                                 om::common::ID objectId);

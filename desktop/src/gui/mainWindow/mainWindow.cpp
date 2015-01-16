@@ -226,7 +226,7 @@ void MainWindow::openRecentFile() {
     return;
   }
 
-  openProject(action->data().toString().toStdString(), "");
+  openProject(action->data().toString().toStdString(), "", true);
 }
 
 bool MainWindow::openProject() {
@@ -254,11 +254,11 @@ bool MainWindow::openProject() {
 }
 
 bool MainWindow::openProject(const std::string& fileNameAndPath,
-                             const std::string& username) {
+                             const std::string& username, bool closeTask) {
   if (OmProject::IsOpen(fileNameAndPath, username)) {
     return true;
   }
-  if (closeProjectIfOpen(false)) {
+  if (closeProjectIfOpen(closeTask)) {
     return loadProject(fileNameAndPath, username);
   } else {
     return false;
