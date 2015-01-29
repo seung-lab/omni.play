@@ -4,6 +4,7 @@
 # as it does use of the /proc filesystem.
 
 export RTMDIR=/usr/local/omni/rtm
+export RTMBIN=/usr/local/omni/rtm/rtm
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$RTMDIR/lib
 export APPENV=PRODUCTION
 
@@ -11,8 +12,8 @@ ORIGINALDIR=`pwd`
 cd $RTMDIR
 
 PORT=9099 # 9999 is test
-PIDFILE=/etc/run/rtm_${PORT}.pid
-EXEC="screen -d -m -L -S rtm $RTMDIR/rtm --port=$PORT --nodaemonize"
+PIDFILE=/run/rtm_${PORT}.pid
+SCREEN=/usr/bin/screen
 
 case "$1" in
     start)
@@ -21,7 +22,10 @@ case "$1" in
                 echo "$PIDFILE exists, process is already running or crashed"
         else
                 echo "Starting Real Time Mesher..."
-                start-stop-daemon --start --pidfile $PIDFILE --make-pidfile --user omni --exec $EXEC
+                start-stop-daemon --start --pidfile $PIDFILE --make-pidfile \
+                        --chuid omni --user omni --chdir "${RTMDIR}" --exec "$RTMBIN" \
+                        --startas $SCREEN -- -d -m -L -S rtm "$RTMBIN" --port=$PORT --nodaemonize
+                echo
         fi
         ;;
     stop)
@@ -31,7 +35,7 @@ case "$1" in
         else
                 PID=$(cat $PIDFILE)
                 echo "Stopping PID $PID ..."
-		start-stop-daemon --stop --pidfile $PIDFILE --make-pidfile --user omni --exec $EXEC
+                start-stop-daemon --stop --user omni --exec "$RTMBIN"
                 while [ -x /proc/${PID} ]
                 do
                     echo "Waiting for RTM to shutdown ..."
