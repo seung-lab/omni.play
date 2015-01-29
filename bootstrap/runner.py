@@ -5,6 +5,7 @@ from string import Template
 from library import LibraryMetadata
 from builder import Builder
 from sysutils import sysutils
+from shutil import copyfile
 
 class runner:
     def __init__(self, num_cores):
@@ -29,6 +30,12 @@ CFLAGS='-g -O2'
 
         b.prepare()
         b.buildInSourceFolder()
+
+        #Copy $OMNIWEBDIR/external/Protocol.h to $OMNIWEBDIR/external/libs/thrift/include/thrift/protocol/TProtocol.h 
+        #To Fix Error related to signals in Thrift 
+        #The fixed files comes from commit https://github.com/apache/thrift/commit/f4e6e62ea091b94322ecc99756269dbee1c06380?diff=split#diff-b0a553fc4a9a00297624dc612c54c146R95
+        if LibraryMetadata.thrift().baseFileName == 'thrift-0.9.1':
+            copyfile('{external}/TProtocol.h'.format(external=b.ext_fp), '{libs}/thrift/include/thrift/protocol/TProtocol.h'.format(libs=b.libs_fp()))
 
     def libjpeg(self):
         b = self.makeBuilder(LibraryMetadata.jpeg())

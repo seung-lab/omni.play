@@ -18,3 +18,5 @@ TAGS
 .#*
 #*
 omni.play.pro.user
+!external/TProtocol.h
+
