@@ -76,6 +76,16 @@ public:
         , mutex_()
     { }
 
+    ~rwlock_pool()
+    {
+        mutex::guard g( mutex_ );
+        FOR_EACH( it, locks_ )
+        {
+            delete it->second;
+        }
+        locks_.clear();
+    }
+
     bool try_acquire_read(const T& k) const
     {
         mutex::guard g( mutex_ );

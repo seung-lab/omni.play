@@ -23,8 +23,8 @@
 #include <zi/concurrency.hpp>
 #include <zi/system/daemon.hpp>
 
-ZiARG_int32(port, 9099, "Server's port");
-ZiARG_bool(daemonize, true, "Run as daemon");
+ZiARG_int32(port, 9899, "Server's port");
+ZiARG_bool(daemonize, false, "Run as daemon");
 
 
 using namespace ::apache::thrift;
@@ -243,7 +243,7 @@ public:
     }
 
     int64_t getMeshVersion( const std::string& uri,
-                            const MeshCoordinate& c)
+			    const MeshCoordinate& c)
     {
         zi::wall_timer t;
 
@@ -334,6 +334,10 @@ void signal_handler( int param )
 int main(int argc, char **argv)
 {
 
+
+    int x;
+    //std::cin >> x;
+    
     zi::parse_arguments(argc, argv, true);
     if ( ZiARG_daemonize )
     {
@@ -348,6 +352,10 @@ int main(int argc, char **argv)
     int port = ZiARG_port;
 
     shared_ptr<RealTimeMesherHandler> handler(new RealTimeMesherHandler());
+    
+    //std::cin >> x;
+    
+
     shared_ptr<TProcessor> processor(new RealTimeMesherProcessor(handler));
     shared_ptr<TServerTransport> serverTransport(new TServerSocket(port));
     shared_ptr<TTransportFactory> transportFactory(new TBufferedTransportFactory());
@@ -373,32 +381,70 @@ int main(int argc, char **argv)
 
     t.start();
 
+    // Test the RTM
     // {
+
+    //     int x;
+    //     //std::cin >> x;
+
     //     Vector3i l;
     //     l.x = 14*128-250;
     //     l.y = 25*128-250;
     //     l.z = 36*128-250;
 
-    //     Vector3i s; s.x=s.y=s.z=1024;
+    //     Vector3i s; s.x=s.y=s.z=224;
 
-    //     std::size_t slen = 2*2*2*512*512*512;
+
+
+    //     std::size_t slen = 224*224*224;
     //     char* st = new char[slen*4];
     //     memset(st,0,slen*4);
+
+    //     char* stx = new char[slen*4];
+    //     memset(stx,0,slen*4);
+
+
 
     //     char* st2 = new char[slen];
     //     memset(st2,1,slen);
 
-    //     handler->maskedUpdate( "61",
-    //                   l, s, std::string(st,slen*4),
-    //                   std::string(st2,slen));
+    //     int32_t* sti = reinterpret_cast<int32_t*>(st);
 
+
+    //     for ( int i = 100; i < 900000; ++i ) sti[i] = 61;
+
+    //     for ( int kk = 0; kk < 1000; kk += 10)
+    //     {
+    //         usleep(200000);
+
+    //         l.x += 14;
+    //         l.y += 25;
+    //         handler->maskedUpdate( "61",
+    //                       l, s, std::string(st,slen*4),
+    //                       std::string(st2,slen));
+    //         l.x += 15;
+    //         l.y += 21;
+    //         handler->maskedUpdate( "61",
+    //                       l, s, std::string(stx,slen*4),
+    //                       std::string(st2,slen));
+    //     }
+    //     delete [] st;
+    //     delete [] st2;
+    //     delete [] stx;
+
+    //     //std::cin >> x;
     // }
 
-    // handler->remesh("81");
+    // //int n;
+    // //std::cin >> x;
+
+    // //handler->remesh("61");
 
     server->serve();
 
     t.join();
+
+
 
     return 0;
 }

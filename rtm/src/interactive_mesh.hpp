@@ -44,6 +44,11 @@
 namespace zi {
 namespace mesh {
 
+  namespace {
+    int32_t task_count = 0;
+    zi::mutex task_count_m;
+  }
+
 class interactive_mesh: non_copyable
 {
 private:
@@ -73,7 +78,17 @@ private:
             , to_(to)
             , d_(d)
             , m_(m)
-        { }
+        {
+	  zi::mutex::guard g(task_count_m);
+	  ++task_count;
+	}
+
+      ~store_task()
+      {
+	zi::mutex::guard g(task_count_m);
+	--task_count;
+	std::cout << "TCOUNTL " << task_count << std::endl;
+      }
     };
 
 private:

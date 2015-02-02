@@ -62,7 +62,7 @@ private:
             std::cout << std::flush;
 
             zi::this_thread::usleep(200000);
-        }
+        }  
     }
 
 public:
@@ -79,7 +79,19 @@ public:
     {
         {
             zi::mutex::guard g(m_);
+            
             d_ = true;
+
+            FOR_EACH( it, o_ )
+            {
+                std::cout << (*it)->str() << "\n";
+                delete (*it);
+            }
+
+            o_.clear();
+            
+            std::cout << std::flush;
+
         }
         t_.join();
     }
@@ -87,7 +99,14 @@ public:
     void reg(std::ostringstream* o)
     {
         zi::mutex::guard g(m_);
-        o_.push_back(o);
+        if (d_)
+        {
+            delete o;
+        }
+        else
+        {
+            o_.push_back(o);            
+        }
     }
 }; // class log_output_impl
 

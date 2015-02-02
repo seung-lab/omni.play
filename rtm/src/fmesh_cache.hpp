@@ -64,6 +64,7 @@ private:
 
         if ( max_memory_ < cur_memory_ )
         {
+            LOG(debug) << "Downsizing: " << cur_memory_;
             std::size_t target_memory = max_memory_ * 3 / 4;
             while ( cur_memory_ > target_memory )
             {
@@ -71,6 +72,7 @@ private:
                 cur_memory_ -= map_[to_erase]->mem_size();
                 map_.erase(to_erase);
             }
+            LOG(debug) << "Downsized: " << cur_memory_;
         }
     }
 
@@ -79,7 +81,7 @@ public:
         : lru_()
         , m_()
         , size_(500000)
-        , max_memory_(10000000000ULL) // 10G
+        , max_memory_(100000000ULL) // 10G
         , cur_memory_(0)
         , map_()
     {}

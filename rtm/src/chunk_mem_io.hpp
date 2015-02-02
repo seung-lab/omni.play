@@ -266,6 +266,10 @@ public:
             done_ = 1;
         }
         writeback_t_.join();
+        FOR_EACH( it, map_)
+        {
+            delete it->second;
+        }
         LOG(out) << "      chunk_io for " << id_ << " died";
     }
 
