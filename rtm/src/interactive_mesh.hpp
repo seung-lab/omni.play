@@ -22,6 +22,7 @@
 
 #include "detail/log.hpp"
 #include "detail/assert.hpp"
+#include "detail/semaphore.hpp"
 #include "detail/scoped_task_manager.hpp"
 
 #include "types.hpp"
@@ -43,6 +44,12 @@
 
 namespace zi {
 namespace mesh {
+
+using throttle = semaphore<8>;
+
+namespace {
+throttle& fat = zi::singleton<throttle>::instance();
+}
 
 class interactive_mesh: non_copyable
 {
@@ -383,6 +390,8 @@ private:
     void
     chunk_update_task( vec3u chunk_coord, const std::list<store_task*>& tasks )
     {
+        throttle::guard tg(fat);
+
         if ( tasks.size() == 0 )
         {
             return;
@@ -518,6 +527,8 @@ private:
 
     void update_mip0_task( const vec3u& c )
     {
+        throttle::guard tg(fat);
+
         chunk_type_ptr chunk = chunk_io_.read_extended(c);
 
         zi::mesh::marching_cubes<int32_t> mc;
@@ -560,6 +571,8 @@ private:
 
     void update_mipn_task( const vec3u& c, uint32_t mip )
     {
+        throttle::guard tg(fat);
+
         vec4u mcoord( c[0], c[1], c[2], mip);
         vec3u next(c[0]/2, c[1]/2, c[2]/2);
 
