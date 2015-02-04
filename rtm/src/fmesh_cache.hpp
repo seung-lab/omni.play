@@ -79,7 +79,7 @@ public:
         : lru_()
         , m_()
         , size_(500000)
-        , max_memory_(10000000ULL) // 10M
+        , max_memory_(10000000000ULL) // 10M
         , cur_memory_(0)
         , map_()
     {}

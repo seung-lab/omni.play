@@ -45,7 +45,11 @@ public:
         std::unique_lock<std::mutex> g(m_);
 
         ++credit_;
-        cv_.notify_one();
+
+        if ( waiters_ > 0 )
+        {
+            cv_.notify_one();
+        }
     }
 
     struct guard
