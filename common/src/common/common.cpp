@@ -40,3 +40,18 @@ template class std::unordered_set<om::common::ID>;
 template class std::deque<om::common::SegID>;
 template class std::set<om::common::SegID>;
 }
+
+namespace {
+// Even though we have explicitly instantiated
+// std::unordered_set<om::common::ID>, for some reason g++ (4.8) refuses
+// to generate code for its copy and move construstors and operator=
+// (it wasn't becuase we extern'ed the class earlier in the header),
+// causing linking errors in a build with all optimization disabled.
+// Force the code to be generated:
+void NotUsed() {
+  std::unordered_set<om::common::ID> a(a);
+  std::unordered_set<om::common::ID> b(std::move(a));
+  a = a;
+  a = std::move(a);
+}
+}
