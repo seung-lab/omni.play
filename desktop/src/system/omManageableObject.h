@@ -6,7 +6,7 @@
  * Brett Warne - bwarne@mit.edu - 3/3/09
  */
 
-#include "common/exception.h"
+#include "common/common.h"
 #include "datalayer/archive/segmentation.h"
 #include "datalayer/archive/filter.h"
 

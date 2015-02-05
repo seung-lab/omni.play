@@ -2,6 +2,7 @@
 
 #include "precomp.h"
 
+#include "common/logging.h"
 #include "common/exception.h"
 #include "zi/concurrency/rwmutex.hpp"
 

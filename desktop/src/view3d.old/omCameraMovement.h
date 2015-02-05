@@ -5,7 +5,7 @@
  *
  */
 
-#include "common/exception.h"
+#include "common/common.h"
 
 class OmCamera;
 
