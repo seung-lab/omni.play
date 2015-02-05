@@ -2,6 +2,7 @@
 
 #include "precomp.h"
 #include "common/macro.hpp"
+#include "common/common.h"
 
 using namespace vmml;
 #include "coordinates/global.h"

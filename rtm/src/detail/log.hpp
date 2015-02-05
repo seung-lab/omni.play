@@ -29,6 +29,10 @@
 #include <iostream>
 #include <sstream>
 #include <list>
+#include <memory>
+#include <thread>
+#include <mutex>
+#include <chrono>
 
 namespace zi {
 namespace mesh {
@@ -36,19 +40,19 @@ namespace mesh {
 class log_output_impl
 {
 private:
-    zi::mutex                      m_;
-    std::list<std::ostringstream*> o_;
-    bool                           d_;
-    zi::thread                     t_;
+    std::mutex                                     m_;
+    std::list<std::unique_ptr<std::ostringstream>> o_;
+    bool                                           d_;
+    std::thread                                    t_;
 
     void loop()
     {
         bool done = false;
         while (!done)
         {
-            std::list<std::ostringstream*> l;
+            std::list<std::unique_ptr<std::ostringstream>> l;
             {
-                zi::mutex::guard g(m_);
+                std::lock_guard<std::mutex> g(m_);
                 l.swap(o_);
                 done = d_;
             }
@@ -56,12 +60,11 @@ private:
             FOR_EACH( it, l )
             {
                 std::cout << (*it)->str() << "\n";
-                delete (*it);
             }
 
             std::cout << std::flush;
 
-            zi::this_thread::usleep(200000);
+            std::this_thread::sleep_for(std::chrono::milliseconds(200));
         }
     }
 
@@ -70,24 +73,30 @@ public:
         : m_()
         , o_()
         , d_(false)
-        , t_(zi::run_fn(zi::bind(&log_output_impl::loop,this)))
     {
-        t_.start();
     }
 
     ~log_output_impl()
     {
         {
-            zi::mutex::guard g(m_);
+            std::lock_guard<std::mutex> g(m_);
             d_ = true;
         }
-        t_.join();
+        if ( t_.joinable() )
+        {
+            t_.join();
+        }
     }
 
-    void reg(std::ostringstream* o)
+    void start()
     {
-        zi::mutex::guard g(m_);
-        o_.push_back(o);
+        t_ = std::thread(&log_output_impl::loop, this);
+    }
+
+    void reg(std::unique_ptr<std::ostringstream>& o)
+    {
+        std::lock_guard<std::mutex> g(m_);
+        o_.push_back(std::move(o));
     }
 }; // class log_output_impl
 
@@ -101,7 +110,7 @@ log_output_impl& log_output =
 class log_token: non_copyable
 {
 public:
-    std::ostringstream* i_;
+    std::unique_ptr<std::ostringstream> i_;
 
     log_token()
         : i_(new std::ostringstream)

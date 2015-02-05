@@ -35,6 +35,7 @@
 #include <sstream>
 #include <fstream>
 #include <cstdlib>
+#include <memory>
 
 #include <zlib.h>
 
@@ -45,7 +46,7 @@ class compressed_chunk: non_copyable
 {
 public:
     zi::rwmutex m_;
-    void*       d_;
+    Bytef*      d_;
     uLongf      s_;
     bool        l_;
     bool        e_;
@@ -63,7 +64,7 @@ public:
         zi::rwmutex::write_guard g(m_);
         if ( s_ )
         {
-            free(d_);
+            std::return_temporary_buffer(d_);
         }
     }
 };
@@ -74,8 +75,8 @@ private:
     uint32_t    id_    ;
     std::string prefix_;
 
-    std::map<vec3u, compressed_chunk*>  map_;
-    zi::mutex                           m_  ;
+    std::map<vec3u, std::unique_ptr<compressed_chunk>>  map_;
+    zi::mutex                                           m_  ;
 
     std::map<compressed_chunk*, vec3u> writeback_  ;
     zi::mutex                          writeback_m_;
@@ -186,7 +187,16 @@ private:
         std::fseek(fp, 0, SEEK_END);
 
         cc->s_ = std::ftell(fp);
-        cc->d_ = malloc(cc->s_);
+
+        auto r = std::get_temporary_buffer<Bytef>(cc->s_);
+
+        if ( r.second == 0 )
+        {
+            std::cout << "No memory: " << "\n";
+            exit(-1);
+        }
+
+        cc->d_ = r.first;
 
         std::rewind(fp);
         if ( cc->s_ != std::fread(cc->d_, 1, cc->s_, fp) )
@@ -202,15 +212,14 @@ private:
     {
         zi::mutex::guard g(m_);
 
-        compressed_chunk* ret = map_[v];
+        auto& ret = map_[v];
 
-        if ( ret == 0 )
+        if ( !ret )
         {
-            ret = new compressed_chunk;
-            map_[v] = ret;
+            ret = std::unique_ptr<compressed_chunk>(new compressed_chunk);
         }
 
-        return ret;
+        return ret.get();
     }
 
     void clear_all()
@@ -225,11 +234,6 @@ private:
         done_ = 0;
 
         zi::mutex::guard g(m_);
-
-        FOR_EACH( it, map_ )
-        {
-            delete it->second;
-        }
 
         file_io.remove_dir(prefix_);
 
@@ -353,7 +357,7 @@ public:
 
         if ( cc->s_ )
         {
-            free(cc->d_);
+            std::return_temporary_buffer(cc->d_);
             {
                 zi::mutex::guard g(m_);
                 total_ -= cc->s_;
@@ -362,7 +366,16 @@ public:
 
         cc->e_ = cc->l_ = true;
         cc->s_ = compressBound(static_cast<uLongf>(CHUNK_DATA_SIZE*4));
-        cc->d_ = malloc(cc->s_);
+
+        auto tmp = std::get_temporary_buffer<Bytef>(cc->s_);
+
+        if ( tmp.second == 0 )
+        {
+            std::cout << "No memory: " << "\n";
+            exit(-1);
+        }
+
+        cc->d_ = tmp.first;
 
         int r = ::compress2(reinterpret_cast<Bytef*>(cc->d_), &cc->s_,
                             reinterpret_cast<const Bytef*>(v->data()),
@@ -374,7 +387,19 @@ public:
             exit(-1);
         }
 
-        cc->d_ = realloc(cc->d_, cc->s_);
+        auto tmp2 = std::get_temporary_buffer<Bytef>(cc->s_);
+
+        if ( tmp2.second == 0 )
+        {
+            std::cout << "No memory: " << "\n";
+            exit(-1);
+        }
+
+        cc->d_ = tmp2.first;
+
+        std::memcpy(cc->d_, tmp.first, cc->s_);
+
+        std::return_temporary_buffer(tmp.first);
 
         {
             zi::mutex::guard g(writeback_m_);

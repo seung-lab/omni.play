@@ -10,6 +10,7 @@
 #include <zi/utility/singleton.hpp>
 
 #include <map>
+#include <memory>
 
 namespace zi {
 namespace mesh {
@@ -75,6 +76,14 @@ public:
         : locks_()
         , mutex_()
     { }
+
+    ~rwlock_pool()
+    {
+        for (auto& l: locks_)
+        {
+            delete l.second;
+        }
+    }
 
     bool try_acquire_read(const T& k) const
     {

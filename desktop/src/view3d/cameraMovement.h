@@ -1,7 +1,7 @@
 #pragma once
 #include "precomp.h"
 
-#include "common/exception.h"
+#include "common/common.h"
 
 namespace om {
 namespace v3d {

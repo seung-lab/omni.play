@@ -1,7 +1,6 @@
 #pragma once
 
 #include "precomp.h"
-#include "common/common.h"
 
 namespace om {
 

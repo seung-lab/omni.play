@@ -187,6 +187,8 @@ void get_seeds(std::vector<std::map<int32_t, int32_t>>& seeds,
   auto dir = getDirection(preBounds, postBounds);
   auto bounds = getBounds(preBounds, postBounds, dir);
   if (bounds.isEmpty()) {
+    log_errors << "get_seeds: Bounds do not overlap: \n" << pre.Endpoint()
+               << '\n' << post.Endpoint();
     throw ArgException("Bounds do not overlap.");
   }
 
@@ -206,6 +208,8 @@ void get_seeds(std::vector<std::map<int32_t, int32_t>>& seeds,
   uint64_t overlap_volume =
       (uint64_t)range.x * (uint64_t)range.y * (uint64_t)range.z;
   if (overlap_volume > 400 * 128 * 128 * 128) {  // Max overlap size
+    log_errors << "get_seeds: Overlap region is too large: \n" << pre.Endpoint()
+               << '\n' << post.Endpoint();
     throw ArgException("Overlap region is too large.");
   }
 

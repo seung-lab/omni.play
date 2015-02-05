@@ -198,7 +198,6 @@ public:
         , rng_(std::time(0))
         , rnd_( rng_, boost::uniform_real<>(0,1) )
     {
-        tm_.start();
     }
 
     ~file_io_impl()
@@ -220,6 +219,8 @@ public:
             (static_cast<double>(rnd_()));
 
         rename(dir.c_str(), new_dir.c_str());
+        // Relying on the fact start() just returns if it's already running:
+        tm_.start();
         tm_.insert(zi::run_fn(zi::bind( &file_io_impl::remove_dir_in_background,
                                         this, new_dir) ));
     }

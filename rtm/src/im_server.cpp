@@ -344,6 +344,11 @@ int main(int argc, char **argv)
         }
     }
 
+    // logging thread should only be started after daemonize()
+    log_output.start();
+
+    // Needed by chunk_io, fmesh_io and smesh_io to serve data
+    file_io.create_dir("./data/");
 
     int port = ZiARG_port;
 
