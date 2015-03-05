@@ -23,7 +23,7 @@ void MeshSegmentListTask::run() {
 
   SegPtrAndColorList segmentsToDraw;
 
-  while (nullptr != seg) {
+  for (; nullptr != seg; seg = segIter.getNextSegment()) {
     if (chunkSegIDs->contains(seg->value())) {
       if (seg->size() < key_.dustThreshold) {
         continue;
@@ -31,7 +31,6 @@ void MeshSegmentListTask::run() {
       auto color = determineColor(seg);
       segmentsToDraw.push_back({seg, color});
     }
-    seg = segIter.getNextSegment();
   }
 
   rootSegLists_.AddToCache(coord_, rootSeg_, key_.shouldVolumeBeShownBroken,
