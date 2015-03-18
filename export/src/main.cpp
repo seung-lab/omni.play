@@ -31,7 +31,7 @@ class Options {
                          "A multiplicative resolution modifier")(
         "scale,s", po::value<float>()->default_value(1.0),
         "A scale factor for the resulting meshes")(
-        "mip,m", po::value<uint8_t>()->default_value(0),
+        "mip,m", po::value<uint>()->default_value(0),
         "Mip level at which to export")("id", po::value<uint32_t>(),
                                         "Segment ID to export")(
         "obj,o", po::value<bool>()->default_value(true), "Export as obj");
@@ -150,7 +150,15 @@ int exportMesh(const Options& opt, int argc, char* argv[]) {
 
   uint8_t mip;
   if (meshVM.count("mip")) {
-    mip = meshVM["mip"].as<uint8_t>();
+    // Note this couldn't be directly specified as uint8_t in the
+    // options_description object as uint8_t will be taken as we want a single
+    // charater rather than a number.
+    try {
+      mip = boost::numeric_cast<uint, uint8_t>(meshVM["mip"].as<uint>());
+    } catch (boost::numeric::bad_numeric_cast& e) {
+      log_errors << "Invalid mip";
+      return getHelp(opt, argc, argv);
+    }
   } else {
     log_debugs << "Failed mip";
     return getHelp(opt, argc, argv);
