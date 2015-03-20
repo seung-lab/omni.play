@@ -9,9 +9,18 @@ namespace logging {
 size_t LOG_LIMIT;
 
 void log_formatter(record_view const& rec, formatting_ostream& strm) {
+  auto severity = extract<severity_level>("Severity", rec);
+
+  if(severity == om::logging::debug){
+      strm << "\033[93m" ; //Yellow
+  }else if(severity == om::logging::info){
+      strm << "\033[94m" ; //Blue
+  }else if(severity == om::logging::error){
+      strm << "\033[91m" ; //Red
+  }
   strm << extract<attributes::current_thread_id::value_type>("ThreadID", rec)
        << ": ";
-  strm << "[" << extract<severity_level>("Severity", rec) << "] ";
+  strm << "[" << severity << "] ";
   if (LOG_LIMIT) {
     auto msg = extract<std::string>("Message", rec);
     if (!msg) {
@@ -23,7 +32,7 @@ void log_formatter(record_view const& rec, formatting_ostream& strm) {
       return;
     }
   }
-  strm << rec[expressions::smessage];
+  strm << rec[expressions::smessage] << "\033[0m"; //End color
 }
 
 void initLogging(std::string logfile, bool consoleLog, size_t logLimit) {
