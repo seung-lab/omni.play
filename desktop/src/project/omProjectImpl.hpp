@@ -81,16 +81,11 @@ class OmProjectImpl {
   }
 
   void Save() {
-    if (IsReadOnly()) {
-      log_errors << "Project saving should have been disabled in the UI.";
-      return;
-    }
+
     for (auto& seg : SegmentationDataWrapper::GetPtrVec()) {
       seg->Flush();
     }
-
     om::data::archive::project::Write(projectMetadataFile_.c_str(), this);
-
     globals_->Users().UserSettings().Save();
 
     log_infos << "omni project saved!";
