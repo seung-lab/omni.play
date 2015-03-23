@@ -27,9 +27,6 @@ Paths::Paths(const path& file, bool newFile) {
   } else {
     throw ArgException(std::string("Invalid omni extension: ") + normal.string());
   }
-
-  filesFolder_ = omniFile_;
-  filesFolder_ += ".files";
 }
 
 bool Paths::IsValid(const path& file) {
