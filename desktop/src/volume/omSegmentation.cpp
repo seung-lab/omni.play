@@ -63,7 +63,7 @@ void OmSegmentation::LoadPath() {
       new om::volume::MetadataManager(*metaDS_, p.Segmentation(id_)));
 
   validGroupNum_.reset(new OmValidGroupNum(userPaths.ValidGroupNum(id_),
-                                           metaManager_->numSegments()));
+                                           Metadata().maxSegments() + 1));
 
   segDataDS_.reset(new segment::FileDataSource(userPaths.Segments(id_)));
   segData_.reset(new segment::SegDataVector(*segDataDS_, segment::PageSize,
