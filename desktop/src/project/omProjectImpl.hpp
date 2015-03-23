@@ -82,9 +82,14 @@ class OmProjectImpl {
 
   void Save() {
 
+    if (IsReadOnly()) {
+        log_debugs << "Saving project using default user.";
+    }
+
     for (auto& seg : SegmentationDataWrapper::GetPtrVec()) {
       seg->Flush();
     }
+
     om::data::archive::project::Write(projectMetadataFile_.c_str(), this);
     globals_->Users().UserSettings().Save();
 
