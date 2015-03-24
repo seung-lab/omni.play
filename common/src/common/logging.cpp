@@ -7,12 +7,12 @@ namespace om {
 namespace logging {
 
 size_t LOG_LIMIT;
-bool m_printWithColors;
+bool printWithColors_;
 
 void log_formatter(record_view const& rec, formatting_ostream& strm) {
   auto severity = extract<severity_level>("Severity", rec);
 
-  if (m_printWithColors)  {
+  if (printWithColors_)  {
     if(severity == om::logging::debug){
       strm << "\033[93m" ; //Yellow
     }else if(severity == om::logging::info){
@@ -37,13 +37,13 @@ void log_formatter(record_view const& rec, formatting_ostream& strm) {
   }
   strm << rec[expressions::smessage];
 
-  if (m_printWithColors)  strm << "\033[0m"; //End color
+  if (printWithColors_)  strm << "\033[0m"; //End color
 
 }
 
 void initLogging(std::string logfile, bool consoleLog, size_t logLimit, bool printWithColors) {
   LOG_LIMIT = logLimit;
-  m_printWithColors = printWithColors;
+  printWithColors_ = printWithColors;
 
   boost::shared_ptr<core> c = core::get();
   c->add_global_attribute("TimeStamp", attributes::local_clock());
