@@ -21,12 +21,12 @@ OmChannelImpl::OmChannelImpl(om::common::ID id)
       volData_(new OmVolumeData()),
       tileCache_(new OmTileCacheChannel()) {
   filterManager_.AddFilter();
+  paths_ = OmProject::Paths().Channel(id);
 }
 
 OmChannelImpl::~OmChannelImpl() {}
 
 void OmChannelImpl::LoadPath() {
-  paths_ = OmProject::Paths().Channel(GetID());
   chunkDS_.reset(
       new om::chunk::CachedDataSource(paths_, getVolDataType(), coords_));
   tileDS_.reset(new om::tile::CachedDataSource(*chunkDS_, coords_));

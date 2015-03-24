@@ -13,13 +13,13 @@ void log_formatter(record_view const& rec, formatting_ostream& strm) {
   auto severity = extract<severity_level>("Severity", rec);
 
   if (m_printWithColors)  {
-      if(severity == om::logging::debug){
-          strm << "\033[93m" ; //Yellow
-      }else if(severity == om::logging::info){
-          strm << "\033[94m" ; //Blue
-      }else if(severity == om::logging::error){
-          strm << "\033[91m" ; //Red
-      }
+    if(severity == om::logging::debug){
+      strm << "\033[93m" ; //Yellow
+    }else if(severity == om::logging::info){
+      strm << "\033[94m" ; //Blue
+    }else if(severity == om::logging::error){
+      strm << "\033[91m" ; //Red
+    }
   }
   strm << extract<attributes::current_thread_id::value_type>("ThreadID", rec)
        << ": ";
