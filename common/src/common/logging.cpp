@@ -7,11 +7,23 @@ namespace om {
 namespace logging {
 
 size_t LOG_LIMIT;
+bool printWithColors_;
 
 void log_formatter(record_view const& rec, formatting_ostream& strm) {
+  auto severity = extract<severity_level>("Severity", rec);
+
+  if (printWithColors_)  {
+    if(severity == om::logging::debug){
+      strm << "\033[93m" ; //Yellow
+    }else if(severity == om::logging::info){
+      strm << "\033[94m" ; //Blue
+    }else if(severity == om::logging::error){
+      strm << "\033[91m" ; //Red
+    }
+  }
   strm << extract<attributes::current_thread_id::value_type>("ThreadID", rec)
        << ": ";
-  strm << "[" << extract<severity_level>("Severity", rec) << "] ";
+  strm << "[" << severity << "] ";
   if (LOG_LIMIT) {
     auto msg = extract<std::string>("Message", rec);
     if (!msg) {
@@ -24,10 +36,14 @@ void log_formatter(record_view const& rec, formatting_ostream& strm) {
     }
   }
   strm << rec[expressions::smessage];
+
+  if (printWithColors_)  strm << "\033[0m"; //End color
+
 }
 
-void initLogging(std::string logfile, bool consoleLog, size_t logLimit) {
+void initLogging(std::string logfile, bool consoleLog, size_t logLimit, bool printWithColors) {
   LOG_LIMIT = logLimit;
+  printWithColors_ = printWithColors;
 
   boost::shared_ptr<core> c = core::get();
   c->add_global_attribute("TimeStamp", attributes::local_clock());

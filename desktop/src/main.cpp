@@ -6,6 +6,8 @@ ZiARG_bool(noTilePrefetch, false, "disable tile prefetcher");
 ZiARG_bool(noView3dThrottle, false, "disable View3d throttling");
 ZiARG_bool(version, false, "Show omni version");
 ZiARG_bool(verbose, true, "Verbose Log output");
+ZiARG_bool(coloredLog, true, "Colored Log output");
+
 
 #include "version.hpp"
 
@@ -27,7 +29,7 @@ class Omni {
 
  public:
   Omni(int argc, char **argv) : argc_(argc), argv_(argv) {
-    om::logging::initLogging("~/.omni/omni.log", true, ZiARG_verbose ? 0 : 120);
+    om::logging::initLogging("~/.omni/omni.log", true, ZiARG_verbose ? 0 : 120 , ZiARG_coloredLog);
   }
 
   int Run() {

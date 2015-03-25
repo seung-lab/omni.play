@@ -81,16 +81,16 @@ class OmProjectImpl {
   }
 
   void Save() {
+
     if (IsReadOnly()) {
-      log_errors << "Project saving should have been disabled in the UI.";
-      return;
+        log_debugs << "Saving project using default user.";
     }
+
     for (auto& seg : SegmentationDataWrapper::GetPtrVec()) {
       seg->Flush();
     }
 
     om::data::archive::project::Write(projectMetadataFile_.c_str(), this);
-
     globals_->Users().UserSettings().Save();
 
     log_infos << "omni project saved!";
@@ -121,6 +121,8 @@ class OmProjectImpl {
     OmTileCache::Reset();
 
     OmPreferenceDefaults::SetDefaultAllPreferences();
+
+    OmActionLogger::Init(globals_->Users().LogFolderPath());
 
     Save();
   }

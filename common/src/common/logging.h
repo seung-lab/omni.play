@@ -6,7 +6,7 @@ namespace om {
 namespace logging {
 
 void initLogging(std::string logfile, bool consoleLog = true,
-                 size_t logLimit = 0);
+                 size_t logLimit = 0, bool printWithColors = true);
 
 inline boost::format& my_printf_core(boost::format& format) { return format; }
 
@@ -26,6 +26,7 @@ enum severity_level {
   info,
   error
 };
+
 
 typedef boost::log::sources::severity_logger_mt<severity_level> my_logger_mt;
 
