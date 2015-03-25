@@ -62,10 +62,8 @@ class OmVolumeAllocater {
     std::shared_ptr<QFile> file(std::make_shared<QFile>(fnp));
     QFileInfo info(fnp);
 
-    if (!info.dir().exists()){
-      QDir dir;
-      dir.mkdir(info.dir().absolutePath());
-    }
+    QDir dir;
+    dir.mkdir(info.dir().absolutePath());
 
     file->resize(size);
     if (!file->open(QIODevice::ReadWrite)) {
