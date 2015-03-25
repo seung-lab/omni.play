@@ -57,8 +57,15 @@ class OmVolumeAllocater {
     const std::string fnpStr =
         vol->VolPaths().Data(level, vol->getVolDataType()).string();
     const QString fnp = QString::fromStdString(fnpStr);
-    QFile::remove(fnp);
+
+
     std::shared_ptr<QFile> file(std::make_shared<QFile>(fnp));
+    QFileInfo info(fnp);
+
+    QDir dir;
+    dir.mkdir(info.dir().absolutePath());
+    log_debugs << "created folder " << qPrintable(info.dir().absolutePath());
+
     file->resize(size);
     if (!file->open(QIODevice::ReadWrite)) {
       throw om::IoException("could not open file " + fnpStr);

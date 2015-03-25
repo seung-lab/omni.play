@@ -86,6 +86,9 @@ class OmProjectImpl {
         log_debugs << "Saving project using default user.";
     }
 
+    OmActionLogger::Init(globals_->Users().LogFolderPath());
+
+
     for (auto& seg : SegmentationDataWrapper::GetPtrVec()) {
       seg->Flush();
     }
