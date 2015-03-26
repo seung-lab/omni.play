@@ -28,7 +28,7 @@ class OmVolumeBuilderBase {
   void BuildEmpty() { buildEmpty(vol_); }
 
  private:
-  void build(OmChannel&) {
+  void build(OmChannel& chann) {
     setVolAsBuilding();
 
     checkChunkDims();
@@ -37,6 +37,7 @@ class OmVolumeBuilderBase {
 
     setVolAsBuilt();
 
+    chann.LoadPath();
     downsample();
   }
 
