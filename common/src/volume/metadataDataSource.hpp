@@ -112,7 +112,7 @@ class MetadataDataSource
     volume["UUID"] = metadata->UUID.Str();
     volume["type"] = metadata->DataType.value();
 
-    volume["coords"]["dataDimensions"] = metadata->Bounds.getDimensions();
+    volume["coords"]["dataDimensions"] = metadata->Bounds.getDimensions() / metadata->Resolution;
     volume["coords"]["absOffset"] = metadata->Bounds.getMin();
     volume["coords"]["dataResolution"] = metadata->Resolution;
     volume["coords"]["chunkDim"] = metadata->ChunkDim;
@@ -170,24 +170,24 @@ class MetadataDataSource
     }
 
     coords::Global dims;
+    ret->Resolution =
+        volume["coords"]["dataResolution"].as<Vector3i>(Vector3i::ONE);
     if (volume["coords"]["dataDimensions"].IsDefined()) {
       dims = volume["coords"]["dataDimensions"].as<coords::Global>();
+      dims *= ret->Resolution;
     } else {
       dims = volume["coords"]["dataExtent"]["max"].as<coords::Global>() -
              volume["coords"]["dataExtent"]["min"].as<coords::Global>();
     }
     auto absOffset =
         volume["coords"]["absOffset"].as<coords::Global>(coords::Global::ZERO);
-    ret->Resolution =
-        volume["coords"]["dataResolution"].as<Vector3i>(Vector3i::ONE);
     ret->ChunkDim = volume["coords"]["chunkDim"].as<int>(128);
     ret->RootMipLevel = volume["coords"]["mMipRootLevel"].as<int>();
 
-    dims.x = om::math::roundUp((int)dims.x, ret->ChunkDim);
-    dims.y = om::math::roundUp((int)dims.y, ret->ChunkDim);
-    dims.z = om::math::roundUp((int)dims.z, ret->ChunkDim);
-
-    ret->Bounds = coords::GlobalBbox(absOffset, absOffset + dims - 1);
+    dims.x = om::math::roundUp((int)dims.x, ret->ChunkDim * ret->Resolution.x);
+    dims.y = om::math::roundUp((int)dims.y, ret->ChunkDim * ret->Resolution.y);
+    dims.z = om::math::roundUp((int)dims.z, ret->ChunkDim * ret->Resolution.z);
+    ret->Bounds = coords::GlobalBbox(absOffset, absOffset + dims - ret->Resolution * 1);
 
     return ret;
   }

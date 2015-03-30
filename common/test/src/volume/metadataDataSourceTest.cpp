@@ -13,6 +13,7 @@ namespace test {
 
 #define URI \
   "/omniweb_data/x06/y59/x06y59z28_s1587_13491_6483_e1842_13746_6738.omni"
+//TODO: the PutMetadata test below modifies the file on disk!
 
 TEST(Volume_MetadataDataSource, GetMetadata) {
   file::Paths p(URI);
@@ -36,7 +37,7 @@ TEST(Volume_MetadataDataSource, PutMetadata) {
   auto m2 = std::make_shared<Metadata>();
   m2->Name = "Test Volume";
   m2->UUID = utility::UUID();
-  m2->Bounds = coords::GlobalBbox(coords::Global::ZERO, coords::Global(127));
+  m2->Bounds = coords::GlobalBbox(coords::Global::ZERO, coords::Global(127*256));
   m2->Resolution = Vector3i(256);
   m2->ChunkDim = 128;
   m2->RootMipLevel = 1;

@@ -22,7 +22,8 @@ void MetadataManager::Update() {
     return;
   }
 
-  coordSystem_.SetBounds(meta_->Bounds);
+  coordSystem_.SetDataDimensions(meta_->Bounds.getDimensions() / meta_->Resolution);
+  coordSystem_.SetAbsOffset(meta_->Bounds.getMin());
   coordSystem_.SetResolution(meta_->Resolution);
   coordSystem_.SetChunkDimensions(Vector3i(meta_->ChunkDim));
   coordSystem_.UpdateRootLevel();

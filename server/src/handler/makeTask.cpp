@@ -99,8 +99,8 @@ inline Direction getDirection(const coords::GlobalBbox& pre,
   }
 }
 
-inline bool inCriticalRegion(const coords::Global& g,
-                             const coords::GlobalBbox& bounds,
+inline bool inCriticalRegion(const coords::Data& g,
+                             const coords::DataBbox& bounds,
                              const Direction d) {
   const int FUDGE = 5;
   return ((d == Direction::XMin && g.x < bounds.getMin().x + FUDGE) ||
@@ -204,7 +204,7 @@ void get_seeds(std::vector<std::map<int32_t, int32_t>>& seeds,
   bounds.intersect(segBounds.ToGlobalBbox());
 
   auto proxyBounds = bounds.ToDataBbox(pre.Coords(), 0);
-  const Vector3i range = slab(bounds);
+  const Vector3i range = slab(proxyBounds);
   uint64_t overlap_volume =
       (uint64_t)range.x * (uint64_t)range.y * (uint64_t)range.z;
   if (overlap_volume > 400 * 128 * 128 * 128) {  // Max overlap size
@@ -265,7 +265,7 @@ void get_seeds(std::vector<std::map<int32_t, int32_t>>& seeds,
     const auto root = sets.find_set(i);
     newSeedSets[root].insert(postGetter.GetValue(dc.ToGlobal()));
     preSideSets[root].insert(preGetter.GetValue(dc));
-    if (!escapes[root] && inCriticalRegion(dc.ToGlobal(), bounds, dir)) {
+    if (!escapes[root] && inCriticalRegion(dc, bounds.ToDataBbox(pre.Coords(), 0), dir)) {
       escapes[root] = true;
     }
   }

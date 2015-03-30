@@ -39,7 +39,7 @@ TEST(Coords_VolumeSystem, Extent) {
   ASSERT_EQ(GlobalBbox(Global::ZERO, Global(1023)), vs.Extent());
   VolumeSystem vs2(Vector3i(1024, 512, 256), Vector3i(0, 512, 768),
                    Vector3i(1, 2, 3));
-  ASSERT_EQ(GlobalBbox(Global(0, 512, 768), Global(1023, 1535, 1535)),
+  ASSERT_EQ(GlobalBbox(Global(0, 512, 768), Global(1023, 1534, 1533)),
             vs2.Extent());
 }
 
