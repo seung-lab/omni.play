@@ -82,6 +82,12 @@ class dataval_iterator
     // TODO: What if the chunkIter has bad bounds?  Better way to initialize
     // without knowing the type?
 
+    if (bounds.getMin().x > bounds.getMax().x ||
+        bounds.getMin().y > bounds.getMax().y ||
+        bounds.getMin().z > bounds.getMax().z) {
+      val_.reset();
+      return;
+    }
     updateChunkBounds();
     val_.reset(
         new CoordValue<T>(ds, coords::Data(chunkFrom_, iterBounds_->volume(),
