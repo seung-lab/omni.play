@@ -279,13 +279,13 @@ void get_seeds(std::vector<std::map<int32_t, int32_t>>& seeds,
     const auto root = sets.find_set(i);
     newSeedSets[root].insert(postGetter.GetValue(dc.ToGlobal()));
     preSideSets[root].insert(preGetter.GetValue(dc));
-    if (!escapes[root] && inCriticalRegion(dc, bounds.ToDataBbox(pre.Coords(), 0), dir)) {
+    if (!escapes[root] &&
+        inCriticalRegion(dc, bounds.ToDataBbox(pre.Coords(), 0), dir)) {
       escapes[root] = true;
     }
   }
 
   for (auto& seed : newSeedSets) {
-
     if (escapes[seed.first]) {
       seeds.push_back(makeSeed(seed.second, mappingCounts, sizes));
       log_infos << "Spawned!";

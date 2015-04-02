@@ -18,10 +18,10 @@ TEST(TaskSpawnTest, Case1) {
   volume::Segmentation pre(prePaths, 1);
   volume::Segmentation post(postPaths, 1);
 
-  std::set<int> segs({1037975, 1039368, 1039480, 1061408, 1062016,
-                      1083185, 1084004, 1085998, 1090552, 1092491,
-                      1095443, 1096127, 1103096, 1103976, 1105366,
-                      1105370, 1111813, 1118021, 1118624, 1125898});
+  std::set<int> segs({1037975, 1039368, 1039480, 1061408, 1062016, 1083185,
+                      1084004, 1085998, 1090552, 1092491, 1095443, 1096127,
+                      1103096, 1103976, 1105366, 1105370, 1111813, 1118021,
+                      1118624, 1125898});
 
   std::vector<std::map<int32_t, int32_t>> seedIds;
   handler::get_seeds(seedIds, pre, segs, post);
@@ -238,13 +238,13 @@ TEST(TaskSpawnTest, Case5_EmptyIntersection) {
   volume::Segmentation pre(prePaths, 1);
   volume::Segmentation post(postPaths, 1);
 
-  std::set<int> segs{3141, 4226, 4367, 4451, 4494, 4560, 4580, 4581, 4597, 4699};
+  std::set<int> segs{3141, 4226, 4367, 4451, 4494,
+                     4560, 4580, 4581, 4597, 4699};
 
   std::vector<std::map<int32_t, int32_t>> seedIds;
   handler::get_seeds(seedIds, pre, segs, post);
 
   ASSERT_EQ(0, seedIds.size());
 }
-
 }
 }  // namespace om::test::
