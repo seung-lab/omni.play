@@ -4,7 +4,7 @@
 namespace om {
 namespace utility {
 RandColorFile::RandColorFile(const file::Paths& paths)
-    : fnp_(paths.RandColors().string()), values_(nullptr), numEntries_(0) {
+    : fnp_(paths.RandColors().string()), values_(nullptr), numEntries_(1) {
   createOrLoad();
 }
 

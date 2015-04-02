@@ -9,6 +9,10 @@ template <typename T>
 class FileStoragePolicy {
  public:
   FileStoragePolicy(file::path fnp) : fnp_(fnp) {
+    if(!om::file::exists(fnp)){
+      std::ofstream creator(fnp.c_str());
+    }
+
     try {
       file::readAll(fnp_, data_);
     }

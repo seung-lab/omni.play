@@ -16,26 +16,12 @@ class VectorFileDataSource
   VectorFileDataSource(file::path root, size_t size = 0)
       : root_(root), size_(size) {}
 
-  virtual std::shared_ptr<Vector<TKey, TValue>> Get(const TKey& key,
-                                                    bool async = false) {
-    try {
-      return doGet(key, async);
-    }
-    catch (Exception e) {
-      log_errors << e.what();
-      return std::shared_ptr<Vector<TKey, TValue>>();
-    }
+  virtual std::shared_ptr<Vector<TKey, TValue>> Get(const TKey& key, bool async = false) {
+    return doGet(key, async);
   }
 
-  virtual std::shared_ptr<Vector<TKey, TValue>> Get(const TKey& key,
-                                                    bool async = false) const {
-    try {
-      return doGet(key, async);
-    }
-    catch (Exception e) {
-      log_errors << e.what();
-      return std::shared_ptr<Vector<TKey, TValue>>();
-    }
+  virtual std::shared_ptr<Vector<TKey, TValue>> Get(const TKey& key, bool async = false) const {
+    return doGet(key, async);
   }
 
   virtual bool Put(const TKey& key, std::shared_ptr<Vector<TKey, TValue>> data,
@@ -67,7 +53,9 @@ class VectorFileDataSource
     }
     catch (Exception& e) {
       log_errors << "Unable to Load FileDataSource: " << e.what();
-      return std::shared_ptr<Vector<TKey, TValue>>();
+      std::shared_ptr<Vector<TKey, TValue> > new_vector;
+      new_vector.reset(new Vector<TKey, TValue>(key));
+      return new_vector;
     }
   }
 

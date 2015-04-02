@@ -34,8 +34,13 @@ void manager::Save() const {
   YAML::Node n;
   base_t::Save(n);
 
+  if (n.size() == 0){
+    return;
+  }
+
   try {
     std::ofstream file(fnp);
+    log_debugs << "saving anotation to " << fnp;
     file << n;
   }
   catch (std::exception e) {
@@ -53,8 +58,11 @@ data* manager::parse(const YAML::Node& n) {
 
 void manager::Load() {
   std::string fnp = filePathV1();
+  auto file = om::file::path(fnp);
   if (!file::exists(fnp)) {
-    log_infos << "Unable to find Annotations file.  Will create new one.";
+    log_infos << "Unable to find Annotations file.  Will create new one." << fnp;
+    om::file::MkDir(file.parent_path());
+    std::ofstream creator(fnp);
     return;
   }
 

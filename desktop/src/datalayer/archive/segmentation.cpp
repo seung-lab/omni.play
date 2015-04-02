@@ -65,11 +65,16 @@ Node convert<OmSegmentsImpl>::encode(const OmSegmentsImpl& sc) {
 }
 
 bool convert<OmSegmentsImpl>::decode(const Node& node, OmSegmentsImpl& sc) {
-  sc.segmentCustomNames_ =
-      node["Segment Custom Names"]
-          .as<std::unordered_map<om::common::ID, std::string>>();
-  sc.segmentNotes_ = node["Segment Notes"]
-                         .as<std::unordered_map<om::common::ID, std::string>>();
+  if (node["Segment Custom Names"].size() > 0){
+    sc.segmentCustomNames_ =
+        node["Segment Custom Names"]
+        .as<std::unordered_map<om::common::ID, std::string>>();
+  }
+  if (node["Segment Notes"].size() > 0){
+    sc.segmentNotes_ = node["Segment Notes"]
+      .as<std::unordered_map<om::common::ID, std::string>>();
+  }
+
   return true;
 }
 

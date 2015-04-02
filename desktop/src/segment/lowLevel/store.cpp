@@ -7,7 +7,7 @@ namespace om {
 namespace segment {
 
 Store::Store(SegDataVector& data, SegListDataVector& listData,
-             const coords::VolumeSystem& system, common::SegID maxSegID)
+             const coords::VolumeSystem& system)
     : data_(data), listData_(listData), system_(system) {
 
   segments_.resize(data.size());
@@ -21,6 +21,7 @@ OmSegment* Store::GetSegment(const common::SegID value) const {
     log_errors << "Invalid segid " << value;
     return nullptr;
   }
+
   return const_cast<OmSegment*>(&segments_[value]);
 }
 

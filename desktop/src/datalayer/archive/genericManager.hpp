@@ -11,16 +11,17 @@ namespace archive {
 class genericManager {
  public:
   template <class T>
-  static void Save(YAML::Emitter& out, const OmGenericManager<T>& gm) {
-    out << YAML::Key << "size" << YAML::Value << gm.size_;
-    out << YAML::Key << "valid set" << YAML::Value << gm.validSet_;
-    out << YAML::Key << "enabled set" << YAML::Value << gm.enabledSet_;
-    out << YAML::Key << "next id" << YAML::Value << gm.nextId_;
+//  static void Save(YAML::Emitter& out, const OmGenericManager<T>& gm) { //not used
 
-    out << YAML::Key << "values" << YAML::Value << YAML::BeginSeq;
-    FOR_EACH(iter, gm.validSet_) { out << *gm.vec_[*iter]; }
-    out << YAML::EndSeq;
-  }
+//    out << YAML::Key << "size" << YAML::Value << gm.size_;
+//    out << YAML::Key << "valid set" << YAML::Value << gm.validSet_;
+//    out << YAML::Key << "enabled set" << YAML::Value << gm.enabledSet_;
+//    out << YAML::Key << "next id" << YAML::Value << gm.nextId_;
+
+//    out << YAML::Key << "values" << YAML::Value << YAML::BeginSeq;
+//    for(auto iter : gm.validSet_){ out << *gm.vec_[*iter]; }
+//    out << YAML::EndSeq;
+//  }
 
   template <class T>
   static bool Load(const YAML::Node& in, OmGenericManager<T>& gm,

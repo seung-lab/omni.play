@@ -40,7 +40,9 @@ class OmDataCopierHdf5 : public OmDataCopierBase<VOL> {
 
  private:
   virtual void doImport() {
-    allocateData(determineDataType());
+    auto data_type = determineDataType();
+
+    allocateData(data_type);
 
     OmTimer timer;
     log_infos << "copying in HDF5 data...";
@@ -64,7 +66,6 @@ class OmDataCopierHdf5 : public OmDataCopierBase<VOL> {
     }
 
     threadPool.join();
-
     log_infos << "HDF5 data copy done in " << timer.s_elapsed() << " secs";
   }
 

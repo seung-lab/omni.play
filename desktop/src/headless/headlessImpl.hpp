@@ -274,6 +274,7 @@ class HeadlessImpl {
   static void ImportWatershed(const QString& fnp) {
     SegmentationDataWrapper sdw;
     OmSegmentation& segmentation = sdw.Create();
+    segmentation.LoadEmptyPath();
 
     std::vector<QFileInfo> files;
     files.push_back(QFileInfo(fnp));

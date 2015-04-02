@@ -28,9 +28,15 @@ class PagedStoragePolicy {
   void resize(index_type n, const T& val) {
     size_ = n;
     pages_.resize(numPages());
+
     for (int page = 0; page < numPages(); ++page) {
       auto newPageSize =
           (page == numPages() - 1) ? size_ % pageSize_ : pageSize_;
+
+      if(!pages_[page]){
+        pages_[page].reset(new page_type(page));
+      }
+
       if (newPageSize != pages_[page]->Values.size()) {
         pages_[page]->Values.resize(newPageSize, val);
       }

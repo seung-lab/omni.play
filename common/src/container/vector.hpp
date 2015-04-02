@@ -7,7 +7,8 @@
 namespace om {
 namespace data {
 
-template <typename T, typename StoragePolicy = VectorBackedStore<T>,
+template <typename T,
+          typename StoragePolicy = VectorBackedStore<T>,
           typename AsyncPolicy = NoAsyncPolicy,
           typename LockingPolicy = NoLockingPolicy,
           typename ExceptionPolicy = ThrowPolicy<size_t, T>>

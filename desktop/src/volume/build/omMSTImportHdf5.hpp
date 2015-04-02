@@ -142,12 +142,13 @@ class OmMSTImportHdf5 {
     auto& segments = vol_->Segments();
 
     for (uint32_t i = 0; i < size; ++i) {
-      if (segments.IsSegmentValid(edges_[i].seg1)) {
-        if (segments.IsSegmentValid(edges_[i].seg2)) {
-          valid.push_back(edges_[i]);
-          continue;
-        }
+      if (segments.IsSegmentValid(edges_[i].seg1)
+          && segments.IsSegmentValid(edges_[i].seg2)) {
+
+            valid.push_back(edges_[i]);
+            continue;
       }
+
 
       log_infos << "MST edge import: skipping: " << edges_[i];
     }

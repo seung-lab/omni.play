@@ -69,6 +69,7 @@ OmSegmentation& SegmentationDataWrapper::Create() {
   OmSegmentation& s = OmProject::Volumes().Segmentations().AddSegmentation();
   id_ = s.id();
   log_debugs << "create segmentation " << id_;
+  s.LoadEmptyPath();
   segmentation_ = &s;
   return s;
 }
