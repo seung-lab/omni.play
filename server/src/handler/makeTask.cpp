@@ -143,6 +143,13 @@ coords::GlobalBbox getBounds(const coords::GlobalBbox& pre,
                              const Direction d) {
   auto bounds = pre;
   bounds.intersect(post);
+  if (bounds.isEmpty()) {
+    throw ArgException("Bounds do not overlap.");
+  }
+  // Ah! What an implementation of isEmpty(), which relies on bounds._empty that
+  // we are not actually properly updating after substracting the fudge region
+  // below, at which time isEmpty() can be theoretically inconsistent with the
+  // actual bounds until its merge() or intersect() method is called.
 
   // Trim on preside
   const int FUDGE = 5;
@@ -185,11 +192,13 @@ void get_seeds(std::vector<std::map<int32_t, int32_t>>& seeds,
   auto preBounds = pre.Metadata().bounds();
   auto postBounds = post.Metadata().bounds();
   auto dir = getDirection(preBounds, postBounds);
-  auto bounds = getBounds(preBounds, postBounds, dir);
-  if (bounds.isEmpty()) {
+  coords::GlobalBbox bounds;
+  try {
+    bounds = getBounds(preBounds, postBounds, dir);
+  } catch (ArgException& e) {
     log_errors << "get_seeds: Bounds do not overlap: \n" << pre.Endpoint()
                << '\n' << post.Endpoint();
-    throw ArgException("Bounds do not overlap.");
+    throw;
   }
 
   // Only have to work in the region where there are segments we care about.
@@ -202,9 +211,14 @@ void get_seeds(std::vector<std::map<int32_t, int32_t>>& seeds,
   }
 
   bounds.intersect(segBounds.ToGlobalBbox());
+  if (bounds.isEmpty()) {
+    log_debugs << "No segments in non-fudge area.";
+    return;
+  }
 
   auto proxyBounds = bounds.ToDataBbox(pre.Coords(), 0);
   const Vector3i range = slab(proxyBounds);
+  assert(range.x >= 0 && range.y >= 0 && range.z >= 0);
   uint64_t overlap_volume =
       (uint64_t)range.x * (uint64_t)range.y * (uint64_t)range.z;
   if (overlap_volume > 400 * 128 * 128 * 128) {  // Max overlap size
