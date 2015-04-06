@@ -23,14 +23,16 @@ class OmValidGroupNum {
       : path_(p), version_(1), noGroupNum_(0), initialGroupNum_(1) {
     maxGroupNum_.store(initialGroupNum_);
     load();
-    if (maxSegs > segToGroupNum_.size()) {
+    if (maxSegs >= segToGroupNum_.size()) {
       Resize(maxSegs);
     }
   }
 
   void Save() const { save(); }
 
-  void Resize(const size_t size) { segToGroupNum_.resize(size, noGroupNum_); }
+  void Resize(const size_t maxSegs) {
+    segToGroupNum_.resize(maxSegs + 1, noGroupNum_);
+  }
 
   void Clear() {
     std::fill(segToGroupNum_.begin(), segToGroupNum_.end(), noGroupNum_);
