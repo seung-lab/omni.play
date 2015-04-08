@@ -38,7 +38,9 @@ OmSegment* Store::AddSegment(const common::SegID value) {
   auto oldSize = segments_.size();
   auto newSize = value + 1;  // one indexed.
 
-  data_.resize(newSize);
+  Data nullSeg;
+  nullSeg.value = 0;
+  data_.resize(newSize, nullSeg);
   data_[value].value = value;
 
   listData_.resize(newSize);
