@@ -121,6 +121,9 @@ std::map<int32_t, int32_t> makeSeed(
   uint32_t largestSize = 0;
 
   for (auto& seg : bundle) {
+    if (seg == 0) {
+      continue;
+    }
     if (((double)mappingCounts[seg]) / ((double)sizes[seg]) >=
         FALSE_OBJ_RATIO_THR) {
       ret[seg] = sizes[seg];
