@@ -5,7 +5,7 @@
 #include "common/colors.h"
 #include "project/omProject.h"
 #include "project/omProjectGlobals.h"
-#include "utility/omRandColorFile.hpp"
+#include "utility/omRandColorFile.h"
 
 namespace om {
 namespace utils {

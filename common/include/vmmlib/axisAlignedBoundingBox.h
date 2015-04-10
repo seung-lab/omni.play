@@ -338,7 +338,7 @@ AxisAlignedBoundingBox< T >::getNearestVertex(const Vector3< T > &v) const {
     return mynear;
 }
 
-
+//Isn't the disction between getDimensions and getUnitDimensions() a bit confusing?
 template< typename T >
 Vector3< T >
 AxisAlignedBoundingBox< T >::getDimensions() const {

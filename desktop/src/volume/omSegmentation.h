@@ -63,8 +63,7 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
 
   const om::file::Paths::Vol& VolPaths() const { return paths_; }
   const om::file::Paths::Seg& SegPaths() const { return paths_; }
-  void LoadPath();
-  void LoadEmptyPath();
+  void LoadPath(const bool newSegmentation = false);
   void LoadChunks();
   bool LoadVolData();
   bool LoadVolDataIfFoldersExist();

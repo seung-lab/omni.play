@@ -17,6 +17,7 @@ class Store {
   OmSegment* GetSegment(const common::SegID value) const;
   OmSegment* AddSegment(const common::SegID value);
   bool IsSegmentValid(const common::SegID value);
+  void resize(size_t newSize);
 
   void Flush();
 

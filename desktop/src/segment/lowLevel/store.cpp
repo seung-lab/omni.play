@@ -18,7 +18,7 @@ Store::Store(SegDataVector& data, SegListDataVector& listData,
 
 OmSegment* Store::GetSegment(const common::SegID value) const {
   if (value >= data_.size()) {
-    log_errors << "Invalid segid " << value;
+    log_debugs << "Invalid segid " << value;
     return nullptr;
   }
 
@@ -27,29 +27,29 @@ OmSegment* Store::GetSegment(const common::SegID value) const {
 
 OmSegment* Store::AddSegment(const common::SegID value) {
   zi::guard g(pagesLock_);
-  if (value < data_.size()) {
-    OmSegment* seg = GetSegment(value);
-    if (seg && seg->value() != value) {
-      data_[value].value = value;
-    }
-    return seg;
-  }
 
-  auto oldSize = segments_.size();
-  auto newSize = value + 1;  // one indexed.
+  if ( value+1 > data_.size()){
+    resize(value+1);
+  }
+  data_[value].value = value;
+  segments_[value] = OmSegment(data_[value], listData_[value], system_);
+
+  return &segments_[value];
+}
+void Store::resize(size_t newSize)
+{
+  size_t oldSize = data_.size();
 
   Data nullSeg;
   nullSeg.value = 0;
+  nullSeg.size = 0;
   data_.resize(newSize, nullSeg);
-  data_[value].value = value;
-
   listData_.resize(newSize);
-
   segments_.resize(newSize);
-  for (int i = oldSize; i < data_.size(); ++i) {
+
+  for(size_t i = oldSize; i < data_.size(); ++i){
     segments_[i] = OmSegment(data_[i], listData_[i], system_);
   }
-  return GetSegment(value);
 }
 
 void Store::Flush() {

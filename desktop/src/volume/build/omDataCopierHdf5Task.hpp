@@ -11,10 +11,9 @@
 #include "utility/omSimpleProgress.hpp"
 #include "volume/omVolumeTypes.hpp"
 
-template <typename VOL>
 class OmDataCopierHdf5Task : public zi::runnable {
- private:
-  VOL* const vol_;
+private:
+  unsigned int bytesPerPlane_;
   const OmDataPath path_;
   const om::common::AffinityGraph aff_;
 
@@ -22,26 +21,27 @@ class OmDataCopierHdf5Task : public zi::runnable {
   OmHdf5* const hdf5reader_;
   const QString mip0fnp_;
   const om::coords::Chunk coord_;
+  const om::coords::VolumeSystem vol_coords_;
 
   OmSimpleProgress* prog_;
 
   bool resizedChunk_;
 
- public:
-  OmDataCopierHdf5Task(VOL* vol, const OmDataPath& path,
+public:
+  OmDataCopierHdf5Task(unsigned int bytesPerPlane, om::coords::VolumeSystem vol_coords , const OmDataPath& path,
                        const om::common::AffinityGraph aff,
                        const Vector3i volSize, OmHdf5* const hdf5reader,
                        const QString mip0fnp, const om::coords::Chunk& coord,
                        OmSimpleProgress* prog)
-      : vol_(vol),
-        path_(path),
-        aff_(aff),
-        volSize_(volSize),
-        hdf5reader_(hdf5reader),
-        mip0fnp_(mip0fnp),
-        coord_(coord),
-        prog_(prog),
-        resizedChunk_(false) {}
+    : bytesPerPlane_(bytesPerPlane),
+      path_(path),
+      aff_(aff),
+      volSize_(volSize),
+      hdf5reader_(hdf5reader),
+      mip0fnp_(mip0fnp),
+      coord_(coord),
+      vol_coords_(vol_coords),
+      prog_(prog){}
 
   virtual ~OmDataCopierHdf5Task() {}
 
@@ -51,98 +51,68 @@ class OmDataCopierHdf5Task : public zi::runnable {
     copyIntoChunk();
 
     std::ostringstream stm;
-    stm << "copied ";
-    if (resizedChunk_) {
-      stm << "and resized ";
-    }
-    stm << "HDF5 chunk: " << coord_ << " in " << timer.s_elapsed() << " secs ";
-
+    stm << "copied HDF5 chunk: " << coord_ << " in " << timer.s_elapsed() << " secs ";
     prog_->DidOne(stm.str());
   }
 
- private:
-  template <typename T>
-  OmDataWrapperPtr doResizePartialChunk(
-      OmDataWrapperPtr data, const om::coords::DataBbox& chunkExtent,
-      const om::coords::DataBbox& dataExtent) {
-    resizedChunk_ = true;
-
-    const Vector3i dataSize = dataExtent.getDimensions();
-
-    // weirdness w/ hdf5 and/or boost::multi_arry requires flipping x/z
-    // TODO: figure out!
-    OmImage<T, 3> partialChunk(OmExtents[dataSize.z][dataSize.y][dataSize.x],
-                               data->getPtr<T>());
-
-    const Vector3i chunkSize = chunkExtent.getDimensions();
-
-    partialChunk.resize(chunkSize);
-
-    return om::ptrs::Wrap(partialChunk.getMallocCopyOfData());
-  }
-
-  OmDataWrapperPtr resizePartialChunk(OmDataWrapperPtr data,
-                                      const om::coords::DataBbox& chunkExtent,
-                                      const om::coords::DataBbox& dataExtent) {
-    switch (data->getVolDataType().index()) {
-      case om::common::DataType::INT8:
-        return doResizePartialChunk<int8_t>(data, chunkExtent, dataExtent);
-      case om::common::DataType::UINT8:
-        return doResizePartialChunk<uint8_t>(data, chunkExtent, dataExtent);
-      case om::common::DataType::INT32:
-        return doResizePartialChunk<int32_t>(data, chunkExtent, dataExtent);
-      case om::common::DataType::UINT32:
-        return doResizePartialChunk<uint32_t>(data, chunkExtent, dataExtent);
-      case om::common::DataType::FLOAT:
-        return doResizePartialChunk<float>(data, chunkExtent, dataExtent);
-      case om::common::DataType::UNKNOWN:
-      default:
-        throw om::IoException("unknown data type");
-    }
-  }
-
+private:
   void copyIntoChunk() {
-    OmDataWrapperPtr data = getChunkData();
 
-    const uint64_t chunkOffset =
-        coord_.PtrOffset(vol_->Coords(), vol_->GetBytesPerVoxel());
+    const uint64_t chunkOffset = coord_.PtrOffset(vol_coords_, bytesPerPlane_);
     QFile file(mip0fnp_);
     if (!file.open(QIODevice::ReadWrite)) {
       throw om::IoException("could not open file");
     }
-
     file.seek(chunkOffset);
-    auto numBytes =
-        vol_->Coords().GetNumberOfVoxelsPerChunk() * vol_->GetBytesPerVoxel();
-    file.write(data->getPtr<const char>(), numBytes);
-  }
-
-  OmDataWrapperPtr getChunkData() {
-    // get chunk data bbox
-    const om::coords::DataBbox& chunkExtent =
-        coord_.BoundingBox(vol_->Coords());
 
     const om::coords::DataBbox volExtent(
-        om::coords::Data(Vector3i::ZERO, vol_->Coords(), coord_.mipLevel()),
-        om::coords::Data(volSize_, vol_->Coords(), coord_.mipLevel()));
+          om::coords::Data(Vector3i::ZERO, vol_coords_, coord_.mipLevel()),
+          om::coords::Data(volSize_-1, vol_coords_, coord_.mipLevel()));
 
-    // if data extent contains given extent, read full chunk
-    if (volExtent.contains(chunkExtent)) {
-      return hdf5reader_->readChunk(path_, chunkExtent, aff_);
-    }
-
-    // else, read what we can, and resize
-
+    const om::coords::DataBbox& chunkExtent = coord_.BoundingBox(vol_coords_);
     om::coords::DataBbox intersect_extent = chunkExtent;
     intersect_extent.intersect(volExtent);
 
     if (intersect_extent.isEmpty()) {
-      throw om::IoException("should not have happened");
+      throw om::IoException("the intersection between the volume and the chunk is null");
     }
 
-    OmDataWrapperPtr partialChunk =
-        hdf5reader_->readChunk(path_, intersect_extent, aff_);
+    auto dims = intersect_extent.getUnitDimensions();
+    auto numBytes =  dims[2] * bytesPerPlane_;
+    OmDataWrapperPtr data = hdf5reader_->readChunk(path_, intersect_extent, aff_);
 
-    return resizePartialChunk(partialChunk, chunkExtent, intersect_extent);
+    switch (data->getVolDataType().index()) {
+      case om::common::DataType::INT8:
+        data = doResizePartialChunk<int8_t>(data, chunkExtent, intersect_extent);
+        break;
+      case om::common::DataType::UINT8:
+        data = doResizePartialChunk<uint8_t>(data, chunkExtent, intersect_extent);
+        break;
+      case om::common::DataType::INT32:
+        data = doResizePartialChunk<int32_t>(data, chunkExtent, intersect_extent);
+        break;
+      case om::common::DataType::UINT32:
+        data = doResizePartialChunk<uint32_t>(data, chunkExtent, intersect_extent);
+        break;
+      case om::common::DataType::FLOAT:
+        data = doResizePartialChunk<float>(data, chunkExtent, intersect_extent);
+        break;
+      case om::common::DataType::UNKNOWN:
+      default:
+        throw om::IoException("unknown data type" + std::to_string(data->getVolDataType().index()));
+    }
+
+    file.write(data->getPtr<const char>(), numBytes);
+  }
+  template <typename T>   OmDataWrapperPtr doResizePartialChunk(
+    OmDataWrapperPtr data, const om::coords::DataBbox& chunkExtent, const om::coords::DataBbox& dataExtent) {
+
+    const Vector3i dataSize = dataExtent.getUnitDimensions();
+    OmImage<T, 3> partialChunk(OmExtents[dataSize.z][dataSize.y][dataSize.x],	data->getPtr<T>());
+
+    const Vector3i chunkSize = chunkExtent.getUnitDimensions();
+    partialChunk.resize(chunkSize);
+
+    return  om::ptrs::Wrap(partialChunk.getMallocCopyOfData());
   }
 };

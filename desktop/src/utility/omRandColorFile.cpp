@@ -1,10 +1,10 @@
-#include "utility/omRandColorFile.hpp"
+#include "utility/omRandColorFile.h"
 #include "utility/omRand.hpp"
 
 namespace om {
 namespace utility {
 RandColorFile::RandColorFile(const file::Paths& paths)
-    : fnp_(paths.RandColors().string()), values_(nullptr), numEntries_(1) {
+    : fnp_(paths.RandColors().string()), values_(nullptr), numEntries_(0) {
   createOrLoad();
 }
 
@@ -70,6 +70,7 @@ void RandColorFile::setupFile() {
   file_ = datalayer::ROMemMappedFile<common::Color>::CreateFromData(fnp_,
                                                                     colorTable);
   values_ = file_.GetPtr();
+  numEntries_ = file_.Length();
 }
 }
 }

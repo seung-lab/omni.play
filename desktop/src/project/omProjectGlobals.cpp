@@ -4,7 +4,7 @@
 #include "project/omProjectGlobals.h"
 #include "system/omStateManagerImpl.hpp"
 #include "users/omUsers.h"
-#include "utility/omRandColorFile.hpp"
+#include "utility/omRandColorFile.h"
 #include "view2d/omView2dManagerImpl.hpp"
 
 OmProjectGlobals::OmProjectGlobals(const om::file::Paths& paths)

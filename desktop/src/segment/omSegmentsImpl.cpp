@@ -7,7 +7,7 @@
 #include "segment/selection.hpp"
 #include "segment/userEdgeVector.hpp"
 #include "system/cache/omCacheManager.h"
-#include "utility/omRandColorFile.hpp"
+#include "utility/omRandColorFile.h"
 #include "utility/segmentationDataWrapper.hpp"
 #include "volume/metadataManager.h"
 
@@ -67,7 +67,6 @@ OmSegment* OmSegmentsImpl::AddSegment(const om::common::SegID value) {
     graph_->Resize(value);
     valid_.Resize(value);
   }
-
   return seg;
 }
 
@@ -77,10 +76,10 @@ OmSegment* OmSegmentsImpl::GetOrAddSegment(const om::common::SegID val) {
   }
 
   OmSegment* seg = store_->GetSegment(val);
-
-  if (nullptr == seg || seg->getEdgeNumber() == -1) {
+  if (nullptr == seg || seg->value() == 0) {
     seg = AddSegment(val);
   }
+
   return seg;
 }
 

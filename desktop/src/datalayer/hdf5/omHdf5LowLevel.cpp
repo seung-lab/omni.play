@@ -414,6 +414,7 @@ OmDataWrapperPtr OmHdf5LowLevel::GetChunkDataType() {
 
 OmDataWrapperPtr OmHdf5LowLevel::readChunk(
     const om::coords::DataBbox& extent, const om::common::AffinityGraph aff) {
+
   // Opens an existing dataset.
   // hid_t H5Dopen(hid_t loc_id, const char *name  )
   hid_t dataset_id = H5Dopen2(fileId, getPath(), H5P_DEFAULT);
@@ -438,8 +439,8 @@ OmDataWrapperPtr OmHdf5LowLevel::readChunk(
   Vector3<hsize_t> stride = Vector3i::ONE;
   Vector3<hsize_t> count = Vector3i::ONE;
 
-  Vector3<hsize_t> block = extent.getDimensions();
-  Vector3<hsize_t> block_flipped(block.z, block.y, block.x);
+  Vector3<hsize_t> block = extent.getUnitDimensions();
+  Vector3<hsize_t> block_flipped(block.z , block.y, block.x);
   herr_t ret;
   hid_t mem_dataspace_id;
   OmDataWrapperPtr data;
@@ -504,6 +505,9 @@ OmDataWrapperPtr OmHdf5LowLevel::readChunk(
 
     free(imageData);
   } else {
+
+    assert(rank == 3);
+
     // Selects a hyperslab region to add to the current selected region.
     ret = H5Sselect_hyperslab(dataspace_id, H5S_SELECT_SET, start_flipped.array,
                               stride.array, count.array, block_flipped.array);
@@ -511,13 +515,13 @@ OmDataWrapperPtr OmHdf5LowLevel::readChunk(
 
     // Creates a new simple dataspace and opens it for access.
     log_infos << "\tBlock: " << block;
-    mem_dataspace_id = H5Screate_simple(3, block.array, nullptr);
+    mem_dataspace_id = H5Screate_simple(rank , block.array , nullptr);
     if (mem_dataspace_id < 0) {
       throw om::IoException(
           "Could not create scratch HDF5 dataspace to read data into.");
     }
 
-    const Vector3i extent_dims = extent.getDimensions();
+    const Vector3i extent_dims = extent.getUnitDimensions();
     const int64_t size = extent_dims.x * extent_dims.y * extent_dims.z *
                          OmHdf5Utils::getSizeofType(dstype);
     if (size < 1) {
@@ -534,6 +538,7 @@ OmDataWrapperPtr OmHdf5LowLevel::readChunk(
 
     ret = H5Dread(dataset_id, data->getHdf5MemoryType(), mem_dataspace_id,
                   dataspace_id, H5P_DEFAULT, imageData);
+
     if (ret < 0) {
       log_infos << "ERROR: extexts were " << extent;
       throw om::IoException("Error while reading HDF5 dataset \"" +

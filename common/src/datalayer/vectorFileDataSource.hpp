@@ -17,11 +17,23 @@ class VectorFileDataSource
       : root_(root), size_(size) {}
 
   virtual std::shared_ptr<Vector<TKey, TValue>> Get(const TKey& key, bool async = false) {
-    return doGet(key, async);
+    try {
+      return doGet(key, async);
+    }
+    catch (Exception& e){
+      log_debugs << "couldn't returned request page";
+      return std::make_shared<Vector<TKey, TValue>>(key);
+    }
   }
 
   virtual std::shared_ptr<Vector<TKey, TValue>> Get(const TKey& key, bool async = false) const {
-    return doGet(key, async);
+    try {
+      return doGet(key, async);
+    }
+    catch (Exception& e){
+      log_debugs << "couldn't returned request page";
+      return std::make_shared<Vector<TKey, TValue>>(key);
+    }
   }
 
   virtual bool Put(const TKey& key, std::shared_ptr<Vector<TKey, TValue>> data,
@@ -31,7 +43,6 @@ class VectorFileDataSource
       doPut(key, data);
     }
     catch (Exception& e) {
-
       log_errors << "Unable to Write FileDataSource: " << e.what();
       return false;
     }
@@ -44,19 +55,12 @@ class VectorFileDataSource
  protected:
   virtual std::shared_ptr<Vector<TKey, TValue>> doGet(
       const TKey& key, bool async = false) const {
-    try {
-      auto ret = std::make_shared<Vector<TKey, TValue>>(key);
-      file::readAll(fnp(key), ret->Values);
-      resize(ret->Values);
 
-      return ret;
-    }
-    catch (Exception& e) {
-      log_errors << "Unable to Load FileDataSource: " << e.what();
-      std::shared_ptr<Vector<TKey, TValue> > new_vector;
-      new_vector.reset(new Vector<TKey, TValue>(key));
-      return new_vector;
-    }
+   auto ret = std::make_shared<Vector<TKey, TValue>>(key);
+   file::readAll(fnp(key), ret->Values);
+   resize(ret->Values);
+
+    return ret;
   }
 
   virtual void doPut(const TKey& key,
