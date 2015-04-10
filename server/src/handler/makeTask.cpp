@@ -255,7 +255,6 @@ void get_seeds(std::vector<std::map<int32_t, int32_t>>& seeds,
       auto n = iter.neighbor(offset);
       if ((bool)n && sel.count(n->value())) {
         auto p = toProxy(n->coord(), range, proxyBounds);
-        included.insert(p);
         sets.join(sets.find_set(proxy), sets.find_set(p));
       }
     };
@@ -264,6 +263,10 @@ void get_seeds(std::vector<std::map<int32_t, int32_t>>& seeds,
     considerNeighbor(Vector3i(0, 0, -1));
   }
 
+  // Note sizes here are potentially counting one more slice in any direction
+  // than the mappingCounts above due to the offset-by-1 iterBounds, but this
+  // can actually help us get rid of mis-inclusions of segments overlapping only
+  // on the last (few) slice(s).
   for (auto& iter : post.SegIterate(postSelected, bounds)) {
     sizes[iter.value()]++;
   }

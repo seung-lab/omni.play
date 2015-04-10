@@ -19,6 +19,7 @@ class CoordValue {
 
     auto ret = *this;
     ret.coord_ += offset;
+    assert(ret.coord_.x >= 0 && ret.coord_.y >= 0 && ret.coord_.z >= 0);
 
     if (ret.coord_.ToChunk() != coord_.ToChunk()) {
       ret.updateChunk();
