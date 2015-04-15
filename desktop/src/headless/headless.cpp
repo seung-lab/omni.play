@@ -79,6 +79,7 @@ void Headless::processLine(const QString& line, const QString&) {
 
   if (line == "q" || line == "quit") {
     printf("Exiting...\n");
+    save();
     OmProject::Close();
     exit(0);
   }

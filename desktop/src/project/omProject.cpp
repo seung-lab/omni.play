@@ -84,7 +84,6 @@ void OmProject::Close() {
   if (!IsOpen()) {
     return;
   }
-  OmActions::Save();
   OmActions::Close();
 
   OmCacheManager::SignalCachesToCloseDown();
