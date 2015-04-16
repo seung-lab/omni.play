@@ -142,17 +142,10 @@ std::map<int32_t, int32_t> makeSeed(
 }
 
 coords::GlobalBbox getBounds(const coords::GlobalBbox& pre,
-                             const coords::GlobalBbox& post,
-                             const Direction d) {
+                             const coords::GlobalBbox& post, const Direction d,
+                             const Vector3i& resolution) {
   auto bounds = pre;
   bounds.intersect(post);
-  if (bounds.isEmpty()) {
-    throw ArgException("Bounds do not overlap.");
-  }
-  // Ah! What an implementation of isEmpty(), which relies on bounds._empty that
-  // we are not actually properly updating after substracting the fudge region
-  // below, at which time isEmpty() can be theoretically inconsistent with the
-  // actual bounds until its merge() or intersect() method is called.
 
   // Trim on preside
   const int FUDGE = 5;
@@ -161,25 +154,29 @@ coords::GlobalBbox getBounds(const coords::GlobalBbox& pre,
 
   switch (d) {
     case Direction::XMin:
-      bounds.setMax(Vector3f(max.x - FUDGE, max.y, max.z));
+      bounds.setMax(Vector3f(max.x - FUDGE * resolution.x, max.y, max.z));
       break;
     case Direction::YMin:
-      bounds.setMax(Vector3f(max.x, max.y - FUDGE, max.z));
+      bounds.setMax(Vector3f(max.x, max.y - FUDGE * resolution.y, max.z));
       break;
     case Direction::ZMin:
-      bounds.setMax(Vector3f(max.x, max.y, max.z - FUDGE));
+      bounds.setMax(Vector3f(max.x, max.y, max.z - FUDGE * resolution.z));
       break;
     case Direction::XMax:
-      bounds.setMin(Vector3f(min.x + FUDGE, min.y, min.z));
+      bounds.setMin(Vector3f(min.x + FUDGE * resolution.x, min.y, min.z));
       break;
     case Direction::YMax:
-      bounds.setMin(Vector3f(min.x, min.y + FUDGE, min.z));
+      bounds.setMin(Vector3f(min.x, min.y + FUDGE * resolution.y, min.z));
       break;
     case Direction::ZMax:
-      bounds.setMin(Vector3f(min.x, min.y, min.z + FUDGE));
+      bounds.setMin(Vector3f(min.x, min.y, min.z + FUDGE * resolution.z));
       break;
   }
 
+  bounds.intersect(bounds);
+  // So that bounds.isEmpty() returns the correct result. The implementation of
+  // isEmpty() relies on an _empty data member that is not updated until
+  // intersect() is called.
   return bounds;
 }
 
@@ -195,13 +192,12 @@ void get_seeds(std::vector<std::map<int32_t, int32_t>>& seeds,
   auto preBounds = pre.Metadata().bounds();
   auto postBounds = post.Metadata().bounds();
   auto dir = getDirection(preBounds, postBounds);
-  coords::GlobalBbox bounds;
-  try {
-    bounds = getBounds(preBounds, postBounds, dir);
-  } catch (ArgException& e) {
+  auto res = pre.Coords().Resolution();
+  auto bounds = getBounds(preBounds, postBounds, dir, res);
+  if (bounds.isEmpty()) {
     log_errors << "get_seeds: Bounds do not overlap: \n" << pre.Endpoint()
                << '\n' << post.Endpoint();
-    throw;
+    throw ArgException("Adjusted bounds do not overlap.");
   }
 
   // Only have to work in the region where there are segments we care about.
