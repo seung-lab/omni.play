@@ -199,6 +199,7 @@ void get_seeds(std::vector<std::map<int32_t, int32_t>>& seeds,
                << '\n' << post.Endpoint();
     throw ArgException("Adjusted bounds do not overlap.");
   }
+  auto postSegSizeBounds = bounds.ToDataBbox(post.Coords(), 0);
 
   // Only have to work in the region where there are segments we care about.
   coords::DataBbox segBounds(pre.Coords(), 0);
@@ -262,11 +263,20 @@ void get_seeds(std::vector<std::map<int32_t, int32_t>>& seeds,
     considerNeighbor(Vector3i(0, 0, -1));
   }
 
-  // Note sizes here are potentially counting one more slice in any direction
+  // Get the size of segments on the post side.
+  // Expand the bounds enough to capture full/most size of the segment, but
+  // discount portions reentering the overlap region if the same segment exits
+  // but curves back into the region.
+  // Note we are also potentially counting one more slice in any direction
   // than the mappingCounts above due to the offset-by-1 iterBounds, but this
   // can actually help us get rid of mis-inclusions of segments overlapping only
   // on the last (few) slice(s).
-  for (auto& iter : post.SegIterate(postSelected, bounds)) {
+  const int EXPANSION = 50;
+  auto postDilatedBounds = bounds.ToDataBbox(post.Coords(), 0);
+  postDilatedBounds.setMin(postDilatedBounds.getMin() - EXPANSION);
+  postDilatedBounds.setMax(postDilatedBounds.getMax() + EXPANSION);
+  postSegSizeBounds.intersect(postDilatedBounds);
+  for (auto& iter : post.SegIterate(postSelected, postSegSizeBounds)) {
     sizes[iter.value()]++;
   }
 
