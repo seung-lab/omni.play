@@ -13,10 +13,10 @@ Screen Global::ToScreen(ScreenSystem &state) const {
 Data Global::ToData(const VolumeSystem &vol, const int mipLevel) const {
   const vmml::Vector4f Global(x, y, z, 1);
   vmml::Vector3f dataC = vol.GlobalToDataMat(mipLevel) * Global;
-  using std::lround;
-  // With performance hit but we should make sure it gets back to the correct
-  // integer value.
-  return Data(lround(dataC.x), lround(dataC.y), lround(dataC.z), vol, mipLevel);
+  using std::lrint;
+  // With some performance hit but we should make sure it gets back to the
+  // correct integer value.
+  return Data(lrint(dataC.x), lrint(dataC.y), lrint(dataC.z), vol, mipLevel);
 }
 
 Chunk Global::ToChunk(const VolumeSystem &vol, const int mipLevel) const {
