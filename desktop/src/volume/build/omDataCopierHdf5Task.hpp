@@ -14,6 +14,7 @@
 class OmDataCopierHdf5Task : public zi::runnable {
 private:
   unsigned int bytesPerPlane_;
+  unsigned short bytesPerVoxel_;
   const OmDataPath path_;
   const om::common::AffinityGraph aff_;
 
@@ -28,12 +29,13 @@ private:
   bool resizedChunk_;
 
 public:
-  OmDataCopierHdf5Task(unsigned int bytesPerPlane, om::coords::VolumeSystem vol_coords , const OmDataPath& path,
+  OmDataCopierHdf5Task(unsigned int bytesPerPlane, unsigned short bytesPerVoxel, om::coords::VolumeSystem vol_coords , const OmDataPath& path,
                        const om::common::AffinityGraph aff,
                        const Vector3i volSize, OmHdf5* const hdf5reader,
                        const QString mip0fnp, const om::coords::Chunk& coord,
                        OmSimpleProgress* prog)
     : bytesPerPlane_(bytesPerPlane),
+      bytesPerVoxel_(bytesPerVoxel),
       path_(path),
       aff_(aff),
       volSize_(volSize),
@@ -58,11 +60,12 @@ public:
 private:
   void copyIntoChunk() {
 
-    const uint64_t chunkOffset = coord_.PtrOffset(vol_coords_, bytesPerPlane_);
     QFile file(mip0fnp_);
     if (!file.open(QIODevice::ReadWrite)) {
       throw om::IoException("could not open file");
     }
+
+    const uint64_t chunkOffset = coord_.PtrOffset(vol_coords_, bytesPerVoxel_);
     file.seek(chunkOffset);
 
     const om::coords::DataBbox volExtent(

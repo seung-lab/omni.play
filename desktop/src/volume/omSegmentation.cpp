@@ -68,12 +68,15 @@ void OmSegmentation::LoadPath(const bool newSegmentation) {
                                            metaManager_->numSegments()));
 
   segDataDS_.reset(new segment::FileDataSource(userPaths.Segments(id_)));
-  segData_.reset(new segment::SegDataVector(*segDataDS_, segment::PageSize,
-                                            Metadata().maxSegments()+1));
-
   segListDataDS_.reset(new segment::ListTypeFileDataSource(userPaths.Segments(id_)));
-  segListData_.reset(new segment::SegListDataVector(*segListDataDS_, segment::PageSize, Metadata().maxSegments()+1));
-  segListData_->resize(Metadata().maxSegments() +1);
+
+  if(newSegmentation){
+    segData_.reset(new segment::SegDataVector(*segDataDS_, segment::PageSize, 0));
+    segListData_.reset(new segment::SegListDataVector(*segListDataDS_, segment::PageSize, 0));
+  }else{
+    segData_.reset(new segment::SegDataVector(*segDataDS_, segment::PageSize, Metadata().maxSegments()+1));
+    segListData_.reset(new segment::SegListDataVector(*segListDataDS_, segment::PageSize, Metadata().maxSegments()+1));
+  }
 
   chunkDS_.reset(new chunk::CachedDataSource(paths_, getVolDataType(), coords_));
 

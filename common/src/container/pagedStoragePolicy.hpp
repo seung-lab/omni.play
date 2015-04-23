@@ -3,6 +3,8 @@
 #include "datalayer/dataSource.hpp"
 #include "datalayer/vector.hpp"
 #include "utility/malloc.hpp"
+#include <typeinfo>
+
 
 namespace om {
 namespace data {
@@ -21,39 +23,39 @@ class PagedStoragePolicy {
         pageSize_(pageSize),
         size_(size),
         backendSize_(size),
-        pages_(numPages()) {}
+        pages_(numPages()) {
+
+    for(size_t i = 1 ; i < numPages(); ++i){
+      getPage(i-1);
+    }
+  }
 
   index_type size() const { return size_; }
 
-  void resize(index_type n, const T& val) {
+  void resize(const index_type n, const T& val) {
     size_ = n;
     pages_.resize(numPages());
 
     for (int page = 0; page < numPages(); ++page) {
-      auto newPageSize =
-          (page == numPages() - 1) ? size_ % pageSize_ : pageSize_;
+      if(!pages_[page] ){
+        pages_[page].reset(new page_type(page));
+        pages_[page]->Values.resize(pageSize_,val);
+      }
+    }
+  }
 
+  void resize(const index_type n) {
+    size_ = n;
+    pages_.resize(numPages());
+
+    for (int page = 0; page < numPages(); ++page) {
       if(!pages_[page]){
         pages_[page].reset(new page_type(page));
-      }
-
-      if (newPageSize != pages_[page]->Values.size()) {
-        pages_[page]->Values.resize(newPageSize, val);
+        pages_[page]->Values.resize(pageSize_);
       }
     }
   }
 
-  void resize(index_type n) {
-    size_ = n;
-    pages_.resize(numPages());
-    for (int page = 0; page < numPages(); ++page) {
-      auto newPageSize =
-          (page == numPages() - 1) ? size_ % pageSize_ : pageSize_;
-      if (newPageSize != pages_[page]->Values.size()) {
-        pages_[page]->Values.resize(newPageSize);
-      }
-    }
-  }
 
   void reserve(index_type n) {
     auto reservePages = (n / pageSize_) + 1;
@@ -203,12 +205,12 @@ class MemPagedStoragePolicy<
   }
 
   T& doGet(index_type i) {
-    auto page = getPage(i);
+    page_type page = getPage(i);
     return page[i % PageSize];
   }
 
   const T& doGet(index_type i) const {
-    auto page = getPage(i);
+    page_type page = getPage(i);
     return page[i % PageSize];
   }
 

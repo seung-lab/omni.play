@@ -11,7 +11,7 @@ Store::Store(SegDataVector& data, SegListDataVector& listData,
     : data_(data), listData_(listData), system_(system) {
 
   segments_.resize(data.size());
-  for (int i = 0; i < data_.size(); ++i) {
+  for (int i = 1; i < data_.size(); ++i) {
     segments_[i] = OmSegment(data_[i], listData_[i], system_);
   }
 }
@@ -25,17 +25,16 @@ OmSegment* Store::GetSegment(const common::SegID value) const {
   return const_cast<OmSegment*>(&segments_[value]);
 }
 
-OmSegment* Store::AddSegment(const common::SegID value) {
+OmSegment* Store::AddSegment(const common::SegID value)  {
   zi::guard g(pagesLock_);
-
-  if ( value+1 > data_.size()){
+  if ( value >= data_.size()){
     resize(value+1);
   }
-  data_[value].value = value;
-  segments_[value] = OmSegment(data_[value], listData_[value], system_);
+  segments_[value].SetValue(value);
 
   return &segments_[value];
 }
+
 void Store::resize(size_t newSize)
 {
   size_t oldSize = data_.size();
@@ -44,10 +43,10 @@ void Store::resize(size_t newSize)
   nullSeg.value = 0;
   nullSeg.size = 0;
   data_.resize(newSize, nullSeg);
+
   listData_.resize(newSize);
   segments_.resize(newSize);
-
-  for(size_t i = oldSize; i < data_.size(); ++i){
+  for(size_t i = oldSize ; i < data_.size(); ++i){
     segments_[i] = OmSegment(data_[i], listData_[i], system_);
   }
 }

@@ -57,7 +57,7 @@ class OmDataCopierHdf5 : public OmDataCopierBase<VOL> {
 
     for(const auto coord : *coordsPtr) {
 
-      auto task = std::make_shared<OmDataCopierHdf5Task>(vol_.GetBytesPerSlice(), vol_.Coords(), path_, aff_,
+      auto task = std::make_shared<OmDataCopierHdf5Task>(vol_.GetBytesPerSlice(), vol_.GetBytesPerVoxel(),vol_.Coords(), path_, aff_,
                                                        volSize_, hdf5reader_,
                                                        mip0fnp_, coord, &prog);
       threadPool.push_back(task);

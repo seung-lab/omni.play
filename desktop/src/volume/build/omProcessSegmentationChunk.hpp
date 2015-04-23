@@ -45,6 +45,7 @@ class OmProcessSegmentationChunk {
 
   OmSegment* getOrAddSegment(const om::common::SegID val) {
     if (!cacheSegments_.count(val)) {
+      sizes_[val] = 0;
       return cacheSegments_[val] = segments_.GetOrAddSegment(val);
     }
     return cacheSegments_[val];

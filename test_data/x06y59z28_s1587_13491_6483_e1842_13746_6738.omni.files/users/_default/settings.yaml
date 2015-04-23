@@ -1,0 +1,5 @@
+---
+threshold: 0.999
+sizeThreshold: 250
+showAnnotations: false
+...

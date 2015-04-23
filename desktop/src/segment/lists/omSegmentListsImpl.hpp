@@ -28,7 +28,7 @@ class OmSegmentListsImpl {
 
     // use threadPool as serial job queue;
     // more than 1 thread requires locking, and dealing w/ out-of-order
-    //  manipulations of tree modifiations that are order-sensative
+    // manipulations of tree modifications that are order-sensitive
     threadPool_.start(1);
   }
 
@@ -61,10 +61,7 @@ class OmSegmentListsImpl {
   inline void ForceRefreshGUIlists() { runRefreshGUIlists(true); }
 
   inline int64_t GetSizeWithChildren(const om::common::SegID segID) {
-    // if (segID >= list_.size()) {
-    //   log_debugs << "segment " << segID << "not found";
-    //   return 0;
-    // }
+
     return list_[segID].sizeIncludingChildren;
   }
 
