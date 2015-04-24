@@ -28,12 +28,12 @@ public:
         log_debugs << "Loading Metadata " << path << " : " << volType << ":" << number;
         return loadYaml(path, volType, number);
       } else {
-        return std::shared_ptr<Metadata>(new Metadata());
+        return std::shared_ptr<Metadata>();
       }
     }
     catch (...) {
       log_debugs << "Failed Loading Metadata: ";
-      return std::shared_ptr<Metadata>(new Metadata());
+      return std::shared_ptr<Metadata>();
     }
   }
 

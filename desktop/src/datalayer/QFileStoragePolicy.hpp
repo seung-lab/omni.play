@@ -30,6 +30,7 @@ class QFileStoragePolicy {
     QFile file(path);
 
     if (!file.exists()){
+      log_infos << "creating file " << fnp_.string() << " because it doesn't exist";
       flush();
     }
 

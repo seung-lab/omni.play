@@ -11,6 +11,7 @@ class FileStoragePolicy {
   FileStoragePolicy(file::path fnp) : fnp_(fnp) {
     if(!om::file::exists(fnp)){
       std::ofstream creator(fnp.c_str());
+      log_infos << "creating file " << fnp.c_str() << " because it didn't exist";
     }
 
     try {

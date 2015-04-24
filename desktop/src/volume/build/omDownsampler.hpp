@@ -21,7 +21,6 @@ class OmDownsampler {
       : vol_(vol), files_(files) {
     mippingInfo_.maxMipLevel = vol_->Coords().RootMipLevel();
 
-    files_->Load();
     const Vector3<uint64_t> chunkDims = vol_->Coords().ChunkDimensions();
 
     mippingInfo_.chunkDims = chunkDims;
@@ -46,8 +45,10 @@ class OmDownsampler {
     OmTimer timer;
     log_infos << "downsampling...";
 
+    //TODO add a progress indicator
+
     om::thread::ThreadPool threadPool;
-    threadPool.start(3);
+    threadPool.start(6);
 
     std::shared_ptr<std::deque<om::coords::Chunk> > coordsPtr =
         vol_->GetMipChunkCoords(0);

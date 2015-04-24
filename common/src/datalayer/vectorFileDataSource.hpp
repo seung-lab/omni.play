@@ -21,7 +21,7 @@ class VectorFileDataSource
       return doGet(key, async);
     }
     catch (Exception& e){
-      log_debugs << "couldn't returned requested page";
+      log_errors << "couldn't returned requested page";
       return  std::shared_ptr<Vector<TKey, TValue>>();
     }
   }
@@ -31,7 +31,7 @@ class VectorFileDataSource
       return doGet(key, async);
     }
     catch (Exception& e){
-      log_debugs << "couldn't returned requested page";
+      log_errors << "couldn't returned requested page";
       return  std::shared_ptr<Vector<TKey, TValue>>();
     }
   }
