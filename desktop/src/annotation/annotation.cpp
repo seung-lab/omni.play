@@ -34,6 +34,7 @@ void manager::Save() const {
   YAML::Node n;
   base_t::Save(n);
 
+  //YAML lib crashes if you try to save an empty node.
   if (n.size() == 0){
     return;
   }

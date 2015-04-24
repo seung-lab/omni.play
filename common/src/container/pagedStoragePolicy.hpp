@@ -3,8 +3,6 @@
 #include "datalayer/dataSource.hpp"
 #include "datalayer/vector.hpp"
 #include "utility/malloc.hpp"
-#include <typeinfo>
-
 
 namespace om {
 namespace data {
@@ -24,10 +22,6 @@ class PagedStoragePolicy {
         size_(size),
         backendSize_(size),
         pages_(numPages()) {
-
-    for(size_t i = 1 ; i < numPages(); ++i){
-      getPage(i-1);
-    }
   }
 
   index_type size() const { return size_; }

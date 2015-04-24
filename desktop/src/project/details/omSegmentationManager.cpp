@@ -14,6 +14,8 @@ OmSegmentation* OmSegmentationManager::GetSegmentation(
 
 OmSegmentation& OmSegmentationManager::AddSegmentation() {
   OmSegmentation& vol = manager_.Add();
+  vol.LoadPath(true);
+
   return vol;
 }
 

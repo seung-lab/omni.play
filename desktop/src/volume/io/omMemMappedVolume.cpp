@@ -95,6 +95,7 @@ class DownsampleVisitor : public boost::static_visitor<> {
     OmMemMappedVolumeImpl<T>& files =
         boost::get<OmMemMappedVolumeImpl<T> >(volData_);
 
+    files.Load();
     OmDownsampler<T> d(vol_, &files);
     d.DownsampleChooseOneVoxelOfNine();
   }

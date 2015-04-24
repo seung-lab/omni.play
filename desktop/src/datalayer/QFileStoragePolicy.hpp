@@ -30,7 +30,7 @@ class QFileStoragePolicy {
     QFile file(path);
 
     if (!file.exists()){
-      save();
+      flush();
     }
 
     if (!file.open(QIODevice::ReadOnly)) {
