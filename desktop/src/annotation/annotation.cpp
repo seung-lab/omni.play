@@ -39,6 +39,12 @@ void manager::Save() const {
     return;
   }
 
+  if (!file::exists(fnp)) {
+    log_infos << "Creating new Annotations file. " << fnp;
+    auto file = om::file::path(fnp);
+    om::file::MkDir(file.parent_path());
+  }
+
   try {
     std::ofstream file(fnp);
     log_debugs << "saving anotation to " << fnp;
@@ -59,11 +65,8 @@ data* manager::parse(const YAML::Node& n) {
 
 void manager::Load() {
   std::string fnp = filePathV1();
-  auto file = om::file::path(fnp);
+
   if (!file::exists(fnp)) {
-    log_infos << "Unable to find Annotations file.  Will create new one." << fnp;
-    om::file::MkDir(file.parent_path());
-    std::ofstream creator(fnp);
     return;
   }
 
