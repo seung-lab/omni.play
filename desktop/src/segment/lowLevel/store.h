@@ -12,11 +12,12 @@ namespace segment {
 class Store {
  public:
   Store(SegDataVector& data, SegListDataVector& listData,
-        const coords::VolumeSystem& system, common::SegID maxSegID);
+        const coords::VolumeSystem& system);
 
   OmSegment* GetSegment(const common::SegID value) const;
   OmSegment* AddSegment(const common::SegID value);
   bool IsSegmentValid(const common::SegID value);
+  void resize(size_t newSize);
 
   void Flush();
 

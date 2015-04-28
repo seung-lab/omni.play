@@ -39,6 +39,6 @@ class OmBuildAffinityChannel : public OmBuildVolumes {
                                        affChan_.GetDefaultHDF5DatasetName());
     builder.Build(aff_);
 
-    stopTimingAndSave(type, build_timer);
+    stopTiming(type, build_timer);
   }
 };

@@ -19,7 +19,6 @@ class OmBuildVolumes {
 
   void addFileNameAndPath(const QString& fnp) {
     mFileNamesAndPaths.push_back(QFileInfo(fnp));
-    ;
   }
 
  protected:
@@ -38,8 +37,7 @@ class OmBuildVolumes {
     timer.start();
   }
 
-  void stopTimingAndSave(const QString& type, OmTimer& timer) {
-    OmActions::Save();
+  void stopTiming(const QString& type, OmTimer& timer) {
     const double time = timer.s_elapsed();
     log_info("done: %s build performed in (%.6f secs)", qPrintable(type), time);
     log_infos << "************";

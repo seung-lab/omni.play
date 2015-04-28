@@ -68,7 +68,7 @@ om::common::ID SegmentationDataWrapper::id() const { return id_; }
 OmSegmentation& SegmentationDataWrapper::Create() {
   OmSegmentation& s = OmProject::Volumes().Segmentations().AddSegmentation();
   id_ = s.id();
-  log_debugs << "create segmentation " << id_;
+  log_debugs << "creating segmentation " << id_;
   segmentation_ = &s;
   return s;
 }

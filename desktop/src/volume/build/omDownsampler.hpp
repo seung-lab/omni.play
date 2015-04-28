@@ -45,18 +45,16 @@ class OmDownsampler {
     OmTimer timer;
     log_infos << "downsampling...";
 
+    //TODO add a progress indicator
+
     om::thread::ThreadPool threadPool;
-    threadPool.start(3);
+    threadPool.start(6);
 
     std::shared_ptr<std::deque<om::coords::Chunk> > coordsPtr =
         vol_->GetMipChunkCoords(0);
 
-    FOR_EACH(iter, *coordsPtr) {
-      const om::coords::Chunk& coord = *iter;
-
-      std::shared_ptr<DownsampleVoxelTask<T> > task =
-          std::make_shared<DownsampleVoxelTask<T> >(vol_, mips_, mippingInfo_,
-                                                    coord, files_);
+    for(auto coord : *coordsPtr) {
+      auto task = std::make_shared<DownsampleVoxelTask<T> >(vol_, mips_, mippingInfo_, coord, files_);
       threadPool.push_back(task);
     }
 

@@ -83,7 +83,7 @@ class OmBuildSegmentation : public OmBuildVolumes {
     OmVolumeBuilder<OmSegmentation> builder(*seg_, mFileNamesAndPaths, "main");
     builder.Build();
 
-    stopTimingAndSave(type, build_timer);
+    stopTiming(type, build_timer);
 
     log_infos << "Segmentation image COMPLETELY done";
     log_infos << "************************";
@@ -104,6 +104,6 @@ class OmBuildSegmentation : public OmBuildVolumes {
       // seg_.MeshManagers().FullMesh(.8);
     }
 
-    stopTimingAndSave(type, build_timer);
+    stopTiming(type, build_timer);
   }
 };

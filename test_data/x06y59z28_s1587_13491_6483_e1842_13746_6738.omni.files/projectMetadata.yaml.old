@@ -1,0 +1,104 @@
+---
+version: 25
+...
+---
+Preferences:
+  String Preferences:
+    {}
+  Float Preferences:
+    613: 0.2
+    602: 1e+06
+    603: 60
+    604: 1
+    505: 0.5
+  Int Preferences:
+    500: 20
+    501: 1
+    503: 5
+    605: 1
+    504: 300
+    506: 500
+  Bool Preferences:
+    612: true
+    614: false
+    600: false
+    502: true
+    607: false
+    608: true
+    609: true
+    610: true
+    611: true
+  V3f Preferences:
+    601: [0, 0, 0]
+    606: [1, 1, 1]
+Volumes:
+  Channels:
+    size: 10
+    valid set: [1]
+    enabled set: [1]
+    next id: 2
+    values:
+      - id: 1
+        custom name: ""
+        note: ""
+        coords:
+          dataDimensions: [256, 256, 256]
+          dataResolution: [1, 1, 1]
+          chunkDim: 128
+          mMipLeafDim: 0
+          mMipRootLevel: 1
+          absOffset: [1586, 13490, 6482]
+        build state: 1
+        type: float
+        Filters:
+          size: 10
+          valid set: [1]
+          enabled set: [1]
+          next id: 2
+          values:
+            - id: 1
+              note: ""
+              custom name: ""
+              alpha: 0
+              chan id: 0
+              seg id: 1
+  Segmentations:
+    size: 10
+    valid set: [1]
+    enabled set: [1]
+    next id: 2
+    values:
+      - id: 1
+        custom name: ""
+        note: ""
+        coords:
+          dataDimensions: [256, 256, 256]
+          dataResolution: [1, 1, 1]
+          chunkDim: 128
+          mMipLeafDim: 0
+          mMipRootLevel: 1
+          absOffset: [1586, 13490, 6482]
+        build state: 1
+        type: uint32_t
+        Segments:
+          Num Segments: 4908
+          Max Value: 4908
+          Enabled Segments:
+            []
+          Selected Segments:
+            []
+          Segment Custom Names:
+            {}
+          Segment Notes:
+            {}
+        Num Edges: 4836
+        Groups:
+          size: 10
+          valid set: []
+          enabled set: []
+          next id: 1
+          values:
+            []
+          Group Names:
+            {}
+...

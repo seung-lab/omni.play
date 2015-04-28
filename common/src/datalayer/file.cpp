@@ -25,6 +25,7 @@ uint64_t numBytes(const path& fnp) {
 void resizeFileNumBytes(const path& file, const int64_t numBytes) {
   boost::system::error_code ec;
   if (!exists(file)) {
+    MkDir(file.parent_path());
     std::ofstream creator(file.c_str());
   }
 

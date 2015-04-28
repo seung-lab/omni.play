@@ -41,16 +41,19 @@ class OmVolumeBuilderBase {
     downsample();
   }
 
-  void build(OmSegmentation&) {
+  void build(OmSegmentation& seg) {
     setVolAsBuilding();
 
     checkChunkDims();
     updateMipProperties();
     importSourceData();
+    seg.LoadChunks();
 
     rewriteMip0Volume(vol_);
     downsample();
+
     processVol();
+
     loadDendrogramWrapper(vol_);
 
     setVolAsBuilt();
@@ -120,7 +123,7 @@ class OmVolumeBuilderBase {
   void setVolAsBuilt() { vol_.SetBuildState(MIPVOL_BUILT); }
 
   void checkChunkDims() {
-    if (vol_.Coords().ChunkDimensions().x % 2) {
+    if (vol_.Coords().ChunkDimensions().x % 2) {  //Shouldn't this check all dimensions?
       throw om::FormatException("chunk dimensions must be even");
     }
   }
@@ -134,6 +137,8 @@ class OmVolumeBuilderBase {
 
     vol_.Coords().UpdateRootLevel();
 
-    vol_.UpdateFromVolResize();
+
+    //Comented because it does nothing.
+    // vol_.UpdateFromVolResize();
   }
 };

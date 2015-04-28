@@ -20,8 +20,9 @@ class genericManager {
     n["next id"] = gm.nextId_;
 
     for (auto& iter : gm.validSet_) {
-      n["values"][iter] = *gm.vec_[iter];
+      n["values"].push_back(*gm.vec_[iter]);
     }
+
     return n;
   }
 

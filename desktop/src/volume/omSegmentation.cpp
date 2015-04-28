@@ -42,35 +42,44 @@ OmSegmentation::OmSegmentation(common::ID id)
       volData_(new OmVolumeData()),
       volSliceCache_(new OmRawSegTileCache(this)),
       tileCache_(new OmTileCacheSegmentation()),
-      annotations_(new annotation::manager(this)) {}
+      annotations_(new annotation::manager(this)) {
+}
 
 OmSegmentation::~OmSegmentation() {}
 
-void OmSegmentation::LoadPath() {
+void OmSegmentation::LoadPath(const bool newSegmentation) {
   log_debugs << "Loading segmentation " << id_;
   const auto& p = OmProject::Paths();
   const auto& username = OmProject::Globals().Users().CurrentUser();
   paths_ = p.SegmentationPaths(id_);
   auto userPaths = p.UserPaths(username);
 
-  metaDS_.reset(new om::volume::MetadataDataSource());
-  metaManager_.reset(
-      new om::volume::MetadataManager(*metaDS_, p.Segmentation(id_)));
+  metaDS_.reset( new om::volume::MetadataDataSource());
+  metaManager_.reset( new om::volume::MetadataManager(*metaDS_, p.Segmentation(id_)) );
 
+  if(newSegmentation) {
+    Metadata().New();
+    Metadata().set_maxSegments(0);
+    Metadata().set_numSegments(0);
+
+    om::file::MkDir(p.SegmentationPaths(id_));
+  }
   validGroupNum_.reset(new OmValidGroupNum(userPaths.ValidGroupNum(id_),
                                            metaManager_->numSegments()));
 
   segDataDS_.reset(new segment::FileDataSource(userPaths.Segments(id_)));
-  segData_.reset(new segment::SegDataVector(*segDataDS_, segment::PageSize,
-                                            Metadata().maxSegments() + 1));
+  segListDataDS_.reset(new segment::ListTypeFileDataSource(userPaths.Segments(id_)));
 
-  segListDataDS_.reset(
-      new segment::ListTypeFileDataSource(userPaths.Segments(id_)));
-  segListData_.reset(new segment::SegListDataVector(
-      *segListDataDS_, segment::PageSize, Metadata().maxSegments() + 1));
+  if(newSegmentation){
+    segData_.reset(new segment::SegDataVector(*segDataDS_, segment::PageSize, 0));
+    segListData_.reset(new segment::SegListDataVector(*segListDataDS_, segment::PageSize, 0));
+  }else{
+    segData_.reset(new segment::SegDataVector(*segDataDS_, segment::PageSize, Metadata().maxSegments()+1));
+    segListData_.reset(new segment::SegListDataVector(*segListDataDS_, segment::PageSize, Metadata().maxSegments()+1));
+  }
 
-  chunkDS_.reset(
-      new chunk::CachedDataSource(paths_, getVolDataType(), coords_));
+  chunkDS_.reset(new chunk::CachedDataSource(paths_, getVolDataType(), coords_));
+
   tileDS_.reset(new om::tile::CachedDataSource(*chunkDS_, coords_));
   uniqueChunkValues_.reset(new chunk::CachedUniqueValuesDataSource(paths_));
 
@@ -80,6 +89,12 @@ void OmSegmentation::LoadPath() {
   }
   userEdges_.reset(new segment::UserEdgeVector(userPaths.UserEdges(id_)));
   segments_.reset(new OmSegments(this));
+}
+
+void OmSegmentation::LoadChunks()
+{
+  chunkDS_.reset(
+        new chunk::CachedDataSource(paths_, getVolDataType(), coords_));
 }
 
 bool OmSegmentation::LoadVolData() {

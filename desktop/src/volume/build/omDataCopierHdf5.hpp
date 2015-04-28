@@ -40,7 +40,9 @@ class OmDataCopierHdf5 : public OmDataCopierBase<VOL> {
 
  private:
   virtual void doImport() {
-    allocateData(determineDataType());
+    auto data_type = determineDataType();
+
+    allocateData(data_type);
 
     OmTimer timer;
     log_infos << "copying in HDF5 data...";
@@ -53,18 +55,15 @@ class OmDataCopierHdf5 : public OmDataCopierBase<VOL> {
 
     OmSimpleProgress prog(coordsPtr->size(), "HDF5 chunk copy");
 
-    FOR_EACH(iter, *coordsPtr) {
-      const om::coords::Chunk& coord = *iter;
+    for(const auto coord : *coordsPtr) {
 
-      std::shared_ptr<OmDataCopierHdf5Task<VOL> > task =
-          std::make_shared<OmDataCopierHdf5Task<VOL> >(&vol_, path_, aff_,
+      auto task = std::make_shared<OmDataCopierHdf5Task>(vol_.GetBytesPerSlice(), vol_.GetBytesPerVoxel(),vol_.Coords(), path_, aff_,
                                                        volSize_, hdf5reader_,
                                                        mip0fnp_, coord, &prog);
       threadPool.push_back(task);
     }
 
     threadPool.join();
-
     log_infos << "HDF5 data copy done in " << timer.s_elapsed() << " secs";
   }
 

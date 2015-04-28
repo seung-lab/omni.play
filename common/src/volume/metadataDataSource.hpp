@@ -13,7 +13,7 @@ namespace volume {
 
 class MetadataDataSource
     : public datalayer::IDataSource<std::string, Metadata> {
- public:
+public:
   static std::shared_ptr<Metadata> GetStatic(const std::string& uri) {
     MetadataDataSource mds;
     return mds.Get(uri);
@@ -25,18 +25,14 @@ class MetadataDataSource
     int number;
     try {
       if (parseUri(uri, path, volType, number)) {
-        log_debugs << "Loading Metadata " << path << " : " << number;
+        log_debugs << "Loading Metadata " << path << " : " << volType << ":" << number;
         return loadYaml(path, volType, number);
       } else {
         return std::shared_ptr<Metadata>();
       }
     }
-    catch (YAML::Exception e) {
-      log_debugs << "Failed Loading Metadata: " << e.what();
-      return std::shared_ptr<Metadata>();
-    }
-    catch (Exception e) {
-      log_debugs << "Failed Loading Metadata: " << e.what();
+    catch (...) {
+      log_debugs << "Failed Loading Metadata: ";
       return std::shared_ptr<Metadata>();
     }
   }
@@ -67,15 +63,16 @@ class MetadataDataSource
   virtual bool is_cache() const override { return false; }
   virtual bool is_persisted() const override { return true; }
 
- private:
+private:
   bool parseUri(const std::string& uri, std::string& path,
                 common::ObjectType& volType, int& number) const {
+
     if (!boost::filesystem::exists(uri) ||
         !boost::filesystem::is_directory(uri)) {
       return false;
     }
     boost::regex r(
-        "(.*)/(segmentations|channels)/(segmentation|channel)(\\d+)/?");
+          "(.*)/(segmentations|channels)/(segmentation|channel)(\\d+)/?");
 
     boost::match_results<std::string::const_iterator> mr;
     if (!boost::regex_match(uri, mr, r)) {
@@ -99,8 +96,8 @@ class MetadataDataSource
 
     YAML::Node volume =
         volType == common::ObjectType::CHANNEL
-            ? docs[1]["Volumes"]["Channels"]["values"][number - 1]
-            : docs[1]["Volumes"]["Segmentations"]["values"][number - 1];
+        ? docs[1]["Volumes"]["Channels"]["values"][number - 1]
+        : docs[1]["Volumes"]["Segmentations"]["values"][number - 1];
 
     if (volType == common::ObjectType::SEGMENTATION) {
       volume["Segments"]["Num Segments"] = metadata->NumSegments;
@@ -174,7 +171,7 @@ class MetadataDataSource
       dims = volume["coords"]["dataDimensions"].as<coords::Global>();
     } else {
       dims = volume["coords"]["dataExtent"]["max"].as<coords::Global>() -
-             volume["coords"]["dataExtent"]["min"].as<coords::Global>();
+          volume["coords"]["dataExtent"]["min"].as<coords::Global>();
     }
     auto absOffset =
         volume["coords"]["absOffset"].as<coords::Global>(coords::Global::ZERO);

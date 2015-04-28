@@ -14,8 +14,8 @@ OmSegmentation* OmSegmentationManager::GetSegmentation(
 
 OmSegmentation& OmSegmentationManager::AddSegmentation() {
   OmSegmentation& vol = manager_.Add();
-  om::file::MkDir(vol.SegPaths());
-  OmActions::Save();
+  vol.LoadPath(true);
+
   return vol;
 }
 

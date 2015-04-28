@@ -16,25 +16,23 @@ class VectorFileDataSource
   VectorFileDataSource(file::path root, size_t size = 0)
       : root_(root), size_(size) {}
 
-  virtual std::shared_ptr<Vector<TKey, TValue>> Get(const TKey& key,
-                                                    bool async = false) {
+  virtual std::shared_ptr<Vector<TKey, TValue>> Get(const TKey& key, bool async = false) {
     try {
       return doGet(key, async);
     }
-    catch (Exception e) {
-      log_errors << e.what();
-      return std::shared_ptr<Vector<TKey, TValue>>();
+    catch (Exception& e){
+      log_errors << "couldn't returned requested page";
+      return  std::shared_ptr<Vector<TKey, TValue>>();
     }
   }
 
-  virtual std::shared_ptr<Vector<TKey, TValue>> Get(const TKey& key,
-                                                    bool async = false) const {
+  virtual std::shared_ptr<Vector<TKey, TValue>> Get(const TKey& key, bool async = false) const {
     try {
       return doGet(key, async);
     }
-    catch (Exception e) {
-      log_errors << e.what();
-      return std::shared_ptr<Vector<TKey, TValue>>();
+    catch (Exception& e){
+      log_errors << "couldn't returned requested page";
+      return  std::shared_ptr<Vector<TKey, TValue>>();
     }
   }
 
@@ -45,7 +43,6 @@ class VectorFileDataSource
       doPut(key, data);
     }
     catch (Exception& e) {
-
       log_errors << "Unable to Write FileDataSource: " << e.what();
       return false;
     }
@@ -58,17 +55,12 @@ class VectorFileDataSource
  protected:
   virtual std::shared_ptr<Vector<TKey, TValue>> doGet(
       const TKey& key, bool async = false) const {
-    try {
-      auto ret = std::make_shared<Vector<TKey, TValue>>(key);
-      file::readAll(fnp(key), ret->Values);
-      resize(ret->Values);
 
-      return ret;
-    }
-    catch (Exception& e) {
-      log_errors << "Unable to Load FileDataSource: " << e.what();
-      return std::shared_ptr<Vector<TKey, TValue>>();
-    }
+   auto ret = std::make_shared<Vector<TKey, TValue>>(key);
+   file::readAll(fnp(key), ret->Values);
+   resize(ret->Values);
+
+    return ret;
   }
 
   virtual void doPut(const TKey& key,

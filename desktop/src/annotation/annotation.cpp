@@ -34,8 +34,20 @@ void manager::Save() const {
   YAML::Node n;
   base_t::Save(n);
 
+  //YAML lib crashes if you try to save an empty node.
+  if (n.size() == 0){
+    return;
+  }
+
+  if (!file::exists(fnp)) {
+    log_infos << "Creating new Annotations file. " << fnp;
+    auto file = om::file::path(fnp);
+    om::file::MkDir(file.parent_path());
+  }
+
   try {
     std::ofstream file(fnp);
+    log_debugs << "saving anotation to " << fnp;
     file << n;
   }
   catch (std::exception e) {
@@ -53,8 +65,8 @@ data* manager::parse(const YAML::Node& n) {
 
 void manager::Load() {
   std::string fnp = filePathV1();
+
   if (!file::exists(fnp)) {
-    log_infos << "Unable to find Annotations file.  Will create new one.";
     return;
   }
 

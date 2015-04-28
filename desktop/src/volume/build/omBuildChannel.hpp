@@ -33,12 +33,10 @@ class OmBuildChannel : public OmBuildVolumes {
   }
 
   void Build() {
-    const QString type = "channel";
-
     if (!checkSettings()) {
       return;
-    }
-
+    }    
+    const QString type = "channel";
     OmTimer build_timer;
     startTiming(type, build_timer);
 
@@ -46,6 +44,6 @@ class OmBuildChannel : public OmBuildVolumes {
                                        chan_->GetDefaultHDF5DatasetName());
     builder.Build();
 
-    stopTimingAndSave(type, build_timer);
+    stopTiming(type, build_timer);
   }
 };

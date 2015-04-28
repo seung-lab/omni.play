@@ -48,6 +48,7 @@ class OmSegment {
   }
 
   om::common::SegID value() const { return data_->value; }
+  void SetValue(const om::common::SegID segId) { data_->value = segId; }
 
   // color
   void RandomizeColor();

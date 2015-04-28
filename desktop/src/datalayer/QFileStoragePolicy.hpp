@@ -25,8 +25,14 @@ class QFileStoragePolicy {
 
   void load() {
     const QString path = QString::fromStdString(fnp_.string());
+    log_debugs << "about to open " << fnp_.string();
 
     QFile file(path);
+
+    if (!file.exists()){
+      log_infos << "creating file " << fnp_.string() << " because it doesn't exist";
+      flush();
+    }
 
     if (!file.open(QIODevice::ReadOnly)) {
       throw IoException("error reading file " + fnp_.string());
@@ -60,6 +66,10 @@ class QFileStoragePolicy {
     const QString path = QString::fromStdString(fnp_.string());
 
     QFile file(path);
+
+    QFileInfo info(file);
+    QDir dir;
+    dir.mkpath(info.dir().absolutePath());
 
     if (!file.open(QIODevice::WriteOnly)) {
       throw IoException("could not write file " + fnp_.string());
