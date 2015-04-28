@@ -86,7 +86,7 @@ Data GlobalToData_NoRounding(const Global& g, const VolumeSystem& vol,
 
 TEST(Coords_Global, Benchmark_ToData_Rounding) {
   int min = 1;
-  int max = 3e4;
+  int max = 1.5e4;
 
   utility::timer t;
   t.start();
