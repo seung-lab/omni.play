@@ -30,12 +30,10 @@ class MetadataDataSource
       } else {
         return std::shared_ptr<Metadata>();
       }
-    }
-    catch (YAML::Exception e) {
+    } catch (YAML::Exception e) {
       log_debugs << "Failed Loading Metadata: " << e.what();
       return std::shared_ptr<Metadata>();
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       log_debugs << "Failed Loading Metadata: " << e.what();
       return std::shared_ptr<Metadata>();
     }
@@ -53,12 +51,10 @@ class MetadataDataSource
       } else {
         return false;
       }
-    }
-    catch (YAML::Exception e) {
+    } catch (YAML::Exception e) {
       log_debugs << "Failed Writing Metadata: " << e.what();
       return false;
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       log_debugs << "Failed Writing Metadata: " << e.what();
       return false;
     }
@@ -112,9 +108,9 @@ class MetadataDataSource
     volume["UUID"] = metadata->UUID.Str();
     volume["type"] = metadata->DataType.value();
 
-    volume["coords"]["dataDimensions"] = metadata->Bounds.getDimensions() / metadata->Resolution;
-    volume["coords"]["absOffset"] = metadata->Bounds.getMin();
+    volume["coords"]["dataDimensions"] = metadata->DataDimensions;
     volume["coords"]["dataResolution"] = metadata->Resolution;
+    volume["coords"]["absOffset"] = metadata->AbsOffset;
     volume["coords"]["chunkDim"] = metadata->ChunkDim;
     volume["coords"]["mMipRootLevel"] = metadata->RootMipLevel;
 
@@ -169,25 +165,26 @@ class MetadataDataSource
       throw IoException("Invalid Data type.");
     }
 
-    coords::Global dims;
+    Vector3i dims;
     ret->Resolution =
         volume["coords"]["dataResolution"].as<Vector3i>(Vector3i::ONE);
     if (volume["coords"]["dataDimensions"].IsDefined()) {
-      dims = volume["coords"]["dataDimensions"].as<coords::Global>();
-      dims *= ret->Resolution;
+      dims = volume["coords"]["dataDimensions"].as<Vector3i>();
     } else {
-      dims = volume["coords"]["dataExtent"]["max"].as<coords::Global>() -
-             volume["coords"]["dataExtent"]["min"].as<coords::Global>();
+      // Presumably dataExtent had never been floats before, since Resolution
+      // and AbsOffset has been int so far.
+      dims = volume["coords"]["dataExtent"]["max"].as<Vector3i>() -
+             volume["coords"]["dataExtent"]["min"].as<Vector3i>();
+      dims /= ret->Resolution;
     }
-    auto absOffset =
+    dims.x = om::math::roundUp((int)dims.x, ret->ChunkDim);
+    dims.y = om::math::roundUp((int)dims.y, ret->ChunkDim);
+    dims.z = om::math::roundUp((int)dims.z, ret->ChunkDim);
+    ret->DataDimensions = dims;
+    ret->AbsOffset =
         volume["coords"]["absOffset"].as<coords::Global>(coords::Global::ZERO);
     ret->ChunkDim = volume["coords"]["chunkDim"].as<int>(128);
     ret->RootMipLevel = volume["coords"]["mMipRootLevel"].as<int>();
-
-    dims.x = om::math::roundUp((int)dims.x, ret->ChunkDim * ret->Resolution.x);
-    dims.y = om::math::roundUp((int)dims.y, ret->ChunkDim * ret->Resolution.y);
-    dims.z = om::math::roundUp((int)dims.z, ret->ChunkDim * ret->Resolution.z);
-    ret->Bounds = coords::GlobalBbox(absOffset, absOffset + dims - ret->Resolution * 1);
 
     return ret;
   }
