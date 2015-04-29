@@ -18,7 +18,11 @@ class vector3_iterator
         val_(Vector3<T>::ZERO),
         valid_(false) {}
   vector3_iterator(Vector3<T> from, Vector3<T> to, Vector3<T> curr)
-      : from_(from), to_(to), val_(curr), valid_(from <= curr && curr <= to) {
+      : from_(from),
+        to_(to),
+        val_(curr),
+        valid_(from.x <= curr.x && from.y <= curr.y && from.z <= curr.z &&
+               curr.x <= to.x && curr.y <= to.y && curr.z <= to.z) {
     if (!valid_) {
       log_errors << "Invalid iterator: " << from << "<=" << curr << "<=" << to;
     }

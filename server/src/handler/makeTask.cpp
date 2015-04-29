@@ -99,8 +99,8 @@ inline Direction getDirection(const coords::GlobalBbox& pre,
   }
 }
 
-inline bool inCriticalRegion(const coords::Global& g,
-                             const coords::GlobalBbox& bounds,
+inline bool inCriticalRegion(const coords::Data& g,
+                             const coords::DataBbox& bounds,
                              const Direction d) {
   const int FUDGE = 5;
   return ((d == Direction::XMin && g.x < bounds.getMin().x + FUDGE) ||
@@ -121,6 +121,9 @@ std::map<int32_t, int32_t> makeSeed(
   uint32_t largestSize = 0;
 
   for (auto& seg : bundle) {
+    if (seg == 0) {
+      continue;
+    }
     if (((double)mappingCounts[seg]) / ((double)sizes[seg]) >=
         FALSE_OBJ_RATIO_THR) {
       ret[seg] = sizes[seg];
@@ -139,8 +142,8 @@ std::map<int32_t, int32_t> makeSeed(
 }
 
 coords::GlobalBbox getBounds(const coords::GlobalBbox& pre,
-                             const coords::GlobalBbox& post,
-                             const Direction d) {
+                             const coords::GlobalBbox& post, const Direction d,
+                             const Vector3i& resolution) {
   auto bounds = pre;
   bounds.intersect(post);
 
@@ -151,25 +154,29 @@ coords::GlobalBbox getBounds(const coords::GlobalBbox& pre,
 
   switch (d) {
     case Direction::XMin:
-      bounds.setMax(Vector3f(max.x - FUDGE, max.y, max.z));
+      bounds.setMax(Vector3f(max.x - FUDGE * resolution.x, max.y, max.z));
       break;
     case Direction::YMin:
-      bounds.setMax(Vector3f(max.x, max.y - FUDGE, max.z));
+      bounds.setMax(Vector3f(max.x, max.y - FUDGE * resolution.y, max.z));
       break;
     case Direction::ZMin:
-      bounds.setMax(Vector3f(max.x, max.y, max.z - FUDGE));
+      bounds.setMax(Vector3f(max.x, max.y, max.z - FUDGE * resolution.z));
       break;
     case Direction::XMax:
-      bounds.setMin(Vector3f(min.x + FUDGE, min.y, min.z));
+      bounds.setMin(Vector3f(min.x + FUDGE * resolution.x, min.y, min.z));
       break;
     case Direction::YMax:
-      bounds.setMin(Vector3f(min.x, min.y + FUDGE, min.z));
+      bounds.setMin(Vector3f(min.x, min.y + FUDGE * resolution.y, min.z));
       break;
     case Direction::ZMax:
-      bounds.setMin(Vector3f(min.x, min.y, min.z + FUDGE));
+      bounds.setMin(Vector3f(min.x, min.y, min.z + FUDGE * resolution.z));
       break;
   }
 
+  bounds.intersect(bounds);
+  // So that bounds.isEmpty() returns the correct result. The implementation of
+  // isEmpty() relies on an _empty data member that is not updated until
+  // intersect() is called.
   return bounds;
 }
 
@@ -185,12 +192,14 @@ void get_seeds(std::vector<std::map<int32_t, int32_t>>& seeds,
   auto preBounds = pre.Metadata().bounds();
   auto postBounds = post.Metadata().bounds();
   auto dir = getDirection(preBounds, postBounds);
-  auto bounds = getBounds(preBounds, postBounds, dir);
+  auto res = pre.Coords().Resolution();
+  auto bounds = getBounds(preBounds, postBounds, dir, res);
   if (bounds.isEmpty()) {
     log_errors << "get_seeds: Bounds do not overlap: \n" << pre.Endpoint()
                << '\n' << post.Endpoint();
-    throw ArgException("Bounds do not overlap.");
+    throw ArgException("Adjusted bounds do not overlap.");
   }
+  auto postSegSizeBounds = bounds.ToDataBbox(post.Coords(), 0);
 
   // Only have to work in the region where there are segments we care about.
   coords::DataBbox segBounds(pre.Coords(), 0);
@@ -202,9 +211,14 @@ void get_seeds(std::vector<std::map<int32_t, int32_t>>& seeds,
   }
 
   bounds.intersect(segBounds.ToGlobalBbox());
+  if (bounds.isEmpty()) {
+    log_debugs << "No segments in non-fudge area.";
+    return;
+  }
 
   auto proxyBounds = bounds.ToDataBbox(pre.Coords(), 0);
-  const Vector3i range = slab(bounds);
+  const Vector3i range = slab(proxyBounds);
+  assert(range.x >= 0 && range.y >= 0 && range.z >= 0);
   uint64_t overlap_volume =
       (uint64_t)range.x * (uint64_t)range.y * (uint64_t)range.z;
   if (overlap_volume > 400 * 128 * 128 * 128) {  // Max overlap size
@@ -241,7 +255,6 @@ void get_seeds(std::vector<std::map<int32_t, int32_t>>& seeds,
       auto n = iter.neighbor(offset);
       if ((bool)n && sel.count(n->value())) {
         auto p = toProxy(n->coord(), range, proxyBounds);
-        included.insert(p);
         sets.join(sets.find_set(proxy), sets.find_set(p));
       }
     };
@@ -250,7 +263,20 @@ void get_seeds(std::vector<std::map<int32_t, int32_t>>& seeds,
     considerNeighbor(Vector3i(0, 0, -1));
   }
 
-  for (auto& iter : post.SegIterate(postSelected, bounds)) {
+  // Get the size of segments on the post side.
+  // Expand the bounds enough to capture full/most size of the segment, but
+  // discount portions reentering the overlap region if the same segment exits
+  // but curves back into the region.
+  // Note we are also potentially counting one more slice in any direction
+  // than the mappingCounts above due to the offset-by-1 iterBounds, but this
+  // can actually help us get rid of mis-inclusions of segments overlapping only
+  // on the last (few) slice(s).
+  const int EXPANSION = 50;
+  auto postDilatedBounds = bounds.ToDataBbox(post.Coords(), 0);
+  postDilatedBounds.setMin(postDilatedBounds.getMin() - EXPANSION);
+  postDilatedBounds.setMax(postDilatedBounds.getMax() + EXPANSION);
+  postSegSizeBounds.intersect(postDilatedBounds);
+  for (auto& iter : post.SegIterate(postSelected, postSegSizeBounds)) {
     sizes[iter.value()]++;
   }
 
@@ -265,13 +291,13 @@ void get_seeds(std::vector<std::map<int32_t, int32_t>>& seeds,
     const auto root = sets.find_set(i);
     newSeedSets[root].insert(postGetter.GetValue(dc.ToGlobal()));
     preSideSets[root].insert(preGetter.GetValue(dc));
-    if (!escapes[root] && inCriticalRegion(dc.ToGlobal(), bounds, dir)) {
+    if (!escapes[root] &&
+        inCriticalRegion(dc, bounds.ToDataBbox(pre.Coords(), 0), dir)) {
       escapes[root] = true;
     }
   }
 
   for (auto& seed : newSeedSets) {
-
     if (escapes[seed.first]) {
       seeds.push_back(makeSeed(seed.second, mappingCounts, sizes));
       log_infos << "Spawned!";

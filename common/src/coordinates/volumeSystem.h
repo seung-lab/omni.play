@@ -80,11 +80,6 @@ class VolumeSystem {
     updateNormMat();
   }
 
-  inline void SetBounds(const GlobalBbox& bounds) {
-    SetDataDimensions(bounds.getDimensions());
-    SetAbsOffset(bounds.getMin());
-  }
-
   inline void SetChunkDimensions(const Vector3i& dims) {
     chunkDimensions_ = dims;
   }

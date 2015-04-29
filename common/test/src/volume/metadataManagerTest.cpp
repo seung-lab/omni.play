@@ -87,10 +87,6 @@ TEST(Volume_MetadataManager, Sets) {
   EXPECT_NO_THROW(chanMan.set_uuid(newUUID));
   EXPECT_EQ(newUUID, chanMan.uuid());
 
-  GlobalBbox bounds(Global::ZERO, Global(128));
-  EXPECT_NO_THROW(chanMan.set_bounds(bounds));
-  EXPECT_EQ(bounds, chanMan.bounds());
-
   Global absOffset(1);
   Vector3i dimensions(256);
   EXPECT_NO_THROW(chanMan.set_absOffset(absOffset));
@@ -99,6 +95,8 @@ TEST(Volume_MetadataManager, Sets) {
   EXPECT_EQ(dimensions, chanMan.dimensions());
   EXPECT_NO_THROW(chanMan.set_resolution(Vector3i(2)));
   EXPECT_EQ(Vector3i(2), chanMan.resolution());
+  GlobalBbox bounds(absOffset, absOffset + (dimensions - 1) * 2);
+  EXPECT_EQ(bounds, chanMan.bounds());
   EXPECT_NO_THROW(chanMan.set_chunkDim(256));
   EXPECT_EQ(256, chanMan.chunkDim());
   EXPECT_NO_THROW(chanMan.set_rootMipLevel(2));

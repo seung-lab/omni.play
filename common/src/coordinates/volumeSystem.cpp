@@ -30,7 +30,7 @@ void VolumeSystem::UpdateRootLevel() {
 
 GlobalBbox VolumeSystem::Extent() const {
   Vector3f abs = AbsOffset();
-  return GlobalBbox(abs, abs - Vector3f::ONE + DataDimensions() * Resolution());
+  return GlobalBbox(abs, abs + (DataDimensions()-Vector3f::ONE) * Resolution());
 }
 
 DataBbox VolumeSystem::Bounds() const { return Extent().ToDataBbox(*this, 0); }

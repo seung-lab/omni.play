@@ -19,6 +19,7 @@ class CoordValue {
 
     auto ret = *this;
     ret.coord_ += offset;
+    assert(ret.coord_.x >= 0 && ret.coord_.y >= 0 && ret.coord_.z >= 0);
 
     if (ret.coord_.ToChunk() != coord_.ToChunk()) {
       ret.updateChunk();
@@ -82,6 +83,12 @@ class dataval_iterator
     // TODO: What if the chunkIter has bad bounds?  Better way to initialize
     // without knowing the type?
 
+    if (bounds.getMin().x > bounds.getMax().x ||
+        bounds.getMin().y > bounds.getMax().y ||
+        bounds.getMin().z > bounds.getMax().z) {
+      val_.reset();
+      return;
+    }
     updateChunkBounds();
     val_.reset(
         new CoordValue<T>(ds, coords::Data(chunkFrom_, iterBounds_->volume(),

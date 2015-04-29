@@ -18,10 +18,10 @@ TEST(TaskSpawnTest, Case1) {
   volume::Segmentation pre(prePaths, 1);
   volume::Segmentation post(postPaths, 1);
 
-  std::set<int> segs({1037975, 1039368, 1039480, 1061408, 1062016,
-                      1083185, 1084004, 1085998, 1090552, 1092491,
-                      1095443, 1096127, 1103096, 1103976, 1105366,
-                      1105370, 1111813, 1118021, 1118624, 1125898});
+  std::set<int> segs({1037975, 1039368, 1039480, 1061408, 1062016, 1083185,
+                      1084004, 1085998, 1090552, 1092491, 1095443, 1096127,
+                      1103096, 1103976, 1105366, 1105370, 1111813, 1118021,
+                      1118624, 1125898});
 
   std::vector<std::map<int32_t, int32_t>> seedIds;
   handler::get_seeds(seedIds, pre, segs, post);
@@ -186,7 +186,7 @@ TEST(TaskSpawnTest, Case3) {
   handler::get_seeds(seedIds, pre, segs, post);
 
   std::vector<std::set<int32_t>> expected{{608763, 614337}, {263128}};
-  ASSERT_EQ(seedIds.size(), expected.size());
+  ASSERT_EQ(expected.size(), seedIds.size());
   // Check "expected" is the same as the keys in seedIds:
   // If the size of the union of two sets is different from the size of either
   // set, the two sets are different.
@@ -215,7 +215,7 @@ TEST(TaskSpawnTest, Case4) {
   handler::get_seeds(seedIds, pre, segs, post);
 
   std::vector<std::set<int32_t>> expected{{1363, 2420}};
-  ASSERT_EQ(seedIds.size(), expected.size());
+  ASSERT_EQ(expected.size(), seedIds.size());
   // Check "expected" is the same as the keys in seedIds:
   // If the size of the union of two sets is different from the size of either
   // set, the two sets are different.
@@ -228,6 +228,23 @@ TEST(TaskSpawnTest, Case4) {
       EXPECT_EQ(expected[i].size(), seedIds[i].size());
     }
   }
+}
+
+TEST(TaskSpawnTest, Case5_EmptyIntersection) {
+  file::Paths prePaths(
+      "/omniweb_data/x09/y34/x09y34z07_s2259_7891_1779_e2514_8146_2034.omni");
+  file::Paths postPaths(
+      "/omniweb_data/x09/y35/x09y35z07_s2259_8115_1779_e2514_8370_2034.omni");
+  volume::Segmentation pre(prePaths, 1);
+  volume::Segmentation post(postPaths, 1);
+
+  std::set<int> segs{3141, 4226, 4367, 4451, 4494,
+                     4560, 4580, 4581, 4597, 4699};
+
+  std::vector<std::map<int32_t, int32_t>> seedIds;
+  handler::get_seeds(seedIds, pre, segs, post);
+
+  ASSERT_EQ(0, seedIds.size());
 }
 }
 }  // namespace om::test::
