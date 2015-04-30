@@ -13,7 +13,7 @@ using namespace om::chunk;
 namespace om {
 namespace test {
 
-#define URI "/omniData/e2198/e2198_a_s10_101_46_e17_116_61.omni"
+#define URI "../../test_data/x06y59z28_s1587_13491_6483_e1842_13746_6738.omni"
 
 TEST(Chunk_UniqueValuesFileDataSource, Get) {
   file::Paths p(URI);
@@ -24,8 +24,9 @@ TEST(Chunk_UniqueValuesFileDataSource, Get) {
   ASSERT_TRUE((bool)values);
   ASSERT_GT(values->Values.size(), 0);
 
+  //Becase this doesn't exists a null pointer is returned
   values = uvfds.Get(coords::Chunk(100, 0, 0, 0));
-  ASSERT_FALSE(values);
+  ASSERT_FALSE((bool)values);
 }
 
 TEST(Chunk_UniqueValuesFileDataSource, Completeness) {

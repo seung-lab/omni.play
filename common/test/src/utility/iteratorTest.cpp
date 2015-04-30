@@ -115,9 +115,9 @@ TEST(Utility_Iterators, Benchmark_ChunkIterator) {
 
 TEST(Utility_Iterators, Benchmark_FilteredChunkIterator) {
   volume::Segmentation seg(
-      file::Paths("/omniData/e2198/e2198_a_s10_101_46_e17_116_61.omni"), 1);
+      file::Paths("../../test_data/x06y59z28_s1587_13491_6483_e1842_13746_6738.omni"), 1);
 
-  const common::SegID id = 1127249;
+  const common::SegID id = 1135;
   coords::DataBbox bounds = seg.Bounds();
 
   auto chunkFrom = bounds.getMin().ToChunk();
@@ -127,7 +127,7 @@ TEST(Utility_Iterators, Benchmark_FilteredChunkIterator) {
   for (int i = chunkFrom.x; i <= chunkTo.x; ++i) {
     for (int j = chunkFrom.y; j <= chunkTo.y; ++j) {
       for (int k = chunkFrom.z; k <= chunkTo.z; ++k) {
-        auto uv = seg.UniqueValuesDS().Get(coords::Chunk(0, i, j, k));
+        seg.UniqueValuesDS().Get(coords::Chunk(0, i, j, k));
       }
     }
   }
@@ -164,7 +164,7 @@ TEST(Utility_Iterators, Benchmark_FilteredChunkIterator) {
 
 TEST(Utility_Iterators, DatavalIterator) {
   volume::Segmentation seg(
-      file::Paths("/omniData/e2198/e2198_a_s10_101_46_e17_116_61.omni"), 1);
+      file::Paths("../../test_data/x06y59z28_s1587_13491_6483_e1842_13746_6738.omni"), 1);
   coords::Chunk cc(0, 1, 1, 1);
   size_t counter = 0;
   auto bounds = cc.BoundingBox(seg.Coords());
@@ -176,9 +176,9 @@ TEST(Utility_Iterators, DatavalIterator) {
 
 TEST(Utility_Iterators, Benchmark_DatavalIterator) {
   volume::Segmentation seg(
-      file::Paths("/omniData/e2198/e2198_a_s10_101_46_e17_116_61.omni"), 1);
+      file::Paths("../../test_data/x06y59z28_s1587_13491_6483_e1842_13746_6738.omni"), 1);
 
-  coords::DataBbox bounds({{1, 2, 3}, {500, 300, 400}}, seg.Coords(), 1);
+  coords::DataBbox bounds({{1, 2, 3}, {100, 150, 200}}, seg.Coords(), 0);
 
   utility::timer t;
   t.start();
@@ -233,7 +233,7 @@ TEST(Utility_Iterators, Benchmark_DatavalIterator) {
 
 TEST(Utility_Iterators, Benchmark_FilteredDatavalIterator) {
   volume::Segmentation seg(
-      file::Paths("/omniData/e2198/e2198_a_s10_101_46_e17_116_61.omni"), 1);
+      file::Paths("../../test_data/x06y59z28_s1587_13491_6483_e1842_13746_6738.omni"), 1);
 
   const common::SegID id = 1127249;
   coords::DataBbox bounds = seg.Bounds();
@@ -320,7 +320,7 @@ TEST(Utility_Iterators, Benchmark_FilteredDatavalIterator) {
 
 TEST(Utility_Iterators, Benchmark_SegmentFilteredDatavalIterator) {
   volume::Segmentation seg(
-      file::Paths("/omniData/e2198/e2198_a_s10_101_46_e17_116_61.omni"), 1);
+      file::Paths("../../test_data/x06y59z28_s1587_13491_6483_e1842_13746_6738.omni"), 1);
 
   const common::SegID id = 1127249;
   coords::DataBbox bounds = seg.Bounds();
