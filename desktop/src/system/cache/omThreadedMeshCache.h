@@ -2,8 +2,8 @@
 #pragma once
 #include "precomp.h"
 
-#include "mesh/omMesh.h"
-#include "mesh/omMeshTypes.h"
+#include "view3d/mesh/omMesh.h"
+#include "view3d/mesh/omMeshTypes.h"
 #include "system/cache/omCacheBase.h"
 #include "system/cache/omCacheManager.h"
 #include "cache/lockedObjects.hpp"

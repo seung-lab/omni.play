@@ -99,7 +99,7 @@ class Drawer {
     camera_.DrawFocusAxis();
 
     // setup culler to current projection-modelview matrix
-    OmVolumeCuller mainCuller(camera_.GetProjModelViewMatrix(),
+    om::v3d::VolumeCuller mainCuller(camera_.GetProjModelViewMatrix(),
                               om::coords::Norm(camera_.GetPosition(), system_),
                               om::coords::Norm(camera_.GetFocus(), system_));
 

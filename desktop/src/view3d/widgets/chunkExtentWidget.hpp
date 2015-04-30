@@ -3,7 +3,7 @@
 
 #include "view3d/camera.h"
 #include "view3d/view3d.h"
-#include "mesh/omVolumeCuller.h"
+#include "view3d/mesh/omVolumeCuller.h"
 #include "base.h"
 
 namespace om {

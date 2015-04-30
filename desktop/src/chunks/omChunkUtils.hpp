@@ -5,6 +5,7 @@
 #include "utility/segmentationDataWrapper.hpp"
 #include "segment/omSegments.h"
 #include "chunk/chunkUtils.hpp"
+#include "volume/omSegmentation.h"
 
 class OmChunkUtils {
  public:

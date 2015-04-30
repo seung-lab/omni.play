@@ -3,7 +3,7 @@
 
 #include "datalayer/omDataWrapper.h"
 #include "datalayer/paths.hpp"
-#include "mesh/omMeshTypes.h"
+#include "view3d/mesh/omMeshTypes.h"
 #include "system/omManageableObject.h"
 #include "volume/omMipVolume.h"
 #include "datalayer/archive/segmentation.h"
@@ -23,7 +23,7 @@ class OmSegments;
 class OmTileCacheSegmentation;
 class OmValidGroupNum;
 class OmViewGroupState;
-class OmVolumeCuller;
+class VolumeCuller;
 class OmVolumeData;
 class SegmentationDataWrapper;
 

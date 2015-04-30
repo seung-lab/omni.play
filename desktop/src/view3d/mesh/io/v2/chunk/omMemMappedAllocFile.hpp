@@ -1,7 +1,7 @@
 #pragma once
 #include "precomp.h"
 
-#include "mesh/io/v2/chunk/omMeshChunkTypes.h"
+#include "view3d/mesh/io/v2/chunk/omMeshChunkTypes.h"
 #include "utility/omStringHelpers.h"
 #include "volume/omSegmentation.h"
 

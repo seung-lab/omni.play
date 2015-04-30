@@ -2,7 +2,7 @@
 #include "precomp.h"
 
 class TriStripCollector {
- private:
+ protected:
   std::vector<float> data_;
   std::vector<uint32_t> indices_;
   std::vector<uint32_t> strips_;

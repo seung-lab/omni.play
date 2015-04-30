@@ -2,7 +2,7 @@
 #include "precomp.h"
 
 #include "coordinates/volumeSystem.h"
-#include "mesh/omVolumeCuller.h"
+#include "view3d/mesh/omVolumeCuller.h"
 
 namespace om {
 namespace v3d {
@@ -31,7 +31,7 @@ class FindChunksToDraw {
     stack_.reserve(system_.ComputeTotalNumChunks());
   }
 
-  void Find(const OmVolumeCuller& culler) {
+  void Find(const om::v3d::VolumeCuller& culler) {
     stack_.push_back({system_.RootMipChunkCoordinate(), true});
 
     while (!stack_.empty()) {
@@ -48,7 +48,7 @@ class FindChunksToDraw {
    *  the visibility of a MipChunk.  If visible, the MipChunk is either
    *  drawn or the recursive draw process is called on its children.
    */
-  inline void determineChunksToDraw(const OmVolumeCuller& culler,
+  inline void determineChunksToDraw(const om::v3d::VolumeCuller& culler,
                                     const om::coords::Chunk& cc, bool testVis) {
     if (!system_.ContainsMipChunk(cc)) {
       return;
@@ -94,7 +94,7 @@ class FindChunksToDraw {
    * Given that the chunk is visible, determine if it should be drawn
    * or if we should continue refining so as to draw children.
    */
-  inline distanceRet shouldChunkBeDrawn(const OmVolumeCuller& culler,
+  inline distanceRet shouldChunkBeDrawn(const om::v3d::VolumeCuller& culler,
                                         const om::coords::Chunk& chunk) {
     // draw if MIP 0
     if (0 == chunk.mipLevel()) {

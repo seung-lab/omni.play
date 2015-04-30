@@ -25,7 +25,7 @@ class PlanCache {
         vgs_(vgs),
         planner_(system, segments, rootSegLists_) {}
 
-  std::shared_ptr<MeshPlan> GetPlan(const OmVolumeCuller& culler,
+  std::shared_ptr<MeshPlan> GetPlan(const om::v3d::VolumeCuller& culler,
                                     const bool changed) {
     key k = {OmCacheManager::GetFreshness(),   vgs_.getDustThreshold(),
              vgs_.shouldVolumeBeShownBroken(), vgs_.getBreakThreshold()};
@@ -44,7 +44,7 @@ class PlanCache {
   }
 
  private:
-  std::shared_ptr<MeshPlan> buildPlan(const OmVolumeCuller& culler,
+  std::shared_ptr<MeshPlan> buildPlan(const om::v3d::VolumeCuller& culler,
                                       const key& k) {
     auto meshPlan = planner_.BuildPlan(culler, k);
 

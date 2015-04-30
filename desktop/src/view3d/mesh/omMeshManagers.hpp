@@ -1,9 +1,9 @@
 #pragma once
 #include "precomp.h"
 
-#include "mesh/io/omMeshMetadata.hpp"
-#include "mesh/mesher/ziMesher.hpp"
-#include "mesh/omMeshManager.h"
+#include "view3d/mesh/io/omMeshMetadata.hpp"
+#include "view3d/mesh/mesher/ziMesher.h"
+#include "view3d/mesh/omMeshManager.h"
 #include "utility/fuzzyStdObjs.hpp"
 #include "utility/omStringHelpers.h"
 

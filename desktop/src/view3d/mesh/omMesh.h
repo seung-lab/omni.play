@@ -11,7 +11,7 @@
 #include "common/common.h"
 #include "coordinates/mesh.h"
 #include "utility/glInclude.h"
-#include "mesh/omMeshTypes.h"
+#include "view3d/mesh/omMeshTypes.h"
 
 class OmDataForMeshLoad;
 class OmMeshCache;

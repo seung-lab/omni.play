@@ -3,7 +3,7 @@
 #include "common/logging.h"
 #include "datalayer/omDataPath.h"
 #include "datalayer/omDataPaths.h"
-#include "mesh/omMeshManager.h"
+#include "view3d/mesh/omMeshManager.h"
 #include "project/omProject.h"
 #include "system/omLocalPreferences.hpp"
 #include "system/omStateManager.h"

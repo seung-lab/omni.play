@@ -4,7 +4,7 @@
 #include "common/common.h"
 #include "datalayer/file.h"
 #include "volume/omSegmentation.h"
-#include "mesh/io/v2/chunk/omMeshChunkTypes.h"
+#include "view3d/mesh/io/v2/chunk/omMeshChunkTypes.h"
 
 class OmMeshChunkDataReaderV2 {
  private:

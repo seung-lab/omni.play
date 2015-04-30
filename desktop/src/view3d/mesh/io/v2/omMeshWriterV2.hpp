@@ -2,13 +2,13 @@
 #include "precomp.h"
 
 #include "common/common.h"
-#include "mesh/io/omDataForMeshLoad.hpp"
-#include "mesh/io/v2/chunk/omMeshChunkAllocTable.hpp"
-#include "mesh/io/v2/chunk/omMeshChunkDataWriterV2.hpp"
-#include "mesh/io/v2/omMeshFilePtrCache.hpp"
-#include "mesh/io/v2/threads/omMeshWriterTaskV2.hpp"
-#include "mesh/mesher/TriStripCollector.hpp"
-#include "mesh/omMeshManager.h"
+#include "view3d/mesh/io/omDataForMeshLoad.hpp"
+#include "view3d/mesh/io/v2/chunk/omMeshChunkAllocTable.hpp"
+#include "view3d/mesh/io/v2/chunk/omMeshChunkDataWriterV2.hpp"
+#include "view3d/mesh/io/v2/omMeshFilePtrCache.hpp"
+#include "view3d/mesh/io/v2/threads/omMeshWriterTaskV2.hpp"
+#include "view3d/mesh/mesher/TriStripCollector.hpp"
+#include "view3d/mesh/omMeshManager.h"
 
 class OmMeshWriterV2 {
  private:

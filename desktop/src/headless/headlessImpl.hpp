@@ -4,7 +4,7 @@
 #include "datalayer/hdf5/omExportVolToHdf5.hpp"
 #include "actions/io/omActionDumper.h"
 #include "actions/omActions.h"
-#include "mesh/omMeshParams.hpp"
+#include "view3d/mesh/omMeshParams.hpp"
 #include "project/omProject.h"
 #include "segment/omSegmentCenter.hpp"
 #include "segment/omSegmentUtils.hpp"

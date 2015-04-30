@@ -3,7 +3,7 @@
 
 #include "actions/omActions.h"
 #include "events/events.h"
-#include "mesh/omMeshManagers.hpp"
+#include "view3d/mesh/omMeshManagers.hpp"
 #include "project/omProject.h"
 #include "segment/omSegments.h"
 #include "threads/taskManager.hpp"

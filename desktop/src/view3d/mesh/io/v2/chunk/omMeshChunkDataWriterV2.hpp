@@ -3,7 +3,7 @@
 
 #include "common/common.h"
 
-#include "mesh/io/v2/chunk/omMeshChunkDataWriterTaskV2.hpp"
+#include "view3d/mesh/io/v2/chunk/omMeshChunkDataWriterTaskV2.hpp"
 #include "utility/omLockedPODs.hpp"
 
 class OmMeshChunkDataWriterV2 {

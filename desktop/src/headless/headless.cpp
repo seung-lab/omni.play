@@ -5,7 +5,7 @@
 #include "gui/recentFileList.h"
 #include "headless/headless.h"
 #include "headless/headlessImpl.hpp"
-#include "mesh/omMesh.h"
+#include "view3d/mesh/omMesh.h"
 #include "segment/omSegments.h"
 #include "system/omLocalPreferences.hpp"
 #include "system/omStateManager.h"
