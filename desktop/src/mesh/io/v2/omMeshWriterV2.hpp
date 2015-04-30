@@ -96,9 +96,8 @@ class OmMeshWriterV2 {
   void Save(const om::common::SegID segID, const om::coords::Chunk& coord,
             const U data, const om::common::ShouldBufferWrites buffferWrites,
             const om::common::AllowOverwrite allowOverwrite) {
-    std::shared_ptr<OmMeshWriterTaskV2<U> > task =
-        std::make_shared<OmMeshWriterTaskV2<U> >(
-            segmentation_, filePtrCache_, segID, coord, data, allowOverwrite);
+
+    auto task = std::make_shared<OmMeshWriterTaskV2<U> >(filePtrCache_, segID, coord, data, allowOverwrite);
 
     static const uint32_t maxNumberTasks = 500;
     const uint32_t curNumberTasks = filePtrCache_->NumTasks();

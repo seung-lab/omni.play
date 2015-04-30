@@ -215,24 +215,23 @@ class ziMesher {
     const om::common::SegID* chunkDataRaw =
         static_cast<const om::common::SegID*>(chunkData.getScalarPtr());
 
-    cube_marcher.marche(reinterpret_cast<const int*>(chunkDataRaw), 129, 129,
-                        129);
-  }
+    cube_marcher.marche(reinterpret_cast<const int*>(chunkDataRaw), 129, 129, 129);
+}
 
   void processChunk(const om::coords::Chunk& coord) {
     static const int chunkDim = vol_->Coords().ChunkDimensions().x;
 
-    const om::coords::NormBbox& dstBbox =
-        coord.BoundingBox(vol_->Coords()).ToNormBbox();
+    const om::coords::DataBbox  dst = coord.BoundingBox(vol_->Coords());
+    const om::coords::NormBbox& dstBbox = dst.ToNormBboxExclusive();
+
+    Vector3f minPos = dstBbox.getMin();
+    const zi::vl::vec3d translate(minPos.z, minPos.y, minPos.x);
+
 
     Vector3f dstDim = dstBbox.getDimensions();
-
-    zi::vl::vec3d scale(dstDim.x / chunkDim, dstDim.y / chunkDim,
+    zi::vl::vec3d scale(dstDim.x / chunkDim,
+                        dstDim.y / chunkDim,
                         dstDim.z / chunkDim);
-
-    dstDim = dstBbox.getMin();
-
-    const zi::vl::vec3d translate(dstDim.z, dstDim.y, dstDim.x);
 
     const double maxScale = scale.max();
     scale /= maxScale;
