@@ -5,7 +5,7 @@
 #include "datalayer/archive/old/omGenericManagerArchive.hpp"
 #include "datalayer/archive/old/omMipVolumeArchive.h"
 #include "datalayer/archive/old/omMipVolumeArchiveOld.h"
-#include "mesh/omMeshManagers.hpp"
+#include "view3d/mesh/omMeshManagers.hpp"
 #include "project/omProject.h"
 #include "project/omProjectImpl.hpp"
 #include "project/details/omChannelManager.h"

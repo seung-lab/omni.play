@@ -118,6 +118,8 @@ class DataBbox : public vmml::AxisAlignedBoundingBox<int> {
 
   GlobalBbox ToGlobalBbox() const;
   NormBbox ToNormBbox() const;
+  NormBbox ToNormBboxExclusive() const;
+
   DataBbox AtDifferentLevel(int) const;
 
   inline DataBbox& operator=(const DataBbox& other) {

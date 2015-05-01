@@ -2,7 +2,7 @@
 #include "datalayer/archive/old/omDataArchiveProject.h"
 #include "datalayer/archive/old/omDataArchiveProjectImpl.h"
 #include "datalayer/upgraders/omUpgraders.hpp"
-#include "mesh/omMeshManagers.hpp"
+#include "view3d/mesh/omMeshManagers.hpp"
 #include "project/omProject.h"
 #include "utility/dataWrappers.h"
 #include "utility/omFileHelpers.h"

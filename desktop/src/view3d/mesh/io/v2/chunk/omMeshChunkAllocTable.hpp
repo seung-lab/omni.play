@@ -1,7 +1,7 @@
 #pragma once
 #include "precomp.h"
 
-#include "mesh/io/v2/chunk/omMemMappedAllocFile.hpp"
+#include "view3d/mesh/io/v2/chunk/omMemMappedAllocFile.hpp"
 #include "utility/lockedObjects.hpp"
 
 class OmMeshFilePtrCache;

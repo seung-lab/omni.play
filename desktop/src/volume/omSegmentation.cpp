@@ -2,7 +2,7 @@
 #include "common/common.h"
 #include "common/logging.h"
 #include "datalayer/omDataPaths.h"
-#include "mesh/omMeshManagers.hpp"
+#include "view3d/mesh/omMeshManagers.hpp"
 #include "segment/io/omValidGroupNum.hpp"
 #include "segment/lists/omSegmentLists.h"
 #include "segment/omSegments.h"

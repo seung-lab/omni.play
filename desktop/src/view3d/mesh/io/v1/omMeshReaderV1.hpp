@@ -5,7 +5,7 @@
 #include "datalayer/hdf5/omHdf5.h"
 #include "datalayer/omDataPath.h"
 #include "datalayer/omDataPaths.h"
-#include "mesh/io/omDataForMeshLoad.hpp"
+#include "view3d/mesh/io/omDataForMeshLoad.hpp"
 #include "volume/omSegmentation.h"
 #include "project/omProject.h"
 

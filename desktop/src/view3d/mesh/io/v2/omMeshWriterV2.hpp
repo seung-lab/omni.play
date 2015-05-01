@@ -2,13 +2,13 @@
 #include "precomp.h"
 
 #include "common/common.h"
-#include "mesh/io/omDataForMeshLoad.hpp"
-#include "mesh/io/v2/chunk/omMeshChunkAllocTable.hpp"
-#include "mesh/io/v2/chunk/omMeshChunkDataWriterV2.hpp"
-#include "mesh/io/v2/omMeshFilePtrCache.hpp"
-#include "mesh/io/v2/threads/omMeshWriterTaskV2.hpp"
-#include "mesh/mesher/TriStripCollector.hpp"
-#include "mesh/omMeshManager.h"
+#include "view3d/mesh/io/omDataForMeshLoad.hpp"
+#include "view3d/mesh/io/v2/chunk/omMeshChunkAllocTable.hpp"
+#include "view3d/mesh/io/v2/chunk/omMeshChunkDataWriterV2.hpp"
+#include "view3d/mesh/io/v2/omMeshFilePtrCache.hpp"
+#include "view3d/mesh/io/v2/threads/omMeshWriterTaskV2.hpp"
+#include "view3d/mesh/mesher/TriStripCollector.hpp"
+#include "view3d/mesh/omMeshManager.h"
 
 class OmMeshWriterV2 {
  private:
@@ -96,9 +96,8 @@ class OmMeshWriterV2 {
   void Save(const om::common::SegID segID, const om::coords::Chunk& coord,
             const U data, const om::common::ShouldBufferWrites buffferWrites,
             const om::common::AllowOverwrite allowOverwrite) {
-    std::shared_ptr<OmMeshWriterTaskV2<U> > task =
-        std::make_shared<OmMeshWriterTaskV2<U> >(
-            segmentation_, filePtrCache_, segID, coord, data, allowOverwrite);
+
+    auto task = std::make_shared<OmMeshWriterTaskV2<U> >(filePtrCache_, segID, coord, data, allowOverwrite);
 
     static const uint32_t maxNumberTasks = 500;
     const uint32_t curNumberTasks = filePtrCache_->NumTasks();

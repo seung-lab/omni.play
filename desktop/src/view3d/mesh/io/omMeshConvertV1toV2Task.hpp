@@ -1,9 +1,9 @@
 #pragma once
 #include "precomp.h"
 
-#include "mesh/io/v1/omMeshReaderV1.hpp"
-#include "mesh/io/v2/omMeshWriterV2.hpp"
-#include "mesh/io/omMeshMetadata.hpp"
+#include "view3d/mesh/io/v1/omMeshReaderV1.hpp"
+#include "view3d/mesh/io/v2/omMeshWriterV2.hpp"
+#include "view3d/mesh/io/omMeshMetadata.hpp"
 #include "system/cache/omCacheManager.h"
 
 class OmMeshConvertV1toV2Task : public zi::runnable {

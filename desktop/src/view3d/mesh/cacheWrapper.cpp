@@ -1,6 +1,6 @@
 #include "system/cache/omThreadedMeshCache.h"
-#include "mesh/omMeshTypes.h"
-#include "mesh/omMeshManager.h"
+#include "view3d/mesh/omMeshTypes.h"
+#include "view3d/mesh/omMeshManager.h"
 #include "view3d/mesh/cacheWrapper.hpp"
 #include "utility/segmentationDataWrapper.hpp"
 

@@ -2,10 +2,10 @@
 #include "precomp.h"
 
 #include "common/common.h"
-#include "mesh/io/omDataForMeshLoad.hpp"
-#include "mesh/io/v2/chunk/omMeshChunkDataReaderV2.hpp"
-#include "mesh/io/v2/omMeshFilePtrCache.hpp"
-#include "mesh/omMeshManager.h"
+#include "view3d/mesh/io/omDataForMeshLoad.hpp"
+#include "view3d/mesh/io/v2/chunk/omMeshChunkDataReaderV2.hpp"
+#include "view3d/mesh/io/v2/omMeshFilePtrCache.hpp"
+#include "view3d/mesh/omMeshManager.h"
 
 class OmMeshReaderV2 {
  private:

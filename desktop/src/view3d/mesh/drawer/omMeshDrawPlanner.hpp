@@ -28,7 +28,7 @@ class MeshDrawPlanner {
 
   void Reset() { drawChunks_.clear(); }
 
-  std::shared_ptr<MeshPlan> BuildPlan(const OmVolumeCuller& culler,
+  std::shared_ptr<MeshPlan> BuildPlan(const om::v3d::VolumeCuller& culler,
                                       const key& key) {
     auto plan = std::make_shared<MeshPlan>();
 

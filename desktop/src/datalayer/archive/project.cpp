@@ -12,7 +12,7 @@
 #include "utility/segmentationDataWrapper.hpp"
 #include "utility/segmentDataWrapper.hpp"
 #include "volume/omFilter2d.h"
-#include "mesh/omMeshManagers.hpp"
+#include "view3d/mesh/omMeshManagers.hpp"
 #include "utility/yaml/baseTypes.hpp"
 
 namespace om {

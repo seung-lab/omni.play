@@ -14,7 +14,7 @@ class MeshDrawInfo {
   PlanCache cache_;
   DrawerImpl drawer_;
 
-  std::shared_ptr<OmVolumeCuller> culler_;
+  std::shared_ptr<om::v3d::VolumeCuller> culler_;
   int numPrevRedraws_;
 
  public:
@@ -27,14 +27,14 @@ class MeshDrawInfo {
 
   inline OmSegmentation& Vol() const { return vol_; }
 
-  inline std::shared_ptr<MeshPlan> GetPlan(const OmVolumeCuller& culler,
+  inline std::shared_ptr<MeshPlan> GetPlan(const om::v3d::VolumeCuller& culler,
                                            const bool changed) {
     return cache_.GetPlan(culler, changed);
   }
 
   inline DrawerImpl& Drawer() { return drawer_; }
 
-  inline bool DidCullerChange(std::shared_ptr<OmVolumeCuller> culler) {
+  inline bool DidCullerChange(std::shared_ptr<om::v3d::VolumeCuller> culler) {
     if (!culler_ || *culler_ != *culler) {
       culler_ = culler;
       numPrevRedraws_ = 0;

@@ -3,17 +3,16 @@
 
 #include "common/common.h"
 #include "common/enums.hpp"
-#include "mesh/mesher/TriStripCollector.hpp"
-#include "mesh/io/omDataForMeshLoad.hpp"
-#include "mesh/io/v2/chunk/omMeshChunkAllocTable.hpp"
-#include "mesh/io/v2/chunk/omMeshChunkDataWriterV2.hpp"
-#include "mesh/io/v2/omMeshFilePtrCache.hpp"
-#include "mesh/omMeshManager.h"
+#include "view3d/mesh/mesher/TriStripCollector.hpp"
+#include "view3d/mesh/io/omDataForMeshLoad.hpp"
+#include "view3d/mesh/io/v2/chunk/omMeshChunkAllocTable.hpp"
+#include "view3d/mesh/io/v2/chunk/omMeshChunkDataWriterV2.hpp"
+#include "view3d/mesh/io/v2/omMeshFilePtrCache.hpp"
+#include "view3d/mesh/omMeshManager.h"
 
 template <typename U>
 class OmMeshWriterTaskV2 : public zi::runnable {
  private:
-  OmSegmentation* const seg_;
   OmMeshFilePtrCache* const filePtrCache_;
   const om::common::SegID segID_;
   const om::coords::Chunk coord_;
@@ -21,12 +20,11 @@ class OmMeshWriterTaskV2 : public zi::runnable {
   const om::common::AllowOverwrite allowOverwrite_;
 
  public:
-  OmMeshWriterTaskV2(OmSegmentation* seg, OmMeshFilePtrCache* filePtrCache,
+  OmMeshWriterTaskV2(OmMeshFilePtrCache* filePtrCache,
                      const om::common::SegID segID,
                      const om::coords::Chunk& coord, const U mesh,
                      const om::common::AllowOverwrite allowOverwrite)
-      : seg_(seg),
-        filePtrCache_(filePtrCache),
+      : filePtrCache_(filePtrCache),
         segID_(segID),
         coord_(coord),
         mesh_(mesh),

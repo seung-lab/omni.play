@@ -1,7 +1,7 @@
 #pragma once
 #include "precomp.h"
 
-#include "mesh/omMesh.h"
+#include "view3d/mesh/omMesh.h"
 #include "common/core.hpp"
 
 namespace om {

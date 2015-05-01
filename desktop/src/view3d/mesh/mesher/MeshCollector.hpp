@@ -1,7 +1,9 @@
 #pragma once
 #include "precomp.h"
 
-#include "TriStripCollector.hpp"
+#include "view3d/mesh/mesher/TriStripCollector.hpp"
+#include "view3d/mesh/io/v2/omMeshWriterV2.hpp"
+#include "view3d/mesh/omMesh.h"
 
 class MeshCollector {
  private:
@@ -57,7 +59,7 @@ class MeshCollector {
       return;
     }
 
-    meshIO_.Save(segID, coord_, mesh, om::common::BUFFER_WRITES,
-                 om::common::OVERWRITE);
+    meshIO_.Save(segID, coord_, mesh, om::common::ShouldBufferWrites::BUFFER_WRITES,
+                 om::common::AllowOverwrite::OVERWRITE);
   }
 };

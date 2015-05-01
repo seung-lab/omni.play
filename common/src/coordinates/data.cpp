@@ -117,6 +117,12 @@ NormBbox DataBbox::ToNormBbox() const {
   return NormBbox(getMin().ToNorm(), getMax().ToNorm());
 }
 
+NormBbox DataBbox::ToNormBboxExclusive() const
+{
+  Data max = getMax()+1;
+  return NormBbox(getMin().ToNorm(), max.ToNorm());
+}
+
 DataBbox DataBbox::AtDifferentLevel(int newLevel) const {
   return DataBbox(getMin().AtDifferentLevel(newLevel),
                   getMax().AtDifferentLevel(newLevel));

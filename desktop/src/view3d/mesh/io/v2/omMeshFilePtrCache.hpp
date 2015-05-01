@@ -2,10 +2,10 @@
 #include "precomp.h"
 
 #include "common/common.h"
-#include "mesh/io/v2/chunk/omMeshChunkAllocTable.hpp"
-#include "mesh/io/v2/chunk/omMeshChunkDataReaderV2.hpp"
-#include "mesh/io/v2/chunk/omMeshChunkDataWriterV2.hpp"
-#include "mesh/io/v2/omRingBuffer.hpp"
+#include "view3d/mesh/io/v2/chunk/omMeshChunkAllocTable.hpp"
+#include "view3d/mesh/io/v2/chunk/omMeshChunkDataReaderV2.hpp"
+#include "view3d/mesh/io/v2/chunk/omMeshChunkDataWriterV2.hpp"
+#include "view3d/mesh/io/v2/omRingBuffer.hpp"
 #include "threads/taskManager.hpp"
 
 class OmMeshChunkAllocTableV2;

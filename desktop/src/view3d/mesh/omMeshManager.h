@@ -2,7 +2,7 @@
 #include "precomp.h"
 
 #include "common/enums.hpp"
-#include "mesh/omMeshTypes.h"
+#include "view3d/mesh/omMeshTypes.h"
 
 class OmMeshCache;
 class OmMeshConvertV1toV2;
