@@ -6,7 +6,7 @@
 #include "mesh/mesher/MeshCollector.hpp"
 #include "mesh/mesher/TriStripCollector.hpp"
 #include "mesh/omMeshParams.hpp"
-#include "utility/lockedPODs.hpp"
+#include "utility/omLockedPODs.hpp"
 #include "volume/io/omVolumeData.h"
 #include "volume/omSegmentation.h"
 #include "mesh/mesher/omMesherProgress.hpp"
