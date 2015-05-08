@@ -64,6 +64,9 @@ class VolumeSystem {
 
   bool Contains(coords::Global g) const { return Extent().contains(g); }
   bool Contains(coords::Data dc) const {
+    // FIX ME: MipedDataDimensions() is supposed to do the same thing as
+    // MipLevelDataDimensions() but the latter is too slow (order of magnitude)
+    // to be used here (chunk::Voxels in voxelGetter.hpp uses this)
     const auto mippedDims = MipedDataDimensions(dc.mipLevel());
     return dc.x < mippedDims.x && dc.y < mippedDims.y && dc.z < mippedDims.z &&
            dc.x >= 0 && dc.y >= 0 && dc.z >= 0;
@@ -171,8 +174,8 @@ class VolumeSystem {
   Chunk RootMipChunkCoordinate() const;
 
   std::shared_ptr<std::vector<coords::Chunk>> MipChunkCoords() const;
-  std::shared_ptr<std::vector<coords::Chunk>> MipChunkCoords(const int mipLevel)
-      const;
+  std::shared_ptr<std::vector<coords::Chunk>> MipChunkCoords(
+      const int mipLevel) const;
 
   bool ContainsMipChunk(const Chunk& rMipCoord) const;
 
