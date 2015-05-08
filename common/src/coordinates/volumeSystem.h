@@ -46,11 +46,13 @@ class VolumeSystem {
 
   inline int RootMipLevel() const { return rootMipLevel_; }
 
-  inline Vector3i MipedDataDimensions(const int level) const {
-    return DataDimensions() / math::pow2int(level);
-  }
-
-  Vector3i MipLevelDataDimensions(const int level) const;
+  Vector3i MipLevelDataDimensions(const int level) const {
+    // In the absence of overflow, equivalent of 
+    // (DataDimensions() + math::pow2int(level) - 1) / math::pow2int(level).
+    // Even if we always use 2^n size volumes, one thing this trick in
+    // parenthesis does is it takes care of never reducing the dimension to 0.
+    return (DataDimensions() - 1) / math::pow2int(level) + 1;
+  };
 
   inline Vector3i MipLevelDimensionsInMipChunks(int level) const {
     const Vector3f data_dims = MipLevelDataDimensions(level);
@@ -64,10 +66,7 @@ class VolumeSystem {
 
   bool Contains(coords::Global g) const { return Extent().contains(g); }
   bool Contains(coords::Data dc) const {
-    // FIX ME: MipedDataDimensions() is supposed to do the same thing as
-    // MipLevelDataDimensions() but the latter is too slow (order of magnitude)
-    // to be used here (chunk::Voxels in voxelGetter.hpp uses this)
-    const auto mippedDims = MipedDataDimensions(dc.mipLevel());
+    const auto mippedDims = MipLevelDataDimensions(dc.mipLevel());
     return dc.x < mippedDims.x && dc.y < mippedDims.y && dc.z < mippedDims.z &&
            dc.x >= 0 && dc.y >= 0 && dc.z >= 0;
   }
