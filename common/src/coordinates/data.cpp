@@ -79,16 +79,12 @@ int Data::ToTileDepth(ViewType viewType) const {
 bool Data::IsInVolume() const { return volume_->Extent().contains(ToGlobal()); }
 
 Data Data::AtDifferentLevel(int newLevel) const {
-  if (newLevel > volume_->RootMipLevel()) {
-    throw ArgException("Invalid Mip level.");
-  }
-
   if (newLevel == mipLevel_) {
     return *this;
   }
 
-  Vector3f result =
-      *this * om::math::pow2int(mipLevel_) / om::math::pow2int(newLevel);
+  auto result = Vector3d(*this) * om::math::pow2int(mipLevel_) /
+                    om::math::pow2int(newLevel);
   return Data(result, *volume_, newLevel);
 }
 

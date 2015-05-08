@@ -28,7 +28,22 @@ CFLAGS='-g -O2'
 --with-boost={libs}/boost""".format(libs=b.libs_fp())
 
         b.prepare()
+        self.__patch_thrift(b)
         b.buildInSourceFolder()
+
+    def __patch_thrift(self, b):
+        for f in ["lib/cpp/src/thrift/protocol/TProtocol.h",]:
+            fnp = os.path.join(b.src_fp(), f)
+            if not os.path.exists(fnp):
+                raise Exception("can't patch " + fnp)
+
+        ext_fp = b.ext_fp
+        patch_fnp = os.path.join(ext_fp, "patches/thrift-0.9.1.patch")
+
+        cmd = "/usr/bin/patch -d {ext_fp} -p0 -i {fnp} -N".format(
+                                    ext_fp=b.src_fp(), fnp=patch_fnp)
+        print "patching using cmd: ", cmd
+        os.system(cmd)
 
     def libjpeg(self):
         b = self.makeBuilder(LibraryMetadata.jpeg())

@@ -20,11 +20,15 @@ TEST(Coords_VolumeSystem, UpdateRootLevel) {
   ASSERT_EQ(2, vs2.RootMipLevel());
 }
 
-TEST(Coords_VolumeSystem, MipedDataDimensions) {
-  VolumeSystem vs(Vector3i(1024));
-  ASSERT_EQ(Vector3i(1024 / 2), vs.MipedDataDimensions(1));
-  ASSERT_EQ(Vector3i(1024 / 4), vs.MipedDataDimensions(2));
-  ASSERT_EQ(Vector3i(1024 / 8), vs.MipedDataDimensions(3));
+TEST(Coords_VolumeSystem, MipLevelDataDimensions) {
+  VolumeSystem vs(Vector3i(1024, 128, 8), Vector3i::ZERO, Vector3i(7, 8, 40), 16);
+  ASSERT_EQ(Vector3i(1024, 128, 16), vs.MipLevelDataDimensions(0));
+  ASSERT_EQ(Vector3i(512, 64, 8), vs.MipLevelDataDimensions(1));
+  ASSERT_EQ(Vector3i(256, 32, 4), vs.MipLevelDataDimensions(2));
+  ASSERT_EQ(Vector3i(128, 16, 2), vs.MipLevelDataDimensions(3));
+  ASSERT_EQ(Vector3i(64, 8, 1), vs.MipLevelDataDimensions(4));
+  ASSERT_EQ(Vector3i(32, 4, 1), vs.MipLevelDataDimensions(5));
+  ASSERT_EQ(Vector3i(16, 2, 1), vs.MipLevelDataDimensions(6));
 }
 
 TEST(Coords_VolumeSystem, MipLevelDimensionsInMipChunks) {

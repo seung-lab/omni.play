@@ -60,6 +60,15 @@ TEST(Coords_Global, DataToGlobal_RoundTrip1) {
   ASSERT_EQ(g, d.ToGlobal());
 }
 
+TEST(Coords_Global, DataToGlobal_ToDataMip) {
+  VolumeSystem vs(Vector3i(1024), Vector3i::ZERO, Vector3i(7, 7, 40));
+  Data d(1023, 1023, 236, vs, 0);
+  Data d3 = d.AtDifferentLevel(3);  //(127, 127, 29)
+  Global g(7161, 7161, 236 * 40);
+  ASSERT_EQ(d3, d.ToGlobal().ToData(vs, 3));
+  ASSERT_EQ(d3, g.ToData(vs, 3));
+}
+
 TEST(Coords_Global, DataToGlobal_RoundTrip2) {
   int min = 1;
   int max = 1e4;
@@ -94,7 +103,7 @@ TEST(Coords_Global, Benchmark_ToData_Rounding) {
     VolumeSystem vs(Vector3i(max), Vector3i::ZERO, Vector3i(i, i + 1, i + 2));
     for (int j = 1; j < max; j++) {
       Global g(j * i, j * (i + 1), j * (i + 2));
-      g.ToData(vs, 0);
+      g.ToData(vs, 2);
     }
   }
   t.Print("ToData w rounding");
@@ -108,7 +117,7 @@ TEST(Coords_Global, Benchmark_ToData_Rounding) {
       // Apparently having defined this function in this same translation unit
       // also significantly improves performance. Ideal apple to apple
       // comparison would have it defined in anther file.
-      om::test::GlobalToData_NoRounding(g, vs, 0);
+      om::test::GlobalToData_NoRounding(g, vs, 2);
     }
   }
   t.Print("ToData w/o rounding");

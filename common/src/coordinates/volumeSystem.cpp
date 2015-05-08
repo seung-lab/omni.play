@@ -86,9 +86,5 @@ void VolumeSystem::addChunkCoordsForLevel(
   }
 }
 
-Vector3i VolumeSystem::MipLevelDataDimensions(const int level) const {
-  return Extent().ToDataBbox(*this, level).getMax();
-}
-
 }  // namespace coords
 }  // namespace om
