@@ -59,8 +59,8 @@ THRIFT_CXXFLAGS    =    -DHAVE_CONFIG_H
 
 COMMON_CXXFLAGS    =    -g -fPIC $(CXXWARN) $(THRIFT_CXXFLAGS) -std=c++11 -MMD -MP -MT "$(@)" -MF $(@:.o=.d)
 
-DBG_CFLAGS         =    $(COMMON_CFLAGS) -DDEBUG_MODE=1
-DBG_CXXFLAGS       =    $(COMMON_CXXFLAGS) -DDEBUG_MODE=1 -Og -gstabs+
+DBG_CFLAGS         =    $(COMMON_CFLAGS) -DDEBUG_MODE=1 -c -Wall -O0 --coverage
+DBG_CXXFLAGS       =    $(COMMON_CXXFLAGS) -DDEBUG_MODE=1 -Og -gstabs+ --coverage
 OPTIMIZATION_FLAGS =    -O2
 OPT_CFLAGS         =    $(COMMON_CFLAGS) -DNDEBUG \
 						$(OPTIMIZATION_FLAGS) -fno-omit-frame-pointer
@@ -166,7 +166,7 @@ endif
 .PHONY: clean
 clean:
 	$(ECHO) Cleaning...
-	$(RM) -rf bin build
+	$(RM) -rf bin build coverage
 	$(RM) -rf common/src/precomp.h.gch desktop/src/precomp.h.gch
 	$(RM) -f common/include/yaml-cpp/src/*.o common/include/yaml-cpp/src/*.d
 	$(RM) -f desktop/lib/strnatcmp.o
@@ -532,3 +532,17 @@ clang-format:
 # Automatic dependencies ####################################
 ALLDEPS = $(shell find $(BUILDDIR) -iname "*.d" 2>/dev/null)
 -include $(ALLDEPS)
+
+
+################################ Check code coverage of tests
+.PHONY: coverage
+coverage: 
+	mkdir -p ./coverage
+	#lcov --directory ./build/debug/common/ --directory ./build/debug/desktop/ --capture --output-file ./coverage/app.info
+	lcov --directory ./build/debug/common/ --capture --output-file ./coverage/app.info
+	lcov --remove ./coverage/app.info "/usr/include/*" -o ./coverage/app.info
+	lcov --remove ./coverage/app.info "external/*" -o ./coverage/app.info  
+	lcov --remove ./coverage/app.info "boost/*" -o ./coverage/app.info
+	lcov --remove ./coverage/app.info "test/*" -o ./coverage/app.info   
+	lcov --remove ./coverage/app.info "include/*" -o ./coverage/app.info   
+	genhtml --output-directory ./coverage ./coverage/app.info    
