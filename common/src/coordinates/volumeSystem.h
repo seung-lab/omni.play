@@ -135,11 +135,9 @@ class VolumeSystem {
   inline Vector3i DimsRoundedToNearestChunk(const int level) const {
     const Vector3i data_dims = MipLevelDataDimensions(level);
 
-    auto x = std::max(math::roundUp(data_dims.x, chunkDimensions_.x), chunkDimensions_.x);
-    auto y = std::max(math::roundUp(data_dims.y, chunkDimensions_.y), chunkDimensions_.y);
-    auto z = std::max(math::roundUp(data_dims.z, chunkDimensions_.z), chunkDimensions_.z);
-
-    return Vector3i(x , y, z);
+    return Vector3i(math::roundUp(data_dims.x, chunkDimensions_.x),
+                    math::roundUp(data_dims.y, chunkDimensions_.y),
+                    math::roundUp(data_dims.z, chunkDimensions_.z));
   }
 
   inline void ValidMipChunkCoordChildren(const Chunk& coord,
