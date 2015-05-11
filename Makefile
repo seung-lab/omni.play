@@ -534,3 +534,15 @@ clang-format:
 # Automatic dependencies ####################################
 ALLDEPS = $(shell find $(BUILDDIR) -iname "*.d" 2>/dev/null)
 -include $(ALLDEPS)
+
+################################ Check code coverage of tests
+.PHONY: coverage
+coverage: 
+	#lcov --directory ./build/debug/common/ --directory ./build/debug/desktop/ --capture --output-file ./coverage/app.info
+	lcov --directory ./build/debug/common/ --capture --output-file ./coverage/app.info
+	lcov --remove ./coverage/app.info "/usr/include/*" -o ./coverage/app.info
+	lcov --remove ./coverage/app.info "external/*" -o ./coverage/app.info  
+	lcov --remove ./coverage/app.info "boost/*" -o ./coverage/app.info
+	lcov --remove ./coverage/app.info "test/*" -o ./coverage/app.info   
+	lcov --remove ./coverage/app.info "include/*" -o ./coverage/app.info   
+	genhtml --output-directory ./coverage ./coverage/app.info    
