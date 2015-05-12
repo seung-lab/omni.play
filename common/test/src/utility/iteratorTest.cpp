@@ -235,7 +235,7 @@ TEST(Utility_Iterators, Benchmark_FilteredDatavalIterator) {
   volume::Segmentation seg(
       file::Paths("../../test_data/x06y59z28_s1587_13491_6483_e1842_13746_6738.omni"), 1);
 
-  const common::SegID id = 1127249;
+  const common::SegID id = 1135;
   coords::DataBbox bounds = seg.Bounds();
 
   auto chunkFrom = bounds.getMin().ToChunk();
@@ -322,7 +322,7 @@ TEST(Utility_Iterators, Benchmark_SegmentFilteredDatavalIterator) {
   volume::Segmentation seg(
       file::Paths("../../test_data/x06y59z28_s1587_13491_6483_e1842_13746_6738.omni"), 1);
 
-  const common::SegID id = 1127249;
+  const common::SegID id = 1135;
   coords::DataBbox bounds = seg.Bounds();
 
   auto chunkFrom = bounds.getMin().ToChunk();
