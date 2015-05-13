@@ -246,5 +246,21 @@ TEST(TaskSpawnTest, Case5_EmptyIntersection) {
 
   ASSERT_EQ(0, seedIds.size());
 }
+
+TEST(TaskSpawnTest, Case6_DoesNotEscape) {
+  file::Paths prePaths(
+      "/omniweb_data/x07/y34/x07y34z41_s1811_7891_9395_e2066_8146_9650.omni");
+  file::Paths postPaths(
+      "/omniweb_data/x07/y34/x07y34z40_s1811_7891_9171_e2066_8146_9426.omni");
+  volume::Segmentation pre(prePaths, 1);
+  volume::Segmentation post(postPaths, 1);
+
+  std::set<int> segs{734,944,971,1266,1433,1848, 2029};
+
+  std::vector<std::map<int32_t, int32_t>> seedIds;
+  handler::get_seeds(seedIds, pre, segs, post);
+
+  ASSERT_EQ(0, seedIds.size());
+}
 }
 }  // namespace om::test::

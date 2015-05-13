@@ -193,13 +193,12 @@ void get_seeds(std::vector<std::map<int32_t, int32_t>>& seeds,
   auto postBounds = post.Metadata().bounds();
   auto dir = getDirection(preBounds, postBounds);
   auto res = pre.Coords().Resolution();
-  auto bounds = getBounds(preBounds, postBounds, dir, res);
-  if (bounds.isEmpty()) {
+  auto trimmedOverlapRegion = getBounds(preBounds, postBounds, dir, res);
+  if (trimmedOverlapRegion.isEmpty()) {
     log_errors << "get_seeds: Bounds do not overlap: \n" << pre.Endpoint()
                << '\n' << post.Endpoint();
     throw ArgException("Adjusted bounds do not overlap.");
   }
-  auto postSegSizeBounds = bounds.ToDataBbox(post.Coords(), 0);
 
   // Only have to work in the region where there are segments we care about.
   coords::DataBbox segBounds(pre.Coords(), 0);
@@ -210,6 +209,7 @@ void get_seeds(std::vector<std::map<int32_t, int32_t>>& seeds,
     }
   }
 
+  auto bounds = trimmedOverlapRegion;
   bounds.intersect(segBounds.ToGlobalBbox());
   if (bounds.isEmpty()) {
     log_debugs << "No segments in non-fudge area.";
@@ -263,7 +263,7 @@ void get_seeds(std::vector<std::map<int32_t, int32_t>>& seeds,
     considerNeighbor(Vector3i(0, 0, -1));
   }
 
-  // Get the size of segments on the post side.
+  // Get the sizes of segments on the post side.
   // Expand the bounds enough to capture full/most size of the segment, but
   // discount portions reentering the overlap region if the same segment exits
   // but curves back into the region.
@@ -275,8 +275,9 @@ void get_seeds(std::vector<std::map<int32_t, int32_t>>& seeds,
   auto postDilatedBounds = bounds.ToDataBbox(post.Coords(), 0);
   postDilatedBounds.setMin(postDilatedBounds.getMin() - EXPANSION);
   postDilatedBounds.setMax(postDilatedBounds.getMax() + EXPANSION);
-  postSegSizeBounds.intersect(postDilatedBounds);
-  for (auto& iter : post.SegIterate(postSelected, postSegSizeBounds)) {
+  postDilatedBounds.intersect(
+      trimmedOverlapRegion.ToDataBbox(post.Coords(), 0));
+  for (auto& iter : post.SegIterate(postSelected, postDilatedBounds)) {
     sizes[iter.value()]++;
   }
 
@@ -292,7 +293,8 @@ void get_seeds(std::vector<std::map<int32_t, int32_t>>& seeds,
     newSeedSets[root].insert(postGetter.GetValue(dc.ToGlobal()));
     preSideSets[root].insert(preGetter.GetValue(dc));
     if (!escapes[root] &&
-        inCriticalRegion(dc, bounds.ToDataBbox(pre.Coords(), 0), dir)) {
+        inCriticalRegion(dc, trimmedOverlapRegion.ToDataBbox(pre.Coords(), 0),
+                         dir)) {
       escapes[root] = true;
     }
   }
