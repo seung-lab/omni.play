@@ -54,6 +54,7 @@ class Sender : public boost::static_visitor<> {
       return;
     }
 
+    // RTM is built upon a uniform voxel space
     auto location = min_.ToGlobal() / resolution_;
 
 
