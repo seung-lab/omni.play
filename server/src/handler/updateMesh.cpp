@@ -23,12 +23,13 @@ typedef std::function<MesherPtr()> ConnectionFunc;
 
 class Sender : public boost::static_visitor<> {
  public:
-  Sender(const coords::Data& min,
-         const coords::Data& max, ConnectionFunc connect,
-         const std::set<uint32_t> addedSegIds,
+
+  Sender(const coords::Data& min, const coords::Data& max, Vector3i& resolution,
+         ConnectionFunc connect, const std::set<uint32_t> addedSegIds,
          const std::set<uint32_t> modifiedSegIds, int32_t segId)
       : min_(min),
         max_(max),
+        resolution_(resolution),
         connect_(connect),
         addedSegIds_(addedSegIds),
         modifiedSegIds_(modifiedSegIds),
@@ -53,7 +54,8 @@ class Sender : public boost::static_visitor<> {
       return;
     }
 
-    auto location = min_.ToGlobal();
+    auto location = min_.ToGlobal() / resolution_;
+
 
     const typename array::size_type* shape = chunkData.shape();
     size_t length = shape[0] * shape[1] * shape[2];
@@ -115,6 +117,7 @@ class Sender : public boost::static_visitor<> {
  private:
   const coords::Data& min_;
   const coords::Data& max_;
+  Vector3i& resolution_;
   ConnectionFunc connect_;
   const std::set<uint32_t> addedSegIds_;
   const std::set<uint32_t> modifiedSegIds_;
@@ -167,8 +170,10 @@ bool modify_global_mesh_data(ConnectionFunc c, const volume::Segmentation& vol,
     min.y = std::max(min.y, TRIM);
     min.z = std::max(min.z, TRIM);
 
+    Vector3i resolution = vol.Metadata().resolution();
+
     boost::apply_visitor(
-        Sender(min, max, c, addedSegIds, modifiedSegIds, segId),
+        Sender(min, max, resolution ,c, addedSegIds, modifiedSegIds, segId),
         *vol.ChunkDS().Get(cc));
   }
   return true;
