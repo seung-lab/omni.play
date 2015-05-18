@@ -1,0 +1,25 @@
+# https://issues.apache.org/jira/browse/THRIFT-2214
+--- lib/cpp/src/thrift/protocol/TProtocol.h	2013-09-27 13:27:12.732148823 +0200
++++ lib/cpp/src/thrift/protocol/TProtocol.h	2013-09-27 13:27:56.738669377 +0200
+@@ -75,10 +75,6 @@
+ }
+ 
+ 
+-namespace apache { namespace thrift { namespace protocol {
+-
+-using apache::thrift::transport::TTransport;
+-
+ #ifdef HAVE_SYS_PARAM_H
+ #include <sys/param.h>
+ #endif
+@@ -140,6 +136,10 @@
+ # error "Can't define htonll or ntohll!"
+ #endif
+ 
++namespace apache { namespace thrift { namespace protocol {
++
++using apache::thrift::transport::TTransport;
++
+ /**
+  * Enumerated definition of the types that the Thrift protocol supports.
+  * Take special note of the T_END type which is used specifically to mark

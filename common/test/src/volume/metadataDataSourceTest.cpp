@@ -35,7 +35,8 @@ TEST(Volume_MetadataDataSource, PutMetadata) {
   auto m2 = std::make_shared<Metadata>();
   m2->Name = "Test Volume";
   m2->UUID = utility::UUID();
-  m2->Bounds = coords::GlobalBbox(coords::Global::ZERO, coords::Global(127));
+  m2->AbsOffset = Vector3i::ZERO;
+  m2->DataDimensions = Vector3i(128);
   m2->Resolution = Vector3i(256);
   m2->ChunkDim = 128;
   m2->RootMipLevel = 1;

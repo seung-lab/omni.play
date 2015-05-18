@@ -41,9 +41,9 @@ class OmProjectImpl {
   std::unique_ptr<OmProjectGlobals> globals_;
 
  public:
-  OmProjectImpl(const QString& fnp, const std::string& username)
+  OmProjectImpl(const QString& fnp, const std::string& username, bool newfile = false)
       : oldHDF5_(nullptr),
-        paths_(fnp.toStdString()),
+        paths_(fnp.toStdString(), newfile ),
         username_(username),
         fileVersion_(0) {}
 

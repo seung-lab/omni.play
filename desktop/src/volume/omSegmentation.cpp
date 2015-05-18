@@ -65,7 +65,7 @@ void OmSegmentation::LoadPath(const bool newSegmentation) {
     om::file::MkDir(p.SegmentationPaths(id_));
   }
   validGroupNum_.reset(new OmValidGroupNum(userPaths.ValidGroupNum(id_),
-                                           metaManager_->numSegments()));
+                                           Metadata().maxSegments()));
 
   segDataDS_.reset(new segment::FileDataSource(userPaths.Segments(id_)));
   segListDataDS_.reset(new segment::ListTypeFileDataSource(userPaths.Segments(id_)));

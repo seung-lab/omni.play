@@ -59,5 +59,15 @@ TEST(Coords_Data, IsInVolume) {
   Data d2(12800, 128, 128, vs, 0);
   ASSERT_FALSE(d2.IsInVolume());
 }
+
+TEST(Coords_Data, AtDifferentLevel) {
+  VolumeSystem vs(Vector3i(2048));
+  Data d(127, 126, 125, vs, 1);
+  ASSERT_EQ(Vector3i(254,252,250), d.AtDifferentLevel(0));
+  ASSERT_EQ(d, d.AtDifferentLevel(1));
+  ASSERT_EQ(Vector3i(63,63,62), d.AtDifferentLevel(2));
+  ASSERT_EQ(Vector3i(31,31,31), d.AtDifferentLevel(3));
+  ASSERT_EQ(Vector3i(15,15,15), d.AtDifferentLevel(4));
+}
 }
 }  // namespace om::test::

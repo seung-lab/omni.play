@@ -190,7 +190,7 @@ void get_connected_groups(
 
   log_debugs << "2. Group by Flag & Compute Total Size.";
   for (const auto& iter : segToFlag) {
-    if (iter.first > vol.SegData().size()) {
+    if (iter.first >= vol.SegData().size()) {
       // Discard invalid segIDs
       continue;
     }

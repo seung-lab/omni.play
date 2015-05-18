@@ -46,11 +46,13 @@ class VolumeSystem {
 
   inline int RootMipLevel() const { return rootMipLevel_; }
 
-  inline Vector3i MipedDataDimensions(const int level) const {
-    return DataDimensions() / math::pow2int(level);
-  }
-
-  Vector3i MipLevelDataDimensions(const int level) const;
+  Vector3i MipLevelDataDimensions(const int level) const {
+    // In the absence of overflow, equivalent of 
+    // (DataDimensions() + math::pow2int(level) - 1) / math::pow2int(level).
+    // Even if we always use 2^n size volumes, one thing this trick in
+    // parenthesis does is it takes care of never reducing the dimension to 0.
+    return (DataDimensions() - 1) / math::pow2int(level) + 1;
+  };
 
   inline Vector3i MipLevelDimensionsInMipChunks(int level) const {
     const Vector3f data_dims = MipLevelDataDimensions(level);
@@ -65,7 +67,7 @@ class VolumeSystem {
 
   bool Contains(coords::Global g) const { return Extent().contains(g); }
   bool Contains(coords::Data dc) const {
-    const auto mippedDims = MipedDataDimensions(dc.mipLevel());
+    const auto mippedDims = MipLevelDataDimensions(dc.mipLevel());
     return dc.x < mippedDims.x && dc.y < mippedDims.y && dc.z < mippedDims.z &&
            dc.x >= 0 && dc.y >= 0 && dc.z >= 0;
   }
@@ -78,11 +80,6 @@ class VolumeSystem {
     dataDimensions_.z = om::math::roundUp((int)dim.z, chunkDimensions_.z);
 
     updateNormMat();
-  }
-
-  inline void SetBounds(const GlobalBbox& bounds) {
-    SetDataDimensions(bounds.getDimensions());
-    SetAbsOffset(bounds.getMin());
   }
 
   inline void SetChunkDimensions(const Vector3i& dims) {
@@ -138,11 +135,9 @@ class VolumeSystem {
   inline Vector3i DimsRoundedToNearestChunk(const int level) const {
     const Vector3i data_dims = MipLevelDataDimensions(level);
 
-    auto x = std::max(math::roundUp(data_dims.x, chunkDimensions_.x), chunkDimensions_.x);
-    auto y = std::max(math::roundUp(data_dims.y, chunkDimensions_.y), chunkDimensions_.y);
-    auto z = std::max(math::roundUp(data_dims.z, chunkDimensions_.z), chunkDimensions_.z);
-
-    return Vector3i(x , y, z);
+    return Vector3i(math::roundUp(data_dims.x, chunkDimensions_.x),
+                    math::roundUp(data_dims.y, chunkDimensions_.y),
+                    math::roundUp(data_dims.z, chunkDimensions_.z));
   }
 
   inline void ValidMipChunkCoordChildren(const Chunk& coord,
@@ -179,8 +174,8 @@ class VolumeSystem {
   Chunk RootMipChunkCoordinate() const;
 
   std::shared_ptr<std::vector<coords::Chunk>> MipChunkCoords() const;
-  std::shared_ptr<std::vector<coords::Chunk>> MipChunkCoords(const int mipLevel)
-      const;
+  std::shared_ptr<std::vector<coords::Chunk>> MipChunkCoords(
+      const int mipLevel) const;
 
   bool ContainsMipChunk(const Chunk& rMipCoord) const;
 

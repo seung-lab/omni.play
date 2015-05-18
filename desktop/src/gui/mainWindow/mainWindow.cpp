@@ -25,6 +25,7 @@
 #include "viewGroup/omViewGroupState.h"
 #include "task/task.h"
 #include "task/taskManager.h"
+#include "version.hpp"
 
 MainWindow::MainWindow()
     : inspector_(nullptr),
@@ -374,10 +375,7 @@ void MainWindow::open3dView() {
 
 void MainWindow::openAboutDialog(){
 
-  QString major = "1.3"; //from desktop/version/major
-  QString minor = ".2";  //from desktop/version/minor
-  QMessageBox::about(this, "Omni","Omni\nVersion " + major + minor + " \n\nMade with love by a bunch of geeks");
-
+  QMessageBox::about(this, "Omni","Omni\nVersion " + QString(OMNI_DESKTOP_VERSION) + " \n\nMade with love by a bunch of geeks");
 }
 
 void MainWindow::closeEvent(QCloseEvent* event) {

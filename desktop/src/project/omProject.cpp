@@ -8,7 +8,7 @@ OmProject::~OmProject() {}
 
 QString OmProject::New(const QString& fnp) {
   try {
-    instance().impl_ = std::make_unique<OmProjectImpl>(fnp, "");
+    instance().impl_ = std::make_unique<OmProjectImpl>(fnp, "" , true); //True means in a newFile, so it's existence won't be check
     instance().impl_->New();
   }
   catch (...) {

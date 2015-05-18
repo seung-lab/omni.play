@@ -10,8 +10,9 @@ namespace volume {
 struct Metadata {
   std::string Name;
   utility::UUID UUID;
-  coords::GlobalBbox Bounds;
+  Vector3i DataDimensions;
   Vector3i Resolution;
+  Vector3i AbsOffset;
   int ChunkDim;
   int RootMipLevel;
   common::DataType DataType;
@@ -23,8 +24,9 @@ struct Metadata {
   Metadata()
       : Name(""),
         UUID(),
-        Bounds(coords::GlobalBbox::UNITBOX),
+        DataDimensions(Vector3i::ZERO),
         Resolution(Vector3i::ONE),
+        AbsOffset(Vector3i::ZERO),
         ChunkDim(128),
         RootMipLevel(1),
         DataType(common::DataType::UNKNOWN),
@@ -34,23 +36,26 @@ struct Metadata {
         NumEdges(0) {}
 
   friend bool operator==(const Metadata& a, const Metadata& b) {
-    return std::tie(a.Name, a.UUID.Str(), a.Bounds, a.Resolution, a.ChunkDim,
-                    a.RootMipLevel, a.DataType, a.VolumeType, a.NumSegments,
-                    a.MaxSegments, a.NumEdges) ==
-           std::tie(b.Name, b.UUID.Str(), b.Bounds, b.Resolution, b.ChunkDim,
-                    b.RootMipLevel, b.DataType, b.VolumeType, b.NumSegments,
-                    b.MaxSegments, b.NumEdges);
+    return std::tie(a.Name, a.UUID.Str(), a.DataDimensions, a.Resolution,
+                    a.AbsOffset, a.ChunkDim, a.RootMipLevel, a.DataType,
+                    a.VolumeType, a.NumSegments, a.MaxSegments, a.NumEdges) ==
+           std::tie(b.Name, b.UUID.Str(), b.DataDimensions, b.Resolution,
+                    b.AbsOffset, b.ChunkDim, b.RootMipLevel, b.DataType,
+                    b.VolumeType, b.NumSegments, b.MaxSegments, b.NumEdges);
   }
 
   friend std::ostream& operator<<(std::ostream& out, const Metadata& m) {
     return out << "{" << std::endl << "Name: " << m.Name << std::endl
-               << "UUID: " << m.UUID.Str() << std::endl << "Bounds: "
-               << m.Bounds << std::endl << "Resolution: " << m.Resolution
-               << std::endl << "ChunkDim: " << m.ChunkDim << std::endl
+               << "UUID: " << m.UUID.Str() << std::endl
+               << "DataDimensions: " << m.DataDimensions << std::endl
+               << "Resolution: " << m.Resolution << std::endl
+               << "AbsOffset: " << m.AbsOffset << std::endl
+               << "ChunkDim: " << m.ChunkDim << std::endl
                << "RootMipLevel: " << m.RootMipLevel << std::endl
-               << "DataType: " << m.DataType << std::endl << "VolumeType: "
-               << m.VolumeType << std::endl << "NumSegments: " << m.NumSegments
-               << std::endl << "MaxSegments: " << m.MaxSegments << std::endl
+               << "DataType: " << m.DataType << std::endl
+               << "VolumeType: " << m.VolumeType << std::endl
+               << "NumSegments: " << m.NumSegments << std::endl
+               << "MaxSegments: " << m.MaxSegments << std::endl
                << "NumEdges: " << m.NumEdges << std::endl << "}" << std::endl;
   }
 };

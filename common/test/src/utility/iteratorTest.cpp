@@ -35,6 +35,9 @@ TEST(Utility_Iterators, VectorIterator) {
   ASSERT_EQ(b, ++a);
   ASSERT_NE(vector3_iterator<int>({0, 0, 0}, {10, 11, 12}),
             vector3_iterator<int>());
+
+  ASSERT_EQ(vector3_iterator<int>(),
+            vector3_iterator<int>({1, 2, 3}, {2, 2, -3}));
 }
 
 TEST(Utility_Iterators, Benchmark_VectorIterator) {
@@ -172,6 +175,21 @@ TEST(Utility_Iterators, DatavalIterator) {
     counter++;
   }
   ASSERT_EQ(128 * 128 * 128, counter);
+}
+
+TEST(Utility_Iterators, DatavalIterator_EmptyBounds) {
+  volume::Segmentation seg(
+      file::Paths("/omniData/e2198/e2198_a_s10_101_46_e17_116_61.omni"), 1);
+  coords::Chunk cc(0, 1, 1, 1);
+  size_t counter = 0;
+  auto bounds = cc.BoundingBox(seg.Coords());
+  auto max = bounds.getMax();
+  // make the bounds empty:
+  bounds.setMax(Vector3f(bounds.getMin().x - 2, max.y, max.z));
+  for (auto iter : seg.Iterate<common::SegID>(bounds)) {
+    counter++;
+  }
+  ASSERT_EQ(0, counter);
 }
 
 TEST(Utility_Iterators, Benchmark_DatavalIterator) {

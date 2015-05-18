@@ -51,13 +51,9 @@ class MetadataManager {
   coords::GlobalBbox bounds() const {
     zi::guard g(lock_);
     throwIfInvalid();
-    return meta_->Bounds;
-  }
-  void set_bounds(coords::GlobalBbox bounds) {
-    zi::guard g(lock_);
-    throwIfInvalid();
-    meta_->Bounds = bounds;
-    coordSystem_.SetBounds(bounds);
+    coords::Global min(meta_->AbsOffset);
+    coords::Global max(meta_->AbsOffset + (meta_->DataDimensions - 1) * meta_->Resolution);
+    return coords::GlobalBbox(min, max);
   }
 
   Vector3i absOffset() const {
@@ -68,10 +64,8 @@ class MetadataManager {
   void set_absOffset(Vector3i offset) {
     zi::guard g(lock_);
     throwIfInvalid();
-    auto b = meta_->Bounds;
-    b.setMin(offset);
-    meta_->Bounds = b;
-    coordSystem_.SetBounds(b);
+    meta_->AbsOffset = offset;
+    coordSystem_.SetAbsOffset(offset);
   }
 
   Vector3i dimensions() const {
@@ -82,10 +76,8 @@ class MetadataManager {
   void set_dimensions(Vector3i dimensions) {
     zi::guard g(lock_);
     throwIfInvalid();
-    auto b = meta_->Bounds;
-    b.setMax(b.getMin() + dimensions);
-    meta_->Bounds = b;
-    coordSystem_.SetBounds(b);
+    meta_->DataDimensions = dimensions;
+    coordSystem_.SetDataDimensions(dimensions);
   }
 
   Vector3i resolution() const {

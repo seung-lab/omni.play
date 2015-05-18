@@ -63,7 +63,7 @@ class MemMappedFile : public IOnDiskFile<T> {
     try {
       file_.reset(new mapped_file(fnp_.string()));
     }
-    catch (std::exception e) {
+    catch (std::exception& e) {
       log_errors << "Unable to map " << fnp_.string() << ": " << e.what();
       throw;
     }

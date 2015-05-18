@@ -2,6 +2,7 @@
 
 #include "common/common.h"
 #include "coordinates/coordinates.h"
+#include "utility/timer.hpp"
 
 #include <algorithm>
 
@@ -48,6 +49,79 @@ TEST(Coords_Global, WithAbsOffset) {
 TEST(Coords_Global, FromOffsetCoords) {
   VolumeSystem vs(Vector3i(1024), Vector3i(128));
   ASSERT_EQ(Global(0), Global::FromOffsetCoords(Vector3i(128), vs));
+}
+
+TEST(Coords_Global, DataToGlobal_RoundTrip1) {
+  VolumeSystem vs(Vector3i(1024), Vector3i::ZERO, Vector3i(7, 7, 40));
+  Data d(1023, 1023, 236, vs, 0);
+  Global g(7161, 7161, 236 * 40);
+  ASSERT_EQ(d.ToGlobal().ToData(vs, 0), d);
+  ASSERT_EQ(g.ToData(vs, 0), d);
+  ASSERT_EQ(g, d.ToGlobal());
+}
+
+TEST(Coords_Global, DataToGlobal_ToDataMip) {
+  VolumeSystem vs(Vector3i(1024), Vector3i::ZERO, Vector3i(7, 7, 40));
+  Data d(1023, 1023, 236, vs, 0);
+  Data d3 = d.AtDifferentLevel(3);  //(127, 127, 29)
+  Global g(7161, 7161, 236 * 40);
+  ASSERT_EQ(d3, d.ToGlobal().ToData(vs, 3));
+  ASSERT_EQ(d3, g.ToData(vs, 3));
+}
+
+TEST(Coords_Global, DataToGlobal_RoundTrip2) {
+  int min = 1;
+  int max = 1e4;
+
+  for (int i = min; i < max; i += 3) {
+    VolumeSystem vs(Vector3i(max), Vector3i::ZERO, Vector3i(i, i + 1, i + 2));
+    // std::cout << i << std::endl;
+    for (int j = 1; j < max; j++) {
+      Data d(j, j, j, vs, 0);
+      Global g(j * i, j * (i + 1), j * (i + 2));
+      ASSERT_EQ(d.ToGlobal().ToData(vs, 0), d);
+      ASSERT_EQ(g.ToData(vs, 0), d);
+      ASSERT_EQ(g, d.ToGlobal());
+    }
+  }
+}
+
+Data GlobalToData_NoRounding(const Global& g, const VolumeSystem& vol,
+                             const int mipLevel) {
+  const vmml::Vector4f Global(g.x, g.y, g.z, 1);
+  vmml::Vector3f dataCf = vol.GlobalToDataMat(mipLevel) * Global;
+  return Data(dataCf, vol, mipLevel);
+}
+
+TEST(Coords_Global, Benchmark_ToData_Rounding) {
+  int min = 1;
+  int max = 1.5e4;
+
+  utility::timer t;
+  t.start();
+  for (int i = min; i < max; i += 3) {
+    VolumeSystem vs(Vector3i(max), Vector3i::ZERO, Vector3i(i, i + 1, i + 2));
+    for (int j = 1; j < max; j++) {
+      Global g(j * i, j * (i + 1), j * (i + 2));
+      g.ToData(vs, 2);
+    }
+  }
+  t.Print("ToData w rounding");
+
+  t.reset();
+  t.start();
+  for (int i = min; i < max; i += 3) {
+    VolumeSystem vs(Vector3i(max), Vector3i::ZERO, Vector3i(i, i + 1, i + 2));
+    for (int j = 1; j < max; j++) {
+      Global g(j * i, j * (i + 1), j * (i + 2));
+      // Apparently having defined this function in this same translation unit
+      // also significantly improves performance. Ideal apple to apple
+      // comparison would have it defined in anther file.
+      om::test::GlobalToData_NoRounding(g, vs, 2);
+    }
+  }
+  t.Print("ToData w/o rounding");
+  t.reset();
 }
 }
 }  // namespace om::test::
