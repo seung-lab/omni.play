@@ -11,9 +11,7 @@ using namespace om::volume;
 namespace om {
 namespace test {
 
-#define URI \
-  "/omniweb_data/x06/y59/x06y59z28_s1587_13491_6483_e1842_13746_6738.omni"
-//TODO: the PutMetadata test below modifies the file on disk!
+#define URI "../../test_data/x06y59z28_s1587_13491_6483_e1842_13746_6738.omni"
 
 TEST(Volume_MetadataDataSource, GetMetadata) {
   file::Paths p(URI);
@@ -49,6 +47,11 @@ TEST(Volume_MetadataDataSource, PutMetadata) {
 
   ASSERT_NO_THROW(source.Put(p.Segmentation(1).string(), m2));
   ASSERT_EQ(*m2, *source.Get(p.Segmentation(1).string()));
+
+  //Clean this, so next text which depends on metadata doesn't fail
+  file::RmFile("../../test_data/x06y59z28_s1587_13491_6483_e1842_13746_6738.omni.files/projectMetadata.yaml");
+  file::CopyFile("../../test_data/x06y59z28_s1587_13491_6483_e1842_13746_6738.omni.files/projectMetadata.yaml.old",
+                 "../../test_data/x06y59z28_s1587_13491_6483_e1842_13746_6738.omni.files/projectMetadata.yaml");
 }
 
 #undef URI

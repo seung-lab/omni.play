@@ -10,8 +10,7 @@ using namespace om::tile;
 namespace om {
 namespace test {
 
-#define URI \
-  "/omniweb_data/x06/y59/x06y59z28_s1587_13491_6483_e1842_13746_6738.omni"
+#define URI "../../test_data/x06y59z28_s1587_13491_6483_e1842_13746_6738.omni"
 
 TEST(Tile_FileDataSource, GetTile) {
   file::Paths p(URI);
