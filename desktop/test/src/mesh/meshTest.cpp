@@ -1,5 +1,7 @@
-#pragma once
 #include "precomp.h"
+#include "gtest/gtest.h"
+#include "gmock/gmock.h"
+
 #include "view3d/mesh/omMeshManagers.hpp"
 #include "chunks/omChunkUtils.hpp"
 #include "common/common.h"
@@ -9,17 +11,31 @@
 #include "utility/omLockedPODs.hpp"
 #include "volume/io/omVolumeData.h"
 #include "volume/omSegmentation.h"
+#include "volume/OmSimpleRawVol.hpp"
+
+const std::string fnp("../../test_data/build_project/meshTest.omni");
+
+namespace om {
+namespace test {
+
+class MockTriStripCollector : public TriStripCollector {
+public:
+  MockTriStripCollector(uint32_t id) {
+    data_ = std::vector<float>(id, id + 0.1);
+    indices_ = std::vector<uint32_t>(id, id + 1);
+    strips_ = std::vector<uint32_t>(id, id + 2);
+  }
+};
 
 class MeshTest {
- public:
+public:
   MeshTest(OmSegmentation* segmentation, const double threshold)
-      : segmentation_(segmentation),
-        threshold_(threshold),
-        meshManager_(segmentation->MeshManager(threshold)),
-        meshWriter_(new OmMeshWriterV2(meshManager_)),
-        numParallelChunks_(numberParallelChunks()) {}
-
-  ~MeshTest() {}
+    : segmentation_(segmentation),
+      threshold_(threshold),
+      meshManager_(segmentation->MeshManager(threshold)),
+      meshWriter_(new OmMeshWriterV2(meshManager_)),
+      numParallelChunks_(numberParallelChunks()) {
+  }
 
   void MeshFullVolume() {
     init();
@@ -29,11 +45,11 @@ class MeshTest {
     check();
   }
 
- private:
+private:
   OmSegmentation* const segmentation_;
   const double threshold_;
 
-  OmMeshManager* const meshManager_;
+  OmMeshManager* meshManager_;
   std::unique_ptr<OmMeshWriterV2> meshWriter_;
 
   const int numParallelChunks_;
@@ -46,22 +62,13 @@ class MeshTest {
 
     for (auto& cc : *coords) {
       manager.push_back(
-          zi::run_fn(zi::bind(&MeshTest::processChunk, this, cc)));
+            zi::run_fn(zi::bind(&MeshTest::processChunk, this, cc)));
     }
 
     manager.join();
 
     log_infos << "done meshing...";
   }
-
-  class MockTriStripCollector : public TriStripCollector {
-   public:
-    MockTriStripCollector(uint32_t id) {
-      data_ = std::vector<float>(id, id + 0.1);
-      indices_ = std::vector<uint32_t>(id, id + 1);
-      strips_ = std::vector<uint32_t>(id, id + 2);
-    }
-  };
 
   om::utility::LockedVector<std::shared_ptr<MockTriStripCollector> > tris_;
 
@@ -71,11 +78,11 @@ class MeshTest {
       log_errors << "Unable to process " << coord << " can't load UniqueValues";
       return;
     }
-    FOR_EACH(id, *segIDs) {
-      auto t = std::make_shared<MockTriStripCollector>(*id);
+    for(auto& id: *segIDs) {
+      auto t = std::make_shared<MockTriStripCollector>(id);
       tris_.push_back(t);
       TriStripCollector* pt = t.get();
-      meshWriter_->Save(*id, coord, pt,
+      meshWriter_->Save(id, coord, pt,
                         om::common::ShouldBufferWrites::BUFFER_WRITES,
                         om::common::AllowOverwrite::OVERWRITE);
     }
@@ -138,3 +145,54 @@ class MeshTest {
     log_infos << "data check ok!!";
   }
 };
+
+TEST(meshTest , CreateProject){
+  OmProject::New(QString::fromStdString(fnp));
+
+  const uint64_t SIDE_SIZE = 128;
+
+  // make a segmentation
+  SegmentationDataWrapper sdw;
+  OmSegmentation& seg = sdw.Create();
+  seg.BuildBlankVolume(Vector3i(SIDE_SIZE, SIDE_SIZE, SIDE_SIZE));
+  seg.LoadVolData();
+  seg.Segments().refreshTree();
+  OmProject::Save();
+
+  // fill it (sutpidly)
+  auto mip0volFile = OmSimpleRawVol::Open(&seg, 0);
+  const uint64_t numVoxels = SIDE_SIZE * SIDE_SIZE * SIDE_SIZE;
+  const uint32_t maxSeg = SIDE_SIZE * 3;
+  std::vector<uint32_t> data(numVoxels);
+
+  uint32_t c = 1;
+  printf("filling data...\n");
+  for (uint64_t i = 0; i < numVoxels; ++i) {
+    data[i] = c++;
+    if (c > maxSeg) {
+      c = 1;
+    }
+  }
+
+  mip0volFile->write(reinterpret_cast<const char*>(&data[0]), 4 * numVoxels);
+  mip0volFile->flush();
+
+  OmProject::Close();
+}
+
+TEST(meshTest , MeshProject){
+  OmProject::Load(QString::fromStdString(fnp));
+
+  SegmentationDataWrapper sdw(1);
+
+  {
+    MeshTest mt(sdw.GetSegmentation(), 1.0);
+    EXPECT_NO_THROW(mt.MeshFullVolume());
+  }
+
+  OmProject::Save();
+  OmProject::Close();
+}
+
+}
+}
