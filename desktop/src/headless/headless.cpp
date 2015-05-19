@@ -440,7 +440,15 @@ void Headless::loadHDF5seg(const QString& line) {
     return;
   }
 
-  HeadlessImpl::loadHDF5seg(args[1], segmentationID_);
+  OmBuildSegmentation bs;
+  const QString file = args[1];
+  bs.addFileNameAndPath(file);
+  bs.BuildImage();
+
+  //We update segmenationID_ because is the default value for meshing
+  segmentationID_ = bs.GetDataWrapper().id();
+
+  OmProject::Save();
 }
 
 void Headless::loadHDF5chann(const QString& line) {
@@ -451,11 +459,12 @@ void Headless::loadHDF5chann(const QString& line) {
     return;
   }
 
-  QString hdf5fnp = args[1];
-
   OmBuildChannel bc;
+  const QString hdf5fnp = args[1];
   bc.addFileNameAndPath(hdf5fnp);
   bc.Build();
+
+  OmProject::Save();
 }
 
 void Headless::loadHDF5affgraph(const QString& line) {

@@ -30,7 +30,7 @@ class progress {
     const uint32_t total = progress_->GetTotal();
     const uint32_t chunksLeft = total - progress_->GetDone();
 
-    log_debugs << "finished chunk: " << coord << "; " << chunksLeft
+    log_infos << "finished chunk: " << coord << "; " << chunksLeft
                << " chunks left "
                << "(" << total << " total)";
   }

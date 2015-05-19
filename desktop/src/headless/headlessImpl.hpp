@@ -67,14 +67,6 @@ class HeadlessImpl {
     OmProject::Save();
   }
 
-  static void loadHDF5seg(const QString file, om::common::ID& segmentationID_) {
-    OmBuildSegmentation bs;
-    bs.addFileNameAndPath(file);
-    bs.BuildImage();
-
-    segmentationID_ = bs.GetDataWrapper().id();
-  }
-
   static void ClearMST(const om::common::ID segmentationID) {
     SegmentationDataWrapper sdw(segmentationID);
     if (!sdw.IsValidWrapper()) {
