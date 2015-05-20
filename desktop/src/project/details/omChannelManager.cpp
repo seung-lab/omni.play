@@ -21,8 +21,6 @@ void OmChannelManager::RemoveChannel(const om::common::ID id) {
     return;
   }
 
-  chan->CloseDownThreads();
-
   // TODO: fixme
   // OmDataPath path(GetChannel(id).GetDirectoryPath());
   // OmProjectData::DeleteInternalData(path);

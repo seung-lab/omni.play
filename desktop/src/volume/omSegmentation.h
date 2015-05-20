@@ -76,8 +76,8 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
   inline om::common::ID GetID() const { return id_; }
   inline om::common::ID id() const { return id_; }
 
-  virtual int GetBytesPerVoxel() const;
-  virtual int GetBytesPerSlice() const;
+  virtual unsigned int GetBytesPerVoxel() const;
+  virtual unsigned int GetBytesPerSlice() const;
 
   SegmentationDataWrapper GetSDW() const;
 

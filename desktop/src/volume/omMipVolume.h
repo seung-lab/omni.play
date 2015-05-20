@@ -74,8 +74,8 @@ class OmMipVolume {
 
   virtual void SetVolDataType(const om::common::DataType) = 0;
 
-  virtual int GetBytesPerVoxel() const = 0;
-  virtual int GetBytesPerSlice() const = 0;
+  virtual unsigned int GetBytesPerVoxel() const = 0;
+  virtual unsigned int GetBytesPerSlice() const = 0;
 
   inline om::coords::VolumeSystem& Coords() { return coords_; }
   inline const om::coords::VolumeSystem& Coords() const { return coords_; }

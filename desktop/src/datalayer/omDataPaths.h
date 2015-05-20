@@ -4,8 +4,9 @@
 #include "common/common.h"
 #include "coordinates/mesh.h"
 
+
 class OmAffinityChannel;
-class OmChannelImpl;
+class OmChannel;
 class OmDataPath;
 class OmMeshManager;
 class OmSegmentation;
@@ -20,7 +21,7 @@ class OmDataPaths {
 
   static std::string getMeshFileName(const om::coords::Mesh& meshCoord);
 
-  static std::string getDirectoryPath(OmChannelImpl const* const chan);
+  static std::string getDirectoryPath(const OmChannel * const chan);
 
   static std::string Hdf5VolData(const std::string& dirPath, const int level);
 };
