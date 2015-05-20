@@ -5,7 +5,6 @@
 #include "actions/io/omActionReplayer.hpp"
 #include "actions/omActions.h"
 #include "common/common.h"
-#include "datalayer/archive/old/omDataArchiveProject.h"
 #include "datalayer/archive/project.h"
 #include "datalayer/hdf5/omHdf5Manager.h"
 #include "datalayer/omDataPath.h"
@@ -170,9 +169,6 @@ class OmProjectImpl {
 
     if (om::file::exists(projectMetadataFile_)) {
       om::data::archive::project::Read(projectMetadataFile_.c_str(), this);
-    } else {
-      OmDataArchiveProject::ArchiveRead(paths_.ProjectMetadataQt().c_str(),
-                                        this);
     }
 
     globals_->Users().UserSettings().Load();
@@ -223,24 +219,7 @@ class OmProjectImpl {
 
     openHDF5();
 
-    moveProjectMetadata();
-
     // TODO: Save()?
-  }
-
-  void moveProjectMetadata() {
-    const OmDataPath path = OmDataPaths::getProjectArchiveNameQT();
-    int size;
-    OmDataWrapperPtr dw = oldHDF5_->readDataset(path, &size);
-    char const* const data = dw->getPtr<const char>();
-
-    QFile newProjectMetadafile(paths_.ProjectMetadataQt().c_str());
-
-    if (!newProjectMetadafile.open(QIODevice::WriteOnly)) {
-      throw om::IoException("could not open");
-    }
-
-    newProjectMetadafile.write(data, size);
   }
 
   void setFileVersion(const int v) { fileVersion_ = v; }
