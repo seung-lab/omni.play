@@ -1,2 +1,2 @@
 #pragma once
-#define OMNI_SERVER_VERSION "1.0.11"
+#define OMNI_SERVER_VERSION "1.0.12"
