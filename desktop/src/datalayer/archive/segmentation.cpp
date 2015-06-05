@@ -56,8 +56,11 @@ bool convert<OmSegments>::decode(const Node& node, OmSegments& sc) {
 
 Node convert<OmSegmentsImpl>::encode(const OmSegmentsImpl& sc) {
   Node n;
-  n["Enabled Segments"] = std::set<om::common::SegID>();
-  n["Selected Segments"] = sc.Selection().selected_;
+
+  // We don't read these two any more. These are only kept here for comaptiblity
+  // with older binaries.
+  n["Enabled Segments"] = om::common::SegIDSet();
+  n["Selected Segments"] = om::common::SegIDSet();
 
   n["Segment Custom Names"] = sc.segmentCustomNames_;
   n["Segment Notes"] = sc.segmentNotes_;
