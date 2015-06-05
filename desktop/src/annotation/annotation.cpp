@@ -50,7 +50,7 @@ void manager::Save() const {
     log_debugs << "saving anotation to " << fnp;
     file << n;
   }
-  catch (std::exception e) {
+  catch (std::exception& e) {
     log_errors << "Error writing Annotation file: " << e.what();
   }
 }
@@ -74,7 +74,7 @@ void manager::Load() {
     YAML::Node n = YAML::LoadFile(fnp);
     base_t::Load(n);
   }
-  catch (YAML::Exception e) {
+  catch (YAML::Exception& e) {
     std::stringstream ss;
     ss << "Error Loading Annotations: " << e.what() << ".\n";
     throw IoException(ss.str());
