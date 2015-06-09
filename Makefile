@@ -183,7 +183,7 @@ lint:
 
 .PHONY: docs
 docs:
-	doxygen Doxyfile
+	cd $(HERE)/documentation/  && doxygen Doxyfile
 
 # Common  #################################################
 CURL_INCLUDES = $(shell pkg-config --cflags libcurl)

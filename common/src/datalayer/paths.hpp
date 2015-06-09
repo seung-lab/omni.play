@@ -19,7 +19,6 @@ class Paths {
 
   // Filenames
   struct File {
-    static path ProjectMetadataQt() { return "projectMetadata.qt"; }
     static path ProjectMetadataYaml() { return "projectMetadata.yaml"; }
     static path RandColors() { return "rand_colors.raw.ver1"; }
     static path Locations() { return "locations"; }
@@ -191,9 +190,6 @@ class Paths {
   }
 
   // Absolute
-  path ProjectMetadataQt() const {
-    return FilesFolder() / File::ProjectMetadataQt();
-  }
   path ProjectMetadataYaml() const {
     return FilesFolder() / File::ProjectMetadataYaml();
   }

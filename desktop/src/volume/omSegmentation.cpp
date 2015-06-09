@@ -152,11 +152,11 @@ void OmSegmentation::UpdateVoxelBoundingData() {
   updater.Update();
 }
 
-int OmSegmentation::GetBytesPerVoxel() const {
+unsigned int OmSegmentation::GetBytesPerVoxel() const {
   return volData_->GetBytesPerVoxel();
 }
 
-int OmSegmentation::GetBytesPerSlice() const {
+unsigned int OmSegmentation::GetBytesPerSlice() const {
   return GetBytesPerVoxel() * coords_.ChunkDimensions().x *
          coords_.ChunkDimensions().y;
 }

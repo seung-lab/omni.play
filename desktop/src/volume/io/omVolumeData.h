@@ -26,6 +26,6 @@ class OmVolumeData {
     return memMapped_.getChunkPtrRaw(coord);
   }
 
-  void downsample(OmMipVolume* vol) { memMapped_.downsample(vol); }
+  void downsample(OmMipVolume* vol) { memMapped_.downsample(vol);}
   void SetDataType(OmMipVolume* vol) { memMapped_.SetDataType(vol); }
 };

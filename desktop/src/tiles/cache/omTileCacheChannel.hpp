@@ -6,7 +6,7 @@
 #include "coordinates/tile.h"
 #include "tiles/omTileTypes.hpp"
 
-class OmChannelImpl;
+class OmChannel;
 
 class OmTileCacheChannel : public OmThreadedTileCache {
  public:
@@ -14,5 +14,5 @@ class OmTileCacheChannel : public OmThreadedTileCache {
 
   virtual ~OmTileCacheChannel() {}
 
-  void Load(OmChannelImpl*) {}
+  void Load(OmChannel*) {}
 };

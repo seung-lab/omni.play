@@ -1,10 +1,12 @@
 #pragma once
 #include "precomp.h"
 
+
 #include "volume/io/omMemMappedVolumeImpl.hpp"
-#include "volume/omMipVolume.h"
-#include "volume/omVolumeTypes.hpp"
+//#include "volume/omVolumeTypes.hpp"
 #include "datalayer/hdf5/omHdf5ChunkUtils.hpp"
+
+class omMipVolume;
 
 class OmMemMappedVolume {
  public:
