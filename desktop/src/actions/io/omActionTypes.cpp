@@ -6,6 +6,7 @@ om::actions_::typeMap_t om::actions_::registerActionTypes() {
   ret["OmSegmentValidateAction"] = OmSegmentValidateAction;
   ret["OmSegmentSplitAction"] = OmSegmentSplitAction;
   ret["OmSegmentCutAction"] = OmSegmentCutAction;
+  ret["OmSegmentShatterAction"] = OmSegmentShatterAction;
   ret["OmSegmentJoinAction"] = OmSegmentJoinAction;
   ret["OmSegmentSelectAction"] = OmSegmentSelectAction;
   ret["OmSegmentGroupAction"] = OmSegmentGroupAction;

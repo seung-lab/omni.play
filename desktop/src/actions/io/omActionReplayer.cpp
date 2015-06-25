@@ -9,6 +9,8 @@
 #include "actions/details/omSegmentSplitActionImpl.hpp"
 #include "actions/details/omSegmentCutAction.h"
 #include "actions/details/omSegmentCutActionImpl.hpp"
+#include "actions/details/omSegmentShatterAction.h"
+#include "actions/details/omSegmentShatterActionImpl.hpp"
 #include "actions/details/omSegmentUncertainAction.h"
 #include "actions/details/omSegmentUncertainActionImpl.hpp"
 #include "actions/details/omVoxelSetValueAction.h"
@@ -66,6 +68,9 @@ void OmActionReplayer::dispatchAction(const QString& actionName,
       break;
     case om::actions_::OmSegmentCutAction:
       doReplayFile<OmSegmentCutAction, OmSegmentCutActionImpl>(in);
+      break;
+    case om::actions_::OmSegmentShatterAction:
+      doReplayFile<OmSegmentShatterAction, OmSegmentShatterActionImpl>(in);
       break;
     case om::actions_::OmSegmentJoinAction:
       doReplayFile<OmSegmentJoinAction, OmSegmentJoinActionImpl>(in);

@@ -8,6 +8,7 @@ enum ActionTypes {
   OmSegmentValidateAction,
   OmSegmentSplitAction,
   OmSegmentCutAction,
+  OmSegmentShatterAction,
   OmSegmentJoinAction,
   OmSegmentSelectAction,
   OmSegmentGroupAction,
