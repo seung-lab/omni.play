@@ -3,7 +3,7 @@
 #include "network/curlCore.h"
 #include "network/uri.hpp"
 #include "datalayer/paths.hpp"
-#include "yaml-cpp/yaml.h"
+#include <yaml-cpp/yaml.h>
 #include "network/http/postStringEncoding.hpp"
 
 namespace om {

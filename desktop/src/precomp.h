@@ -1,6 +1,7 @@
 #pragma once
 
 #define GL_GLEXT_PROTOTYPES
+#define BOOST_LOG_DYN_LINK 1
 
 #if defined(__APPLE_CC__)
 #include <OpenGL/gl.h>

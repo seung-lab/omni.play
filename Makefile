@@ -1,9 +1,5 @@
 # -*- Makefile -*-
 
-ifeq ($(shell uname), Darwin)
-OSX = true
-endif
-
 HERE        =       .
 EXTERNAL    =   $(HERE)/external/libs
 BREAKPAD    =   $(HERE)/external/srcs/google-breakpad/src
@@ -20,28 +16,12 @@ MV      =   $(AT)mv
 RM      =   $(AT)rm
 TOUCH   =   $(AT)touch
 TAR     =   $(AT)tar
-FIND     =   $(AT)find
-
-ifdef OSX
-INT     =   $(AT)install_name_tool
-endif
-
+FIND     =  $(AT)find
 CC       =  $(AT)gcc
 CXX      =  $(AT)g++
-THRIFT   =  $(AT)$(EXTERNAL)/thrift/bin/thrift
-
-ifneq (,$(wildcard $(EXTERNAL)/qt/bin/moc))
-  LOCAL_QT =  true
-  MOC      =  $(AT)$(EXTERNAL)/qt/bin/moc
-  RCC      =  $(AT)$(EXTERNAL)/qt/bin/rcc
-else
-  MOC      =  $(AT)moc
-  RCC      =  $(AT)rcc
-endif
-
-ifneq (,$(wildcard $(EXTERNAL)/boost/lib/libboost_log.a))
-  LOCAL_BOOST = true
-endif
+THRIFT   =  $(AT)thrift
+MOC      =  $(AT)moc
+RCC      =  $(AT)rcc
 
 DUMPSYMS =  $(AT)$(EXTERNAL)/breakpad/bin/dump_syms
 
@@ -70,14 +50,9 @@ COMMON_LDFLAGS     =    -g -fPIC -Wl,--eh-frame-hdr -lm
 DBG_LDFLAGS        =    $(COMMON_LDFLAGS)
 OPT_LDFLAGS        =    $(COMMON_LDFLAGS) -O2 -fno-omit-frame-pointer
 
-ifdef LOCAL_BOOST
-#-DBOOST_FILESYSTEM_NO_DEPRECATED -DBOOST_SYSTEM_NO_DEPRECATED
-# Appears no longer necessary?
-else
-BOOST_DEFINES = -DBOOST_NO_CXX11_SCOPED_ENUMS -DBOOST_LOG_DYN_LINK
+BOOST_DEFINES = -DBOOST_NO_CXX11_SCOPED_ENUMS -DBOOST_LOG_DYN_LINK 
 # BOOST_NO_CXX11_SCOPED_ENUMS is for linking w non-C++11 boost_filesystem
 # BOOST_LOG_DYN_LINK is for dynamically linking to boost_log
-endif
 
 DEFINES = -DQT_NO_KEYWORDS -DQT_OPENGL_LIB -DQT_GUI_LIB -DQT_CORE_LIB \
 -DQT_SHARED -DQT_USE_FAST_CONCATENATION -DQT_USE_FAST_OPERATOR_PLUS \
@@ -89,14 +64,13 @@ EXTRA_LDFLAGS  = -DZI_USE_OPENMP -fopenmp
 
 ifneq ($(strip $(OPT)),)
   CFLAGS    =   $(OPT_CFLAGS) $(EXTRA_CFLAGS)
-  CXXFLAGS  =   $(DEFINES) $(OPT_CXXFLAGS) $(EXTRA_CXXFLAGS)
+  CXXFLAGS  =   $(DEFINES) $(OPT_CXXFLAGS) $(EXTRA_CXXFLAGS) 
   LDFLAGS   =   $(OPT_LDFLAGS) $(EXTRA_LDFLAGS)
   BUILDDIR  =   ./build/release
   BINDIR    =   ./bin/release
 else
-  CFLAGS    =   $(DBG_CFLAGS) $(EXTRA_CFLAGS)
-  CXXFLAGS  =   $(DEFINES) $(DBG_CXXFLAGS) $(EXTRA_CXXFLAGS)
-  LDFLAGS   =   $(DBG_LDFLAGS) $(EXTRA_LDFLAGS)
+  CFLAGS    =   $(DBG_CFLAGS) $(EXTRA_CFLAGS) 
+  CXXFLAGS  =   $(DEFINES) $(DBG_CXXFLAGS) $(EXTRA_CXXFLAGS) 
   BUILDDIR  =   ./build/debug
   BINDIR    =   ./bin/debug
 endif
@@ -148,9 +122,6 @@ TEST_INCLUDES = -I$(GMOCK)/include \
 			   -I$(GMOCK) \
 			   -I$(GMOCK)/gtest \
 
-YAML_SOURCES = $(shell find common/include/yaml-cpp/src -iname "*.cpp" )
-YAML_DEPS = $(YAML_SOURCES:.cpp=.o)
-
 LIB64_DEPS = $(BASE64)/src/cencode.o
 
 TEST_DEPS = $(GMOCK)/src/gmock-all.o $(GMOCK)/gtest/src/gtest-all.o
@@ -168,7 +139,6 @@ clean:
 	$(ECHO) Cleaning...
 	$(RM) -rf bin build coverage
 	$(RM) -rf common/src/precomp.h.gch desktop/src/precomp.h.gch
-	$(RM) -f common/include/yaml-cpp/src/*.o common/include/yaml-cpp/src/*.d
 	$(RM) -f desktop/lib/strnatcmp.o
 	$(FIND) desktop/src -iname "*\.moc\.cpp" -delete 2> /dev/null
 	$(FIND) common/include -iname "*\.o" -delete 2> /dev/null
@@ -196,17 +166,13 @@ INCLUDES    =   -I$(HERE) \
 		-I$(HERE)/common/include/gmock-1.6.0 \
 		-I$(HERE)/common/include/gmock-1.6.0/gtest \
 		-I$(HERE)/common/include/gmock-1.6.0/gtest/include \
-		-I$(HERE)/common/include/yaml-cpp/include \
-		-I$(HERE)/desktop/include/yaml-cpp-old/include \
-		-I$(EXTERNAL)/libjpeg/include \
 		-I$(HERE)/zi_lib \
 		-I$(BASE64)/include \
-		-I$(EXTERNAL)/boost/include \
 		$(CURL_INCLUDES)
 
 #If we want to force the system to prefer static libs, we can use  
 #BOOST_LIBS = -Wl,-Bstatic -l... -Wl,-Bdynamic
-BOOST_LIBS = -L$(EXTERNAL)/boost/lib/ \
+BOOST_LIBS = -L/usr/lib/x86_64-linux-gnu \
 	   -lboost_filesystem \
 	   -lboost_iostreams \
 	   -lboost_log \
@@ -215,11 +181,13 @@ BOOST_LIBS = -L$(EXTERNAL)/boost/lib/ \
 	   -lboost_regex \
 	   -lboost_date_time
 
+
 LIBS = $(BOOST_LIBS) \
-	   -L$(EXTERNAL)/libjpeg/lib/ -lturbojpeg \
+	   -lturbojpeg \
 	   -lpthread -lrt -lGLU -lGL -lz \
 	   $(CURL_LIBS) \
-		 /usr/lib/libtcmalloc_minimal.a
+		 -L/usr/lib/libtcmalloc_minimal.a \
+		 -L/usr/local/lib -lyaml-cpp  
 
 COMMON_INCLUDES = $(INCLUDES) -include common/src/precomp.h
 
@@ -247,8 +215,7 @@ common: $(BINDIR)/omni.common.test
 # Thrift  #################################################
 THRIFT_INCLUDES = $(COMMON_INCLUDES) \
 				 -I$(GENDIR) \
-				 -I$(EXTERNAL)/thrift/include \
-				 -I$(EXTERNAL)/thrift/include/thrift \
+				 -I/usr/local/include/thrift
 
 $(BUILDDIR)/thrift/%.o: $(GENDIR)/%.cpp $(THRIFT_DEPS)
 	$(call build_cpp, $(THRIFT_INCLUDES))
@@ -301,51 +268,10 @@ server: common $(BINDIR)/omni.server $(BINDIR)/omni.server.test
 
 # Desktop  #################################################
 # QT_LIBRARIES = QtGui QtNetwork QtCore QtOpenGL
-ifdef OSX
-QT_INCLUDES = -I$(EXTERNAL)/qt/lib/Qt.framework/Headers \
-				            -I$(EXTERNAL)/qt/lib/QtCore.framework/Headers \
-				            -I$(EXTERNAL)/qt/lib/QtOpenGL.framework/Headers \
-				            -I$(EXTERNAL)/qt/lib/QtGui.framework/Headers \
-				            -I$(EXTERNAL)/qt/lib/QtNetwork.framework/Headers \
+#Qt5
+QT_INCLUDES = `pkg-config --cflags Qt5Core Qt5OpenGL Qt5Gui Qt5Widgets Qt5Network`
+QT_LIBS = `pkg-config --libs Qt5Core Qt5OpenGL Qt5Gui Qt5Widgets Qt5Network`
 
-QT_LIBS = -F$(EXTERNAL)/qt/lib \
-				       -framework QtCore \
-				       -framework QtOpenGL \
-				       -framework QtGui \
-				       -framework QtNetwork \
-				       -framework OpenGL \
-				       -framework GLUT
-else
-
-  ifdef LOCAL_QT
-    # Qt4.8 built from the bootstrap script
-    QT_INCLUDES = -I$(EXTERNAL)/qt/include/Qt \
-				            -I$(EXTERNAL)/qt/include/QtCore \
-				            -I$(EXTERNAL)/qt/include/QtOpenGL \
-				            -I$(EXTERNAL)/qt/include/QtGui \
-				            -I$(EXTERNAL)/qt/include/QtNetwork
-    QT_LIBS = -L$(EXTERNAL)/qt/lib \
-					     -lQtGui \
-					     -lQtNetwork \
-					     -lQtCore \
-					     -lQtOpenGL
-  else
-    #Qt5
-    QT_INCLUDES = $(shell pkg-config --cflags \
-    				Qt5Core Qt5OpenGL Qt5Gui Qt5Widgets Qt5Network 2>/dev/null)
-    QT_LIBS = $(shell pkg-config --libs \
-    				Qt5Core Qt5OpenGL Qt5Gui Qt5Widgets Qt5Network 2>/dev/null)
-
-    #Qt4
-    ifeq ($(QT_INCLUDES), )
-      QT_INCLUDES = $(shell pkg-config --cflags \
-      				QtCore QtOpenGL QtGui QtNetwork 2>/dev/null)
-      QT_LIBS = $(shell pkg-config --libs \
-      				QtCore QtOpenGL QtGui QtNetwork 2>/dev/null)
-    endif
-  endif
-
-endif #OSX
 
 HDF5_INCLUDES = -I$(EXTERNAL)/hdf5/include \
 				-I/usr/lib/openmpi/include -I/usr/include/
@@ -355,7 +281,6 @@ DESKTOP_INCLUDES = -I$(HERE)/desktop/src \
 				  -I$(HERE)/desktop/include \
 				  -I$(HERE)/desktop/lib \
 				  -I$(HERE)/desktop \
-				  -I$(EXTERNAL)/qt/include \
 				  $(HDF5_INCLUDES) \
 				  -I$(BASE64)/include \
 				  $(QT_INCLUDES) \
@@ -421,53 +346,6 @@ symbols: omni.desktop.sym
 
 desktop: common $(BINDIR)/omni.desktop $(BINDIR)/omni.desktop.test
 
-ifeq ($OSX, true)
-APPDIR = $(BINDIR)/omni.desktop.app
-APPBINDIR = $(APPDIR)/Contents/MacOS
-APPFRAMEDIR = $(APPDIR)/Contents/Frameworks
-APPRESCDIR = $(APPDIR)/Contents/Resources
-
-QtMenuNib = external/srcs/qt-everywhere-opensource-src-4.8.2/src/gui/mac/qt_menu.nib
-
-QtCore = $(abspath $(EXTERNAL)/qt/lib/QtCore.framework/Versions/4/QtCore)
-QtGui = $(abspath $(EXTERNAL)/qt/lib/QtGui.framework/Versions/4/QtGui)
-QtNetwork = $(abspath $(EXTERNAL)/qt/lib/QtNetwork.framework/Versions/4/QtNetwork)
-QtOpenGL = $(abspath $(EXTERNAL)/qt/lib/QtOpenGL.framework/Versions/4/QtOpenGL)
-
-.PHONY: app
-app: $(BINDIR)/omni.desktop
-	$(ECHO) "Assembling App..."
-	$(MKDIR) -p $(APPBINDIR)
-	$(MKDIR) -p $(APPFRAMEDIR)
-	$(MKDIR) -p $(APPRESCDIR)
-
-	$(CP) $(BINDIR)/omni.desktop $(APPBINDIR)
-
-	$(CP) $(QtCore) $(APPFRAMEDIR)
-	$(CP) $(QtGui) $(APPFRAMEDIR)
-	$(CP) $(QtNetwork) $(APPFRAMEDIR)
-	$(CP) $(QtOpenGL) $(APPFRAMEDIR)
-
-	$(CP) -R $(QtMenuNib) $(APPRESCDIR)
-
-	$(INT) -id @executable_path/../Frameworks/QtCore $(APPFRAMEDIR)/QtCore
-	$(INT) -id @executable_path/../Frameworks/QtGui $(APPFRAMEDIR)/QtGui
-	$(INT) -id @executable_path/../Frameworks/QtNetwork $(APPFRAMEDIR)/QtNetwork
-	$(INT) -id @executable_path/../Frameworks/QtOpenGL $(APPFRAMEDIR)/QtOpenGL
-
-	$(INT) -change $(QtCore) @executable_path/../Frameworks/QtCore $(APPFRAMEDIR)/QtGui
-	$(INT) -change $(QtCore) @executable_path/../Frameworks/QtCore $(APPFRAMEDIR)/QtNetwork
-	$(INT) -change $(QtCore) @executable_path/../Frameworks/QtCore $(APPFRAMEDIR)/QtOpenGL
-	$(INT) -change $(QtGui) @executable_path/../Frameworks/QtGui $(APPFRAMEDIR)/QtOpenGL
-
-	$(INT) -change $(QtCore) @executable_path/../Frameworks/QtCore $(APPBINDIR)/omni.desktop
-	$(INT) -change $(QtGui) @executable_path/../Frameworks/QtGui $(APPBINDIR)/omni.desktop
-	$(INT) -change $(QtNetwork) @executable_path/../Frameworks/QtNetwork $(APPBINDIR)/omni.desktop
-	$(INT) -change $(QtOpenGL) @executable_path/../Frameworks/QtOpenGL $(APPBINDIR)/omni.desktop
-
-	$(TAR) -zcvf $(BINDIR)/omni.tar.gz -C $(BINDIR) omni.desktop.app
-
-endif
 
 # URTM  #################################################
 URTM_INCLUDES = $(SERVER_INCLUDES) \
@@ -546,3 +424,10 @@ coverage:
 	lcov --remove ./coverage/app.info "test/*" -o ./coverage/app.info   
 	lcov --remove ./coverage/app.info "include/*" -o ./coverage/app.info   
 	genhtml --output-directory ./coverage ./coverage/app.info    
+
+.PHONY: get-deps
+get-deps:
+	$(CC) -v
+	libpng-config  --version
+	echo "getting depdencies"
+	echo $(shell pkg-config --cflags Qt5Core Qt5OpenGL Qt5Gui Qt5Widgets Qt5Network)
