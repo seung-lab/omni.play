@@ -1,3 +1,5 @@
+#define BOOST_LOG_DYN_LINK 1
+
 #include "precomp.h"
 ZiARG_bool(headless, false, "run Omni without GUI");
 ZiARG_string(cmdfile, "", "run automated script file");

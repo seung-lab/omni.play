@@ -1,0 +1,98 @@
+language: cpp
+
+sudo: required
+dist: trusty
+
+os:
+  - linux
+
+#to avoid an infinite loop, before_deploy creates a tag which will re run travis
+branches:
+  except:
+  - /^linux-b.*$/
+  - /^macosx-b.*$/
+addons:
+  apt:
+    packages:
+    - g++-4.8
+    - libboost-all-dev
+    - libboost-log-dev
+    - libpng++-dev
+    - libjpeg-turbo8-dev
+    - libyaml-dev
+    - libgtest-dev
+    - doxygen
+    - thrift-compiler
+    - libxrender-dev
+    - libxext-dev
+    - freeglut3-dev
+    - libfreetype6-dev
+    - libxml2
+    - libxml2-dev
+    - mesa-common-dev
+    - libxt-dev
+    - libgl1-mesa-dev
+    - libglu1-mesa-dev
+    - libgl1-mesa-dri-dbg
+    - libgl1-mesa-glx-dbg
+    - libncurses5-dev
+    - libjpeg-turbo8-dev
+    - libevent-dev
+    - libssl-dev
+    - libcurl4-openssl-dev
+    - pkg-config
+    - qt5-default
+    - libboost-all-dev
+    - libhdf5-openmpi-dev
+    - libgoogle-perftools-dev
+    - libqt5opengl5-dev
+    - qttools5-dev 
+    sources:
+    - ubuntu-toolchain-r-test
+    - llvm-toolchain-precise
+
+#Install lib that cannot be install using travis addon
+install:
+  - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then
+         lsb_release -a
+      && sudo apt-get install -y libyaml-cpp-dev libtcmalloc-minimal4 qtcreator-dev
+      && export CXX="g++-4.8"
+      && export CC="gcc-4.8"
+      ;
+    fi
+
+#After executing the script, make sure to be in the repo root folder, otherwise the deploy script will fail
+script:
+  - echo "#define BUILD $TRAVIS_BUILD_NUMBER" > build_number.h
+  - make desktop CC=$CC CXX=$CXX
+  #- cd documentation/
+  #- cd ../
+before_deploy:
+  #
+  # add a tag
+  #
+  - git config --global user.email "builds@travis-ci.com"
+  - git config --global user.name "Travis CI"
+  - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then
+         export GIT_TAG=linux-b$TRAVIS_BUILD_NUMBER
+      ;
+    else
+         export GIT_TAG=macosx-b$TRAVIS_BUILD_NUMBER
+      ;
+    fi
+  - git tag $GIT_TAG 
+  - git push -q https://$GH_TOKEN@github.com/seung-lab/omni.play --tags
+
+deploy:
+- provider: releases
+  api_key: $GH_TOKEN
+  file: 
+  - ./bin/debug/omni.desktop
+  skip_cleanup: true
+  on:
+      repo: seung-lab/omni.play
+      branch: 
+       - master
+       - travis
+      tags: false
+      condition: ${TRAVIS_OS_NAME} = linux
