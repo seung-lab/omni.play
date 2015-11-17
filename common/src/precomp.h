@@ -1,6 +1,7 @@
 #pragma once
 
 // #define BOOST_BIND_NO_PLACEHOLDERS
+#define BOOST_LOG_DYN_LINK 1
 
 #include <algorithm>
 #include <atomic>
