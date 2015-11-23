@@ -79,7 +79,8 @@ public:
         : lru_()
         , m_()
         , size_(500000)
-        , max_memory_(10000000000ULL) // 10M
+        , max_memory_(8000000000ULL) // in bytes.
+                // 8G, half the physical memory on the current system running rtm
         , cur_memory_(0)
         , map_()
     {}
