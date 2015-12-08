@@ -12,14 +12,6 @@ branches:
   - /^linux-b.*$/
   - /^macosx-b.*$/
 
-addons:
-  apt:
-    sources:
-    - ubuntu-toolchain-r-test
-    packages:
-    # required to run python bootstrap.py that handles the dependencies
-    - python-yaml
-
 #Install lib that cannot be install using travis addon
 install:
   # This is to apt-get the packages needed to build omni
@@ -27,7 +19,7 @@ install:
          lsb_release -a
       && export CXX="g++-4.8"
       && export CC="gcc-4.8"
-      && python bootstrap.py 3
+      && ./bootstrap.py 3
       ;
     fi
 
