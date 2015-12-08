@@ -11,13 +11,20 @@ branches:
   except:
   - /^linux-b.*$/
   - /^macosx-b.*$/
+
+addons:
+    apt:
+        packages:
+            # required to run python bootstrap.py that handles the dependencies
+            - python-yaml
+
 #Install lib that cannot be install using travis addon
 install:
   - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then
          lsb_release -a
       && export CXX="g++-4.8"
       && export CC="gcc-4.8"
-      && python bootstrap.py 3
+      && python bootstrap.py 3 #this is to apt-get the packages needed to build omni
       ;
     fi
 
