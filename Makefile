@@ -127,7 +127,7 @@ endef
 define deps
 	$(eval $1_SOURCES = $(shell find $2/src -iname "*.cpp" 2>/dev/null | grep -v "main.cpp"))
 	$(eval $1_MAIN = $(BUILDDIR)/$2/main.o)
-	$(eval $1_DEPS = $(subst $2/src,$(BUILDDIR)/$2 $($1_SOURCES:.cpp=.o)))
+	$(eval $1_DEPS = $($1_SOURCES:.cpp=.o)))
 endef
 
 define link
@@ -202,7 +202,7 @@ INCLUDES    =   -I$(HERE) \
 
 #If we want to force the system to prefer static libs, we can use  
 #BOOST_LIBS = -Wl,-Bstatic -l... -Wl,-Bdynamic
-BOOST_LIBS =
+BOOST_LIBS = \
 	   -lboost_filesystem \
 	   -lboost_iostreams \
 	   -lboost_log \
@@ -212,7 +212,7 @@ BOOST_LIBS =
 	   -lboost_date_time
 
 LIBS = $(BOOST_LIBS) \
-	   -L/usr/local/lib
+	   -L/usr/local/lib \
 	   -lturbojpeg \
 	   -lpthread -lrt -lGLU -lGL -lz \
 	   $(CURL_LIBS) \
