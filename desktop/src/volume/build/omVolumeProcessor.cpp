@@ -21,8 +21,9 @@ class OmSegmentationChunkBuildTask : public zi::runnable {
   void run() {
     auto chunk = vol_.GetChunk(coord_);
 
-    OmProcessSegmentationChunk p(coord_.mipLevel() == 0, segments_);
-
+    // We need to compute the sizes and bounding box for only MIP level 0
+    bool computeSizeAndBounds = coord_.mipLevel() == 0;
+    OmProcessSegmentationChunk p(computeSizeAndBounds, computeSizeAndBounds, segments_);
     for (auto& dv : vol_.Iterate<uint32_t>(coord_.BoundingBox(vol_.Coords()))) {
       if (dv.value()) {
         p.processVoxel(dv.value(), dv.coord());

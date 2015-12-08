@@ -10,8 +10,7 @@ OmUpdateBoundingBoxes::OmUpdateBoundingBoxes(OmSegmentation* vol)
 void OmUpdateBoundingBoxes::doUpdate(const om::coords::Chunk& coord) {
   auto chunk = vol_->GetChunk(coord);
 
-  OmProcessSegmentationChunk p(false, vol_->Segments());
-
+  OmProcessSegmentationChunk p(false, true, vol_->Segments());
   for (auto& dv : vol_->Iterate<uint32_t>(coord.BoundingBox(vol_->Coords()))) {
     if (dv.value()) {
       p.processVoxel(dv.value(), dv.coord());
