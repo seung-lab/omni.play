@@ -11,53 +11,13 @@ branches:
   except:
   - /^linux-b.*$/
   - /^macosx-b.*$/
-addons:
-  apt:
-    packages:
-    - g++-4.8
-    - libboost-all-dev
-    - libboost-log-dev
-    - libpng++-dev
-    - libjpeg-turbo8-dev
-    - libyaml-dev
-    - libgtest-dev
-    - doxygen
-    - thrift-compiler
-    - libxrender-dev
-    - libxext-dev
-    - freeglut3-dev
-    - libfreetype6-dev
-    - libxml2
-    - libxml2-dev
-    - mesa-common-dev
-    - libxt-dev
-    - libgl1-mesa-dev
-    - libglu1-mesa-dev
-    - libgl1-mesa-dri-dbg
-    - libgl1-mesa-glx-dbg
-    - libncurses5-dev
-    - libjpeg-turbo8-dev
-    - libevent-dev
-    - libssl-dev
-    - libcurl4-openssl-dev
-    - pkg-config
-    - qt5-default
-    - libboost-all-dev
-    - libhdf5-openmpi-dev
-    - libgoogle-perftools-dev
-    - libqt5opengl5-dev
-    - qttools5-dev 
-    sources:
-    - ubuntu-toolchain-r-test
-    - llvm-toolchain-precise
-
 #Install lib that cannot be install using travis addon
 install:
   - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then
          lsb_release -a
-      && sudo apt-get install -y libyaml-cpp-dev libtcmalloc-minimal4 qtcreator-dev
       && export CXX="g++-4.8"
       && export CC="gcc-4.8"
+      && python bootstrap.py 3
       ;
     fi
 
@@ -65,8 +25,6 @@ install:
 script:
   - echo "#define BUILD $TRAVIS_BUILD_NUMBER" > build_number.h
   - make desktop CC=$CC CXX=$CXX
-  #- cd documentation/
-  #- cd ../
 before_deploy:
   #
   # add a tag

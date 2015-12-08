@@ -1,9 +1,8 @@
 # -*- Makefile -*-
+
 ifeq ($(shell uname), Darwin)
 OSX = true
-INT     =   $(AT)install_name_tool
 endif
-
 
 HERE        =       .
 EXTERNAL    =   $(HERE)/external/libs
@@ -24,11 +23,10 @@ TAR     =   $(AT)tar
 FIND     =  $(AT)find
 CC       =  $(AT)gcc
 CXX      =  $(AT)g++
-THRIFT   =  $(AT)thrift
-MOC      =  $(AT)moc
-RCC      =  $(AT)rcc
 
-DUMPSYMS =  $(AT)$(EXTERNAL)/breakpad/bin/dump_syms
+ifdef OSX
+INT     =   $(AT)install_name_tool
+endif
 
 ifneq (,$(wildcard $(EXTERNAL)/thrift/bin/thrift))
 THRIFT   =  $(AT)$(EXTERNAL)/thrift/bin/thrift
@@ -48,6 +46,9 @@ endif
 ifneq (,$(wildcard $(EXTERNAL)/boost/lib/libboost_log.a))
   LOCAL_BOOST = true
 endif
+
+DUMPSYMS =  $(AT)$(EXTERNAL)/breakpad/bin/dump_syms
+
 # don't delete intermediate files
 .SECONDARY:
 
@@ -73,7 +74,6 @@ COMMON_LDFLAGS     =    -g -fPIC -Wl,--eh-frame-hdr -lm
 DBG_LDFLAGS        =    $(COMMON_LDFLAGS)
 OPT_LDFLAGS        =    $(COMMON_LDFLAGS) -O2 -fno-omit-frame-pointer
 
-
 ifdef LOCAL_BOOST
 #-DBOOST_FILESYSTEM_NO_DEPRECATED -DBOOST_SYSTEM_NO_DEPRECATED
 # Appears no longer necessary?
@@ -93,13 +93,14 @@ EXTRA_LDFLAGS  = -DZI_USE_OPENMP -fopenmp
 
 ifneq ($(strip $(OPT)),)
   CFLAGS    =   $(OPT_CFLAGS) $(EXTRA_CFLAGS)
-  CXXFLAGS  =   $(DEFINES) $(OPT_CXXFLAGS) $(EXTRA_CXXFLAGS) 
+  CXXFLAGS  =   $(DEFINES) $(OPT_CXXFLAGS) $(EXTRA_CXXFLAGS)
   LDFLAGS   =   $(OPT_LDFLAGS) $(EXTRA_LDFLAGS)
   BUILDDIR  =   ./build/release
   BINDIR    =   ./bin/release
 else
-  CFLAGS    =   $(DBG_CFLAGS) $(EXTRA_CFLAGS) 
-  CXXFLAGS  =   $(DEFINES) $(DBG_CXXFLAGS) $(EXTRA_CXXFLAGS) 
+  CFLAGS    =   $(DBG_CFLAGS) $(EXTRA_CFLAGS)
+  CXXFLAGS  =   $(DEFINES) $(DBG_CXXFLAGS) $(EXTRA_CXXFLAGS)
+  LDFLAGS   =   $(DBG_LDFLAGS) $(EXTRA_LDFLAGS)
   BUILDDIR  =   ./build/debug
   BINDIR    =   ./bin/debug
 endif
@@ -126,7 +127,7 @@ endef
 define deps
 	$(eval $1_SOURCES = $(shell find $2/src -iname "*.cpp" 2>/dev/null | grep -v "main.cpp"))
 	$(eval $1_MAIN = $(BUILDDIR)/$2/main.o)
-	$(eval $1_DEPS = $(subst $2/src,$(BUILDDIR)/$2,$3 $($1_SOURCES:.cpp=.o)))
+	$(eval $1_DEPS = $(subst $2/src,$(BUILDDIR)/$2 $($1_SOURCES:.cpp=.o)))
 endef
 
 define link
@@ -201,7 +202,7 @@ INCLUDES    =   -I$(HERE) \
 
 #If we want to force the system to prefer static libs, we can use  
 #BOOST_LIBS = -Wl,-Bstatic -l... -Wl,-Bdynamic
-BOOST_LIBS = -L/usr/lib/x86_64-linux-gnu \
+BOOST_LIBS =
 	   -lboost_filesystem \
 	   -lboost_iostreams \
 	   -lboost_log \
@@ -210,13 +211,13 @@ BOOST_LIBS = -L/usr/lib/x86_64-linux-gnu \
 	   -lboost_regex \
 	   -lboost_date_time
 
-
 LIBS = $(BOOST_LIBS) \
+	   -L/usr/local/lib
 	   -lturbojpeg \
 	   -lpthread -lrt -lGLU -lGL -lz \
 	   $(CURL_LIBS) \
-		 -L/usr/lib/libtcmalloc_minimal.a \
-		 -L/usr/local/lib -lyaml-cpp  
+	   -L/usr/lib/libtcmalloc_minimal.a \
+	   -lyaml-cpp  
 
 COMMON_INCLUDES = $(INCLUDES) -include common/src/precomp.h
 
@@ -225,7 +226,7 @@ $(BUILDDIR)/common/%.o: common/src/%.cpp common/src/precomp.h.gch
 common/src/precomp.h.gch: common/src/precomp.h
 	$(call build_gch, $(INCLUDES))
 
-$(eval $(call deps,COMMON,common,$(YAML_DEPS)))
+$(eval $(call deps,COMMON,common))
 
 
 COMMON_TEST_INCLUDES = -I$(HERE)/common/test/src
@@ -297,16 +298,55 @@ server: common $(BINDIR)/omni.server $(BINDIR)/omni.server.test
 
 # Desktop  #################################################
 # QT_LIBRARIES = QtGui QtNetwork QtCore QtOpenGL
-#Qt5
-QT_INCLUDES = `pkg-config --cflags Qt5Core Qt5OpenGL Qt5Gui Qt5Widgets Qt5Network`
-QT_LIBS = `pkg-config --libs Qt5Core Qt5OpenGL Qt5Gui Qt5Widgets Qt5Network`
+ifdef OSX
+QT_INCLUDES = -I$(EXTERNAL)/qt/lib/Qt.framework/Headers \
+				            -I$(EXTERNAL)/qt/lib/QtCore.framework/Headers \
+				            -I$(EXTERNAL)/qt/lib/QtOpenGL.framework/Headers \
+				            -I$(EXTERNAL)/qt/lib/QtGui.framework/Headers \
+				            -I$(EXTERNAL)/qt/lib/QtNetwork.framework/Headers \
 
+QT_LIBS = -F$(EXTERNAL)/qt/lib \
+				       -framework QtCore \
+				       -framework QtOpenGL \
+				       -framework QtGui \
+				       -framework QtNetwork \
+				       -framework OpenGL \
+				       -framework GLUT
+else
+
+  ifdef LOCAL_QT
+    # Qt4.8 built from the bootstrap script
+    QT_INCLUDES = -I$(EXTERNAL)/qt/include/Qt \
+				            -I$(EXTERNAL)/qt/include/QtCore \
+				            -I$(EXTERNAL)/qt/include/QtOpenGL \
+				            -I$(EXTERNAL)/qt/include/QtGui \
+				            -I$(EXTERNAL)/qt/include/QtNetwork
+    QT_LIBS = -L$(EXTERNAL)/qt/lib \
+					     -lQtGui \
+					     -lQtNetwork \
+					     -lQtCore \
+					     -lQtOpenGL
+  else
+    #Qt5
+    QT_INCLUDES = $(shell pkg-config --cflags \
+    				Qt5Core Qt5OpenGL Qt5Gui Qt5Widgets Qt5Network 2>/dev/null)
+    QT_LIBS = $(shell pkg-config --libs \
+    				Qt5Core Qt5OpenGL Qt5Gui Qt5Widgets Qt5Network 2>/dev/null)
+
+    #Qt4
+    ifeq ($(QT_INCLUDES), )
+      QT_INCLUDES = $(shell pkg-config --cflags \
+      				QtCore QtOpenGL QtGui QtNetwork 2>/dev/null)
+      QT_LIBS = $(shell pkg-config --libs \
+      				QtCore QtOpenGL QtGui QtNetwork 2>/dev/null)
+    endif
+  endif
+
+endif #OSX
 
 HDF5_INCLUDES = -I$(EXTERNAL)/hdf5/include \
--I/usr/lib/openmpi/include -I/usr/include/
-HDF5_LIBS = -L$(EXTERNAL)/hdf5/lib/ -l hdf5 \
--L/usr/lib/x86_64-linux-gnu
-
+				-I/usr/lib/openmpi/include -I/usr/include/
+HDF5_LIBS = -L$(EXTERNAL)/hdf5/lib/ -l hdf5
 DESKTOP_INCLUDES = -I$(HERE)/desktop/src \
 					$(INCLUDES) \
 				  -I$(HERE)/desktop/include \
@@ -377,6 +417,53 @@ symbols: omni.desktop.sym
 
 desktop: common $(BINDIR)/omni.desktop $(BINDIR)/omni.desktop.test
 
+ifeq ($OSX, true)
+APPDIR = $(BINDIR)/omni.desktop.app
+APPBINDIR = $(APPDIR)/Contents/MacOS
+APPFRAMEDIR = $(APPDIR)/Contents/Frameworks
+APPRESCDIR = $(APPDIR)/Contents/Resources
+
+QtMenuNib = external/srcs/qt-everywhere-opensource-src-4.8.2/src/gui/mac/qt_menu.nib
+
+QtCore = $(abspath $(EXTERNAL)/qt/lib/QtCore.framework/Versions/4/QtCore)
+QtGui = $(abspath $(EXTERNAL)/qt/lib/QtGui.framework/Versions/4/QtGui)
+QtNetwork = $(abspath $(EXTERNAL)/qt/lib/QtNetwork.framework/Versions/4/QtNetwork)
+QtOpenGL = $(abspath $(EXTERNAL)/qt/lib/QtOpenGL.framework/Versions/4/QtOpenGL)
+
+.PHONY: app
+app: $(BINDIR)/omni.desktop
+	$(ECHO) "Assembling App..."
+	$(MKDIR) -p $(APPBINDIR)
+	$(MKDIR) -p $(APPFRAMEDIR)
+	$(MKDIR) -p $(APPRESCDIR)
+
+	$(CP) $(BINDIR)/omni.desktop $(APPBINDIR)
+
+	$(CP) $(QtCore) $(APPFRAMEDIR)
+	$(CP) $(QtGui) $(APPFRAMEDIR)
+	$(CP) $(QtNetwork) $(APPFRAMEDIR)
+	$(CP) $(QtOpenGL) $(APPFRAMEDIR)
+
+	$(CP) -R $(QtMenuNib) $(APPRESCDIR)
+
+	$(INT) -id @executable_path/../Frameworks/QtCore $(APPFRAMEDIR)/QtCore
+	$(INT) -id @executable_path/../Frameworks/QtGui $(APPFRAMEDIR)/QtGui
+	$(INT) -id @executable_path/../Frameworks/QtNetwork $(APPFRAMEDIR)/QtNetwork
+	$(INT) -id @executable_path/../Frameworks/QtOpenGL $(APPFRAMEDIR)/QtOpenGL
+
+	$(INT) -change $(QtCore) @executable_path/../Frameworks/QtCore $(APPFRAMEDIR)/QtGui
+	$(INT) -change $(QtCore) @executable_path/../Frameworks/QtCore $(APPFRAMEDIR)/QtNetwork
+	$(INT) -change $(QtCore) @executable_path/../Frameworks/QtCore $(APPFRAMEDIR)/QtOpenGL
+	$(INT) -change $(QtGui) @executable_path/../Frameworks/QtGui $(APPFRAMEDIR)/QtOpenGL
+
+	$(INT) -change $(QtCore) @executable_path/../Frameworks/QtCore $(APPBINDIR)/omni.desktop
+	$(INT) -change $(QtGui) @executable_path/../Frameworks/QtGui $(APPBINDIR)/omni.desktop
+	$(INT) -change $(QtNetwork) @executable_path/../Frameworks/QtNetwork $(APPBINDIR)/omni.desktop
+	$(INT) -change $(QtOpenGL) @executable_path/../Frameworks/QtOpenGL $(APPBINDIR)/omni.desktop
+
+	$(TAR) -zcvf $(BINDIR)/omni.tar.gz -C $(BINDIR) omni.desktop.app
+
+endif
 
 # URTM  #################################################
 URTM_INCLUDES = $(SERVER_INCLUDES) \
