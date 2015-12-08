@@ -127,7 +127,7 @@ endef
 define deps
 	$(eval $1_SOURCES = $(shell find $2/src -iname "*.cpp" 2>/dev/null | grep -v "main.cpp"))
 	$(eval $1_MAIN = $(BUILDDIR)/$2/main.o)
-	$(eval $1_DEPS = $($1_SOURCES:.cpp=.o)))
+	$(eval $1_DEPS = $($1_SOURCES:.cpp=.o))
 endef
 
 define link
