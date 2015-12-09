@@ -12,6 +12,9 @@ branches:
   - /^linux-b.*$/
   - /^macosx-b.*$/
 
+before_install:
+  - sudo apt-get update -qq
+
 #Install lib that cannot be install using travis addon
 install:
   # This is to apt-get the packages needed to build omni
