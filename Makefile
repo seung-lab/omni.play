@@ -172,6 +172,8 @@ clean:
 	$(RM) -f desktop/lib/strnatcmp.o
 	$(FIND) desktop/src -iname "*\.moc\.cpp" -delete 2> /dev/null
 	$(FIND) common/include -iname "*\.o" -delete 2> /dev/null
+	$(FIND) common -iname "*\.gcno" -delete 2> /dev/null
+	$(FIND) desktop -iname "*\.gcno" -delete 2> /dev/null
 
 .PHONY: remake
 remake: clean all
