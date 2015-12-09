@@ -22,6 +22,7 @@ install:
          lsb_release -a
       && export CXX="g++-4.8"
       && export CC="gcc-4.8"
+      && ./bootstrap.py 11
       && ./bootstrap.py 3
       ;
     fi
