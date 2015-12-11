@@ -8,6 +8,8 @@
 #include "segment/omSegments.h"
 #include "segment/types.hpp"
 #include "volume/omSegmentation.h"
+#include <sstream>
+#include <set>
 
 class OmMSTImportHdf5 {
  private:
@@ -22,7 +24,7 @@ class OmMSTImportHdf5 {
       return false;
     }
 
-    checkSizes();
+    checkValidData();
 
     process();
 
@@ -67,6 +69,35 @@ class OmMSTImportHdf5 {
     hdf5->close();
 
     return true;
+  }
+
+  void checkValidData() {
+      checkSizes();
+      checkParentChildOrdering();
+  }
+
+  /*
+   * Each omSegment has a pointer to it's parent in the MST.
+   * The code that parses the parent-child relationship requires
+   * that the input MST file must have the child node first,
+   * then the parent node. In other words, the child node on the
+   * left must be unique.
+   */
+  void checkParentChildOrdering() {
+    uint32_t const* const nodes = dend_->getPtr<uint32_t>();
+    std::set<uint32_t> uniqueNodes;
+    for (uint32_t i = 0; i < edges_.size(); ++i) {
+        uniqueNodes.insert(nodes[i]);
+    }
+
+    if (uniqueNodes.size() != edges_.size()) {
+      std::stringstream errorMsg;
+      errorMsg << "Omni requires the child node listed " <<
+        "before the parent node. Therefore, the first value MUST " <<
+        "be unique! Found: " << uniqueNodes.size() <<
+        "unique child nodes when we expected: " << edges_.size();
+      throw om::IoException(errorMsg.str());
+    }
   }
 
   void checkSizes() {
