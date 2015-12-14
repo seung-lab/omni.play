@@ -57,6 +57,6 @@ deploy:
       repo: seung-lab/omni.play
       branch: 
        - master
-       - travis
+       - staging
       tags: false
       condition: ${TRAVIS_OS_NAME} = linux
