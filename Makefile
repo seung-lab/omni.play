@@ -20,15 +20,19 @@ MV      =   $(AT)mv
 RM      =   $(AT)rm
 TOUCH   =   $(AT)touch
 TAR     =   $(AT)tar
-FIND     =   $(AT)find
+FIND     =  $(AT)find
+CC       =  $(AT)gcc
+CXX      =  $(AT)g++
 
 ifdef OSX
 INT     =   $(AT)install_name_tool
 endif
 
-CC       =  $(AT)gcc
-CXX      =  $(AT)g++
+ifneq (,$(wildcard $(EXTERNAL)/thrift/bin/thrift))
 THRIFT   =  $(AT)$(EXTERNAL)/thrift/bin/thrift
+else
+THRIFT   =  $(AT)thrift
+endif
 
 ifneq (,$(wildcard $(EXTERNAL)/qt/bin/moc))
   LOCAL_QT =  true
@@ -59,8 +63,8 @@ THRIFT_CXXFLAGS    =    -DHAVE_CONFIG_H
 
 COMMON_CXXFLAGS    =    -g -fPIC $(CXXWARN) $(THRIFT_CXXFLAGS) -std=c++11 -MMD -MP -MT "$(@)" -MF $(@:.o=.d)
 
-DBG_CFLAGS         =    $(COMMON_CFLAGS) -DDEBUG_MODE=1 -c -Wall -O0 --coverage
-DBG_CXXFLAGS       =    $(COMMON_CXXFLAGS) -DDEBUG_MODE=1 -Og -gstabs+ --coverage
+DBG_CFLAGS         =    $(COMMON_CFLAGS) -DDEBUG_MODE=1 -c -Wall -O0 --coverage -ggdb -g3 -pg -p
+DBG_CXXFLAGS       =    $(COMMON_CXXFLAGS) -DDEBUG_MODE=1 -Og -gstabs+ --coverage -ggdb -g3 -pg -p
 OPTIMIZATION_FLAGS =    -O2
 OPT_CFLAGS         =    $(COMMON_CFLAGS) -DNDEBUG \
 						$(OPTIMIZATION_FLAGS) -fno-omit-frame-pointer
@@ -148,9 +152,6 @@ TEST_INCLUDES = -I$(GMOCK)/include \
 			   -I$(GMOCK) \
 			   -I$(GMOCK)/gtest \
 
-YAML_SOURCES = $(shell find common/include/yaml-cpp/src -iname "*.cpp" )
-YAML_DEPS = $(YAML_SOURCES:.cpp=.o)
-
 LIB64_DEPS = $(BASE64)/src/cencode.o
 
 TEST_DEPS = $(GMOCK)/src/gmock-all.o $(GMOCK)/gtest/src/gtest-all.o
@@ -168,10 +169,11 @@ clean:
 	$(ECHO) Cleaning...
 	$(RM) -rf bin build coverage
 	$(RM) -rf common/src/precomp.h.gch desktop/src/precomp.h.gch
-	$(RM) -f common/include/yaml-cpp/src/*.o common/include/yaml-cpp/src/*.d
 	$(RM) -f desktop/lib/strnatcmp.o
 	$(FIND) desktop/src -iname "*\.moc\.cpp" -delete 2> /dev/null
 	$(FIND) common/include -iname "*\.o" -delete 2> /dev/null
+	$(FIND) common -iname "*\.gcno" -delete 2> /dev/null
+	$(FIND) desktop -iname "*\.gcno" -delete 2> /dev/null
 
 .PHONY: remake
 remake: clean all
@@ -196,17 +198,13 @@ INCLUDES    =   -I$(HERE) \
 		-I$(HERE)/common/include/gmock-1.6.0 \
 		-I$(HERE)/common/include/gmock-1.6.0/gtest \
 		-I$(HERE)/common/include/gmock-1.6.0/gtest/include \
-		-I$(HERE)/common/include/yaml-cpp/include \
-		-I$(HERE)/desktop/include/yaml-cpp-old/include \
-		-I$(EXTERNAL)/libjpeg/include \
 		-I$(HERE)/zi_lib \
 		-I$(BASE64)/include \
-		-I$(EXTERNAL)/boost/include \
 		$(CURL_INCLUDES)
 
 #If we want to force the system to prefer static libs, we can use  
 #BOOST_LIBS = -Wl,-Bstatic -l... -Wl,-Bdynamic
-BOOST_LIBS = -L$(EXTERNAL)/boost/lib/ \
+BOOST_LIBS = \
 	   -lboost_filesystem \
 	   -lboost_iostreams \
 	   -lboost_log \
@@ -216,10 +214,12 @@ BOOST_LIBS = -L$(EXTERNAL)/boost/lib/ \
 	   -lboost_date_time
 
 LIBS = $(BOOST_LIBS) \
-	   -L$(EXTERNAL)/libjpeg/lib/ -lturbojpeg \
+	   -L/usr/local/lib \
+	   -lturbojpeg \
 	   -lpthread -lrt -lGLU -lGL -lz \
 	   $(CURL_LIBS) \
-		 /usr/lib/libtcmalloc_minimal.a
+	   -L/usr/lib/libtcmalloc_minimal.a \
+	   -lyaml-cpp  
 
 COMMON_INCLUDES = $(INCLUDES) -include common/src/precomp.h
 
@@ -228,7 +228,7 @@ $(BUILDDIR)/common/%.o: common/src/%.cpp common/src/precomp.h.gch
 common/src/precomp.h.gch: common/src/precomp.h
 	$(call build_gch, $(INCLUDES))
 
-$(eval $(call deps,COMMON,common,$(YAML_DEPS)))
+$(eval $(call deps,COMMON,common,))
 
 
 COMMON_TEST_INCLUDES = -I$(HERE)/common/test/src
@@ -247,8 +247,7 @@ common: $(BINDIR)/omni.common.test
 # Thrift  #################################################
 THRIFT_INCLUDES = $(COMMON_INCLUDES) \
 				 -I$(GENDIR) \
-				 -I$(EXTERNAL)/thrift/include \
-				 -I$(EXTERNAL)/thrift/include/thrift \
+				 -I/usr/local/include/thrift
 
 $(BUILDDIR)/thrift/%.o: $(GENDIR)/%.cpp $(THRIFT_DEPS)
 	$(call build_cpp, $(THRIFT_INCLUDES))
@@ -355,7 +354,6 @@ DESKTOP_INCLUDES = -I$(HERE)/desktop/src \
 				  -I$(HERE)/desktop/include \
 				  -I$(HERE)/desktop/lib \
 				  -I$(HERE)/desktop \
-				  -I$(EXTERNAL)/qt/include \
 				  $(HDF5_INCLUDES) \
 				  -I$(BASE64)/include \
 				  $(QT_INCLUDES) \

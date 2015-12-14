@@ -8,14 +8,13 @@ using namespace vmml;
 #include "yaml-cpp/yaml.h"
 
 namespace YAML {
-
-template <>
+template<>
 struct convert<om::common::Color> {
   static Node encode(const om::common::Color& c) {
     Node node;
-    node.push_back(c.red);
-    node.push_back(c.green);
-    node.push_back(c.blue);
+    node.push_back(static_cast<int>(c.red));
+    node.push_back(static_cast<int>(c.green));
+    node.push_back(static_cast<int>(c.blue));
     return node;
   }
 
@@ -24,9 +23,9 @@ struct convert<om::common::Color> {
       return false;
     }
 
-    c.red = node[0].as<uint8_t>();
-    c.green = node[1].as<uint8_t>();
-    c.blue = node[2].as<uint8_t>();
+    c.red = static_cast<uint8_t>(node[0].as<int>());
+    c.green = static_cast<uint8_t>(node[1].as<int>());
+    c.blue = static_cast<uint8_t>(node[2].as<int>());
     return true;
   }
 };

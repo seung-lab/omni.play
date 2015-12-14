@@ -14,7 +14,16 @@ thrift/src
 symbols
 crashes
 /test
+common/include/**/*.gcno
+common/src/**/*.gcno
+desktop/**/*.gcno
 TAGS
 .#*
 #*
+*.swp
 omni.play.pro.user
+/*.config
+/*.creator
+/*.creator.user
+/*.includes
+/*.files

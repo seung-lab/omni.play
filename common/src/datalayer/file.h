@@ -6,6 +6,7 @@
 #include "common/exception.h"
 #include "common/IProgress.hpp"
 #include "zi/concurrency/rwmutex.hpp"
+#include <boost/filesystem.hpp>
 
 namespace boost {
 namespace filesystem {
