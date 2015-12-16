@@ -153,7 +153,7 @@ void OmSegmentContextMenu::splitSegments() {
 void OmSegmentContextMenu::cutSegments() { OmActions::CutSegment(sdw_); }
 
 void OmSegmentContextMenu::addColorActions() {
-  addAction("Randomize Root Segment Color", this, SLOT(randomizeColor()));
+  addAction("Randomize Root Segment Color", this, SLOT(randomizeRootSegmentColor()));
   addAction("Randomize Segment Color", this, SLOT(randomizeSegmentColor()));
   addAction("Set As Segment Palette Color", this, SLOT(setSelectedColor()));
 }
@@ -167,7 +167,7 @@ void OmSegmentContextMenu::setSelectedColor() {
   OmSegmentSelected::SetSegmentForPainting(sdw_);
 }
 
-void OmSegmentContextMenu::randomizeColor() {
+void OmSegmentContextMenu::randomizeRootSegmentColor() {
   OmSegment* segment = sdw_.FindRoot();
   segment->reRandomizeColor();
 
@@ -176,8 +176,22 @@ void OmSegmentContextMenu::randomizeColor() {
 }
 
 void OmSegmentContextMenu::randomizeSegmentColor() {
+  /*
+   *  When the total volume is shown without breaking out out the children segments
+   * (i.e. the break option is not activated)
+   * the color of the total volume is determined by the root segment.
+   * If the users clicks on a child segment we should randomize the root segment instead.
+   */
+  if (!vgs_->shouldVolumeBeShownBroken()) {
+    randomizeRootSegmentColor();
+    return;
+  }
   OmSegment* segment = sdw_.GetSegment();
   segment->reRandomizeColor();
+
+  // touch the root for freshness color update because we only redraw if root changes
+  OmSegment* root = sdw_.FindRoot();
+  root->touchFreshnessForMeshes();
 
   OmCacheManager::TouchFreshness();
   om::event::Redraw2d();
