@@ -26,7 +26,8 @@ OmSegmentListWidget::OmSegmentListWidget(SegmentListBase* slist,
   headers << tr("ID") << tr("Num Pieces") << tr("Total Size");
   setColumnCount(headers.size());
   setHeaderLabels(headers);
-
+  // set the stylesheet for coloring selected segments, qpalette selected-background-color seems to be overwritten somewhere
+  setStyleSheet("QTreeWidget::item:selected{background-color:rgb(150,177,220); show-decoration-selected:1;}");
   setFocusPolicy(Qt::StrongFocus);
 }
 
