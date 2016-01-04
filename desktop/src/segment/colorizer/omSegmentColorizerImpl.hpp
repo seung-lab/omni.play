@@ -56,7 +56,7 @@ class OmSegmentColorizerImpl {
 
         if (freshness_ > curFreshness) {  // figure out color and update cache
           prev.color = getVoxelColorForView2d(d[i]);
-          colorCache_.Set(d[i], curFreshness, prev.color);
+          colorCache_.Set(d[i], freshness_, prev.color);
         }
 
         // memoize

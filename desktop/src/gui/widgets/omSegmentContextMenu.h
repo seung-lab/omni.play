@@ -41,7 +41,7 @@ Q_SLOTS:
   void mergeSegments();
   void splitSegments();
   void cutSegments();
-  void randomizeColor();
+  void randomizeRootSegmentColor();
   void randomizeSegmentColor();
   void setSelectedColor();
 
