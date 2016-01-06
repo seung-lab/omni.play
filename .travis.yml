@@ -30,7 +30,7 @@ install:
 #After executing the script, make sure to be in the repo root folder, otherwise the deploy script will fail
 script:
   - echo "#define BUILD $TRAVIS_BUILD_NUMBER" > build_number.h
-  - make desktop CC=$CC CXX=$CXX
+  - make desktop OPT=release CC=$CC CXX=$CXX
 before_deploy:
   #
   # add a tag
@@ -51,7 +51,7 @@ deploy:
 - provider: releases
   api_key: $GH_TOKEN
   file: 
-  - ./bin/debug/omni.desktop
+  - ./bin/release/omni.desktop
   skip_cleanup: true
   on:
       repo: seung-lab/omni.play
