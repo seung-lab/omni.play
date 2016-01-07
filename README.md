@@ -2,7 +2,7 @@ All of everything OMNI
 ======================
 
 There is a work in progress documentation which can be found in documentation/documentation.html
-To compile it run doxygen Doxyfile , inside documentation/ folder.
+To compile it run doxygen Doxyfile , inside documentation/ folder. 
 
 Dependencies:
 -------------
