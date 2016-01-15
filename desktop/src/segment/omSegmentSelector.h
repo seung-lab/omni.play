@@ -8,6 +8,7 @@ class OmSegmentation;
 class OmSegments;
 class OmSelectSegmentsParams;
 class SegmentationDataWrapper;
+
 namespace om {
 namespace segment {
 class Selection;
@@ -19,17 +20,22 @@ class OmSegmentSelector {
   OmSegmentSelector(const SegmentationDataWrapper& sdw, void* sender,
                     const std::string& cmt);
 
-  void selectJustThisSegment(const om::common::SegID segID,
-                             const bool isSelected);
+  void setOrderOfAdditionToZero(om::common::SegID segID);
+  void setOrderOfAdditionToNextNumber(om::common::SegID segID);
+
+  void selectJustThisSegment(const om::common::SegID segID, const bool isSelected);
   void augmentSelectedSet(const om::common::SegID segID, const bool isSelected);
 
   void InsertSegments(const om::common::SegIDSet& segIDs);
+  void InsertSegmentsOrdered(const om::common::SegIDList& segIDs);
   void RemoveSegments(const om::common::SegIDSet& segIDs);
+  void RemoveTheseSegments(const om::common::SegIDSet& segIDs);
 
   void selectJustThisSegment_toggle(const om::common::SegID segID);
   void augmentSelectedSet_toggle(const om::common::SegID segID);
 
   bool sendEvent();
+  bool IsSegmentSelected(const om::common::SegID segID);
   void selectNoSegments();
 
   void ShouldScroll(const bool shouldScroll);
@@ -37,11 +43,13 @@ class OmSegmentSelector {
   void AutoCenter(const bool autoCenter);
   void AugmentListOnly(const bool augmentListOnly);
   void AddOrSubtract(const om::common::AddOrSubtract addSegments);
+  uint32_t GetOrderOfAdding(const om::common::SegID segID);
 
  private:
   OmSegments* segments_;
   om::segment::Selection* selection_;
   std::shared_ptr<OmSelectSegmentsParams> params_;
-
+  std::unordered_map<om::common::SegID, uint32_t> orderOfAdding_;
   void setSelectedSegment(const om::common::SegID segID);
+  uint32_t numberOfAddedSegment;
 };

@@ -16,6 +16,7 @@ enum ActionTypes {
   OmSegmentationThresholdChangeAction,
   OmProjectCloseAction,
   OmProjectSaveAction,
+    OmAutomaticSpreadingThresholdChangeAction
 };
 
 typedef std::map<QString, ActionTypes> typeMap_t;

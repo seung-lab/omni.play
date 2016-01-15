@@ -134,6 +134,8 @@ class DataBbox : public vmml::AxisAlignedBoundingBox<int> {
 
   const VolumeSystem& volume() const { return *volume_; }
 
+  friend class OmSegmentGraphInitialLoad;
+
  private:
   // Stored as a pointer to allow assignment and copying.
   const VolumeSystem* volume_;

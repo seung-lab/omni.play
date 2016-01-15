@@ -29,7 +29,7 @@ OmSegmentsImpl::OmSegmentsImpl(SegDataVector& data, SegListDataVector& listData,
       segmentLists_(new OmSegmentLists(meta_, *store_, sdw)),
       selection_(new om::segment::Selection(*graph_, *store_, *segmentLists_)),
       thresholder_(new om::segment::GraphThresholder(
-          *graph_, valid, *segmentLists_, *store_, mst_)) {
+          *graph_, valid, *segmentLists_, *store_, mst_, adjacencyMap_) ) {
 
   thresholder_->SetGlobalThreshold();
 }
@@ -330,6 +330,7 @@ void OmSegmentsImpl::refreshTree() {
   }
 
   resetGlobalThreshold();
+  resetSizeThreshold();
   for (auto& iter : userEdges_) {
     JoinEdgeFromUser(iter);
   }
@@ -348,6 +349,16 @@ void OmSegmentsImpl::setGlobalThreshold() {
 
   thresholder_->SetGlobalThreshold();
   Selection().Clear();
+}
+
+void OmSegmentsImpl::resetSizeThreshold() {
+  log_info("resetting global threshold to %f...",
+           OmProject::Globals().Users().UserSettings().getThreshold());
+  log_info("resetting size threshold to %f...",
+           OmProject::Globals().Users().UserSettings().getSizeThreshold());
+
+  thresholder_->ResetSizeThreshold();
+  selection_->RerootSegmentList();
 }
 
 void OmSegmentsImpl::resetGlobalThreshold() {
@@ -494,6 +505,23 @@ OmSegment* OmSegmentsImpl::FindRoot(OmSegment* segment) {
 bool OmSegmentsImpl::IsSegmentValid(om::common::SegID seg) {
   return store_->IsSegmentValid(seg);
 }
+
 OmSegment* OmSegmentsImpl::GetSegment(const om::common::SegID value) const {
   return store_->GetSegment(value);
+}
+
+void OmSegmentsImpl::Grow_LocalSizeThreshold(OmSegmentSelector* sel, om::common::SegID SegmentID) {
+  thresholder_->Grow_LocalSizeThreshold(sel, SegmentID);
+}
+
+void OmSegmentsImpl::AddSegments_BreadthFirstSearch(OmSegmentSelector* sel, om::common::SegID SegmentID) {
+  thresholder_->AddSegments_BreadthFirstSearch(sel, SegmentID);
+}
+
+void OmSegmentsImpl::Trim(OmSegmentSelector* sel, om::common::SegID SegmentID) {
+  thresholder_->Trim(sel, SegmentID);
+}
+
+void OmSegmentsImpl::AddSegments_BFS_DynamicThreshold(OmSegmentSelector* sel, om::common::SegID SegmentID) {
+  thresholder_->AddSegments_BFS_DynamicThreshold(sel, SegmentID);
 }

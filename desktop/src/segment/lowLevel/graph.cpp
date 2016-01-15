@@ -6,7 +6,6 @@
 
 namespace om {
 namespace segment {
-
 Graph::Graph(common::SegID max)
     : forest_(new OmDynamicForestCache(max + 1)),
       cache_(new CacheRootIDs(forest_.get(), max + 1)),
@@ -36,5 +35,5 @@ void Graph::Resize(common::SegID newMax) {
 void Graph::SetBatch(bool batchMode) { forest_->SetBatch(batchMode); }
 
 void Graph::ClearCache() { forest_->ClearCache(); }
-}
-}
+} //namespace segment
+} //namespace om

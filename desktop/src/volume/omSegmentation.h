@@ -91,6 +91,9 @@ class OmSegmentation : public OmMipVolume, public OmManageableObject {
   void SetSizeThreshold(double t);
   double GetSizeThreshold();
 
+  void SetASThreshold(double t);
+  double GetASThreshold();
+
   OmMeshManager* MeshManager(const double threshold);
 
   void UpdateVoxelBoundingData();

@@ -8,6 +8,9 @@
 class OmSegment;
 class OmSegmentsImpl;
 class OmSegmentLists;
+class SegmentDataWrapper;
+class OmSegmentSelector;
+class OmSegmentImpl;
 class OmSegmentation;
 
 namespace om {
@@ -68,6 +71,11 @@ class OmSegments {
   std::vector<om::segment::UserEdge> CutSegment(OmSegment* seg);
   bool JoinEdges(const std::vector<om::segment::UserEdge>& edges);
   std::vector<om::segment::UserEdge> Shatter(OmSegment* seg);
+
+  void Grow_LocalSizeThreshold(OmSegmentSelector* sel, om::common::SegID segID);
+  void AddSegments_BreadthFirstSearch(OmSegmentSelector* sel, om::common::SegID segID);
+  void AddSegments_BFS_DynamicThreshold(OmSegmentSelector* sel, om::common::SegID segID);
+  void Trim(OmSegmentSelector* sel, om::common::SegID segID);
 
   uint32_t getPageSize();
 

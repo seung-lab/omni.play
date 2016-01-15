@@ -133,6 +133,12 @@ double OmSegmentation::GetDendThreshold() {
   return OmProject::Globals().Users().UserSettings().getThreshold();
 }
 
+void OmSegmentation::SetASThreshold(const double t){
+  // TODO: lock
+  OmProject::Globals().Users().UserSettings().setASThreshold(t);
+  segments_->refreshTree();
+}
+
 double OmSegmentation::GetSizeThreshold() {
   return OmProject::Globals().Users().UserSettings().getSizeThreshold();
 }
@@ -145,6 +151,10 @@ bool OmSegmentation::LoadVolDataIfFoldersExist() {
   }
 
   return false;
+}
+
+double OmSegmentation::GetASThreshold() {
+  return OmProject::Globals().Users().UserSettings().getASThreshold();
 }
 
 void OmSegmentation::UpdateVoxelBoundingData() {

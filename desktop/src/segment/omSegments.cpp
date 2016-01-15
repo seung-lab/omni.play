@@ -172,6 +172,22 @@ bool OmSegments::JoinEdges(const std::vector<om::segment::UserEdge>& edges) {
   return impl_->JoinEdges(edges);
 }
 
+void OmSegments::Grow_LocalSizeThreshold(OmSegmentSelector* sel, om::common::SegID segID) {
+    impl_->Grow_LocalSizeThreshold(sel, segID);
+}
+
+void OmSegments::AddSegments_BreadthFirstSearch(OmSegmentSelector* sel, om::common::SegID segID) {
+    impl_->AddSegments_BreadthFirstSearch(sel, segID);
+}
+
+void OmSegments::AddSegments_BFS_DynamicThreshold(OmSegmentSelector* sel, om::common::SegID segID) {
+    impl_->AddSegments_BFS_DynamicThreshold(sel, segID);
+}
+
+void OmSegments::Trim(OmSegmentSelector* sel, om::common::SegID segID) {
+    impl_->Trim(sel, segID);
+}
+
 std::vector<om::segment::UserEdge> OmSegments::Shatter(OmSegment* seg) {
   zi::guard g(mutex_);
   return impl_->Shatter(seg);

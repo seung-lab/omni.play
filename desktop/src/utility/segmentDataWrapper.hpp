@@ -8,8 +8,8 @@ class QString;
 class SegmentationDataWrapper;
 class OmSegmentation;
 class OmSegment;
-class OmSegmentLists;
 class OmSegments;
+class OmSegmentLists;
 namespace om {
 namespace coords {
 class Global;
