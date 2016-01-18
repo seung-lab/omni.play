@@ -48,10 +48,7 @@ void OmSegmentSelector::setOrderOfAdditionToNextNumber(const om::common::SegID s
   numberOfAddedSegment++;
 
   // Centralize numberOfAddedSegment !!!
-
   orderOfAdding_[segID] = numberOfAddedSegment;
-
-  std::cout << "We've added " << numberOfAddedSegment << std::endl;
 }
 
 void OmSegmentSelector::selectNoSegments() {

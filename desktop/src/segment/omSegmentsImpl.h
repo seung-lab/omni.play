@@ -128,6 +128,7 @@ class OmSegmentsImpl {
   void setGlobalThreshold();
   void resetGlobalThreshold();
   void resetSizeThreshold();
+  void SortAdjacencyMap();
 
   friend class YAML::convert<OmSegmentsImpl>;
 };

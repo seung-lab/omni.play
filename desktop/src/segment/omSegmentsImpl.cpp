@@ -30,8 +30,7 @@ OmSegmentsImpl::OmSegmentsImpl(SegDataVector& data, SegListDataVector& listData,
       selection_(new om::segment::Selection(*graph_, *store_, *segmentLists_)),
       thresholder_(new om::segment::GraphThresholder(
           *graph_, valid, *segmentLists_, *store_, mst_, adjacencyMap_) ) {
-
-  thresholder_->SetGlobalThreshold();
+  setGlobalThreshold();
 }
 
 OmSegmentsImpl::~OmSegmentsImpl() {}
@@ -350,6 +349,8 @@ void OmSegmentsImpl::setGlobalThreshold() {
            OmProject::Globals().Users().UserSettings().getSizeThreshold());
 
   thresholder_->SetGlobalThreshold();
+  SortAdjacencyMap();
+
   Selection().Clear();
 }
 
@@ -526,4 +527,10 @@ void OmSegmentsImpl::Trim(OmSegmentSelector* sel, om::common::SegID SegmentID) {
 
 void OmSegmentsImpl::AddSegments_BFS_DynamicThreshold(OmSegmentSelector* sel, om::common::SegID SegmentID) {
   thresholder_->AddSegments_BFS_DynamicThreshold(sel, SegmentID);
+}
+
+void OmSegmentsImpl::SortAdjacencyMap() {
+  for(auto keyValue : adjacencyMap_) {
+      sort(keyValue.second.begin(), keyValue.second.end());
+  }
 }
