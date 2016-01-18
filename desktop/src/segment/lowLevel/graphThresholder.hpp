@@ -104,9 +104,10 @@ class GraphThresholder {
           continue;
         }
 
-        if ( !sizeCheck(edges_[i].node1ID,edges_[i].node2ID,sizeThreshold) ) {
-          continue;
-        }
+       // TODO::sizeThreshold disabling sizethreshold because it's all sorts of broken!
+       // if ( !sizeCheck(edges_[i].node1ID,edges_[i].node2ID,sizeThreshold) ) {
+       //   continue;
+       // }
 
         if (joinInternal(edges_[i].node2ID, edges_[i].node1ID,
                          edges_[i].threshold, i)) {

@@ -295,6 +295,7 @@ om::common::SegIDSet OmSegmentsImpl::UnJoinTheseSegments(
   const om::common::SegID parentID = *iter;
   ++iter;
 
+
   // We then iterate through the Segment Ids and split
   // each one from the parent
   while (iter != set.end()) {
@@ -330,7 +331,8 @@ void OmSegmentsImpl::refreshTree() {
   }
 
   resetGlobalThreshold();
-  resetSizeThreshold();
+  // TODO::sizeThreshold disabling sizethreshold because it's all sorts of broken!
+  //resetSizeThreshold();
   for (auto& iter : userEdges_) {
     JoinEdgeFromUser(iter);
   }
