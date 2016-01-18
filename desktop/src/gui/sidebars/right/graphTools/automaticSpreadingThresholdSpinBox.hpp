@@ -69,6 +69,6 @@ private:
        }
 
        OmSegmentation* seg = sdw.GetSegmentation();
-       return boost::optional<double>(seg->GetDendThreshold());
+       return boost::optional<double>(seg->GetASThreshold());
     }
 };

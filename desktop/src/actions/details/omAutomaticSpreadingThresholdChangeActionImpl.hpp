@@ -42,7 +42,7 @@ public:
     }
 
     std::string Description() const {
-        return "Threshold: " + om::string::num(threshold_);
+        return "Automatic Spreading Threshold: " + om::string::num(threshold_);
     }
 
     QString classNameForLogFile() const {
