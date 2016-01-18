@@ -16,29 +16,30 @@ private:
     float oldThreshold_;
 
 public:
-    OmAutomaticSpreadingThresholdChangeActionImpl()
-    {}
+    OmAutomaticSpreadingThresholdChangeActionImpl() {}
 
     OmAutomaticSpreadingThresholdChangeActionImpl(const SegmentationDataWrapper sdw,
                                             const double threshold)
-        : sdw_(sdw)
-        , threshold_(threshold)
-    {}
+        : sdw_(sdw), threshold_(threshold) {}
 
-    void Execute()
-    {
+    void Execute() {
         OmSegmentation* seg = sdw_.GetSegmentation();
 
         oldThreshold_ = seg->GetASThreshold();
 
         seg->SetASThreshold(threshold_);
+
+        om::event::RefreshMSTthreshold();
+        om::event::SegmentModified();
     }
 
-    void Undo()
-    {
+    void Undo() {
         OmSegmentation* seg = sdw_.GetSegmentation();
 
         seg->SetASThreshold(oldThreshold_);
+
+        om::event::RefreshMSTthreshold();
+        om::event::SegmentModified();
     }
 
     std::string Description() const {

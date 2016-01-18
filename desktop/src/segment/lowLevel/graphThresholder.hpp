@@ -71,8 +71,6 @@ class GraphThresholder {
       }
     }
 
-    //segmentLists_.ResetAdjacencyAndOrder(adjacencyMap_, orderOfAdding_);
-
     joinTaskPool_.JoinPool();
 
     graph_.SetBatch(false);
@@ -199,6 +197,9 @@ class GraphThresholder {
       for ( int i = 0; i < adjacencyMap_[currSegment].size(); i++ ) {
         currEdge = adjacencyMap_[currSegment][i];
 
+        log_debugs << "BFS for (" << currSegment << ") looking at: " <<
+                      currEdge->node1ID << " - " << currEdge->node2ID <<
+                      " (" << currEdge->threshold << ") <? (" << threshold << ")";
         if (currEdge->threshold < threshold) {
           continue;
         }
@@ -327,6 +328,10 @@ class GraphThresholder {
         }
 
         currEdge = adjacencyMap_[currSegment][i];
+        log_debugs << "Dynamic BFS for (" << currSegment << ") looking at: " <<
+                      currEdge->node1ID << " - " << currEdge->node2ID <<
+                      " (" << adjacencyMap_[currSegment][0]->threshold <<
+                      ") <-.05> (" << adjacencyMap_[currSegment][i]->threshold << ")";
 
         if (currSegment == currEdge->node2ID) {
             nextSegment = currEdge->node1ID;

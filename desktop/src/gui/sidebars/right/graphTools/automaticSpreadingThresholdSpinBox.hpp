@@ -26,45 +26,41 @@ public:
 private:
     GraphTools *const mParent;
 
-    virtual void RefreshMSTEvent(om::event::MSTEvent*)
-    {
+    virtual void RefreshMSTEvent(om::event::MSTEvent*) {
         boost::optional<double> threshold = getCurVolThreshold();
-        if(threshold){
+        if (threshold) {
             setGUIvalue(*threshold);
         }
     }
 
-    void setInitialGUIThresholdValue()
-    {
+    void setInitialGUIThresholdValue() {
         double t = 0.95;
 
         boost::optional<double> threshold = getCurVolThreshold();
-        if(threshold){
+        if (threshold) {
             t = *threshold;
         }
 
         setGUIvalue(t);
     }
 
-    void actUponValueChange(const double newThreshold)
-    {
+    void actUponValueChange(const double newThreshold) {
         boost::optional<double> threshold = getCurVolThreshold();
-        if(!threshold){
+        if (!threshold) {
             return;
         }
 
-        if(qFuzzyCompare(*threshold, newThreshold)){
+        if (qFuzzyCompare(*threshold, newThreshold)) {
             return;
         }
 
         OmActions::ChangeASthreshold(mParent->GetSDW(), newThreshold);
     }
 
-    boost::optional<double> getCurVolThreshold()
-    {
+    boost::optional<double> getCurVolThreshold() {
        SegmentationDataWrapper sdw = mParent->GetSDW();
 
-       if(!sdw.IsSegmentationValid()){
+       if (!sdw.IsSegmentationValid()) {
            return boost::optional<double>();
        }
 
