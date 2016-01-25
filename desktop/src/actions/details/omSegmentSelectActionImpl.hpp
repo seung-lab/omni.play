@@ -64,9 +64,12 @@ class OmSegmentSelectActionImpl {
   std::string Description() const {
     static const int max = 5;
 
+    om::common::SegIDSet tempSet;
+    boost::copy(params_->newSelectedIDs | boost::adaptors::map_keys,
+                  std::inserter(tempSet, tempSet.begin()));
     const std::string nums =
         om::utils::MakeShortStrList<om::common::SegIDSet, om::common::SegID>(
-            params_->newSelectedIDs, max);
+          tempSet, max);
 
     std::string prefix("Selected segments: ");
 

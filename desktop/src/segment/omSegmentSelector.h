@@ -46,6 +46,8 @@ class OmSegmentSelector {
   uint32_t GetOrderOfAdding(const om::common::SegID segID);
 
  private:
+  void addSegmentToSelectionParameters(const om::common::SegID segID);
+  void removeSegmentFromSelectionParameters(const om::common::SegID segID);
   OmSegments* segments_;
   om::segment::Selection* selection_;
   std::shared_ptr<OmSelectSegmentsParams> params_;

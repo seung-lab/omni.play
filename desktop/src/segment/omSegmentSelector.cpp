@@ -25,7 +25,7 @@ OmSegmentSelector::OmSegmentSelector(const SegmentationDataWrapper& sdw,
   params_->sdw = SegmentDataWrapper(sdw, 0);
   params_->sender = sender;
   params_->comment = cmt;
-  params_->oldSelectedIDs = selection_->GetSelectedSegmentIDs();
+  params_->oldSelectedIDs = selection_->GetSelectedSegmentIDsWithOrder();
   params_->newSelectedIDs = params_->oldSelectedIDs;
   params_->autoCenter = false;
   params_->shouldScroll = true;
@@ -36,25 +36,7 @@ OmSegmentSelector::OmSegmentSelector(const SegmentationDataWrapper& sdw,
 
 }
 
-void OmSegmentSelector::setOrderOfAdditionToZero(const om::common::SegID segID) {
-    orderOfAdding_[segID] = 0;
-}
-
-void OmSegmentSelector::setOrderOfAdditionToNextNumber(const om::common::SegID segID) {
-  if (orderOfAdding_[segID]) {
-    return;
-  }
-
-  numberOfAddedSegment++;
-
-  // Centralize numberOfAddedSegment !!!
-  orderOfAdding_[segID] = numberOfAddedSegment;
-}
-
 void OmSegmentSelector::selectNoSegments() {
-    for (auto id : params_->newSelectedIDs) {
-      setOrderOfAdditionToZero(id);
-    }
     params_->newSelectedIDs.clear();
 }
 
@@ -67,17 +49,12 @@ void OmSegmentSelector::selectJustThisSegment(
     return;
   }
 
-  if (params_->oldSelectedIDs.size() > 1) {
-    params_->newSelectedIDs.insert(segID);
-    setOrderOfAdditionToNextNumber(segID);
-  } else {
-    if (isSelected) {
-      params_->newSelectedIDs.insert(segID);
-      setOrderOfAdditionToNextNumber(segID);
-    }
+  if (params_->oldSelectedIDs.size() > 1 || isSelected) {
+    addSegmentToSelectionParameters(segID);
   }
 
-  setSelectedSegment(segID);
+  // TODO::augmentAlwaysSelect wtf? why does this always select during augment?!
+  //setSelectedSegment(segID);
 }
 
 void OmSegmentSelector::setSelectedSegment(const om::common::SegID segID) {
@@ -89,8 +66,7 @@ void OmSegmentSelector::InsertSegments(const om::common::SegIDSet& segIDs) {
   om::common::SegID rootID;
   for (auto id : segIDs) {
     rootID = segments_->FindRootID(id);
-    params_->newSelectedIDs.insert(rootID);
-    setOrderOfAdditionToNextNumber(rootID);
+    addSegmentToSelectionParameters(rootID);
   }
 }
 
@@ -98,8 +74,7 @@ void OmSegmentSelector::InsertSegmentsOrdered(const om::common::SegIDList& segID
   om::common::SegID rootID;
   for (auto id : segIDs) {
     rootID = segments_->FindRootID(id);
-    params_->newSelectedIDs.insert(rootID);
-    setOrderOfAdditionToNextNumber(rootID);
+    addSegmentToSelectionParameters(rootID);
   }
 }
 
@@ -111,8 +86,7 @@ void OmSegmentSelector::RemoveSegments(const om::common::SegIDSet& segIDs) {
 
   for (auto id : segIDs) {
     rootID = segments_->FindRootID(id);
-    params_->newSelectedIDs.insert(rootID);
-    setOrderOfAdditionToNextNumber(rootID);
+    addSegmentToSelectionParameters(rootID);
   }
 }
 
@@ -123,8 +97,7 @@ void OmSegmentSelector::RemoveTheseSegments(const om::common::SegIDSet& segIDs)
 
   for (auto id : segIDs) {
     rootID = segments_->FindRootID(id);
-    params_->newSelectedIDs.erase(rootID);
-    setOrderOfAdditionToZero(rootID);
+    removeSegmentFromSelectionParameters(rootID);
   }
 }
 
@@ -137,11 +110,9 @@ void OmSegmentSelector::augmentSelectedSet(
   }
 
   if (isSelected) {
-    params_->newSelectedIDs.insert(segID);
-    setOrderOfAdditionToNextNumber(segID);
+    addSegmentToSelectionParameters(segID);
   } else {
-    params_->newSelectedIDs.erase(segID);
-    setOrderOfAdditionToZero(segID);
+    removeSegmentFromSelectionParameters(segID);
   }
 
   setSelectedSegment(segID);
@@ -174,23 +145,29 @@ bool OmSegmentSelector::IsSegmentSelected(const om::common::SegID segID) {
 }
 
 bool OmSegmentSelector::sendEvent() {
+  om::common::SegIDSet oldSelectedIDs;
+  boost::copy(params_->oldSelectedIDs | boost::adaptors::map_keys,
+                std::inserter(oldSelectedIDs, oldSelectedIDs.begin()));
+  om::common::SegIDSet newSelectedIDs;
+  boost::copy(params_->newSelectedIDs | boost::adaptors::map_keys,
+                std::inserter(newSelectedIDs, newSelectedIDs.begin()));
   if (params_->augmentListOnly) {
     if (om::common::AddOrSubtract::ADD == params_->addOrSubtract) {
-      if (om::set::SetAContainsB(params_->oldSelectedIDs,
-                                 params_->newSelectedIDs)) {
+      if (om::set::SetAContainsB(oldSelectedIDs,
+                                 newSelectedIDs)) {
         // already added
         return false;
       }
     } else {
-      if (om::set::SetsAreDisjoint(params_->oldSelectedIDs,
-                                   params_->newSelectedIDs)) {
+      if (om::set::SetsAreDisjoint(oldSelectedIDs,
+                                   newSelectedIDs)) {
         // no segments to be removed are selected
         return false;
       }
     }
 
   } else {
-    if (params_->oldSelectedIDs == params_->newSelectedIDs) {
+    if (oldSelectedIDs == newSelectedIDs) {
       // no change in selected set
       return false;
     }
@@ -198,6 +175,7 @@ bool OmSegmentSelector::sendEvent() {
 
   // log_debugs(segmentSelector) << params_->oldSelectedIDs << "\n";
 
+  // TODO::saveableEventOnly only usage in brushselect, move this code into actionimpl+ redraw!
   if (params_->augmentListOnly) {
     // disable undo option for now
     om::segment::Selection* selection = params_->sdw.Selection();
@@ -235,6 +213,10 @@ void OmSegmentSelector::AddOrSubtract(
   params_->addOrSubtract = addOrSubtract;
 }
 
-uint32_t OmSegmentSelector::GetOrderOfAdding(om::common::SegID segID) {
-  return orderOfAdding_[segID];
+void OmSegmentSelector::addSegmentToSelectionParameters(om::common::SegID segID) {
+  params_->newSelectedIDs[segID] = params_->newSelectedIDs.size() + 1;
+}
+
+void OmSegmentSelector::removeSegmentFromSelectionParameters(om::common::SegID segID) {
+  params_->newSelectedIDs.erase(segID);
 }

@@ -46,7 +46,10 @@ QTextStream& operator<<(QTextStream& out, const OmSegmentJoinActionImpl& a) {
 }
 
 QTextStream& operator<<(QTextStream& out, const OmSegmentSelectActionImpl& a) {
-  out << a.params_->newSelectedIDs;
+    om::common::SegIDSet newSelectedIDs;
+    boost::copy(a.params_->newSelectedIDs| boost::adaptors::map_keys,
+                  std::inserter(newSelectedIDs, newSelectedIDs.begin()));
+  out << newSelectedIDs;
   return out;
 }
 
