@@ -39,7 +39,6 @@ class Selection {
     common::SegIDSet selectedSet;
     boost::copy(selectedIDsToOrders_ | boost::adaptors::map_keys,
                   std::inserter(selectedSet, selectedSet.begin()));
-
     return selectedSet;
   }
 
@@ -74,8 +73,6 @@ class Selection {
                               const bool addToRecentList) {
     zi::guard g(mutex_);
     selectedIDsToOrders_.clear();
-    // TODO:evalOrderToSelectedID_ do we actually need this map reallY?
-    // orderToSelectedIDs_.clear();
 
     for (auto id : ids) {
       setSegmentSelectedBatch(id, true, addToRecentList);
@@ -137,9 +134,6 @@ class Selection {
 
   // SegId to insertion order
   common::SegIDMap selectedIDsToOrders_;
-  // TODO:evalOrderToSelectedID_ do we actually need this map reallY?
-  // Insertion order to SegId
-  //common::SegIDOrderMap orderToSelectedIDs_;
 
   inline void setSegmentSelectedBatch(const common::SegID segID,
                                       const bool isSelected,
@@ -155,19 +149,13 @@ class Selection {
 
   inline void doSelectedSetInsert(const common::SegID segID,
                                   const bool addToRecentList) {
-    uint32_t newOrder = selectedIDsToOrders_.size() + 1;
-    selectedIDsToOrders_[segID] = newOrder;
-    // TODO:evalOrderToSelectedID_ do we actually need this map reallY?
-    // orderToSelectedIDs_.insert(orderToSelectedIDs_.end(),
-    //    common::SegIDOrderMap::value_type(newOrder, segID));
+    addSegmentAnyOrder(segID);
     if (addToRecentList) {
       addToRecentMap(segID);
     }
   }
 
   inline void doSelectedSetRemove(const common::SegID segID) {
-    // TODO:evalOrderToSelectedID_ do we actually need this map reallY?
-    //orderToSelectedIDs_.erase(selectedIDsToOrders_[segID]);
     selectedIDsToOrders_.erase(segID);
     addToRecentMap(segID);
   }
@@ -183,24 +171,28 @@ class Selection {
   }
 
   inline void addSegmentWithOrder(const common::SegID segID, uint32_t newOrder) {
-    selectedIDsToOrders_[segID] = selectedIDsToOrders_[newOrder];
-    // hint insertion since it is ordered
-//    orderToSelectedIDs_.insert(orderToSelectedIDs_.end(),
-//        common::SegIDMap::value_type(newOrder, segID);
+    selectedIDsToOrders_.insert(std::pair<common::SegID, uint32_t>(segID, newOrder));
   }
 
   void updateSelection(const common::SegIDMap segIDToOrders,
                        const bool shouldAddToRecent) {
     selectedIDsToOrders_.clear();
-    // TODO:evalOrderToSelectedID_ do we actually need this map reallY?
-    // orderToSelectedIDs_.clear();
-    for (auto segIDToOrder : segIDToOrders) {
-      addSegmentAnyOrder(segIDToOrder.first);
+    // invert the map to get correct iteration order
+    for (auto orderToSegID : orderToSegIDs(segIDToOrders)) {
       // reinsert and get's rid of missing holes in ids
+      addSegmentAnyOrder(orderToSegID.second);
       if (shouldAddToRecent) {
-        addToRecentMap(segIDToOrder.first);
+        addToRecentMap(orderToSegID.second);
       }
     }
+  }
+
+  std::map<uint32_t, common::SegID> orderToSegIDs(common::SegIDMap segIDToOrders) {
+    std::map<uint32_t, common::SegID> orderToSegIDs;
+    for (auto segIDToOrder : segIDToOrders) {
+        orderToSegIDs[segIDToOrder.second] = segIDToOrder.first;
+    }
+    return orderToSegIDs;
   }
 
   friend class YAML::convert<OmSegmentsImpl>;

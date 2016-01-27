@@ -33,7 +33,6 @@ OmSegmentSelector::OmSegmentSelector(const SegmentationDataWrapper& sdw,
 
   params_->augmentListOnly = false;
   params_->addOrSubtract = om::common::AddOrSubtract::ADD;
-
 }
 
 void OmSegmentSelector::selectNoSegments() {
@@ -214,9 +213,15 @@ void OmSegmentSelector::AddOrSubtract(
 }
 
 void OmSegmentSelector::addSegmentToSelectionParameters(om::common::SegID segID) {
-  params_->newSelectedIDs[segID] = params_->newSelectedIDs.size() + 1;
+  uint32_t newOrder =  params_->newSelectedIDs.size() + 1;
+  params_->newSelectedIDs.insert(std::pair<om::common::SegID, uint32_t>(segID, newOrder));
 }
 
 void OmSegmentSelector::removeSegmentFromSelectionParameters(om::common::SegID segID) {
   params_->newSelectedIDs.erase(segID);
 }
+
+uint32_t OmSegmentSelector::GetOrderOfAdding(const om::common::SegID segID) {
+  return selection_->GetOrderOfAdding(segID);
+}
+

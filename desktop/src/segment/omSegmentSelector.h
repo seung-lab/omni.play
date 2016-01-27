@@ -20,9 +20,6 @@ class OmSegmentSelector {
   OmSegmentSelector(const SegmentationDataWrapper& sdw, void* sender,
                     const std::string& cmt);
 
-  void setOrderOfAdditionToZero(om::common::SegID segID);
-  void setOrderOfAdditionToNextNumber(om::common::SegID segID);
-
   void selectJustThisSegment(const om::common::SegID segID, const bool isSelected);
   void augmentSelectedSet(const om::common::SegID segID, const bool isSelected);
 
@@ -51,7 +48,6 @@ class OmSegmentSelector {
   OmSegments* segments_;
   om::segment::Selection* selection_;
   std::shared_ptr<OmSelectSegmentsParams> params_;
-  std::unordered_map<om::common::SegID, uint32_t> orderOfAdding_;
   void setSelectedSegment(const om::common::SegID segID);
   uint32_t numberOfAddedSegment;
 };
