@@ -52,8 +52,7 @@ void OmSegmentSelector::selectJustThisSegment(
     addSegmentToSelectionParameters(segID);
   }
 
-  // TODO::augmentAlwaysSelect wtf? why does this always select during augment?!
-  //setSelectedSegment(segID);
+  setSelectedSegment(segID);
 }
 
 void OmSegmentSelector::setSelectedSegment(const om::common::SegID segID) {
