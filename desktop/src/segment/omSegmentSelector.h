@@ -38,7 +38,6 @@ class OmSegmentSelector {
   void ShouldScroll(const bool shouldScroll);
   void AddToRecentList(const bool addToRecentList);
   void AutoCenter(const bool autoCenter);
-  void AugmentListOnly(const bool augmentListOnly);
   void AddOrSubtract(const om::common::AddOrSubtract addSegments);
   uint32_t GetOrderOfAdding(const om::common::SegID segID);
 

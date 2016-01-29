@@ -23,18 +23,15 @@ class OmBrushSelectUtils {
     selector.ShouldScroll(false);
     selector.AddToRecentList(false);
     selector.AutoCenter(false);
-    selector.AugmentListOnly(true);
     selector.AddOrSubtract(info->addOrSubract);
 
     if (om::common::AddOrSubtract::ADD == info->addOrSubract) {
       selector.InsertSegments(*segIDs);
 
     } else {
-      selector.RemoveSegments(*segIDs);
+      selector.RemoveTheseSegments(*segIDs);
     }
 
     selector.sendEvent();
-
-    om::event::Redraw3d();
   }
 };

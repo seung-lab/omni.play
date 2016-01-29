@@ -31,7 +31,6 @@ OmSegmentSelector::OmSegmentSelector(const SegmentationDataWrapper& sdw,
   params_->shouldScroll = true;
   params_->addToRecentList = true;
 
-  params_->augmentListOnly = false;
   params_->addOrSubtract = om::common::AddOrSubtract::ADD;
 }
 
@@ -76,21 +75,8 @@ void OmSegmentSelector::InsertSegmentsOrdered(const om::common::SegIDList& segID
   }
 }
 
-/* this actually removes all the segments and inserts the parameter segments. huh? poor naming choice*/
-void OmSegmentSelector::RemoveSegments(const om::common::SegIDSet& segIDs) {
-  selectNoSegments();
-
-  om::common::SegID rootID;
-
-  for (auto id : segIDs) {
-    rootID = segments_->FindRootID(id);
-    addSegmentToSelectionParameters(rootID);
-  }
-}
-
 /* this function actually removes the input segments*/
-void OmSegmentSelector::RemoveTheseSegments(const om::common::SegIDSet& segIDs)
-{
+void OmSegmentSelector::RemoveTheseSegments(const om::common::SegIDSet& segIDs) {
   om::common::SegID rootID;
 
   for (auto id : segIDs) {
@@ -143,49 +129,14 @@ bool OmSegmentSelector::IsSegmentSelected(const om::common::SegID segID) {
 }
 
 bool OmSegmentSelector::sendEvent() {
-  om::common::SegIDSet oldSelectedIDs;
-  boost::copy(params_->oldSelectedIDs | boost::adaptors::map_keys,
-                std::inserter(oldSelectedIDs, oldSelectedIDs.begin()));
-  om::common::SegIDSet newSelectedIDs;
-  boost::copy(params_->newSelectedIDs | boost::adaptors::map_keys,
-                std::inserter(newSelectedIDs, newSelectedIDs.begin()));
-  if (params_->augmentListOnly) {
-    if (om::common::AddOrSubtract::ADD == params_->addOrSubtract) {
-      if (om::set::SetAContainsB(oldSelectedIDs,
-                                 newSelectedIDs)) {
-        // already added
-        return false;
-      }
-    } else {
-      if (om::set::SetsAreDisjoint(oldSelectedIDs,
-                                   newSelectedIDs)) {
-        // no segments to be removed are selected
-        return false;
-      }
-    }
-
-  } else {
-    if (oldSelectedIDs == newSelectedIDs) {
-      // no change in selected set
-      return false;
-    }
+  if (params_->oldSelectedIDs == params_->newSelectedIDs) {
+    // no change in selected set
+    return false;
   }
 
   // log_debugs(segmentSelector) << params_->oldSelectedIDs << "\n";
 
-  // TODO::saveableEventOnly only usage in brushselect, move this code into actionimpl+ redraw!
-  if (params_->augmentListOnly) {
-    // disable undo option for now
-    om::segment::Selection* selection = params_->sdw.Selection();
-
-    if (om::common::AddOrSubtract::ADD == params_->addOrSubtract) {
-      selection->AddToSegmentSelection(params_->newSelectedIDs);
-    } else {
-      selection->RemoveFromSegmentSelection(params_->newSelectedIDs);
-    }
-  } else {
-    OmActions::SelectSegments(params_);
-  }
+  OmActions::SelectSegments(params_);
 
   return true;
 }
@@ -200,10 +151,6 @@ void OmSegmentSelector::AddToRecentList(const bool addToRecentList) {
 
 void OmSegmentSelector::AutoCenter(const bool autoCenter) {
   params_->autoCenter = autoCenter;
-}
-
-void OmSegmentSelector::AugmentListOnly(const bool augmentListOnly) {
-  params_->augmentListOnly = augmentListOnly;
 }
 
 void OmSegmentSelector::AddOrSubtract(

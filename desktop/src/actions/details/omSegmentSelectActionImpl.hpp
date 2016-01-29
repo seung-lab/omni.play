@@ -24,19 +24,8 @@ class OmSegmentSelectActionImpl {
   void Execute() {
     OmSegments* segments = params_->sdw.Segments();
 
-    if (params_->augmentListOnly) {
-      if (om::common::AddOrSubtract::ADD == params_->addOrSubtract) {
-        segments->Selection().AddToSegmentSelection(params_->newSelectedIDs);
-
-      } else {
-        segments->Selection().RemoveFromSegmentSelection(
-            params_->newSelectedIDs);
-      }
-
-    } else {
-      segments->Selection().UpdateSegmentSelection(params_->newSelectedIDs,
+    segments->Selection().UpdateSegmentSelection(params_->newSelectedIDs,
                                                    params_->addToRecentList);
-    }
 
     om::event::SegmentModified(params_);
   }
@@ -44,19 +33,8 @@ class OmSegmentSelectActionImpl {
   void Undo() {
     OmSegments* segments = params_->sdw.Segments();
 
-    if (params_->augmentListOnly) {
-      if (om::common::AddOrSubtract::ADD == params_->addOrSubtract) {
-        segments->Selection().RemoveFromSegmentSelection(
-            params_->newSelectedIDs);
-
-      } else {
-        segments->Selection().AddToSegmentSelection(params_->newSelectedIDs);
-      }
-
-    } else {
-      segments->Selection().UpdateSegmentSelection(params_->oldSelectedIDs,
-                                                   params_->addToRecentList);
-    }
+    segments->Selection().UpdateSegmentSelection(params_->oldSelectedIDs,
+                                                 params_->addToRecentList);
 
     om::event::SegmentModified(params_);
   }
