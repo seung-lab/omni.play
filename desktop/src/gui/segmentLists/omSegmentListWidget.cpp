@@ -118,10 +118,10 @@ void OmSegmentListWidget::segmentLeftClick() {
   sel.AddToRecentList(
       segmentListBase->shouldSelectedSegmentsBeAddedToRecentList());
 
-  bool isAddingToExistingList = QApplication::keyboardModifiers() & Qt::ControlModifier ||
+  bool isModifyingExistingSelection = QApplication::keyboardModifiers() & Qt::ControlModifier ||
       QApplication::keyboardModifiers() & Qt::ShiftModifier;
 
-  if (!isAddingToExistingList) {
+  if (!isModifyingExistingSelection) {
     sel.selectNoSegments();
   } else {
     Q_FOREACH(QTreeWidgetItem * item, selectedItems()) {
@@ -135,6 +135,8 @@ void OmSegmentListWidget::segmentLeftClick() {
     }
   }
 
+  // select the existing selection. also, in case we are modifying the existing selection
+  // then we want to allow removing when ctrl-click (since it is no longer in selectedItems())
   sel.augmentSelectedSet(current_sdw.GetID(), current->isSelected());
 
   sel.AutoCenter(true);
