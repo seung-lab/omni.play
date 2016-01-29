@@ -27,7 +27,6 @@ class OmBrushSelectUtils {
 
     if (om::common::AddOrSubtract::ADD == info->addOrSubract) {
       selector.InsertSegments(*segIDs);
-
     } else {
       selector.RemoveTheseSegments(*segIDs);
     }

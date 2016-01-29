@@ -12,6 +12,7 @@
 #include "utility/dataWrappers.h"
 #include "viewGroup/omColorizers.hpp"
 #include "viewGroup/omSplitting.hpp"
+#include "viewGroup/omMultiSelecting.hpp"
 #include "viewGroup/omViewGroupState.h"
 #include "viewGroup/omViewGroupView2dState.hpp"
 #include "viewGroup/omZoomLevel.hpp"
@@ -29,6 +30,7 @@ OmViewGroupState::OmViewGroupState(MainWindow* mainWindow)
       colorizers_(new OmColorizers(*this)),
       zoomLevel_(new OmZoomLevel()),
       splitting_(new OmSplitting()),
+      multiSelecting_(new OmMultiSelecting()),
       landmarks_(new OmLandmarks(mainWindow)),
       cdw_(new ChannelDataWrapper(1)),
       sdw_(new SegmentationDataWrapper(1))

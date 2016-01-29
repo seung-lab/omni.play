@@ -4,6 +4,7 @@
 #include "view2d/brush/omBrushOppInfo.hpp"
 #include "view2d/brush/omBrushSelectCircle.hpp"
 #include "view2d/brush/omBrushSelectLineTask.hpp"
+#include "viewGroup/omMultiSelecting.hpp"
 
 class OmBrushSelect {
  public:
@@ -18,9 +19,13 @@ class OmBrushSelect {
     circle.SelectCircle(coord);
   }
 
-  static void SelectByLine(OmView2dState* state,
+  static void StartOrContinueMultiSelecting(OmView2dState* state,
                            const om::coords::Global& second,
                            const om::common::AddOrSubtract addSegments) {
+    OmMultiSelecting multiSelecting = state->getViewGroupState().MultiSelecting();
+
+    multiSelecting.EnterSelectingMode();
+
     const om::coords::Global& first = state->GetLastDataPoint();
 
     std::shared_ptr<OmBrushOppInfo> info =
