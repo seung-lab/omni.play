@@ -111,35 +111,33 @@ void OmSegmentListWidget::segmentLeftClick() {
     return;
   }
   QVariant result = current->data(USER_DATA_COL, Qt::UserRole);
-  SegmentDataWrapper sdw = result.value<SegmentDataWrapper>();
+  SegmentDataWrapper current_sdw = result.value<SegmentDataWrapper>();
 
-  OmSegmentSelector sel(sdw.MakeSegmentationDataWrapper(), this,
+  OmSegmentSelector sel(current_sdw.MakeSegmentationDataWrapper(), this,
                         eventSenderName());
   sel.AddToRecentList(
       segmentListBase->shouldSelectedSegmentsBeAddedToRecentList());
 
-  sel.selectNoSegments();
+  bool isModifyingExistingSelection = QApplication::keyboardModifiers() & Qt::ControlModifier ||
+      QApplication::keyboardModifiers() & Qt::ShiftModifier;
 
-  Q_FOREACH(QTreeWidgetItem * item, selectedItems()) {
-    QVariant result = item->data(USER_DATA_COL, Qt::UserRole);
-    SegmentDataWrapper item_sdw = result.value<SegmentDataWrapper>();
+  if (!isModifyingExistingSelection) {
+    sel.selectNoSegments();
+  } else {
+    Q_FOREACH(QTreeWidgetItem * item, selectedItems()) {
+      QVariant result = item->data(USER_DATA_COL, Qt::UserRole);
+      SegmentDataWrapper item_sdw = result.value<SegmentDataWrapper>();
 
-    if (QApplication::keyboardModifiers() & Qt::ControlModifier ||
-        QApplication::keyboardModifiers() & Qt::ShiftModifier) {
-      sel.augmentSelectedSet(item_sdw.GetID(), true);
-
-    } else {
-      if (selectedItems().size() > 1) {
-        if (item_sdw.GetID() == sdw.GetID()) {
-          sel.augmentSelectedSet(item_sdw.GetID(), true);
-        } else {
-          sel.augmentSelectedSet(item_sdw.GetID(), false);
-        }
-      } else {
-        sel.augmentSelectedSet(item_sdw.GetID(), !item_sdw.isSelected());
+      // the current item (current_sdw) will be handled outside of this if/else below
+      if (item_sdw.GetID() != current_sdw.GetID()) {
+        sel.augmentSelectedSet(item_sdw.GetID(), item->isSelected());
       }
     }
   }
+
+  // select the existing selection. also, in case we are modifying the existing selection
+  // then we want to allow removing when ctrl-click (since it is no longer in selectedItems())
+  sel.augmentSelectedSet(current_sdw.GetID(), current->isSelected());
 
   sel.AutoCenter(true);
   sel.sendEvent();

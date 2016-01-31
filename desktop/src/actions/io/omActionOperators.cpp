@@ -6,6 +6,9 @@
 #include "datalayer/archive/old/omDataArchiveWrappers.h"
 #include "datalayer/archive/segmentEdge.hpp"
 
+#include <boost/serialization/map.hpp>
+#include <boost/archive/text_iarchive.hpp>
+#include <boost/archive/text_oarchive.hpp>
 #include "actions/details/omSegmentJoinActionImpl.hpp"
 #include "actions/details/omSegmentSelectActionImpl.hpp"
 #include "actions/details/omSegmentSplitActionImpl.hpp"
@@ -193,8 +196,8 @@ QDataStream& operator<<(QDataStream& out, const OmSegmentSelectActionImpl& a) {
   int version = 2;
   out << version;
   out << a.params_->sdw.GetSegmentationID();
-  out << a.params_->newSelectedIDs;
-  out << a.params_->oldSelectedIDs;
+  out << QMap<om::common::SegID, uint32_t>(a.params_->newSelectedIDs);
+  out << QMap<om::common::SegID, uint32_t>(a.params_->oldSelectedIDs);
   out << a.params_->sdw.GetSegmentID();
   out << a.params_->augmentListOnly;
 
@@ -211,8 +214,12 @@ QDataStream& operator>>(QDataStream& in, OmSegmentSelectActionImpl& a) {
   om::common::ID segmentationID;
   in >> segmentationID;
 
-  in >> params->newSelectedIDs;
-  in >> params->oldSelectedIDs;
+  QMap<om::common::SegID, uint32_t> newSelectedIDs;
+  in >> newSelectedIDs;
+  params->newSelectedIDs = newSelectedIDs.toStdMap();
+  QMap<om::common::SegID, uint32_t> oldSelectedIDs;
+  in >> oldSelectedIDs;
+  params->oldSelectedIDs = oldSelectedIDs.toStdMap();
 
   om::common::SegID segmentID;
   in >> segmentID;

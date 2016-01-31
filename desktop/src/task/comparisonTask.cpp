@@ -75,7 +75,7 @@ bool ComparisonTask::Start() {
   } else {
     // clear any pre-existing selection (which could exist if the previous task
     // happened to be in the same volume)
-    segments.Selection().UpdateSegmentSelection({}, true);
+    segments.Selection().UpdateSegmentSelection(om::common::SegIDSet(), true);
     log_errors << "No segments in Seed segments group.";
   }
 

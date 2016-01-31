@@ -197,17 +197,18 @@ class GraphThresholder {
       for ( int i = 0; i < adjacencyMap_[currSegment].size(); i++ ) {
         currEdge = adjacencyMap_[currSegment][i];
 
-        log_debugs << "BFS for (" << currSegment << ") looking at: " <<
-                      currEdge->node1ID << " - " << currEdge->node2ID <<
-                      " (" << currEdge->threshold << ") <? (" << threshold << ")";
-        if (currEdge->threshold < threshold) {
-          continue;
-        }
-
         if (currSegment == currEdge->node2ID) {
           nextSegment = currEdge->node1ID;
         } else {
           nextSegment = currEdge->node2ID;
+        }
+
+        log_debugs << "BFS for (" << currSegment << ") looking at: " << nextSegment <<
+                      " (" << currEdge->threshold << ") <? (" << threshold << ")";
+
+        // TODO::reorderLog move before log
+        if (currEdge->threshold < threshold) {
+          continue;
         }
 
         if (sel->IsSegmentSelected(nextSegment)) {
@@ -250,6 +251,7 @@ class GraphThresholder {
       } else {
         mini = sel->GetOrderOfAdding(SegmentID);
       }
+      std::cout << "Trying to trim " << SegmentID << " mini is" << mini << std::endl;
 
       std::queue <om::common::SegID> q;
       q.push(SegmentID);
@@ -270,6 +272,12 @@ class GraphThresholder {
             nextSegment = currEdge->node2ID;
           }
 
+          log_debugs << "TRIM for (" << nextSegment << ") looking at: " <<
+                      currEdge->node1ID << " - " << currEdge->node2ID <<
+                      " (" << sel->GetOrderOfAdding(nextSegment) << ") <=? mini (" <<
+                        mini << ")";
+
+          // TODO::reorderLog move before log
           if (sel->GetOrderOfAdding(nextSegment) <= mini) {
             continue;
           }
@@ -323,20 +331,20 @@ class GraphThresholder {
       }
 
       for (int i = 0; i < sizeList; i++) {
-        if (adjacencyMap_[currSegment][0]->threshold - adjacencyMap_[currSegment][i]->threshold > 0.05) {
-          break;
-        }
-
         currEdge = adjacencyMap_[currSegment][i];
-        log_debugs << "Dynamic BFS for (" << currSegment << ") looking at: " <<
-                      currEdge->node1ID << " - " << currEdge->node2ID <<
-                      " (" << adjacencyMap_[currSegment][0]->threshold <<
-                      ") <-.05> (" << adjacencyMap_[currSegment][i]->threshold << ")";
-
         if (currSegment == currEdge->node2ID) {
             nextSegment = currEdge->node1ID;
         } else {
           nextSegment = currEdge->node2ID;
+        }
+
+        log_debugs << "Dynamic BFS for (" << currSegment << ") looking at: " << nextSegment <<
+                      " (" << adjacencyMap_[currSegment][0]->threshold <<
+                      ") <-.05> (" << adjacencyMap_[currSegment][i]->threshold << ")";
+
+        // TODO::reorderLog move before log
+        if (adjacencyMap_[currSegment][0]->threshold - adjacencyMap_[currSegment][i]->threshold > 0.05) {
+          break;
         }
 
         if (sel->IsSegmentSelected(nextSegment)) {
