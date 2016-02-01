@@ -24,13 +24,14 @@ class OmSegmentSelector {
   void augmentSelectedSet(const om::common::SegID segID, const bool isSelected);
 
   void InsertSegments(const om::common::SegIDSet& segIDs);
-  void InsertSegmentsOrdered(const om::common::SegIDList& segIDs);
+  void InsertSegments(const om::common::SegIDList& segIDs);
   void RemoveSegments(const om::common::SegIDSet& segIDs);
   void RemoveTheseSegments(const om::common::SegIDSet& segIDs);
 
   void selectJustThisSegment_toggle(const om::common::SegID segID);
   void augmentSelectedSet_toggle(const om::common::SegID segID);
 
+  bool UpdateSelectionNow();
   bool sendEvent();
   bool IsSegmentSelected(const om::common::SegID segID);
   void selectNoSegments();

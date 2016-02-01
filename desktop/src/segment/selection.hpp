@@ -120,9 +120,13 @@ class Selection {
     updateSelection(old, false);
   }
 
+  uint32_t GetNextOrder() {
+      return selectedIDsToOrders_.size() + 1;
+  }
+
   inline void Clear() { selectedIDsToOrders_.clear(); }
 
-  uint32_t GetOrderOfAdding(const common::SegID segID) {
+  inline uint32_t GetOrderOfAdding(const common::SegID segID) {
     return selectedIDsToOrders_[segID];
   }
 
@@ -149,7 +153,7 @@ class Selection {
 
   inline void doSelectedSetInsert(const common::SegID segID,
                                   const bool addToRecentList) {
-    addSegmentAnyOrder(segID);
+    addSegmentAnyNextOrder(segID);
     if (addToRecentList) {
       addToRecentMap(segID);
     }
@@ -165,8 +169,8 @@ class Selection {
     lists_.TouchRecent(seg);
   }
 
-  inline void addSegmentAnyOrder(const common::SegID segID) {
-    uint32_t newOrder = selectedIDsToOrders_.size() + 1;
+  inline void addSegmentNextOrder(const common::SegID segID) {
+    uint32_t newOrder = GetNextOrder();
     addSegmentWithOrder(segID, newOrder);
   }
 
@@ -180,7 +184,7 @@ class Selection {
     // invert the map to get correct iteration order
     for (auto orderToSegID : orderToSegIDs(segIDToOrders)) {
       // reinsert and get's rid of missing holes in ids
-      addSegmentAnyOrder(orderToSegID.second);
+      addSegmentNextOrder(orderToSegID.second);
       if (shouldAddToRecent) {
         addToRecentMap(orderToSegID.second);
       }

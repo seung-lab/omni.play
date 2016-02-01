@@ -67,7 +67,7 @@ void OmSegmentSelector::InsertSegments(const om::common::SegIDSet& segIDs) {
   }
 }
 
-void OmSegmentSelector::InsertSegmentsOrdered(const om::common::SegIDList& segIDs) {
+void OmSegmentSelector::InsertSegments(const om::common::SegIDList& segIDs) {
   om::common::SegID rootID;
   for (auto id : segIDs) {
     rootID = segments_->FindRootID(id);
@@ -126,6 +126,16 @@ void OmSegmentSelector::augmentSelectedSet_toggle(
 
 bool OmSegmentSelector::IsSegmentSelected(const om::common::SegID segID) {
   return selection_->IsSegmentSelected(segID);
+}
+
+bool OmSegmentSelector::UpdateSelectionNow() {
+  if (params_->oldSelectedIDs == params_->newSelectedIDs) {
+    // no change in selected set
+    return false;
+  }
+
+  segments->Selection().UpdateSegmentSelection(params_->newSelectedIDs,
+                                                 params_->addToRecentList);
 }
 
 bool OmSegmentSelector::sendEvent() {

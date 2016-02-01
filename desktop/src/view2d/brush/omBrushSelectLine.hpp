@@ -23,6 +23,11 @@ class OmBrushSelectLine {
     std::shared_ptr<om::common::SegIDSet> segIDs =
         OmBrushSelectUtils::FindSegIDsFromPoints(info_.get(), pts.get());
 
-    OmBrushSelectUtils::SendEvent(info_.get(), segIDs.get());
+    OmMultiSelecting multiSelecting = state->getViewGroupState().MultiSelecting();
+
+    multiSelecting.EnterSelectingMode(info->segmentation.GetSDW());
+    multiSelecting.InsertSegments(segIDs.get());
+
+    // OmBrushSelectUtils::SendEvent(info_.get(), segIDs.get());
   }
 };

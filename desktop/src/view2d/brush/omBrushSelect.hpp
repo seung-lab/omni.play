@@ -22,10 +22,6 @@ class OmBrushSelect {
   static void StartOrContinueMultiSelecting(OmView2dState* state,
                            const om::coords::Global& second,
                            const om::common::AddOrSubtract addSegments) {
-    OmMultiSelecting multiSelecting = state->getViewGroupState().MultiSelecting();
-
-    multiSelecting.EnterSelectingMode();
-
     const om::coords::Global& first = state->GetLastDataPoint();
 
     std::shared_ptr<OmBrushOppInfo> info =
