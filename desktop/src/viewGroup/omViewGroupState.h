@@ -14,7 +14,7 @@ class OmColorizers;
 class OmLandmarks;
 class OmSegmentColorizer;
 class OmSplitting;
-class OmMultiSelecting;
+class OmSegmentSelector;
 class OmTileCoord;
 class OmViewGroupView2dState;
 class OmZoomLevel;
@@ -56,7 +56,9 @@ class OmViewGroupState : public OmManageableObject {
 
   inline OmSplitting& Splitting() { return *splitting_; }
 
-  inline OmMultiSelecting& MultiSelecting() { return *multiSelecting_; }
+  OmSegmentSelector& Selector();
+  inline bool IsSelecting() { return selector_; }
+  void EndSelecting();
 
   void SetHowNonSelectedSegmentsAreColoredInFilter(const bool);
 
@@ -107,7 +109,7 @@ class OmViewGroupState : public OmManageableObject {
   std::unique_ptr<OmColorizers> colorizers_;
   std::unique_ptr<OmZoomLevel> zoomLevel_;
   std::unique_ptr<OmSplitting> splitting_;
-  std::unique_ptr<OmMultiSelecting> multiSelecting_;
+  std::unique_ptr<OmSegmentSelector> selector_;
   std::unique_ptr<OmLandmarks> landmarks_;
 
   std::unique_ptr<ChannelDataWrapper> cdw_;

@@ -12,7 +12,6 @@
 #include "utility/dataWrappers.h"
 #include "viewGroup/omColorizers.hpp"
 #include "viewGroup/omSplitting.hpp"
-#include "viewGroup/omMultiSelecting.hpp"
 #include "viewGroup/omViewGroupState.h"
 #include "viewGroup/omViewGroupView2dState.hpp"
 #include "viewGroup/omZoomLevel.hpp"
@@ -30,7 +29,6 @@ OmViewGroupState::OmViewGroupState(MainWindow* mainWindow)
       colorizers_(new OmColorizers(*this)),
       zoomLevel_(new OmZoomLevel()),
       splitting_(new OmSplitting()),
-      multiSelecting_(new OmMultiSelecting()),
       landmarks_(new OmLandmarks(mainWindow)),
       cdw_(new ChannelDataWrapper(1)),
       sdw_(new SegmentationDataWrapper(1))
@@ -125,6 +123,22 @@ void OmViewGroupState::SetShowValidMode(bool mode, bool inColor) {
   mShowValidInColor = inColor;
   om::event::Redraw3d();
   om::event::Redraw2d();
+}
+
+OmSegmentSelector& OmViewGroupState::Selector(om::common::ID segmentationID, const std::string& comment) {
+  if (!IsSelecting()) {
+    SegmentationDataWrapper sdw(segmentationID);
+    selector_ = std::make_unique(sdw.GetSegmentation(), nullptr, comment);
+  }
+  return *selector_;
+}
+
+bool OmViewGroupState::IsSelecting() {
+  return selector_;
+}
+
+void OmViewGroupState::EndSelecting() {
+  selector_.reset();
 }
 
 void OmViewGroupState::SetHowNonSelectedSegmentsAreColoredInFilter(

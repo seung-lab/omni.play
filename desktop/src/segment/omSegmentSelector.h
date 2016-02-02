@@ -29,8 +29,7 @@ class OmSegmentSelector {
   void RemoveTheseSegments(const om::common::SegIDSet& segIDs);
 
   void selectJustThisSegment_toggle(const om::common::SegID segID);
-  void augmentSelectedSet_toggle(const om::common::SegID segID);
-
+  void augmentSelectedSet_toggle(const om::common::SegID segID); 
   bool UpdateSelectionNow();
   bool sendEvent();
   bool IsSegmentSelected(const om::common::SegID segID);
@@ -45,9 +44,14 @@ class OmSegmentSelector {
  private:
   void addSegmentToSelectionParameters(const om::common::SegID segID);
   void removeSegmentFromSelectionParameters(const om::common::SegID segID);
+  common::SegID getNextInsertedSegment(om::common::SegIDMap segIDToOrders, uint32_t orderFrom);
+
   OmSegments* segments_;
   om::segment::Selection* selection_;
   std::shared_ptr<OmSelectSegmentsParams> params_;
   void setSelectedSegment(const om::common::SegID segID);
   uint32_t numberOfAddedSegment;
+
+  std::unique_ptr<om::common::SegID> firstSelectedSegmentID_;
+  std::unique_ptr<uint32_t> firstSelectedSegmentOrder_;
 };

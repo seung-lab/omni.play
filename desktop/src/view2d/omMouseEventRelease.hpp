@@ -24,10 +24,15 @@ class OmMouseEventRelease {
     switch (OmStateManager::GetToolMode()) {
       case om::tool::PAINT:
       case om::tool::ERASE:
-      case om::tool::SELECT:
       case om::tool::LANDMARK:
         state_->OverrideToolModeForPan(false);
         break;
+      case om::tool::SELECT:
+        if (OmBrushSelect::IsSelecting(state_)) {
+          OmBrushSelect::EndMultiSelect(state_);
+        }
+        state_->OverrideToolModeForPan(false);
+
       default:
         break;
     }

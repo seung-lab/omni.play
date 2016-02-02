@@ -134,8 +134,29 @@ bool OmSegmentSelector::UpdateSelectionNow() {
     return false;
   }
 
-  segments->Selection().UpdateSegmentSelection(params_->newSelectedIDs,
+  // if we had ever made a first selection and removed that selection afterwards,
+  // check for the next selected segment (if it exists)
+  if (firstSelectedSegID_ && !params->newSelectedID.count(firstSelectedSegID_)) {
+    common::SegID nextSelectedSegID =
+      getNextInsertedSegment(params->newSelectedIDs, firstSelectedSegOrder_);
+    // update the first selection only if one was found return of 0 indicates not found
+    if (nextSelectedSegID) {
+      firstSelectedSegID_ = std::make_unique(nextSelectedSegID);
+    } else {
+      firstSelectedSegID_.reset();
+    }
+  }
+
+  Selection selection = segments->Selection();
+  selection.UpdateSegmentSelection(params_->newSelectedIDs,
                                                  params_->addToRecentList);
+
+  // update the firstSelectedSegOrder in case the underlying order changes
+  // (fill in holes from removals)
+  if (selection.IsSegmentSelected(firstSelectedSegID_)) {
+    firstSelectedSegOrder_ = std::make_unique<common::segID>(
+        selection.GetOrderOfAdding(firstSelectedSegID_));
+  }
 }
 
 bool OmSegmentSelector::sendEvent() {
@@ -170,11 +191,27 @@ void OmSegmentSelector::AddOrSubtract(
 
 void OmSegmentSelector::addSegmentToSelectionParameters(om::common::SegID segID) {
   uint32_t newOrder =  params_->newSelectedIDs.size() + 1;
+  if (!firstSelectedSegID_) {
+    firstSelectedSegID_ = segID;
+    firstSelectedSegOrder_ = newOrder;
+  }
   params_->newSelectedIDs.insert(std::pair<om::common::SegID, uint32_t>(segID, newOrder));
 }
 
 void OmSegmentSelector::removeSegmentFromSelectionParameters(om::common::SegID segID) {
   params_->newSelectedIDs.erase(segID);
+}
+
+// search for the next segment after the order if it exists, if it doesn't returns 0 as SegId
+common::SegID OmSegmentSelector::getNextInsertedSegment(om::common::SegIDMap segIDToOrders,
+    uint32_t orderFrom) {
+  std::map<<uint32_t, common::SegID> orderToSegID = om::segment::OrderToSegIDs(segIDToOrders);
+  for (auto orderToSegId : orderToSegIDs) {
+    if (orderToSegID.first > segIDToOrders) {
+      return orderToSegID.second;
+    }
+  }
+  return 0;
 }
 
 uint32_t OmSegmentSelector::GetOrderOfAdding(const om::common::SegID segID) {

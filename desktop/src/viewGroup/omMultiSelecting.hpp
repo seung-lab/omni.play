@@ -1,6 +1,7 @@
 #pragma once
 #include "precomp.h"
 
+#include <type_traits>
 #include "utility/dataWrappers.h"
 #include "system/omStateManager.h"
 #include "gui/toolbars/toolbarManager.h"
@@ -11,11 +12,15 @@
 
 class OmMultiSelecting {
  private:
-  uint32_t startIndex_;
   std::unique_ptr<OmSegmentSelector> selector_;
+  
+  // use these two to keep track of the first item that was selected.
+  std::unique_ptr<om::common::SegID> firstSelectedSegmentID_;
+  std::unique_ptr<uint32_t> firstSelectedSegmentOrder_;
 
+  void createSelectorIfNotExist(SegmentationDataWrapper& sdw, const std::string& cmt)
  public:
-  OmMultiSelecting() : isSelecting_(false) {}
+  OmMultiSelecting() {}
 
   inline bool IsSelecting() {
     return selector_;
@@ -24,32 +29,28 @@ class OmMultiSelecting {
   void EnterSelectingMode(SegmentationDataWrapper& sdw, const std::string& cmt) {
     if (!IsSelecting()) {
       selector_ = std::make_unique(sdw, nullptr, comment);
-      startIndex_ = sdw.Segments()->Selection().GetNextOrder();
     }
   }
 
   void ExitSelectingMode() {
     selector->sendEvent();
     selector.reset();
+    firstSelectedSegmentID_.reset();
+    firstSelectedSegmentOrder_.reset();
   }
 
   void InsertSegments(const om::comon::SegIDSet segIDSet) {
-    if(!selector_) {
-        log_debugs << "Attempting to multi select but mode is not active" << std::endl;
+    if (!selector_) {
+        log_debugs << "Attempting to multi select insert but mode is not active" << std::endl;
         return;
     }
+
     selector_->InsertSegments(segIDSet);
     selector_->UpdateSelectionNow();
-  }
 
-  void InsertSegments(const om::comon::SegIDList segIDList) {
-    if(!selector_) {
-        log_debugs << "Attempting to multi select but mode is not active" << std::endl;
-        return;
+    if (!firstSelectedSegmentID_) {
+      firstSelectedSegmentID_ = *segIDSet.begin();
+      firstSelectedSegmentOrder_ = selector_.GetOrderOfAdding(firstSelectedSegmentID_);
     }
-    selector->InsertSegments(segIDList);
-    selector_->UpdateSelectionNow();
   }
-
-
 };
