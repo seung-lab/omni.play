@@ -8,11 +8,12 @@
 class OmBrushSelectLine {
  private:
   const std::shared_ptr<OmBrushOppInfo> info_;
+  const std::shared_ptr<OmSegmentSelector> selector_;
 
  public:
-  OmBrushSelectLine(std::shared_ptr<OmBrushOppInfo> info) : info_(info) {}
-
-  virtual ~OmBrushSelectLine() {}
+  OmBrushSelectLine(std::shared_ptr<OmBrushOppInfo> info,
+                    std::shared_ptr<OmSegmentSelector> selector)
+    : info_(info), selector_(selector) {}
 
   void SelectLine(const om::coords::Global& first,
                   const om::coords::Global& second) {
@@ -20,14 +21,9 @@ class OmBrushSelectLine {
 
     std::shared_ptr<om::pt3d_list_t> pts = lineOpp.GetPts(first, second);
 
-    std::shared_ptr<om::common::SegIDSet> segIDs =
-        OmBrushSelectUtils::FindSegIDsFromPoints(info_.get(), pts.get());
+    om::common::SegIDSet segIDs =
+        OmBrushSelectUtils::FindSegIDsFromPoints(*info_, *pts);
 
-    OmMultiSelecting multiSelecting = state->getViewGroupState().MultiSelecting();
-
-    multiSelecting.EnterSelectingMode(info->segmentation.GetSDW());
-    multiSelecting.InsertSegments(segIDs.get());
-
-    // OmBrushSelectUtils::SendEvent(info_.get(), segIDs.get());
+    OmBrushSelectUtils::AddOrSubtractSegments(*selector_, info_->addOrSubtract, segIDs);
   }
 };

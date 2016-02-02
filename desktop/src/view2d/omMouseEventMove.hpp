@@ -106,11 +106,11 @@ class OmMouseEventMove {
 
   inline void selectSegments() {
     if (altKey_) {
-      OmBrushSelect::SelectByLine(state_, dataClickPoint_,
+      OmBrushSelect::StartOrContinueSelector(state_, dataClickPoint_,
                                   om::common::AddOrSubtract::SUBTRACT);
 
     } else {
-      OmBrushSelect::SelectByLine(state_, dataClickPoint_,
+      OmBrushSelect::StartOrContinueSelector(state_, dataClickPoint_,
                                   om::common::AddOrSubtract::ADD);
     }
 

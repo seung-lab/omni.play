@@ -121,10 +121,22 @@ class Selection {
     common::SegIDMap::const_iterator iter = selectedIDsToOrders_.find(segID);
 
     if (iter != selectedIDsToOrders_.end()) {
-      return *iter;
+      return iter->second;
     } else {
       return 0;
     }
+  }
+
+  // search for the next segment after the order. if it doesn't exist return a nullptr
+  std::unique_ptr<common::SegID> GetNextSegment(
+      om::common::SegIDMap segIDToOrders, uint32_t orderFrom) {
+    std::map<uint32_t, common::SegID> orderToSegIDs = getOrderToSegIDs(segIDToOrders);
+    for (auto orderToSegID : orderToSegIDs) {
+      if (orderToSegID.first > orderFrom) {
+        return std::make_unique<uint32_t>(orderToSegID.second);
+      }
+    }
+    return nullptr;
   }
 
  private:
@@ -175,11 +187,11 @@ class Selection {
     selectedIDsToOrders_.insert(std::pair<common::SegID, uint32_t>(segID, newOrder));
   }
 
-  void updateSelection(const common::SegIDMap segIDToOrders,
+  void updateSelection(const common::SegIDMap newSelectedIDToOrders,
                        const bool shouldAddToRecent) {
     selectedIDsToOrders_.clear();
     // invert the map to get correct iteration order
-    for (auto orderToSegID : om::segment::OrderToSegIDs(segIDToOrders)) {
+    for (auto orderToSegID : getOrderToSegIDs(newSelectedIDToOrders)) {
       // reinsert and get's rid of missing holes in ids
       addSegmentNextOrder(orderToSegID.second);
       if (shouldAddToRecent) {
@@ -188,10 +200,7 @@ class Selection {
     }
   }
 
-  friend class YAML::convert<OmSegmentsImpl>;
-}; // class Selection
-
-  std::map<uint32_t, common::SegID> OrderToSegIDs(common::SegIDMap segIDToOrders) {
+  std::map<uint32_t, common::SegID> getOrderToSegIDs(common::SegIDMap segIDToOrders) {
     std::map<uint32_t, common::SegID> orderToSegIDs;
     for (auto segIDToOrder : segIDToOrders) {
       orderToSegIDs.insert(std::pair<uint32_t, common::SegID>(segIDToOrder.second,
@@ -199,6 +208,9 @@ class Selection {
     }
     return orderToSegIDs;
   }
+
+  friend class YAML::convert<OmSegmentsImpl>;
+}; // class Selection
 
 } //namespace segment
 } //namespace om

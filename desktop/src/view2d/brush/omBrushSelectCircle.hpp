@@ -14,7 +14,8 @@ class OmBrushSelectCircle {
   virtual ~OmBrushSelectCircle() {}
 
   void SelectCircle(const om::coords::Global& coord) {
-    OmBrushOppCircle circleOpp(info_);
+    /* TODO::removeCircle investigate to see if we can do this
+     * OmBrushOppCircle circleOpp(info_);
 
     std::shared_ptr<om::pt3d_list_t> pts = circleOpp.GetPts(coord);
 
@@ -22,5 +23,6 @@ class OmBrushSelectCircle {
         OmBrushSelectUtils::FindSegIDsFromPoints(info_.get(), pts.get());
 
     OmBrushSelectUtils::SendEvent(info_.get(), segIDs.get());
+    */
   }
 };

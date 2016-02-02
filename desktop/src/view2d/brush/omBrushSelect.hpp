@@ -4,7 +4,6 @@
 #include "view2d/brush/omBrushOppInfo.hpp"
 #include "view2d/brush/omBrushSelectCircle.hpp"
 #include "view2d/brush/omBrushSelectLineTask.hpp"
-#include "viewGroup/omMultiSelecting.hpp"
 
 namespace OmBrushSelect {
   void SelectByClick(OmView2dState* state,
@@ -18,29 +17,27 @@ namespace OmBrushSelect {
     circle.SelectCircle(coord);
   }
 
-  void StartOrContinueMultiSelect(OmView2dState* state,
+  void StartOrContinueSelector(OmView2dState* state,
                            const om::coords::Global& second,
-                           const om::common::AddOrSubtract addSegments) {
+                           const om::common::AddOrSubtract addOrSubtract) {
     const om::coords::Global& first = state->GetLastDataPoint();
 
     std::shared_ptr<OmBrushOppInfo> info =
-        OmBrushOppInfoFactory::MakeOppInfo(state, first, addSegments);
+        OmBrushOppInfoFactory::MakeOppInfo(state, first, addOrSubtract);
 
+    std::shared_ptr<OmSegmentSelector> selector = OmBrushSelectUtils::GetSelector(*state);
     std::shared_ptr<OmBrushSelectLineTask> task =
-        std::make_shared<OmBrushSelectLineTask>(info, first, second);
+        std::make_shared<OmBrushSelectLineTask>(info, selector, first, second);
 
     OmView2dManager::AddTaskBack(task);
   }
 
-  void EndMultiSelect(OmView2dState* state) {
-
-    std::shared_ptr<OmMultiSelectEndTask> task =
-        std::make_shared<OmBrushMultiSelectEndTask>();
-
-    OmView2dManager::AddTaskBack(task);
+  void EndSelector(OmView2dState* state) {
+    state->getViewGroupState().EndSelector();
   }
 
   inline bool IsSelecting(OmView2dState* state) {
-    return state_->getViewGroupState().IsSelecting();
+    return state->getViewGroupState().IsSelecting();
   }
+
 };

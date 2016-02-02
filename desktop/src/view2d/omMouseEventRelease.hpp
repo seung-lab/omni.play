@@ -29,7 +29,7 @@ class OmMouseEventRelease {
         break;
       case om::tool::SELECT:
         if (OmBrushSelect::IsSelecting(state_)) {
-          OmBrushSelect::EndMultiSelect(state_);
+          OmBrushSelect::EndSelector(state_);
         }
         state_->OverrideToolModeForPan(false);
 

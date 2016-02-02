@@ -197,7 +197,7 @@ class OmMouseEventPress {
         altKey_ ? om::common::AddOrSubtract::SUBTRACT
                 : om::common::AddOrSubtract::ADD;
 
-    OmBrushSelect::StartOrContinueMultiSelect(state_, dataClickPoint_,
+    OmBrushSelect::StartOrContinueSelector(state_, dataClickPoint_,
                                  addOrSubtractSegments);
   }
 

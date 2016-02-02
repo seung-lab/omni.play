@@ -223,7 +223,7 @@ class GraphThresholder {
         vecToAdd.push_back(nextSegment);
       }
     }
-    sel->InsertSegmentsOrdered(vecToAdd);
+    sel->InsertSegments(vecToAdd);
     sel->sendEvent();
   }
 
@@ -361,7 +361,7 @@ class GraphThresholder {
       }
     }
 
-    sel->InsertSegmentsOrdered(vecToAdd);
+    sel->InsertSegments(vecToAdd);
     sel->sendEvent();
   }
 
