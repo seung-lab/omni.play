@@ -130,7 +130,7 @@ std::shared_ptr<OmSegmentSelector> OmViewGroupState::GetOrCreateSelector(
     om::common::ID segmentationID, const std::string& comment) {
   if (!IsSelecting()) {
     SegmentationDataWrapper sdw(segmentationID);
-    selector_ = std::make_shared<OmSegmentSelector>(sdw.GetSegmentation(), nullptr, comment);
+    selector_ = std::make_shared<OmSegmentSelector>(sdw, nullptr, comment);
   }
   return selector_;
 }
