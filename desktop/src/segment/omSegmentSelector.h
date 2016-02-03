@@ -20,6 +20,10 @@ class OmSegmentSelector {
   OmSegmentSelector(const SegmentationDataWrapper& sdw, void* sender,
                     const std::string& cmt);
 
+  // Disabling copy ctor, assign ctor so we don't send multiple events in destructor
+  // Please use pointers to share this class
+  OmSegmentSelector(const OmSegmentSelector& other) = delete;
+  OmSegmentSelector& operator=(const OmSegmentSelector& other) = delete;
   ~OmSegmentSelector() { sendEvent();};
   void selectJustThisSegment(const om::common::SegID segID, const bool isSelected);
   void augmentSelectedSet(const om::common::SegID segID, const bool isSelected);
