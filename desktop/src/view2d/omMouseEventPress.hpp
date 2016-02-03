@@ -197,7 +197,7 @@ class OmMouseEventPress {
         altKey_ ? om::common::AddOrSubtract::SUBTRACT
                 : om::common::AddOrSubtract::ADD;
 
-    OmBrushSelect::SelectByClick(state_, dataClickPoint_,
+    OmBrushSelect::StartSelector(state_, dataClickPoint_,
                                  addOrSubtractSegments);
   }
 
@@ -243,7 +243,6 @@ class OmMouseEventPress {
     } else {
       sel.selectJustThisSegment_toggle(segmentID);
     }
-    sel.sendEvent();
 
     v2d_->Redraw();
   }

@@ -140,7 +140,6 @@ void OmSegmentListWidget::segmentLeftClick() {
   sel.augmentSelectedSet(current_sdw.GetID(), current->isSelected());
 
   sel.AutoCenter(true);
-  sel.sendEvent();
 }
 
 void OmSegmentListWidget::mousePressEvent(QMouseEvent* event) {

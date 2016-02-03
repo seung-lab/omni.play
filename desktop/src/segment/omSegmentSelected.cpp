@@ -7,7 +7,6 @@ void OmSegmentSelected::AugmentSelection(const SegmentDataWrapper& sdw) {
   OmSegmentSelector sel(sdw.MakeSegmentationDataWrapper(), nullptr,
                         "OmSegmentSelected");
   sel.augmentSelectedSet(sdw.GetID(), true);
-  sel.sendEvent();
 }
 
 void OmSegmentSelected::ToggleValid() {

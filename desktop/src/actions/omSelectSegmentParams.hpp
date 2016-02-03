@@ -16,7 +16,6 @@ struct OmSelectSegmentsParams {
   bool addToRecentList;
   bool autoCenter;
 
-  bool augmentListOnly;
   om::common::AddOrSubtract addOrSubtract;
 };
 

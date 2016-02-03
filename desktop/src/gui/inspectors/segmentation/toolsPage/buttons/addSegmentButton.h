@@ -26,7 +26,6 @@ class AddSegmentButton : public OmButton<PageTools> {
 
     OmSegmentSelector sel(sdw, this, "addSegmentButton");
     sel.selectJustThisSegment(newSeg->value(), true);
-    sel.sendEvent();
   }
 };
 

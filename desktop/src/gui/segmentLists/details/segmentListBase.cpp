@@ -206,7 +206,6 @@ void SegmentListBase::searchOne(const QString& text) {
   OmSegmentSelector sel(sdw_, nullptr, "segmentlistbase");
   sel.selectJustThisSegment(segID, true);
   sel.AutoCenter(true);
-  sel.sendEvent();
 
   makeSegmentationActive(sdw, true);
 }
@@ -228,7 +227,6 @@ void SegmentListBase::searchMany(const QStringList& args) {
   }
 
   sel.AutoCenter(true);
-  sel.sendEvent();
 }
 
 void SegmentListBase::userJustClickedInThisSegmentList() {

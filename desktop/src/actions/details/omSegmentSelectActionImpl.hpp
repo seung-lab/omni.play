@@ -51,14 +51,6 @@ class OmSegmentSelectActionImpl {
 
     std::string prefix("Selected segments: ");
 
-    if (params_->augmentListOnly) {
-      if (om::common::AddOrSubtract::ADD == params_->addOrSubtract) {
-        prefix = "Added segments: ";
-      } else {
-        prefix = "Removed segments: ";
-      }
-    }
-
     return prefix + nums;
   }
 

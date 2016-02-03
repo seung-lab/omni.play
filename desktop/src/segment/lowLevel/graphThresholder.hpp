@@ -223,8 +223,7 @@ class GraphThresholder {
         vecToAdd.push_back(nextSegment);
       }
     }
-    sel->InsertSegmentsOrdered(vecToAdd);
-    sel->sendEvent();
+    sel->InsertSegments(vecToAdd);
   }
 
   void Trim(OmSegmentSelector* sel, om::common::SegID SegmentID) {
@@ -296,7 +295,6 @@ class GraphThresholder {
       }
 
       sel->RemoveTheseSegments(setToRemove);
-      sel->sendEvent();
   }
 
   void AddSegments_BFS_DynamicThreshold(OmSegmentSelector* sel, om::common::SegID SegmentID) {
@@ -361,8 +359,7 @@ class GraphThresholder {
       }
     }
 
-    sel->InsertSegmentsOrdered(vecToAdd);
-    sel->sendEvent();
+    sel->InsertSegments(vecToAdd);
   }
 
  private:

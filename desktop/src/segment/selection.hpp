@@ -81,15 +81,6 @@ class Selection {
     OmCacheManager::TouchFreshness();
   }
 
-  void AddToSegmentSelection(const common::SegIDMap& ids) {
-    zi::guard g(mutex_);
-    for (auto id : ids) {
-      setSegmentSelectedBatch(id.first, true, true);
-    }
-
-    OmCacheManager::TouchFreshness();
-  }
-
   void RemoveFromSegmentSelection(const common::SegIDMap& ids) {
     zi::guard g(mutex_);
     for (auto id : ids) {
@@ -120,10 +111,32 @@ class Selection {
     updateSelection(old, false);
   }
 
+  uint32_t GetNextOrder() {
+      return selectedIDsToOrders_.size() + 1;
+  }
+
   inline void Clear() { selectedIDsToOrders_.clear(); }
 
-  uint32_t GetOrderOfAdding(const common::SegID segID) {
-    return selectedIDsToOrders_[segID];
+  inline uint32_t GetOrderOfAdding(const common::SegID segID) {
+    common::SegIDMap::const_iterator iter = selectedIDsToOrders_.find(segID);
+
+    if (iter != selectedIDsToOrders_.end()) {
+      return iter->second;
+    } else {
+      return 0;
+    }
+  }
+
+  // search for the next segment after the order. if it doesn't exist return a nullptr
+  std::unique_ptr<common::SegID> GetNextSegment(
+      om::common::SegIDMap segIDToOrders, uint32_t orderFrom) {
+    std::map<uint32_t, common::SegID> orderToSegIDs = getOrderToSegIDs(segIDToOrders);
+    for (auto orderToSegID : orderToSegIDs) {
+      if (orderToSegID.first > orderFrom) {
+        return std::make_unique<uint32_t>(orderToSegID.second);
+      }
+    }
+    return nullptr;
   }
 
  private:
@@ -141,15 +154,15 @@ class Selection {
     const common::SegID rootID = graph_.Root(segID);
 
     if (isSelected) {
-      doSelectedSetInsert(rootID, addToRecentList);
+      doSelectedInsert(rootID, addToRecentList);
     } else {
       doSelectedSetRemove(rootID);
     }
   }
 
-  inline void doSelectedSetInsert(const common::SegID segID,
+  inline void doSelectedInsert(const common::SegID segID,
                                   const bool addToRecentList) {
-    addSegmentAnyOrder(segID);
+    addSegmentNextOrder(segID);
     if (addToRecentList) {
       addToRecentMap(segID);
     }
@@ -165,8 +178,8 @@ class Selection {
     lists_.TouchRecent(seg);
   }
 
-  inline void addSegmentAnyOrder(const common::SegID segID) {
-    uint32_t newOrder = selectedIDsToOrders_.size() + 1;
+  inline void addSegmentNextOrder(const common::SegID segID) {
+    uint32_t newOrder = GetNextOrder();
     addSegmentWithOrder(segID, newOrder);
   }
 
@@ -174,28 +187,30 @@ class Selection {
     selectedIDsToOrders_.insert(std::pair<common::SegID, uint32_t>(segID, newOrder));
   }
 
-  void updateSelection(const common::SegIDMap segIDToOrders,
+  void updateSelection(const common::SegIDMap newSelectedIDToOrders,
                        const bool shouldAddToRecent) {
     selectedIDsToOrders_.clear();
     // invert the map to get correct iteration order
-    for (auto orderToSegID : orderToSegIDs(segIDToOrders)) {
+    for (auto orderToSegID : getOrderToSegIDs(newSelectedIDToOrders)) {
       // reinsert and get's rid of missing holes in ids
-      addSegmentAnyOrder(orderToSegID.second);
+      addSegmentNextOrder(orderToSegID.second);
       if (shouldAddToRecent) {
         addToRecentMap(orderToSegID.second);
       }
     }
   }
 
-  std::map<uint32_t, common::SegID> orderToSegIDs(common::SegIDMap segIDToOrders) {
+  std::map<uint32_t, common::SegID> getOrderToSegIDs(common::SegIDMap segIDToOrders) {
     std::map<uint32_t, common::SegID> orderToSegIDs;
     for (auto segIDToOrder : segIDToOrders) {
-        orderToSegIDs[segIDToOrder.second] = segIDToOrder.first;
+      orderToSegIDs.insert(std::pair<uint32_t, common::SegID>(segIDToOrder.second,
+           segIDToOrder.first));
     }
     return orderToSegIDs;
   }
 
   friend class YAML::convert<OmSegmentsImpl>;
-};
-}
-}
+}; // class Selection
+
+} //namespace segment
+} //namespace om
