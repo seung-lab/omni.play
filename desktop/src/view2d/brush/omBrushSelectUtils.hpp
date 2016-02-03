@@ -27,17 +27,11 @@ namespace OmBrushSelectUtils {
 
   void AddOrSubtractSegments(OmSegmentSelector& selector,
       om::common::AddOrSubtract addOrSubtract, om::common::SegIDSet& segIDs) {
-  //TODO::removePrintout
-      std::cout << "Inserting segments" << std::endl;
     if (om::common::AddOrSubtract::ADD == addOrSubtract) {
       selector.InsertSegments(segIDs);
     } else {
       selector.RemoveTheseSegments(segIDs);
     }
-  //TODO::removePrintout
-      std::cout << "updating selection" << std::endl;
     selector.UpdateSelectionNow();
-  //TODO::removePrintout
-      std::cout << "done updating selection" << std::endl;
   }
 };

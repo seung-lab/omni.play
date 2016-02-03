@@ -39,7 +39,6 @@ class OmMouseEventMove {
     if (leftMouseButton_) {
       if (shouldPan()) {
         doPan();
-        v2d_->Redraw();
         return;
       }
 
@@ -73,9 +72,11 @@ class OmMouseEventMove {
       if (shouldPan()) {
         doPan();
       }
+    } else {
+      // we only need to redraw if the other actions haven't. (they all trigger redraws)
+      v2d_->Redraw();
     }
 
-    v2d_->Redraw();
   }
 
  private:

@@ -19,22 +19,11 @@ class OmBrushSelectLine {
                   const om::coords::Global& second) {
     OmBrushOppLine lineOpp(info_);
 
-  //TODO::removePrintout
-    std::cout << "Getting segments from " << first << " To " << second << std::endl;
     std::shared_ptr<om::pt3d_list_t> pts = lineOpp.GetPts(first, second);
 
-
-  //TODO::removePrintout
-    std::cout << "finding segIds for " << pts->size() << " points." << std::endl;
     om::common::SegIDSet segIDs =
         OmBrushSelectUtils::FindSegIDsFromPoints(*info_, *pts);
 
-  //TODO::removePrintout
-    std::cout << "found seg ids:";
-    for (auto segID : segIDs) {
-        std::cout << segID << " ";
-    }
-    std::cout << std::endl;
     OmBrushSelectUtils::AddOrSubtractSegments(*selector_, info_->addOrSubtract, segIDs);
   }
 };

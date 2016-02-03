@@ -30,9 +30,6 @@ OmSegmentSelector::OmSegmentSelector(const SegmentationDataWrapper& sdw,
   params_->autoCenter = false;
   params_->shouldScroll = true;
   params_->addToRecentList = true;
-
-  //TODO::removePrintout
-  std::cout << " Creating new selector" << std::endl;
 }
 
 void OmSegmentSelector::selectNoSegments() {
@@ -138,6 +135,7 @@ bool OmSegmentSelector::UpdateSelectionNow() {
   // add any newly selected ids to the master selection list
   selection_->UpdateSegmentSelection(params_->newSelectedIDs, params_->addToRecentList);
 
+  om::event::SegmentModified(params_);
   return true;
 }
 
