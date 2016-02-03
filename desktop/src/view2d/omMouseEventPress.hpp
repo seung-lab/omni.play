@@ -180,8 +180,8 @@ class OmMouseEventPress {
       case om::tool::ANNOTATE:
         addAnnotation();
         break;
-      case om::tool::KALINA:
-        kalina();
+      case om::tool::ADVANCED:
+        advancedTools();
         break;
       default:
         return;
@@ -341,7 +341,7 @@ class OmMouseEventPress {
                 vgs.getAnnotationColor(), vgs.getAnnotationSize());
   }
 
-  void kalina() {
+  void advancedTools() {
     boost::optional<SegmentDataWrapper> sdw = getSelectedSegment();
     if(!sdw){
       return;

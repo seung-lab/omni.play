@@ -40,8 +40,8 @@ NavAndEditButtonGroup::NavAndEditButtonGroup(QWidget* parent)
                      ":/toolbars/mainToolbar/icons/kcmfontinst.png"));
 
   addButton(
-      new ToolButton(parent, "Kalina",
-                     "Do Crazy Stuff", om::tool::KALINA,
+      new ToolButton(parent, "Advanced",
+                     "Advanced Tools", om::tool::ADVANCED,
                      ":/toolbars/mainToolbar/icons/1277962552_highlight.png"));
 
   om::connect(this, SIGNAL(buttonClicked(int)), this,
