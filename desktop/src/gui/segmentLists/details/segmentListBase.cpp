@@ -36,13 +36,7 @@ quint32 SegmentListBase::getTotalNumberOfSegments() {
 void SegmentListBase::populateByPage() {
   assert(haveValidSDW);
 
-  size_t totalPages = getTotalNumberOfSegments() / getNumSegmentsPerPage();
-
-  if (currentPageNum_ < 0) {
-    currentPageNum_ = 0;
-  } else if (currentPageNum_ > totalPages) {
-    currentPageNum_ = totalPages;
-  }
+  updatePageStats();
 
   GUIPageRequest request;
   request.offset = currentPageNum_ * getNumSegmentsPerPage();
@@ -68,6 +62,8 @@ void SegmentListBase::populateBySegment(
     const SegmentDataWrapper segmentJustSelected) {
   assert(haveValidSDW);
 
+  updatePageStats();
+
   GUIPageRequest request;
   request.offset = 0;
   request.numToGet = getNumSegmentsPerPage();
@@ -88,7 +84,16 @@ void SegmentListBase::populateBySegment(
 }
 
 void SegmentListBase::setupPageButtons() {
-  int x = 30, y = 30;
+  QLabel* pageLabel = new QLabel("Page");
+  pageLabel->setMaximumWidth(35);
+  currentPageEdit = new QLineEdit(QString::number(currentPageNum_));
+  currentPageEdit->setMaximumWidth(40);
+  currentPageEdit->setValidator(new QIntValidator());
+  QLabel* slashLabel = new QLabel("/");
+  slashLabel->setMaximumWidth(7);
+  maxPageDisplay = new QLabel(QString::number(totalPages_));
+
+  int x = 20, y = 30;
   startButton = new QPushButton("|<<");
   startButton->setFixedSize(x, y);
   prevButton = new QPushButton("<");
@@ -101,33 +106,44 @@ void SegmentListBase::setupPageButtons() {
   searchEdit = new QLineEdit();
   searchEdit->setMaxLength(searchEdit->maxLength() * 10);
 
-  om::connect(searchEdit, SIGNAL(returnPressed()), this, SLOT(searchChanged()));
-
-  om::connect(startButton, SIGNAL(released()), this, SLOT(goToStartPage()));
-
-  om::connect(prevButton, SIGNAL(released()), this, SLOT(goToPrevPage()));
-
-  om::connect(nextButton, SIGNAL(released()), this, SLOT(goToNextPage()));
-
-  om::connect(endButton, SIGNAL(released()), this, SLOT(goToEndPage()));
-
-  om::connect(endButton, SIGNAL(released()), this, SLOT(goToEndPage()));
-
   QGroupBox* buttonBox = new QGroupBox("");
   buttonBox->setFlat(true);
   QHBoxLayout* buttons = new QHBoxLayout(buttonBox);
-
+  buttons->addWidget(pageLabel);
+  buttons->addWidget(currentPageEdit);
+  buttons->addWidget(slashLabel);
+  buttons->addWidget(maxPageDisplay);
   buttons->addWidget(startButton);
   buttons->addWidget(prevButton);
   buttons->addWidget(nextButton);
   buttons->addWidget(endButton);
   layout->addWidget(buttonBox);
 
+  layout->addWidget(paginationBox);
+
   QGroupBox* searchBox = new QGroupBox("");
   searchBox->setFlat(true);
   QHBoxLayout* searchLayout = new QHBoxLayout(searchBox);
   searchLayout->addWidget(searchEdit);
   layout->addWidget(searchBox);
+
+  om::connect(searchEdit, SIGNAL(editingFinished()), this, SLOT(searchChanged()));
+  om::connect(startButton, SIGNAL(released()), this, SLOT(goToStartPage()));
+  om::connect(prevButton, SIGNAL(released()), this, SLOT(goToPrevPage()));
+  om::connect(nextButton, SIGNAL(released()), this, SLOT(goToNextPage()));
+  om::connect(endButton, SIGNAL(released()), this, SLOT(goToEndPage()));
+  om::connect(endButton, SIGNAL(released()), this, SLOT(goToEndPage()));
+  om::connect(currentPageEdit, SIGNAL(editingFinished()), this, SLOT(goToCustomPage()));
+
+}
+
+void SegmentListBase::goToCustomPage() {
+  bool ok;
+  // minus 1 because display is 1 indexed for readability
+  currentPageNum_ = currentPageEdit->text().toInt(&ok, 10) - 1;
+  if (ok) {
+    populateByPage();
+  }
 }
 
 void SegmentListBase::goToStartPage() {
@@ -233,4 +249,18 @@ void SegmentListBase::searchMany(const QStringList& args) {
 
 void SegmentListBase::userJustClickedInThisSegmentList() {
   ElementListBox::SetActiveTab(this);
+}
+
+void SegmentListBase::updatePageStats() {
+  totalPages_ = getTotalNumberOfSegments() / getNumSegmentsPerPage();
+
+  if (currentPageNum_ < 0) {
+    currentPageNum_ = 0;
+  } else if (currentPageNum_ > totalPages_) {
+    currentPageNum_ = totalPages_;
+  }
+
+  // +1 because display is 1 indexed for readability
+  currentPageEdit->setText(QString::number(currentPageNum_ + 1));
+  maxPageDisplay->setText(QString::number(totalPages_ + 1));
 }
