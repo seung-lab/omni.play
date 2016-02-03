@@ -107,14 +107,11 @@ class OmMouseEventMove {
   }
 
   inline void selectSegments() {
-    if (altKey_) {
-      OmBrushSelect::StartOrContinueSelector(state_, dataClickPoint_,
-                                  om::common::AddOrSubtract::SUBTRACT);
-
-    } else {
-      OmBrushSelect::StartOrContinueSelector(state_, dataClickPoint_,
-                                  om::common::AddOrSubtract::ADD);
-    }
+    om::common::AddOrSubtract addOrSubtractSegments =
+        altKey_ ? om::common::AddOrSubtract::SUBTRACT
+                : om::common::AddOrSubtract::ADD;
+      OmBrushSelect::ContinueSelector(state_, dataClickPoint_,
+                                  addOrSubtractSegments);
   }
 
   void erase() { OmBrushPaint::PaintByLine(state_, dataClickPoint_, 0); }

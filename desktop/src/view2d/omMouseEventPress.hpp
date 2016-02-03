@@ -197,10 +197,7 @@ class OmMouseEventPress {
         altKey_ ? om::common::AddOrSubtract::SUBTRACT
                 : om::common::AddOrSubtract::ADD;
 
-    // essentially this is a line selector with no movement
-    // set "previous click point to current location"
-    state_->SetLastDataPoint(dataClickPoint_);
-    OmBrushSelect::StartOrContinueSelector(state_, dataClickPoint_,
+    OmBrushSelect::StartSelector(state_, dataClickPoint_,
                                  addOrSubtractSegments);
   }
 

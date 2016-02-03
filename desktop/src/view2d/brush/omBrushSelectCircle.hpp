@@ -7,22 +7,23 @@
 class OmBrushSelectCircle {
  private:
   const std::shared_ptr<OmBrushOppInfo> info_;
+  const std::shared_ptr<OmSegmentSelector> selector_;
 
  public:
-  OmBrushSelectCircle(std::shared_ptr<OmBrushOppInfo> info) : info_(info) {}
+  OmBrushSelectCircle(std::shared_ptr<OmBrushOppInfo> info,
+                      std::shared_ptr<OmSegmentSelector> selector)
+   : info_(info), selector_(selector) {}
 
   virtual ~OmBrushSelectCircle() {}
 
   void SelectCircle(const om::coords::Global& coord) {
-    /* TODO::removeCircle investigate to see if we can do this
-     * OmBrushOppCircle circleOpp(info_);
+    OmBrushOppCircle circleOpp(info_);
 
     std::shared_ptr<om::pt3d_list_t> pts = circleOpp.GetPts(coord);
 
-    std::shared_ptr<om::common::SegIDSet> segIDs =
-        OmBrushSelectUtils::FindSegIDsFromPoints(info_.get(), pts.get());
+    om::common::SegIDSet segIDs =
+        OmBrushSelectUtils::FindSegIDsFromPoints(*info_, *pts);
 
-    OmBrushSelectUtils::SendEvent(info_.get(), segIDs.get());
-    */
+    OmBrushSelectUtils::AddOrSubtractSegments(*selector_, info_->addOrSubtract, segIDs);
   }
 };

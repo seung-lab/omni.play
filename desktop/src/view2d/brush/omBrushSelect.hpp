@@ -6,18 +6,20 @@
 #include "view2d/brush/omBrushSelectLineTask.hpp"
 
 namespace OmBrushSelect {
-  void SelectByClick(OmView2dState* state,
+  void StartSelector(OmView2dState* state,
                             const om::coords::Global& coord,
                             const om::common::AddOrSubtract addSegments) {
+    std::shared_ptr<OmSegmentSelector> selector = OmBrushSelectUtils::GetSelector(*state);
+
     std::shared_ptr<OmBrushOppInfo> info =
         OmBrushOppInfoFactory::MakeOppInfo(state, coord, addSegments);
 
-    OmBrushSelectCircle circle(info);
+    OmBrushSelectCircle circle(info, selector);
 
     circle.SelectCircle(coord);
   }
 
-  void StartOrContinueSelector(OmView2dState* state,
+  void ContinueSelector(OmView2dState* state,
                            const om::coords::Global& second,
                            const om::common::AddOrSubtract addOrSubtract) {
     const om::coords::Global& first = state->GetLastDataPoint();
