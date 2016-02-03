@@ -48,10 +48,10 @@ void OmSegmentSelector::selectJustThisSegment(
   if (params_->oldSelectedIDs.size() > 1 || isSelected) {
     addSegmentToSelectionParameters(segID);
   }
-
-  setSelectedSegment(segID);
 }
 
+// this indicates what segment we selected, also used to tell the segment
+// list box to scroll to the selected row for this segment
 void OmSegmentSelector::setSelectedSegment(const om::common::SegID segID) {
   params_->sdw.SetSegmentID(segID);
   OmSegmentSelected::Set(params_->sdw);
@@ -96,8 +96,6 @@ void OmSegmentSelector::augmentSelectedSet(
   } else {
     removeSegmentFromSelectionParameters(segID);
   }
-
-  setSelectedSegment(segID);
 }
 
 void OmSegmentSelector::selectJustThisSegment_toggle(
@@ -166,42 +164,17 @@ void OmSegmentSelector::AutoCenter(const bool autoCenter) {
 
 void OmSegmentSelector::addSegmentToSelectionParameters(om::common::SegID segID) {
   uint32_t newOrder =  params_->newSelectedIDs.size() + 1;
-  /* TODO::moveFirstSelectedLogicOut
-  if (!firstSelectedSegID_) {
-    firstSelectedSegID_ = segID;
-    firstSelectedSegOrder_ = newOrder;
-  }
-  */
   params_->newSelectedIDs.insert(std::pair<om::common::SegID, uint32_t>(segID, newOrder));
+  setSelectedSegment(segID);
 }
 
 void OmSegmentSelector::removeSegmentFromSelectionParameters(om::common::SegID segID) {
   params_->newSelectedIDs.erase(segID);
-}
-
-/*
- * TODO::moveFirstSelectedLogicOut
-// if we had ever made a first selection and removed that selection afterwards,
-// check for the next selected segment (if it exists)
-void updateFirstSelectedSegment() {
-  if (firstSelectedSegID_ && !params->newSelectedID.count(firstSelectedSegID_)) {
-    firstSelectedSegID_ = getNextSegment(params->newSelectedIDs, *firstSelectedSegOrder_);
+  // only update the selected segment if any was selected
+  if (params_->newSelectedIDs.begin() != params_->newSelectedIDs.end()) {
+    setSelectedSegment(params_->newSelectedIDs.begin()->first);
   }
 }
-
-// TODO::moveFirstSelectedLogicOut
-// update the firstSelectedSegOrder in case the underlying order changes
-// (fill in holes from removals)
-void updateFirstSelectedOrder() {
-  if (firstSelectedSegID_ && selection_.IsSegmentSelected(firstSelectedSegID_)) {
-    firstSelectedSegOrder_ = std::make_unique<common::segID>(
-        selection_.GetOrderOfAdding(*firstSelectedSegID_));
-  } else {
-    firstSelectedSegID_.reset();
-    firstSelectedSegOrder_.reset()
-  }
-}
-  */
 
 uint32_t OmSegmentSelector::GetOrderOfAdding(const om::common::SegID segID) {
   return selection_->GetOrderOfAdding(segID);

@@ -19,7 +19,7 @@ namespace OmBrushSelectUtils {
     std::shared_ptr<OmSegmentSelector> selector = 
       state.getViewGroupState().GetOrCreateSelector(
           state.GetSegmentationID(), "Brush Select Line");
-    selector->ShouldScroll(false);
+    selector->ShouldScroll(true);
     selector->AddToRecentList(false);
     selector->AutoCenter(false);
     return selector;
