@@ -20,7 +20,8 @@ class OmSegmentSelector {
   OmSegmentSelector(const SegmentationDataWrapper& sdw, void* sender,
                     const std::string& cmt);
 
-  ~OmSegmentSelector() { sendEvent(); };
+  //TODO::removePrintout
+  ~OmSegmentSelector() { sendEvent(); std::cout << "Sending event in destructor" << std::endl;};
   void selectJustThisSegment(const om::common::SegID segID, const bool isSelected);
   void augmentSelectedSet(const om::common::SegID segID, const bool isSelected);
 

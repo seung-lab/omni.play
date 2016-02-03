@@ -191,8 +191,6 @@ void Ui::deselectSegment(const SegmentDataWrapper& sdw) {
 
   OmSegmentSelector sel(sdw.MakeSegmentationDataWrapper(), this, "view3d");
   sel.augmentSelectedSet(segmentID, false);
-
-  sel.sendEvent();
 }
 
 void Ui::doSelectSegment(const SegmentDataWrapper& sdw,
@@ -213,8 +211,6 @@ void Ui::doSelectSegment(const SegmentDataWrapper& sdw,
   } else {
     sel.selectJustThisSegment_toggle(segmentID);
   }
-
-  sel.sendEvent();
 }
 
 void Ui::navigationModeMouseRelease(QMouseEvent* event) {

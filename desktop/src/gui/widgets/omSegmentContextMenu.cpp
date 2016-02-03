@@ -129,14 +129,12 @@ void OmSegmentContextMenu::select() {
 void OmSegmentContextMenu::unselect() {
   OmSegmentSelector sel(sdw_.MakeSegmentationDataWrapper(), this, "view3d");
   sel.augmentSelectedSet(sdw_.GetID(), false);
-  sel.sendEvent();
 }
 
 void OmSegmentContextMenu::unselectOthers() {
   OmSegmentSelector sel(sdw_.MakeSegmentationDataWrapper(), this, "view3d");
   sel.selectNoSegments();
   sel.selectJustThisSegment(sdw_.GetID(), true);
-  sel.sendEvent();
 }
 
 void OmSegmentContextMenu::mergeSegments() {

@@ -47,6 +47,8 @@ OmViewGroupState::OmViewGroupState(MainWindow* mainWindow)
   mShowValid = false;
   mShowValidInColor = false;
   mShowFilterInColor = false;
+  //TODO::removePrintout
+  std::cout << "Creating viewgropu state" << std::endl;
 }
 
 OmViewGroupState::~OmViewGroupState() {}
@@ -128,9 +130,16 @@ void OmViewGroupState::SetShowValidMode(bool mode, bool inColor) {
 
 std::shared_ptr<OmSegmentSelector> OmViewGroupState::GetOrCreateSelector(
     om::common::ID segmentationID, const std::string& comment) {
+  //TODO::removePrintout
+    std::cout << "getorcreate selector" << std::endl;
   if (!IsSelecting()) {
+  //TODO::removePrintout
+    std::cout << "not currently selecting" << std::endl;
     SegmentationDataWrapper sdw(segmentationID);
     selector_ = std::make_shared<OmSegmentSelector>(sdw, nullptr, comment);
+  } else {
+  //TODO::removePrintout
+    std::cout << "is currently selecting" << std::endl;
   }
   return selector_;
 }

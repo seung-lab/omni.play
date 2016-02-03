@@ -253,6 +253,8 @@ class OmView2dState {
     return lastDataPoint_;
   }
   void SetLastDataPoint(const om::coords::Global& coord) {
+  //TODO::removePrintout
+      std::cout << "setting last data point! " << coord << std::endl;
     lastDataPoint_ = coord;
   }
 

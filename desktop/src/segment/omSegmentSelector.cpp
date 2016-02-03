@@ -30,6 +30,9 @@ OmSegmentSelector::OmSegmentSelector(const SegmentationDataWrapper& sdw,
   params_->autoCenter = false;
   params_->shouldScroll = true;
   params_->addToRecentList = true;
+
+  //TODO::removePrintout
+  std::cout << " Creating new selector" << std::endl;
 }
 
 void OmSegmentSelector::selectNoSegments() {

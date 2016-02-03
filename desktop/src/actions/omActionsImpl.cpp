@@ -86,7 +86,6 @@ void OmActionsImpl::UncertainSegment(const SegmentDataWrapper sdw,
                           "jump after validate");
     sel.selectJustThisSegment(nextSegmentIDtoJumpTo, true);
     sel.AutoCenter(true);
-    sel.sendEvent();
   }
 }
 
@@ -103,7 +102,6 @@ void OmActionsImpl::UncertainSegmentation(const SegmentationDataWrapper sdw,
     OmSegmentSelector sel(sdw, nullptr, "jump after validate");
     sel.selectJustThisSegment(nextSegmentIDtoJumpTo, true);
     sel.AutoCenter(true);
-    sel.sendEvent();
   }
 }
 

@@ -46,6 +46,7 @@ class OmMouseEventMove {
       switch (tool_) {
         case om::tool::SELECT:
           selectSegments();
+          state_->SetLastDataPoint(dataClickPoint_);
           break;
 
         case om::tool::PAN:
@@ -113,8 +114,6 @@ class OmMouseEventMove {
       OmBrushSelect::StartOrContinueSelector(state_, dataClickPoint_,
                                   om::common::AddOrSubtract::ADD);
     }
-
-    state_->SetLastDataPoint(dataClickPoint_);
   }
 
   void erase() { OmBrushPaint::PaintByLine(state_, dataClickPoint_, 0); }
