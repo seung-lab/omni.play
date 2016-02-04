@@ -14,7 +14,7 @@ enum mode {
   CUT,
   LANDMARK,
   ANNOTATE,
-  KALINA,
+  ADVANCED,
   SHATTER
 };
 
