@@ -85,15 +85,15 @@ void SegmentListBase::populateBySegment(
 
 void SegmentListBase::setupPageButtons() {
   QLabel* pageLabel = new QLabel("Page");
-  pageLabel->setMaximumWidth(35);
+  pageLabel->setMaximumWidth(32);
   currentPageEdit = new QLineEdit(QString::number(currentPageNum_));
   currentPageEdit->setMaximumWidth(40);
   currentPageEdit->setValidator(new QIntValidator());
   QLabel* slashLabel = new QLabel("/");
-  slashLabel->setMaximumWidth(7);
+  slashLabel->setMaximumWidth(5);
   maxPageDisplay = new QLabel(QString::number(totalPages_));
 
-  int x = 20, y = 30;
+  int x = 25, y = 25;
   startButton = new QPushButton("|<<");
   startButton->setFixedSize(x, y);
   prevButton = new QPushButton("<");
@@ -108,6 +108,7 @@ void SegmentListBase::setupPageButtons() {
 
   QGroupBox* buttonBox = new QGroupBox("");
   buttonBox->setFlat(true);
+  buttonBox->setStyleSheet("QLabel, QLineEdit, QPushButton { font-size:12px; }");
   QHBoxLayout* buttons = new QHBoxLayout(buttonBox);
   buttons->addWidget(pageLabel);
   buttons->addWidget(currentPageEdit);
@@ -118,8 +119,6 @@ void SegmentListBase::setupPageButtons() {
   buttons->addWidget(nextButton);
   buttons->addWidget(endButton);
   layout->addWidget(buttonBox);
-
-  layout->addWidget(paginationBox);
 
   QGroupBox* searchBox = new QGroupBox("");
   searchBox->setFlat(true);
