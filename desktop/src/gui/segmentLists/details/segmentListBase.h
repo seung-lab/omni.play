@@ -38,6 +38,7 @@ class SegmentListBase : public QWidget {
 
  public
 Q_SLOTS:
+  void goToCustomPage();
   void goToNextPage();
   void goToPrevPage();
   void goToEndPage();
@@ -58,6 +59,8 @@ Q_SLOTS:
   QPushButton* startButton;
   QPushButton* endButton;
   QLineEdit* searchEdit;
+  QLineEdit* currentPageEdit;
+  QLabel* maxPageDisplay;
 
   OmSegmentListWidget* segmentListWidget;
 
@@ -68,8 +71,11 @@ Q_SLOTS:
   QAction* propAct;
   int getNumSegmentsPerPage();
   void setupPageButtons();
+  void updatePageStats();
 
   int currentPageNum_;
+  int totalPages_;
+
   quint32 getTotalNumberOfSegments();
 
   OmViewGroupState& vgs_;
