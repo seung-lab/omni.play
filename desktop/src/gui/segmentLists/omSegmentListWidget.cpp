@@ -128,15 +128,18 @@ void OmSegmentListWidget::segmentLeftClick() {
       QVariant result = item->data(USER_DATA_COL, Qt::UserRole);
       SegmentDataWrapper item_sdw = result.value<SegmentDataWrapper>();
 
-      // the current item (current_sdw) will be handled outside of this if/else below
+      // the current row item (current_sdw) will be handled outside of this if/else below
       if (item_sdw.GetID() != current_sdw.GetID()) {
         sel.augmentSelectedSet(item_sdw.GetID(), item->isSelected());
       }
     }
   }
 
-  // select the existing selection. also, in case we are modifying the existing selection
-  // then we want to allow removing when ctrl-click (since it is no longer in selectedItems())
+  /* 
+   * Select or deselect the row that was clicked. Allows for deselect when we are modifying
+   * the existing selection (ctrl-clicked), since we couldn't have modified it above in the
+   * selecetedItems() for loop
+   */
   sel.augmentSelectedSet(current_sdw.GetID(), current->isSelected());
 
   sel.AutoCenter(true);
