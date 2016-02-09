@@ -2,14 +2,10 @@
 #include "datalayer/archive/old/omDataArchiveBoost.h"
 #include "segment/omSegment.h"
 #include "utility/dataWrappers.h"
-#include "utility/map.hpp"
 #include "volume/omSegmentation.h"
 #include "datalayer/archive/old/omDataArchiveWrappers.h"
 #include "datalayer/archive/segmentEdge.hpp"
 
-#include <boost/serialization/map.hpp>
-#include <boost/archive/text_iarchive.hpp>
-#include <boost/archive/text_oarchive.hpp>
 #include "actions/details/omSegmentJoinActionImpl.hpp"
 #include "actions/details/omSegmentSelectActionImpl.hpp"
 #include "actions/details/omSegmentSplitActionImpl.hpp"
@@ -198,10 +194,10 @@ QDataStream& operator<<(QDataStream& out, const OmSegmentSelectActionImpl& a) {
   out << version;
   out << a.params_->sdw.GetSegmentationID();
   // QT map only allows std map, must convert!
-  out << QMap<om::common::SegID, uint32_t>(
-      om::map::ToStdMap(a.params_->newSelectedIDs));
-  out << QMap<om::common::SegID, uint32_t>(
-      om::map::ToStdMap(a.params_->oldSelectedIDs));
+  out << QMap<om::common::SegID, uint32_t>(std::map<om::common::SegID, uint32_t>(
+        a.params_->newSelectedIDs.begin(), a.params_->newSelectedIDs.end()));
+  out << QMap<om::common::SegID, uint32_t>(std::map<om::common::SegID, uint32_t>(
+        a.params_->oldSelectedIDs.begin(), a.params_->oldSelectedIDs.end()));
   out << a.params_->sdw.GetSegmentID();
 
   return out;
@@ -217,15 +213,19 @@ QDataStream& operator>>(QDataStream& in, OmSegmentSelectActionImpl& a) {
   om::common::ID segmentationID;
   in >> segmentationID;
 
-  QMap<om::common::SegID, uint32_t> newSelectedIDs;
-  QMap<om::common::SegID, uint32_t> oldSelectedIDs;
+  QMap<om::common::SegID, uint32_t> newSelectedIDsQMap;
+  QMap<om::common::SegID, uint32_t> oldSelectedIDsQMap;
 
-  in >> newSelectedIDs;
-  in >> oldSelectedIDs;
+  in >> newSelectedIDsQMap;
+  in >> oldSelectedIDsQMap;
 
   // QT map only allows std map, must convert!
-  params->newSelectedIDs = om::map::ToUnorderedMap(newSelectedIDs.toStdMap());
-  params->oldSelectedIDs = om::map::ToUnorderedMap(oldSelectedIDs.toStdMap());
+  std::map<om::common::SegID, uint32_t> newSelectedIDs = newSelectedIDsQMap.toStdMap();
+  std::map<om::common::SegID, uint32_t> oldSelectedIDs = oldSelectedIDsQMap.toStdMap();
+  params->newSelectedIDs = std::unordered_map<om::common::SegID, uint32_t>(
+      newSelectedIDs.begin(), newSelectedIDs.end());
+  params->oldSelectedIDs = std::unordered_map<om::common::SegID, uint32_t>(
+      oldSelectedIDs.begin(), oldSelectedIDs.end());
 
   om::common::SegID segmentID;
   in >> segmentID;

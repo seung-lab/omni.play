@@ -24,9 +24,6 @@
 #include <boost/log/common.hpp>
 #include <boost/log/core.hpp>
 #include <boost/log/expressions/attr.hpp>
-#include <boost/serialization/map.hpp>
-#include <boost/archive/text_iarchive.hpp>
-#include <boost/archive/text_oarchive.hpp>
 #include <boost/log/expressions/filter.hpp>
 #include <boost/log/expressions/keyword.hpp>
 #include <boost/log/expressions/predicates/is_in_range.hpp>
