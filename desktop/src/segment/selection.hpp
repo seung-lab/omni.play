@@ -174,7 +174,8 @@ class Selection {
   }
 
   inline void addToRecentMap(const common::SegID segID) {
-    OmSegment* seg = store_.GetSegment(segID);
+    const common::SegID rootID = graph_.Root(segID);
+    OmSegment* seg = store_.GetSegment(rootID);
     lists_.TouchRecent(seg);
   }
 
@@ -184,7 +185,8 @@ class Selection {
   }
 
   inline void addSegmentWithOrder(const common::SegID segID, uint32_t newOrder) {
-    selectedIDsToOrders_.insert(std::pair<common::SegID, uint32_t>(segID, newOrder));
+    const common::SegID rootID = graph_.Root(segID);
+    selectedIDsToOrders_.insert(std::pair<common::SegID, uint32_t>(rootID, newOrder));
   }
 
   void updateSelection(const common::SegIDMap newSelectedIDToOrders,
