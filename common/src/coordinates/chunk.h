@@ -48,7 +48,6 @@ class Chunk : public vmml::Vector3i {
   PROP_CONST_REF(int, mipLevel);
 
   friend std::ostream& operator<<(std::ostream& out, const Chunk& in);
-    friend class OmSegmentGraphInitialLoad;
 };
 
 }  // namespace coords

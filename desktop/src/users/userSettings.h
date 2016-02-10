@@ -51,14 +51,7 @@ class userSettings {
       return sizeThreshold_direction_;
   }
 
-  inline void setSizeThreshold(float val) {
-    if ( !sizeThreshold_ ) sizeThreshold_direction_ = -1;
-    else if ( !val ) sizeThreshold_direction_ = 0;
-    else if ( sizeThreshold_ < val ) sizeThreshold_direction_ = 1;
-    else if ( sizeThreshold_ > val ) sizeThreshold_direction_ = -1;
-    else sizeThreshold_direction_ = 0;
-    sizeThreshold_ = val;
-  }
+  inline void setSizeThreshold(float val) { sizeThreshold_ = val; } 
 
   inline float getAnnotationVisible() { return showAnnotations_; }
 

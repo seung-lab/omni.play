@@ -9,7 +9,6 @@ class SegmentationDataWrapper;
 class OmSegmentation;
 class OmSegment;
 class OmSegments;
-class OmSegmentLists;
 namespace om {
 namespace coords {
 class Global;
