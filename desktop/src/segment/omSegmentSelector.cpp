@@ -32,6 +32,16 @@ OmSegmentSelector::OmSegmentSelector(const SegmentationDataWrapper& sdw,
   params_->addToRecentList = true;
 }
 
+OmSegmentSelector::~OmSegmentSelector() {
+  try {
+    sendEvent();
+  } catch (...) {
+    log_errors << "Error in destructing Segment Selector. " <<
+      "Event may not have been sent to complete selection action!" << std::endl;
+  }
+};
+
+
 void OmSegmentSelector::selectNoSegments() {
     params_->newSelectedIDs.clear();
 }
