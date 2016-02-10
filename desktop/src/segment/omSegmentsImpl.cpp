@@ -29,9 +29,8 @@ OmSegmentsImpl::OmSegmentsImpl(SegDataVector& data, SegListDataVector& listData,
       segmentLists_(new OmSegmentLists(meta_, *store_, sdw)),
       selection_(new om::segment::Selection(*graph_, *store_, *segmentLists_)),
       thresholder_(new om::segment::GraphThresholder(
-          *graph_, valid, *segmentLists_, *store_, mst_)) {
-
-  thresholder_->SetGlobalThreshold();
+          *graph_, valid, *segmentLists_, *store_, mst_, adjacencyMap_) ) {
+  setGlobalThreshold();
 }
 
 OmSegmentsImpl::~OmSegmentsImpl() {}
@@ -295,6 +294,7 @@ om::common::SegIDSet OmSegmentsImpl::UnJoinTheseSegments(
   const om::common::SegID parentID = *iter;
   ++iter;
 
+
   // We then iterate through the Segment Ids and split
   // each one from the parent
   while (iter != set.end()) {
@@ -343,18 +343,16 @@ void OmSegmentsImpl::refreshTree() {
 void OmSegmentsImpl::setGlobalThreshold() {
   log_info("setting global threshold to %f...",
            OmProject::Globals().Users().UserSettings().getThreshold());
-  log_info("setting size threshold to %f...",
-           OmProject::Globals().Users().UserSettings().getSizeThreshold());
 
   thresholder_->SetGlobalThreshold();
+  SortAdjacencyMap();
+
   Selection().Clear();
 }
 
 void OmSegmentsImpl::resetGlobalThreshold() {
   log_info("resetting global threshold to %f...",
            OmProject::Globals().Users().UserSettings().getThreshold());
-  log_info("resetting size threshold to %f...",
-           OmProject::Globals().Users().UserSettings().getSizeThreshold());
 
   thresholder_->ResetGlobalThreshold();
   selection_->RerootSegmentList();
@@ -494,6 +492,25 @@ OmSegment* OmSegmentsImpl::FindRoot(OmSegment* segment) {
 bool OmSegmentsImpl::IsSegmentValid(om::common::SegID seg) {
   return store_->IsSegmentValid(seg);
 }
+
 OmSegment* OmSegmentsImpl::GetSegment(const om::common::SegID value) const {
   return store_->GetSegment(value);
+}
+
+void OmSegmentsImpl::AddSegments_BreadthFirstSearch(OmSegmentSelector* sel, om::common::SegID SegmentID) {
+  thresholder_->AddSegments_BreadthFirstSearch(sel, SegmentID);
+}
+
+void OmSegmentsImpl::Trim(OmSegmentSelector* sel, om::common::SegID SegmentID) {
+  thresholder_->Trim(sel, SegmentID);
+}
+
+void OmSegmentsImpl::AddSegments_BFS_DynamicThreshold(OmSegmentSelector* sel, om::common::SegID SegmentID) {
+  thresholder_->AddSegments_BFS_DynamicThreshold(sel, SegmentID);
+}
+
+void OmSegmentsImpl::SortAdjacencyMap() {
+  for(auto keyValue : adjacencyMap_) {
+      sort(keyValue.second.begin(), keyValue.second.end());
+  }
 }

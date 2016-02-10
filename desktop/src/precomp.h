@@ -17,6 +17,7 @@
 #include <array>
 #include <assert.h>
 #include <atomic>
+#include <boost/range/adaptors.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/join.hpp>
 #include <boost/algorithm/string/predicate.hpp>

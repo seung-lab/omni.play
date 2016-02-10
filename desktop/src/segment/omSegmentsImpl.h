@@ -6,8 +6,8 @@
 #include "segment/omSegment.h"
 #include "segment/lowLevel/graph.h"
 #include "segment/dataSources.hpp"
+#include "segment/lists/omSegmentLists.h"
 
-class OmSegmentSelection;
 class SegmentationDataWrapper;
 
 namespace om {
@@ -97,6 +97,10 @@ class OmSegmentsImpl {
 
   void turnBatchModeOn(const bool batchMode);
 
+  void AddSegments_BreadthFirstSearch(OmSegmentSelector* sel, om::common::SegID SegmentID);
+  void Trim(OmSegmentSelector* sel, om::common::SegID SegmentID);
+  void AddSegments_BFS_DynamicThreshold(OmSegmentSelector* sel, om::common::SegID SegmentID);
+
  private:
   om::segment::EdgeVector& mst_;
   om::segment::UserEdgeVector& userEdges_;
@@ -111,6 +115,7 @@ class OmSegmentsImpl {
 
   std::unordered_map<om::common::ID, std::string> segmentCustomNames_;
   std::unordered_map<om::common::ID, std::string> segmentNotes_;
+  std::unordered_map<om::common::SegID, std::vector <om::segment::Edge*>> adjacencyMap_;
 
   om::segment::UserEdge splitChildFromParentNoTest(OmSegment* child);
 
@@ -121,6 +126,8 @@ class OmSegmentsImpl {
 
   void setGlobalThreshold();
   void resetGlobalThreshold();
+  void resetSizeThreshold();
+  void SortAdjacencyMap();
 
   friend class YAML::convert<OmSegmentsImpl>;
 };

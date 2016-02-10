@@ -5,6 +5,7 @@
 
 class MSTThresholdSpinBox;
 class SizeThresholdSpinBox;
+class AutomaticSpreadingThresholdSpinBox;
 class OmViewGroupState;
 class SegmentationDataWrapper;
 class SplitButton;
@@ -54,6 +55,7 @@ Q_SIGNALS:
 
   MSTThresholdSpinBox* threshold_;
   SizeThresholdSpinBox* sizeThreshold_;
+  AutomaticSpreadingThresholdSpinBox* asthreshold_;
 
   QWidget* thresholdBox();
   QWidget* makeBreakThresholdBox();

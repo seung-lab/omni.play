@@ -6,15 +6,16 @@
 
 struct OmSelectSegmentsParams {
   SegmentDataWrapper sdw;
-  om::common::SegIDSet newSelectedIDs;
-  om::common::SegIDSet oldSelectedIDs;
+  om::common::SegIDMap newSelectedIDs;
+  om::common::SegIDMap oldSelectedIDs;
+  om::common::SegIDSet wtfSet;
+  std::map<int, int> mapthing;
   void* sender;
   std::string comment;
   bool shouldScroll;
   bool addToRecentList;
   bool autoCenter;
 
-  bool augmentListOnly;
   om::common::AddOrSubtract addOrSubtract;
 };
 

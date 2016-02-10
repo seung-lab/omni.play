@@ -6,6 +6,7 @@
 #include "landmarks/omLandmarks.hpp"
 #include "segment/colorizer/omSegmentColorizer.h"
 #include "segment/omSegment.h"
+#include "segment/omSegmentSelector.h"
 #include "system/cache/omCacheManager.h"
 #include "system/omStateManager.h"
 #include "tiles/omTileCoord.h"
@@ -123,6 +124,19 @@ void OmViewGroupState::SetShowValidMode(bool mode, bool inColor) {
   mShowValidInColor = inColor;
   om::event::Redraw3d();
   om::event::Redraw2d();
+}
+
+std::shared_ptr<OmSegmentSelector> OmViewGroupState::GetOrCreateSelector(
+    om::common::ID segmentationID, const std::string& comment) {
+  if (!IsSelecting()) {
+    SegmentationDataWrapper sdw(segmentationID);
+    selector_ = std::make_shared<OmSegmentSelector>(sdw, nullptr, comment);
+  }
+  return selector_;
+}
+
+void OmViewGroupState::EndSelector() {
+  selector_.reset();
 }
 
 void OmViewGroupState::SetHowNonSelectedSegmentsAreColoredInFilter(

@@ -8,6 +8,7 @@
 #include "actions/details/omSegmentUncertainActionImpl.hpp"
 #include "actions/details/omSegmentationThresholdChangeActionImpl.hpp"
 #include "actions/details/omSegmentationSizeThresholdChangeActionImpl.hpp"
+#include "actions/details/omAutomaticSpreadingThresholdChangeActionImpl.hpp"
 #include "actions/details/omVoxelSetValueActionImpl.hpp"
 #include "actions/details/omProjectCloseActionImpl.hpp"
 
@@ -45,7 +46,10 @@ QTextStream& operator<<(QTextStream& out, const OmSegmentJoinActionImpl& a) {
 }
 
 QTextStream& operator<<(QTextStream& out, const OmSegmentSelectActionImpl& a) {
-  out << a.params_->newSelectedIDs;
+    om::common::SegIDSet newSelectedIDs;
+    boost::copy(a.params_->newSelectedIDs| boost::adaptors::map_keys,
+                  std::inserter(newSelectedIDs, newSelectedIDs.begin()));
+  out << newSelectedIDs;
   return out;
 }
 
@@ -96,4 +100,17 @@ QTextStream& operator<<(QTextStream& out,
   out << ")";
 
   return out;
+}
+
+QTextStream& operator<<(QTextStream& out, const OmAutomaticSpreadingThresholdChangeActionImpl& a)
+{
+    out << "(new: ";
+    out << a.threshold_;
+    out << ", old: ";
+    out << a.oldThreshold_;
+    out << ", segmentation: ";
+    out << a.sdw_;
+    out << ")";
+
+    return out;
 }

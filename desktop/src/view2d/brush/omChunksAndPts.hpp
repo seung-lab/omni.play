@@ -14,10 +14,10 @@ class OmChunksAndPts {
   OmChunksAndPts(OmSegmentation& vol, const om::common::ViewType viewType)
       : vol_(vol), viewType_(viewType) {}
 
-  void AddAllPtsThatIntersectVol(om::pt3d_list_t* pts) {
+  void AddAllPtsThatIntersectVol(om::pt3d_list_t const& pts) {
     const om::coords::GlobalBbox& segDataExtent = vol_.Coords().Extent();
 
-    FOR_EACH(iter, *pts) {
+    FOR_EACH(iter, pts) {
       if (!segDataExtent.contains(*iter)) {
         continue;
       }
@@ -28,16 +28,15 @@ class OmChunksAndPts {
     }
   }
 
-  std::shared_ptr<om::common::SegIDSet> GetSegIDs() {
+  om::common::SegIDSet GetSegIDs() {
     om::chunk::Voxels<uint32_t> voxels(vol_.ChunkDS(), vol_.Coords());
 
-    std::shared_ptr<om::common::SegIDSet> ret =
-        std::make_shared<om::common::SegIDSet>();
+    om::common::SegIDSet ret;
 
     for (auto& pt : pts_) {
       om::common::SegID id = voxels.GetValue(pt);
       if (id) {
-        ret->insert(id);
+        ret.insert(id);
       }
     }
 

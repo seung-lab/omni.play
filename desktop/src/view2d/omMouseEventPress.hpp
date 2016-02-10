@@ -13,6 +13,7 @@
 #include "view2d/omMouseEventUtils.hpp"
 #include "view2d/omView2d.h"
 #include "view2d/omView2dState.hpp"
+#include "segment/omSegments.h"
 
 class OmMouseEventPress {
  private:
@@ -27,6 +28,8 @@ class OmMouseEventPress {
   bool leftMouseButton_;
   bool rightMouseButton_;
   bool middleMouseButton_;
+    bool gButton_;
+    bool tButton_;
   om::tool::mode tool_;
   QMouseEvent* event_;
   om::coords::Global dataClickPoint_;
@@ -144,7 +147,7 @@ class OmMouseEventPress {
   }
 
   void mouseLeftButton() {
-    if (controlKey_) {
+    if ( controlKey_ && !shiftKey_ && !altKey_ ) {
       state_->OverrideToolModeForPan(true);
       return;
     }
@@ -177,8 +180,8 @@ class OmMouseEventPress {
       case om::tool::ANNOTATE:
         addAnnotation();
         break;
-      case om::tool::KALINA:
-        kalina();
+      case om::tool::ADVANCED:
+        advancedTools();
         break;
       default:
         return;
@@ -194,7 +197,7 @@ class OmMouseEventPress {
         altKey_ ? om::common::AddOrSubtract::SUBTRACT
                 : om::common::AddOrSubtract::ADD;
 
-    OmBrushSelect::SelectByClick(state_, dataClickPoint_,
+    OmBrushSelect::StartSelector(state_, dataClickPoint_,
                                  addOrSubtractSegments);
   }
 
@@ -240,7 +243,6 @@ class OmMouseEventPress {
     } else {
       sel.selectJustThisSegment_toggle(segmentID);
     }
-    sel.sendEvent();
 
     v2d_->Redraw();
   }
@@ -338,22 +340,32 @@ class OmMouseEventPress {
                 vgs.getAnnotationColor(), vgs.getAnnotationSize());
   }
 
-  void kalina() {
-    // boost::optional<SegmentDataWrapper> sdw = getSelectedSegment();
-    // if (!sdw) {
-    //   return;
-    // }
-    // SegmentDataWrapper& seg = *sdw;
-    // if (!seg.IsSegmentValid()) {
-    //   return;
-    // }
+  void advancedTools() {
+    boost::optional<SegmentDataWrapper> sdw = getSelectedSegment();
+    if(!sdw){
+      return;
+    }
+    SegmentDataWrapper& seg = *sdw;
 
-    // SegmentationDataWrapper segmentation = seg.MakeSegmentationDataWrapper();
+    if(!seg.IsSegmentValid()) {
+      return;
+    }
+    SegmentationDataWrapper segmentation = seg.MakeSegmentationDataWrapper();
 
-    // if (shiftKey_) {
-    //   // Do something different
-    // } else {
-    //   // Do the same.
-    // }
+    OmSegments *Segments = segmentation.Segments();
+
+    OmSegmentSelector sel(segmentation, this, "view2dEvent" );
+
+    if (shiftKey_) {
+      if (controlKey_) {
+        Segments->Trim(&sel, seg.GetSegmentID());
+      }
+    } else {
+      if (controlKey_ && altKey_) {
+        Segments->AddSegments_BFS_DynamicThreshold(&sel, seg.GetSegmentID());
+      } else {
+        Segments->AddSegments_BreadthFirstSearch(&sel, seg.GetSegmentID());
+      }
+    }
   }
 };

@@ -42,7 +42,6 @@ class OmSegmentListForGUI {
     if (!request.startSeg) {
       return om::segLists::getPage(bySize_, request.offset, request.numToGet);
     }
-
     return getPageContainingSegment(request.startSeg, request.numToGet);
   }
 

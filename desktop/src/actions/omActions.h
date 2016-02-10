@@ -38,6 +38,9 @@ class OmActions : om::singletonBase<OmActions> {
   static void ChangeSizethreshold(const SegmentationDataWrapper sdw,
                                   const double threshold);
 
+    static void ChangeASthreshold(const SegmentationDataWrapper sdw,
+                                   const double threshold);
+                                                                  
   // painting-related
   static void SetVoxels(const om::common::ID segmentationId,
                         const std::set<om::coords::Data>& rVoxels,

@@ -39,13 +39,13 @@ class OmMouseEventMove {
     if (leftMouseButton_) {
       if (shouldPan()) {
         doPan();
-        v2d_->Redraw();
         return;
       }
 
       switch (tool_) {
         case om::tool::SELECT:
           selectSegments();
+          state_->SetLastDataPoint(dataClickPoint_);
           break;
 
         case om::tool::PAN:
@@ -72,9 +72,11 @@ class OmMouseEventMove {
       if (shouldPan()) {
         doPan();
       }
+    } else {
+      // we only need to redraw if the other actions haven't. (they all trigger redraws)
+      v2d_->Redraw();
     }
 
-    v2d_->Redraw();
   }
 
  private:
@@ -105,16 +107,11 @@ class OmMouseEventMove {
   }
 
   inline void selectSegments() {
-    if (altKey_) {
-      OmBrushSelect::SelectByLine(state_, dataClickPoint_,
-                                  om::common::AddOrSubtract::SUBTRACT);
-
-    } else {
-      OmBrushSelect::SelectByLine(state_, dataClickPoint_,
-                                  om::common::AddOrSubtract::ADD);
-    }
-
-    state_->SetLastDataPoint(dataClickPoint_);
+    om::common::AddOrSubtract addOrSubtractSegments =
+        altKey_ ? om::common::AddOrSubtract::SUBTRACT
+                : om::common::AddOrSubtract::ADD;
+      OmBrushSelect::ContinueSelector(state_, dataClickPoint_,
+                                  addOrSubtractSegments);
   }
 
   void erase() { OmBrushPaint::PaintByLine(state_, dataClickPoint_, 0); }

@@ -14,6 +14,7 @@
 #include "actions/details/omSegmentValidateActionImpl.hpp"
 #include "actions/details/omSegmentUncertainActionImpl.hpp"
 #include "actions/details/omSegmentationThresholdChangeActionImpl.hpp"
+#include "actions/details/omAutomaticSpreadingThresholdChangeActionImpl.hpp"
 #include "actions/details/omSegmentationSizeThresholdChangeActionImpl.hpp"
 #include "actions/details/omVoxelSetValueActionImpl.hpp"
 #include "actions/details/omProjectCloseActionImpl.hpp"
@@ -189,13 +190,15 @@ QDataStream& operator>>(QDataStream& in, OmSegmentJoinActionImpl& a) {
 }
 
 QDataStream& operator<<(QDataStream& out, const OmSegmentSelectActionImpl& a) {
-  int version = 2;
+  int version = 3;
   out << version;
   out << a.params_->sdw.GetSegmentationID();
-  out << a.params_->newSelectedIDs;
-  out << a.params_->oldSelectedIDs;
+  // QT map only allows std map, must convert!
+  out << QMap<om::common::SegID, uint32_t>(std::map<om::common::SegID, uint32_t>(
+        a.params_->newSelectedIDs.begin(), a.params_->newSelectedIDs.end()));
+  out << QMap<om::common::SegID, uint32_t>(std::map<om::common::SegID, uint32_t>(
+        a.params_->oldSelectedIDs.begin(), a.params_->oldSelectedIDs.end()));
   out << a.params_->sdw.GetSegmentID();
-  out << a.params_->augmentListOnly;
 
   return out;
 }
@@ -210,17 +213,24 @@ QDataStream& operator>>(QDataStream& in, OmSegmentSelectActionImpl& a) {
   om::common::ID segmentationID;
   in >> segmentationID;
 
-  in >> params->newSelectedIDs;
-  in >> params->oldSelectedIDs;
+  QMap<om::common::SegID, uint32_t> newSelectedIDsQMap;
+  QMap<om::common::SegID, uint32_t> oldSelectedIDsQMap;
+
+  in >> newSelectedIDsQMap;
+  in >> oldSelectedIDsQMap;
+
+  // QT map only allows std map, must convert!
+  std::map<om::common::SegID, uint32_t> newSelectedIDs = newSelectedIDsQMap.toStdMap();
+  std::map<om::common::SegID, uint32_t> oldSelectedIDs = oldSelectedIDsQMap.toStdMap();
+  params->newSelectedIDs = std::unordered_map<om::common::SegID, uint32_t>(
+      newSelectedIDs.begin(), newSelectedIDs.end());
+  params->oldSelectedIDs = std::unordered_map<om::common::SegID, uint32_t>(
+      oldSelectedIDs.begin(), oldSelectedIDs.end());
 
   om::common::SegID segmentID;
   in >> segmentID;
 
   params->sdw = SegmentDataWrapper(segmentationID, segmentID);
-
-  if (version > 1) {
-    in >> params->augmentListOnly;
-  }
 
   a.params_ = params;
 
@@ -313,6 +323,37 @@ QDataStream& operator>>(QDataStream& in,
   }
 
   a.sdw_ = SegmentationDataWrapper(id);
+
+    return in;
+}
+
+QDataStream& operator<<(QDataStream& out, const OmAutomaticSpreadingThresholdChangeActionImpl& a)
+{
+    int version = 2;
+    out << version;
+    out << a.threshold_;
+    out << a.oldThreshold_;
+    out << a.sdw_;
+
+    return out;
+}
+
+QDataStream& operator>>(QDataStream& in, OmAutomaticSpreadingThresholdChangeActionImpl& a)
+{
+    int version;
+    in >> version;
+    in >> a.threshold_;
+    in >> a.oldThreshold_;
+
+    om::common::ID id = 1;
+
+    if(version > 1){
+        in >> id;
+    } else {
+        printf("WARNGING: guessing segmentation ID...\n");
+    }
+
+    a.sdw_ = SegmentationDataWrapper(id);
 
   return in;
 }

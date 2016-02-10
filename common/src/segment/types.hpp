@@ -33,6 +33,16 @@ struct Edge {
   uint8_t userJoin;
   uint8_t userSplit;
   uint8_t wasJoined;  // transient state
+  bool operator< (const Edge &edge) {
+      if ( threshold > edge.threshold ) return true;
+      if ( threshold == edge.threshold )
+      {
+          if ( node1ID < edge.node1ID ) return true;
+          if ( node1ID == edge.node1ID && node2ID < edge.node2ID ) return true;
+          return false;
+      }
+      return false;
+  }
 };
 
 struct UserEdge {

@@ -56,7 +56,6 @@ class OmSetSegmentValidRunner {
                             "jump after validate");
       sel.selectJustThisSegment(nextSegmentIDtoJumpTo_, true);
       sel.AutoCenter(true);
-      sel.sendEvent();
     }
   }
 };
@@ -105,7 +104,6 @@ class OmSetSegmentsValidRunner {
       OmSegmentSelector sel(sdw_, nullptr, "jump after validate");
       sel.selectJustThisSegment(nextSegmentIDtoJumpTo_, true);
       sel.AutoCenter(true);
-      sel.sendEvent();
     }
   }
 };
