@@ -27,6 +27,10 @@ namespace OmBrushSelectUtils {
 
   void AddOrSubtractSegments(OmSegmentSelector& selector,
       om::common::AddOrSubtract addOrSubtract, om::common::SegIDSet& segIDs) {
+    if (!segIDs.size()) {
+      return;
+    }
+
     if (om::common::AddOrSubtract::ADD == addOrSubtract) {
       selector.InsertSegments(segIDs);
     } else {

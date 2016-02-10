@@ -16,7 +16,6 @@ class OmMouseEventUtils {
       OmSegmentSelector sel(sdw.MakeSegmentationDataWrapper(), v2d,
                             "view2dpick");
       sel.augmentSelectedSet(segID, true);
-      sel.sendEvent();
     }
   }
 };
