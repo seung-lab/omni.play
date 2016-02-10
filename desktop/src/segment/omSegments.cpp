@@ -172,10 +172,6 @@ bool OmSegments::JoinEdges(const std::vector<om::segment::UserEdge>& edges) {
   return impl_->JoinEdges(edges);
 }
 
-void OmSegments::Grow_LocalSizeThreshold(OmSegmentSelector* sel, om::common::SegID segID) {
-    impl_->Grow_LocalSizeThreshold(sel, segID);
-}
-
 void OmSegments::AddSegments_BreadthFirstSearch(OmSegmentSelector* sel, om::common::SegID segID) {
     impl_->AddSegments_BreadthFirstSearch(sel, segID);
 }

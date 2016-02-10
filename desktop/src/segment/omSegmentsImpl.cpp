@@ -330,8 +330,6 @@ void OmSegmentsImpl::refreshTree() {
   }
 
   resetGlobalThreshold();
-  // TODO::sizeThreshold disabling sizethreshold because it's all sorts of broken!
-  //resetSizeThreshold();
   for (auto& iter : userEdges_) {
     JoinEdgeFromUser(iter);
   }
@@ -345,8 +343,6 @@ void OmSegmentsImpl::refreshTree() {
 void OmSegmentsImpl::setGlobalThreshold() {
   log_info("setting global threshold to %f...",
            OmProject::Globals().Users().UserSettings().getThreshold());
-  log_info("setting size threshold to %f...",
-           OmProject::Globals().Users().UserSettings().getSizeThreshold());
 
   thresholder_->SetGlobalThreshold();
   SortAdjacencyMap();
@@ -354,21 +350,9 @@ void OmSegmentsImpl::setGlobalThreshold() {
   Selection().Clear();
 }
 
-void OmSegmentsImpl::resetSizeThreshold() {
-  log_info("resetting global threshold to %f...",
-           OmProject::Globals().Users().UserSettings().getThreshold());
-  log_info("resetting size threshold to %f...",
-           OmProject::Globals().Users().UserSettings().getSizeThreshold());
-
-  thresholder_->ResetSizeThreshold();
-  selection_->RerootSegmentList();
-}
-
 void OmSegmentsImpl::resetGlobalThreshold() {
   log_info("resetting global threshold to %f...",
            OmProject::Globals().Users().UserSettings().getThreshold());
-  log_info("resetting size threshold to %f...",
-           OmProject::Globals().Users().UserSettings().getSizeThreshold());
 
   thresholder_->ResetGlobalThreshold();
   selection_->RerootSegmentList();
@@ -511,10 +495,6 @@ bool OmSegmentsImpl::IsSegmentValid(om::common::SegID seg) {
 
 OmSegment* OmSegmentsImpl::GetSegment(const om::common::SegID value) const {
   return store_->GetSegment(value);
-}
-
-void OmSegmentsImpl::Grow_LocalSizeThreshold(OmSegmentSelector* sel, om::common::SegID SegmentID) {
-  thresholder_->Grow_LocalSizeThreshold(sel, SegmentID);
 }
 
 void OmSegmentsImpl::AddSegments_BreadthFirstSearch(OmSegmentSelector* sel, om::common::SegID SegmentID) {

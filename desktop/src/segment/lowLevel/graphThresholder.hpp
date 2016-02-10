@@ -88,7 +88,6 @@ class GraphThresholder {
 
     const double stopThreshold =
         OmProject::Globals().Users().UserSettings().getThreshold();
-    const double sizeThreshold = OmProject::Globals().Users().UserSettings().getSizeThreshold();
     std::cout << "Stop threshold currently is: " << stopThreshold << std::endl;
 
     for (int i = 0; i < edges_.size(); ++i) {
@@ -101,11 +100,6 @@ class GraphThresholder {
         if (1 == edges_[i].wasJoined) {
           continue;
         }
-
-       // TODO::sizeThreshold disabling sizethreshold because it's all sorts of broken!
-       // if ( !sizeCheck(edges_[i].node1ID,edges_[i].node2ID,sizeThreshold) ) {
-       //   continue;
-       // }
 
         if (joinInternal(edges_[i].node2ID, edges_[i].node1ID,
                          edges_[i].threshold, i)) {
@@ -128,46 +122,6 @@ class GraphThresholder {
     graph_.SetBatch(false);
 
     timer.PrintDone();
-  }
-
-  void ResetSizeThreshold() {
-    log_debugs << "Got here" << std::endl;
-    int direction = OmProject::Globals().Users().UserSettings().getSizeDirection();
-
-    if (!direction) {
-        return;
-    }
-
-    log_debugs << "The direction is " << direction << std::endl;
-    if (direction == 1) {
-      ResetSizeThresholdUp();
-    } else {
-      log_debugs << "-----------\n";
-      ResetSizeThresholdDown();
-      log_debugs << "T-------------";
-    }
-
-    log_debugs << "Got here" << std::endl;
-  }
-
-
-  void Grow_LocalSizeThreshold(OmSegmentSelector* sel, om::common::SegID SegmentID) {
-    double totalSize,sizeThreshold = OmProject::Globals().Users().UserSettings().getSizeThreshold();
-
-    double l=0.6,r=1,mid;
-    while ((r-l) > 0.0001) {
-      mid = ((l + r)/2);
-      totalSize = SizeOfBFSGrowth(SegmentID,mid);
-
-      if (totalSize > sizeThreshold) {
-        l = mid;
-      } else {
-        r = mid;
-      }
-    }
-    OmProject::Globals().Users().UserSettings().setSizeThreshold(r);
-
-    AddSegments_BreadthFirstSearch(sel,SegmentID);
   }
 
   void AddSegments_BreadthFirstSearch(OmSegmentSelector* sel, om::common::SegID SegmentID) {
@@ -469,79 +423,6 @@ class GraphThresholder {
     segmentLists_.UpdateSizeListsFromSplit(parentRoot, child, childInfo);
 
     return true;
-  }
-
-  void ResetSizeThresholdUp() { // Joining the edges that can be joined
-    utility::timer timer;
-
-    graph_.SetBatch(true);
-    graph_.ClearCache();
-
-    const double sizeThreshold = OmProject::Globals().Users().UserSettings().getSizeThreshold();
-    const double stopThreshold = OmProject::Globals().Users().UserSettings().getThreshold();
-
-    for (size_t i = 0; i < edges_.size(); i++) {
-      if (edges_[i].threshold < stopThreshold) {
-        break;
-      }
-
-      if (1 == edges_[i].userSplit) {
-          continue;
-      }
-      if (1 == edges_[i].wasJoined) {
-         continue;
-      }
-
-      if (sizeCheck(edges_[i].node1ID,edges_[i].node2ID,sizeThreshold)) { // join
-
-        log_debugs << segmentLists_.GetSizeWithChildren(Root( edges_[i].node1ID )) + segmentLists_.GetSizeWithChildren(Root( edges_[i].node2ID )) << std::endl;
-
-        if (joinInternal(edges_[i].node2ID,
-             edges_[i].node1ID,
-             edges_[i].threshold, i) ) {
-            edges_[i].wasJoined = 1;
-        } else {
-            edges_[i].userSplit = 1;
-        }
-      }
-    }
-
-    graph_.SetBatch(false);
-
-    timer.PrintDone();
-  }
-
-  void ResetSizeThresholdDown() { // Splitting the edges that should be split
-    utility::timer timer;
-
-    graph_.SetBatch(true);
-    graph_.ClearCache();
-
-    const double sizeThreshold = OmProject::Globals().Users().UserSettings().getSizeThreshold();
-
-    for (size_t i = edges_.size()-1; i >= 0; --i) {
-
-      if (1 == edges_[i].userSplit) {
-        continue;
-      }
-
-      if (0 == edges_[i].wasJoined) {
-         continue;
-      }
-
-      if (segmentLists_.GetSizeWithChildren(Root(edges_[i].node1ID)) > sizeThreshold) {
-        // split
-        if (splitChildFromParentInternal(edges_[i].node1ID)) {
-           edges_[i].wasJoined = 0;
-        } else {
-           edges_[i].userJoin = 1;
-        }
-      }
-    }
-
-    graph_.SetBatch(false);
-
-    timer.PrintDone();
   }
 
   double SizeOfBFSGrowth(om::common::SegID SegmentID, double threshold) {

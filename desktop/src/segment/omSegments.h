@@ -72,7 +72,6 @@ class OmSegments {
   bool JoinEdges(const std::vector<om::segment::UserEdge>& edges);
   std::vector<om::segment::UserEdge> Shatter(OmSegment* seg);
 
-  void Grow_LocalSizeThreshold(OmSegmentSelector* sel, om::common::SegID segID);
   void AddSegments_BreadthFirstSearch(OmSegmentSelector* sel, om::common::SegID segID);
   void AddSegments_BFS_DynamicThreshold(OmSegmentSelector* sel, om::common::SegID segID);
   void Trim(OmSegmentSelector* sel, om::common::SegID segID);

@@ -359,8 +359,6 @@ class OmMouseEventPress {
     if (shiftKey_) {
       if (controlKey_) {
         Segments->Trim(&sel, seg.GetSegmentID());
-      } else {
-        Segments->Grow_LocalSizeThreshold(&sel, seg.GetSegmentID());
       }
     } else {
       if (controlKey_ && altKey_) {
