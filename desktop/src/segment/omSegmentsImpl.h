@@ -97,7 +97,6 @@ class OmSegmentsImpl {
 
   void turnBatchModeOn(const bool batchMode);
 
-  void Grow_LocalSizeThreshold(OmSegmentSelector* sel, om::common::SegID SegmentID);
   void AddSegments_BreadthFirstSearch(OmSegmentSelector* sel, om::common::SegID SegmentID);
   void Trim(OmSegmentSelector* sel, om::common::SegID SegmentID);
   void AddSegments_BFS_DynamicThreshold(OmSegmentSelector* sel, om::common::SegID SegmentID);
