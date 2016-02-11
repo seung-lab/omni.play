@@ -141,10 +141,14 @@ bool OmSegmentSelector::UpdateSelectionNow() {
   }
 
   // add any newly selected ids to the master selection list
-  selection_->UpdateSegmentSelection(params_->newSelectedIDs, params_->addToRecentList);
+  bool selectionIsChanged = 
+    selection_->UpdateSegmentSelection(params_->newSelectedIDs, params_->addToRecentList);
 
-  om::event::SegmentModified(params_);
-  return true;
+  if (selectionIsChanged) {
+    om::event::SegmentModified(params_);
+  }
+
+  return selectionIsChanged;
 }
 
 bool OmSegmentSelector::sendEvent() {

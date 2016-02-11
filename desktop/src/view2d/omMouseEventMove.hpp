@@ -72,11 +72,10 @@ class OmMouseEventMove {
       if (shouldPan()) {
         doPan();
       }
-    } else {
-      // we only need to redraw if the other actions haven't. (they all trigger redraws)
-      v2d_->Redraw();
     }
 
+    // redraw for custom mouse cursor brush
+    v2d_->Redraw();
   }
 
  private:

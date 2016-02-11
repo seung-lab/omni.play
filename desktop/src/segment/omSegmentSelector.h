@@ -36,9 +36,13 @@ class OmSegmentSelector {
 
   void selectJustThisSegment_toggle(const om::common::SegID segID);
   void augmentSelectedSet_toggle(const om::common::SegID segID); 
+  /*
+   * Propagate changes into the selection. This  bypasses the action event and it also
+   * triggers the event Segment::Modified (namely to kick off redrawing).
+   * returns: true if there were any valid changes propagated into the selection.
+   */
   bool UpdateSelectionNow();
-  // This should not be manually called, it should be called automatically during destruction
-  bool sendEvent();
+
   bool IsSegmentSelected(const om::common::SegID segID);
   void selectNoSegments();
 
@@ -50,6 +54,12 @@ class OmSegmentSelector {
  private:
   void addSegmentToSelectionParameters(const om::common::SegID segID);
   void removeSegmentFromSelectionParameters(const om::common::SegID segID);
+
+  /*
+   * Call the segment selection action.  This should not be manually called.
+   * It should be called automatically during destruction
+   */
+  bool sendEvent();
 
   OmSegments* segments_;
   om::segment::Selection* selection_;
