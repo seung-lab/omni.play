@@ -16,6 +16,7 @@ GraphTools::GraphTools(om::sidebars::rightImpl* d, OmViewGroupState& vgs)
     : OmWidget(d),
       mParent(d),
       vgs_(vgs),
+      joinButton(new JoinButton(this)),
       splitButton(new SplitButton(this)),
       shatterButton(new ShatterButton(this)) {
   QFormLayout* box = new QFormLayout(this);
@@ -26,7 +27,7 @@ GraphTools::GraphTools(om::sidebars::rightImpl* d, OmViewGroupState& vgs)
   wbox->setLayout(box2);
   box->addWidget(wbox);
 
-  box2->addWidget(new JoinButton(this), 0, 0, 1, 1);
+  box2->addWidget(joinButton, 0, 0, 1, 1);
   box2->addWidget(splitButton, 0, 1, 1, 1);
   box2->addWidget(shatterButton, 1, 0, 1, 1);
   box2->addWidget(new BreakButton(this), 1, 1, 1, 1);
@@ -35,6 +36,8 @@ GraphTools::GraphTools(om::sidebars::rightImpl* d, OmViewGroupState& vgs)
   breakThresholdBox_->hide();
   box->addWidget(breakThresholdBox_);
 
+  om::connect(this, SIGNAL(signalJoiningOff()), this,
+              SLOT(setJoiningOff()));
   om::connect(this, SIGNAL(signalSplittingOff()), this,
               SLOT(setSplittingOff()));
   om::connect(this, SIGNAL(signalShatteringOff()), this,
@@ -76,6 +79,10 @@ QWidget* GraphTools::thresholdBox() {
 void GraphTools::updateGui() { om::event::Redraw2d(); }
 
 SegmentationDataWrapper GraphTools::GetSDW() { return mParent->GetSDW(); }
+
+void GraphTools::SetJoiningOff() { signalJoiningOff(); }
+
+void GraphTools::setJoiningOff() { joinButton->setChecked(false); }
 
 void GraphTools::SetSplittingOff() { signalSplittingOff(); }
 

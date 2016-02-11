@@ -19,7 +19,7 @@ class rightImpl : public QWidget {
 
   void updateGui();
 
-  void SetSplittingOff();
+  void SetTwoSegmentActionOff(om::common:JoinOrSplit joinOrSplit);
   void SetShatteringOff();
 
   SegmentationDataWrapper GetSDW();

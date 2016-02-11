@@ -35,8 +35,8 @@ SegmentationDataWrapper om::sidebars::rightImpl::GetSDW() {
 
 void om::sidebars::rightImpl::updateGui() { om::event::Redraw2d(); }
 
-void om::sidebars::rightImpl::SetSplittingOff() {
-  graphTools_->SetSplittingOff();
+void om::sidebars::rightImpl::SetTwoSegmentActionOff(om::common::JoinOrSplit joinOrSplit) {
+  graphTools_->SetTwoSegmentActionOff(joinOrSplit);
 }
 
 void om::sidebars::rightImpl::SetShatteringOff() {

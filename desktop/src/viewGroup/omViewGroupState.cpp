@@ -12,7 +12,7 @@
 #include "tiles/omTileCoord.h"
 #include "utility/dataWrappers.h"
 #include "viewGroup/omColorizers.hpp"
-#include "viewGroup/omSplitting.hpp"
+#include "viewGroup/OmTwoSegmentAction.hpp"
 #include "viewGroup/omViewGroupState.h"
 #include "viewGroup/omViewGroupView2dState.hpp"
 #include "viewGroup/omZoomLevel.hpp"
@@ -29,7 +29,7 @@ OmViewGroupState::OmViewGroupState(MainWindow* mainWindow)
       view2dState_(new OmViewGroupView2dState()),
       colorizers_(new OmColorizers(*this)),
       zoomLevel_(new OmZoomLevel()),
-      splitting_(new OmSplitting()),
+      twoSegmentAction_(new OmTwoSegmentAction()),
       landmarks_(new OmLandmarks(mainWindow)),
       cdw_(new ChannelDataWrapper(1)),
       sdw_(new SegmentationDataWrapper(1))
@@ -112,7 +112,7 @@ om::segment::coloring OmViewGroupState::determineColorizationType(
 
 void OmViewGroupState::SetToolBarManager(ToolBarManager* tbm) {
   toolBarManager_ = tbm;
-  splitting_->SetToolBarManager(tbm);
+  twoSegmentAction_->SetToolBarManager(tbm);
 }
 
 ToolBarManager& OmViewGroupState::GetToolBarManager() {
@@ -146,7 +146,7 @@ void OmViewGroupState::SetHowNonSelectedSegmentsAreColoredInFilter(
 }
 
 bool OmViewGroupState::shouldVolumeBeShownBroken() {
-  return mShatter || splitting_->ShowSplit();
+  return mShatter || twoSegmentAction_->ShowShowSegmentBrokenOut();
 }
 
 void OmViewGroupState::setTool(const om::tool::mode tool) {

@@ -10,4 +10,7 @@ class JoinButton : public OmButton<GraphTools> {
 
  private:
   void doAction();
+
+Q_SLOTS:
+  void enterOrExitJoinMode(const bool show);
 };

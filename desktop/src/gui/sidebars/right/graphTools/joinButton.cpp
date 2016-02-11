@@ -11,7 +11,7 @@ JoinButton::JoinButton(GraphTools* d)
     : OmButton<GraphTools>(d, "Join", "Join objects", false) {}
 
 void JoinButton::doAction() {
-  SegmentationDataWrapper sdw = mParent->GetSDW();
+  /*SegmentationDataWrapper sdw = mParent->GetSDW();
   if (!sdw.IsSegmentationValid()) {
     return;
   }
@@ -21,5 +21,14 @@ void JoinButton::doAction() {
       seg->Segments().Selection().GetSelectedSegmentIDs();
   OmActions::JoinSegments(sdw, ids);
 
-  mParent->updateGui();
+  mParent->updateGui();*/
+}
+
+void SplitButton::enterOrExitJoinMode(const bool inSplitMode) h
+  if (inSplitMode) {
+    mParent->GetViewGroupState().TwoSegmentAction()
+      .Enter(om::common::JoinOrSplit::JOIN);
+  } else {
+    mParent->GetViewGroupState().TwoSegmentAction().Exit();
+  }
 }

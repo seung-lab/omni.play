@@ -11,6 +11,7 @@ enum mode {
   ERASE,
   FILL,
   SPLIT,
+  JOIN,
   CUT,
   LANDMARK,
   ANNOTATE,

@@ -9,6 +9,7 @@ class AutomaticSpreadingThresholdSpinBox;
 class OmViewGroupState;
 class SegmentationDataWrapper;
 class SplitButton;
+class JoinButton;
 class ShatterButton;
 
 namespace om {
@@ -23,7 +24,7 @@ class GraphTools : public OmWidget {
  public:
   GraphTools(om::sidebars::rightImpl*, OmViewGroupState& vgs);
 
-  void SetSplittingOff();
+  void SetTwoSegmentActionOff(om::common::JoinOrSplit joinOrSplit);
   void SetShatteringOff();
 
   OmViewGroupState& GetViewGroupState() const { return vgs_; }
@@ -39,10 +40,12 @@ class GraphTools : public OmWidget {
  private
 Q_SLOTS:
   void setSplittingOff();
+  void setJoiningOff();
   void setShatteringOff();
 
 Q_SIGNALS:
   void signalSplittingOff();
+  void signalJoiningOff();
   void signalShatteringOff();
 
  private:
@@ -51,6 +54,7 @@ Q_SIGNALS:
   OmViewGroupState& vgs_;
 
   SplitButton* splitButton;
+  JoinButton* joinButton;
   ShatterButton* shatterButton;
 
   MSTThresholdSpinBox* threshold_;

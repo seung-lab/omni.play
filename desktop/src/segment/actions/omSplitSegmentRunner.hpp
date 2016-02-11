@@ -11,10 +11,10 @@ class OmSplitSegmentRunner {
                                    OmViewGroupState& vgs,
                                    const om::coords::Global curClickPt) {
     const boost::optional<om::coords::Global> prevClickPt =
-        vgs.Splitting().Coord();
+        vgs.TwoSegmentAction().FirstCoord();
 
     if (prevClickPt) {
-      const SegmentDataWrapper prevSDW = vgs.Splitting().Segment();
+      const SegmentDataWrapper prevSDW = vgs.TwoSegmentAction().FirstSegment();
 
       OmSegment* seg1 = prevSDW.GetSegment();
       OmSegment* seg2 = curSDW.GetSegment();
@@ -35,7 +35,7 @@ class OmSplitSegmentRunner {
     } else {
       if (curSDW.IsSegmentValid()) {
         // set segment to be split later...
-        vgs.Splitting().SetFirstSplitPoint(curSDW, curClickPt);
+        vgs.TwoSegmentAction().SetFirstSplitPoint(curSDW, curClickPt);
       }
     }
   }
