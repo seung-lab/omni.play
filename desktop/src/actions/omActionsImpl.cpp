@@ -1,5 +1,4 @@
 #include "actions/details/omActionImpls.hpp"
-#include "actions/details/omSegmentSplitAction.h"
 #include "actions/details/omSegmentShatterAction.h"
 #include "actions/details/omSegmentUncertainAction.h"
 #include "actions/details/omSegmentValidateAction.h"
@@ -13,7 +12,7 @@
 #include "system/omLocalPreferences.hpp"
 #include "threads/taskManager.hpp"
 #include "utility/dataWrappers.h"
-#include "viewGroup/OmJoiningSplitting.hpp"
+#include "viewGroup/omJoiningSplitting.hpp"
 #include "viewGroup/omViewGroupState.h"
 
 OmActionsImpl::OmActionsImpl() : threadPool_(new om::thread::ThreadPool()) {
@@ -133,7 +132,7 @@ void OmActionsImpl::setUncertain(const SegmentationDataWrapper& sdw,
 
 void OmActionsImpl::JoinSegmentsWrapper(const SegmentationDataWrapper sdw) {
   if (sdw.IsSegmentationValid()) {
-    auto ids = sdw_.Segments()->Selection().GetSelectedSegmentIDs();
+    auto ids = sdw.Segments()->Selection().GetSelectedSegmentIDs();
     (new OmSegmentJoinAction(sdw, ids))->Run();
   }
 }
@@ -141,7 +140,6 @@ void OmActionsImpl::JoinSegmentsWrapper(const SegmentationDataWrapper sdw) {
 void OmActionsImpl::JoinSegmentsSet(const SegmentationDataWrapper sdw,
                                     const om::common::SegIDSet ids) {
   if (sdw.IsSegmentationValid()) {
-    auto ids = sdw_.Segments()->Selection().GetSelectedSegmentIDs();
     (new OmSegmentJoinAction(sdw, ids))->Run();
   }
 }
@@ -154,8 +152,8 @@ void OmActionsImpl::JoinSegments(const SegmentationDataWrapper sdw,
   }
 
   om::common::SegIDSet joinIDs;
-  joinIDs.insert(seg1.value());
-  joinIDs.insert(seg2.value());
+  joinIDs.insert(seg1->value());
+  joinIDs.insert(seg2->value());
 
   (new OmSegmentJoinAction(sdw, joinIDs))->Run();
 }

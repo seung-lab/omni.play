@@ -5,7 +5,6 @@
 #include "actions/details/omActionImpls.hpp"
 #include "actions/details/omSegmentValidateAction.h"
 #include "actions/details/omSegmentValidateActionImpl.hpp"
-#include "actions/details/omSegmentSplitAction.h"
 #include "actions/details/omSegmentSplitActionImpl.hpp"
 #include "actions/details/omSegmentCutAction.h"
 #include "actions/details/omSegmentCutActionImpl.hpp"

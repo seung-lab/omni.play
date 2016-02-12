@@ -85,7 +85,7 @@ void OmActions::JoinSegments(const SegmentationDataWrapper& sdw) {
 void OmActions::JoinSegments(const SegmentationDataWrapper& sdw,
                              OmSegment* seg1, OmSegment* seg2) {
   pool().push_back(
-      zi::run_fn(zi::bind(&OmActionsImpl::JoinSegments, impl(), sdw, ids)));
+      zi::run_fn(zi::bind(&OmActionsImpl::JoinSegments, impl(), sdw, seg1, seg2)));
 }
 
 void OmActions::JoinSegments(const SegmentationDataWrapper& sdw,

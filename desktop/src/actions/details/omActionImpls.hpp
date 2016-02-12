@@ -122,4 +122,4 @@ class OmSegmentSplitAction : public OmActionBase<OmSegmentSplitActionImpl> {
     impl_->Undo();
     SetDescription();
   }
-}
+};

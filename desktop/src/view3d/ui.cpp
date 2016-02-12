@@ -71,7 +71,7 @@ void Ui::splitModeMouseReleased(QMouseEvent* event) {
   }
 
   OmJoinSplitRunner::FindAndPerformOnSegments(pickPoint.sdw, vgs_,
-                                             pickPoint.coord);
+                                   pickPoint.coord, om::common::JoinOrSplit::SPLIT);
 }
 
 void Ui::shatterModeMouseReleased(QMouseEvent* event) {
