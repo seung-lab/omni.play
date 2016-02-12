@@ -13,7 +13,7 @@ class MainWindow;
 class OmColorizers;
 class OmLandmarks;
 class OmSegmentColorizer;
-class OmTwoSegmentAction;
+class OmJoiningSplitting;
 class OmSegmentSelector;
 class OmTileCoord;
 class OmViewGroupView2dState;
@@ -54,7 +54,7 @@ class OmViewGroupState : public OmManageableObject {
 
   void setTool(const om::tool::mode tool);
 
-  inline OmTwoSegmentAction& TwoSegmentAction() { return *twoSegmentAction_; }
+  inline OmJoiningSplitting& JoiningSplitting() { return *joiningSplitting_; }
 
   std::shared_ptr<OmSegmentSelector> GetOrCreateSelector(om::common::ID segmentationID,
       const std::string& comment);
@@ -109,7 +109,7 @@ class OmViewGroupState : public OmManageableObject {
   std::unique_ptr<OmViewGroupView2dState> view2dState_;
   std::unique_ptr<OmColorizers> colorizers_;
   std::unique_ptr<OmZoomLevel> zoomLevel_;
-  std::unique_ptr<OmTwoSegmentAction> twoSegmentAction_;
+  std::unique_ptr<OmJoiningSplitting> joiningSplitting_;
   std::unique_ptr<OmLandmarks> landmarks_;
   std::shared_ptr<OmSegmentSelector> selector_;
 

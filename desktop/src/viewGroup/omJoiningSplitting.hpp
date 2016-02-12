@@ -4,10 +4,12 @@
 #include "utility/dataWrappers.h"
 #include "system/omStateManager.h"
 #include "gui/toolbars/toolbarManager.h"
+#include "gui/tools.hpp"
 #include "system/cache/omCacheManager.h"
 #include "events/events.h"
+#include "common/enums.hpp"
 
-class OmTwoSegmentAction {
+class OmJoiningSplitting {
  private:
   bool showSegmentBrokenOut_;
   ToolBarManager* toolBarManager_;
@@ -16,7 +18,7 @@ class OmTwoSegmentAction {
   SegmentDataWrapper firstSegment_;
 
  public:
-  OmTwoSegmentAction() : showSegmentBrokenOut_(false), toolBarManager_(nullptr) {}
+  OmJoiningSplitting() : showSegmentBrokenOut_(false), toolBarManager_(nullptr) {}
 
   inline bool ShowSegmentBrokenOut() const { return showSegmentBrokenOut_; }
 
@@ -32,9 +34,9 @@ class OmTwoSegmentAction {
     showSegmentBrokenOut_ = true;
     om::tool::mode tool;
     if (om::common::JoinOrSplit::JOIN == joinOrSplit) {
-      tool = om::common::tool::SPLIT;
+      tool = om::tool::mode::JOIN;
     } else {
-      tool = om::common::tool::JOIN;
+      tool = om::tool::mode::SPLIT;
     }
 
     OmStateManager::SetToolModeAndSendEvent(tool);
@@ -51,9 +53,10 @@ class OmTwoSegmentAction {
     om::event::Redraw2d();
   }
 
-  void ExitModeFixButton() {
-    toolBarManager_->SetSplittingOff();
-    ExitSplitMode();
+  void ExitFixButton() {
+    toolBarManager_->SetJoiningSplittingOff(om::common::JoinOrSplit::JOIN);
+    toolBarManager_->SetJoiningSplittingOff(om::common::JoinOrSplit::SPLIT);
+    Exit();
   }
 
   void SetFirstPoint(const SegmentDataWrapper& sdw,

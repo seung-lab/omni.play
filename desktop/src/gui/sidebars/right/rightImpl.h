@@ -2,6 +2,7 @@
 #include "precomp.h"
 
 #include "common/common.h"
+#include "common/enums.hpp"
 
 class GraphTools;
 class MainWindow;
@@ -19,7 +20,7 @@ class rightImpl : public QWidget {
 
   void updateGui();
 
-  void SetTwoSegmentActionOff(om::common:JoinOrSplit joinOrSplit);
+  void SetJoiningSplittingOff(om::common::JoinOrSplit joinOrSplit);
   void SetShatteringOff();
 
   SegmentationDataWrapper GetSDW();

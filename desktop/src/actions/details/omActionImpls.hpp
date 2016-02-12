@@ -97,6 +97,29 @@ class OmSegmentJoinAction : public OmActionBase<OmSegmentJoinActionImpl> {
   virtual void UndoAction() {
     impl_->Undo();
     SetDescription();
-    om::event::Redraw2d();
   }
 };
+
+#include "actions/details/omSegmentSplitActionImpl.hpp"
+class OmSegmentSplitAction : public OmActionBase<OmSegmentSplitActionImpl> {
+ public:
+  OmSegmentSplitAction(std::shared_ptr<OmSegmentSplitActionImpl> impl) {
+    impl_ = impl;
+  }
+
+  OmSegmentSplitAction(const SegmentationDataWrapper& sdw,
+                      const om::segment::UserEdge& edge) {
+    impl_ = std::make_shared<OmSegmentSplitActionImpl>(sdw, edge);
+    SetUndoable(true);
+  }
+
+  virtual void Action() {
+    impl_->Execute();
+    SetDescription();
+  }
+
+  virtual void UndoAction() {
+    impl_->Undo();
+    SetDescription();
+  }
+}

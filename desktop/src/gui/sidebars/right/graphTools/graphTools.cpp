@@ -80,11 +80,15 @@ void GraphTools::updateGui() { om::event::Redraw2d(); }
 
 SegmentationDataWrapper GraphTools::GetSDW() { return mParent->GetSDW(); }
 
-void GraphTools::SetJoiningOff() { signalJoiningOff(); }
+void GraphTools::SetJoiningSplittingOff(om::common::JoinOrSplit joinOrSplit) {
+  if (joinOrSplit == om::common::JoinOrSplit::JOIN) {
+    signalJoiningOff();
+  } else {
+    signalSplittingOff();
+  }
+}
 
 void GraphTools::setJoiningOff() { joinButton->setChecked(false); }
-
-void GraphTools::SetSplittingOff() { signalSplittingOff(); }
 
 void GraphTools::setSplittingOff() { splitButton->setChecked(false); }
 

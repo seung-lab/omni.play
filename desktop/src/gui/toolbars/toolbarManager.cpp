@@ -35,8 +35,8 @@ void ToolBarManager::UpdateGuiFromProjectLoadOrOpen(OmViewGroupState& vgs) {
 
 void ToolBarManager::UpdateGuiFromProjectClose() { deleteMainBar(); }
 
-void ToolBarManager::SetTwoSegmentActionOff(om::common::JoinOrSplit joinOrSplit) {
-    rightSideBar_->SetTwoSegmentActionOff(joinOrSplit);
+void ToolBarManager::SetJoiningSplittingOff(om::common::JoinOrSplit joinOrSplit) {
+    rightSideBar_->SetJoiningSplittingOff(joinOrSplit);
 }
 
 void ToolBarManager::SetShatteringOff() { rightSideBar_->SetShatteringOff(); }

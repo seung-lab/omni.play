@@ -15,7 +15,7 @@
 #include "system/cache/omCacheManager.h"
 #include "system/omStateManager.h"
 #include "utility/dataWrappers.h"
-#include "viewGroup/omSplitting.hpp"
+#include "viewGroup/omJoiningSplitting.hpp"
 #include "viewGroup/omViewGroupState.h"
 
 /////////////////////////////////
@@ -143,9 +143,9 @@ void OmSegmentContextMenu::mergeSegments() {
 
 void OmSegmentContextMenu::splitSegments() {
 
-  vgs_->Splitting().EnterSplitMode();
+  vgs_->JoiningSplitting().Enter(om::common::JoinOrSplit::SPLIT);
 
-  vgs_->Splitting().SetFirstSplitPoint(sdw_, coord_);
+  vgs_->JoiningSplitting().SetFirstPoint(sdw_, coord_);
 }
 
 void OmSegmentContextMenu::cutSegments() { OmActions::CutSegment(sdw_); }

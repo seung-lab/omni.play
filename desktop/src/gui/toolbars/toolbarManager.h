@@ -3,6 +3,7 @@
 
 #include "gui/tools.hpp"
 #include "common/common.h"
+#include "common/enums.hpp"
 
 class MainWindow;
 class MainToolBar;
@@ -25,7 +26,7 @@ class ToolBarManager : public QWidget {
   void UpdateGuiFromProjectLoadOrOpen(OmViewGroupState &);
   void UpdateGuiFromProjectClose();
 
-  void SetTwoSegmentActionOff(om::common::JoinOrSplit);
+  void SetJoiningSplittingOff(om::common::JoinOrSplit joinOrSplit);
   void SetShatteringOff();
 
   void SetTool(const om::tool::mode tool);

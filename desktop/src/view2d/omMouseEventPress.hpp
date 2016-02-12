@@ -7,13 +7,14 @@
 #include "gui/widgets/omSegmentContextMenu.h"
 #include "gui/widgets/omTellInfo.hpp"
 #include "landmarks/omLandmarks.hpp"
-#include "segment/actions/omSplitSegmentRunner.hpp"
+#include "segment/actions/omJoinSplitRunner.hpp"
 #include "view2d/brush/omBrushSelect.hpp"
 #include "view2d/omFillTool.hpp"
 #include "view2d/omMouseEventUtils.hpp"
 #include "view2d/omView2d.h"
 #include "view2d/omView2dState.hpp"
 #include "segment/omSegments.h"
+#include "common/enums.hpp"
 
 class OmMouseEventPress {
  private:
@@ -104,8 +105,9 @@ class OmMouseEventPress {
       return;
     }
 
-    OmSplitSegmentRunner::FindAndSplitSegments(
-        *sdw, state_->getViewGroupState(), dataClickPoint_);
+    OmJoinSplitRunner::FindAndPerformOnSegments(
+        *sdw, state_->getViewGroupState(), dataClickPoint_,
+		om::common::JoinOrSplit::SPLIT);
   }
 
   void doFindAndShatterSegment() {

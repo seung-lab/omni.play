@@ -28,8 +28,8 @@ class right {
     mainWindow->addDockWidget(Qt::RightDockWidgetArea, dock);
   }
 
-  void SetTwoSegmentActionOff(om::common::JoinOrSplit joinOrSplit) {
-    impl_->SetSplittingOff(joinOrSplit); }
+  void SetJoiningSplittingOff(om::common::JoinOrSplit joinOrSplit) {
+    impl_->SetJoiningSplittingOff(joinOrSplit); }
 
   void SetShatteringOff() { impl_->SetShatteringOff(); }
 };

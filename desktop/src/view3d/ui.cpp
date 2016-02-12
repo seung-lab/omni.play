@@ -4,7 +4,7 @@
 #include "gui/tools.hpp"
 #include "landmarks/omLandmarks.hpp"
 #include "landmarks/omLandmarksTypes.h"
-#include "segment/actions/omSplitSegmentRunner.hpp"
+#include "segment/actions/omJoinSplitRunner.hpp"
 #include "segment/omSegmentCenter.hpp"
 #include "segment/omSegmentSelected.hpp"
 #include "segment/omSegmentSelector.h"
@@ -70,7 +70,7 @@ void Ui::splitModeMouseReleased(QMouseEvent* event) {
     return;
   }
 
-  OmSplitSegmentRunner::FindAndSplitSegments(pickPoint.sdw, vgs_,
+  OmJoinSplitRunner::FindAndPerformOnSegments(pickPoint.sdw, vgs_,
                                              pickPoint.coord);
 }
 

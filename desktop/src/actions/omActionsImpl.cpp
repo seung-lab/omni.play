@@ -7,14 +7,13 @@
 #include "actions/omActionsImpl.h"
 #include "actions/omSelectSegmentParams.hpp"
 #include "segment/actions/omCutSegmentRunner.hpp"
-#include "segment/actions/omJoinSegmentsRunner.hpp"
 #include "segment/actions/omSetSegmentValidRunner.hpp"
 #include "segment/omFindCommonEdge.hpp"
 #include "segment/omSegmentSelector.h"
 #include "system/omLocalPreferences.hpp"
 #include "threads/taskManager.hpp"
 #include "utility/dataWrappers.h"
-#include "viewGroup/omSplitting.hpp"
+#include "viewGroup/OmJoiningSplitting.hpp"
 #include "viewGroup/omViewGroupState.h"
 
 OmActionsImpl::OmActionsImpl() : threadPool_(new om::thread::ThreadPool()) {
@@ -133,14 +132,32 @@ void OmActionsImpl::setUncertain(const SegmentationDataWrapper& sdw,
 }
 
 void OmActionsImpl::JoinSegmentsWrapper(const SegmentationDataWrapper sdw) {
-  OmJoinSegmentsRunner joiner(sdw);
-  joiner.Join();
+  if (sdw.IsSegmentationValid()) {
+    auto ids = sdw_.Segments()->Selection().GetSelectedSegmentIDs();
+    (new OmSegmentJoinAction(sdw, ids))->Run();
+  }
 }
 
 void OmActionsImpl::JoinSegmentsSet(const SegmentationDataWrapper sdw,
                                     const om::common::SegIDSet ids) {
-  OmJoinSegmentsRunner joiner(sdw, ids);
-  joiner.Join();
+  if (sdw.IsSegmentationValid()) {
+    auto ids = sdw_.Segments()->Selection().GetSelectedSegmentIDs();
+    (new OmSegmentJoinAction(sdw, ids))->Run();
+  }
+}
+
+void OmActionsImpl::JoinSegments(const SegmentationDataWrapper sdw,
+                                 OmSegment* seg1, OmSegment* seg2) {
+  if (seg1 == seg2) {
+    log_infos << "can't join--same segment";
+    return;
+  }
+
+  om::common::SegIDSet joinIDs;
+  joinIDs.insert(seg1.value());
+  joinIDs.insert(seg2.value());
+
+  (new OmSegmentJoinAction(sdw, joinIDs))->Run();
 }
 
 void OmActionsImpl::FindAndSplitSegments(const SegmentationDataWrapper sdw,
