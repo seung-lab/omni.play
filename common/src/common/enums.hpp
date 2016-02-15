@@ -32,10 +32,7 @@ enum class AllowOverwrite {
   WRITE_ONCE,
   OVERWRITE
 };
-enum class JoinOrSplit {
-  JOIN,
-  SPLIT
-};
+
 enum class AddOrSubtract {
   ADD,
   SUBTRACT

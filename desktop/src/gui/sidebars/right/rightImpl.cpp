@@ -33,10 +33,10 @@ SegmentationDataWrapper om::sidebars::rightImpl::GetSDW() {
   return vgs_.Segmentation();
 }
 
-void om::sidebars::rightImpl::updateGui() { om::event::Redraw2d(); }
+void om::sidebars::rightImpl::updateGui() { om::event::Redraw2d(); om::event::Redraw3d(); }
 
-void om::sidebars::rightImpl::SetJoiningSplittingOff(om::common::JoinOrSplit joinOrSplit) {
-  graphTools_->SetJoiningSplittingOff(joinOrSplit);
+void om::sidebars::rightImpl::SetJoiningSplittingOff(om::tool::mode tool) {
+  graphTools_->SetJoiningSplittingOff(tool);
 }
 
 void om::sidebars::rightImpl::SetShatteringOff() {

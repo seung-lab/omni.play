@@ -38,7 +38,8 @@ Q_SLOTS:
   void unselect();
   void unselectOthers();
 
-  void mergeSegments();
+  void joinAllSelectedSegments();
+  void joinThisSegment();
   void splitSegments();
   void cutSegments();
   void randomizeRootSegmentColor();

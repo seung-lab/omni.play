@@ -14,7 +14,6 @@
 #include "view2d/omView2d.h"
 #include "view2d/omView2dState.hpp"
 #include "segment/omSegments.h"
-#include "common/enums.hpp"
 
 class OmMouseEventPress {
  private:
@@ -48,16 +47,14 @@ class OmMouseEventPress {
         om::coords::Screen(event->x(), event->y(), state_->Coords()));
 
     if (leftMouseButton_) {
-      if (om::tool::SPLIT == tool_) {
-        doFindAndSplitSegment();
-        v2d_->Redraw();
-        return;
-      }
-
-      if (om::tool::SHATTER == tool_) {
-        doFindAndShatterSegment();
-        v2d_->Redraw();
-        return;
+      switch (tool_) {
+        case om::tool::JOIN:
+        case om::tool::SPLIT:
+          doJoinSplitSegment(tool_);
+          return;
+        case om::tool::SHATTER:
+          doFindAndShatterSegment();
+          return;
       }
 
       const bool doCrosshair = controlKey_ && om::tool::PAN == tool_;
@@ -98,7 +95,7 @@ class OmMouseEventPress {
     dataClickPoint_ = clicked.ToGlobal();
   }
 
-  void doFindAndSplitSegment() {
+  void doJoinSplitSegment(om::tool::mode tool) {
     boost::optional<SegmentDataWrapper> sdw = getSelectedSegment();
 
     if (!sdw) {
@@ -106,8 +103,7 @@ class OmMouseEventPress {
     }
 
     OmJoinSplitRunner::FindAndPerformOnSegments(
-        *sdw, state_->getViewGroupState(), dataClickPoint_,
-		om::common::JoinOrSplit::SPLIT);
+        *sdw, state_->getViewGroupState(), dataClickPoint_, tool);
   }
 
   void doFindAndShatterSegment() {

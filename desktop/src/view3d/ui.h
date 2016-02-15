@@ -45,7 +45,7 @@ class Ui {
   void navigationModeMouseDoubleClick(QMouseEvent* event);
   void navigationModeMouseWheel(QWheelEvent* event);
 
-  void splitModeMouseReleased(QMouseEvent* event);
+  void joinSplitModeMouseReleased(om::tool::mode tool, QMouseEvent* event);
   void shatterModeMouseReleased(QMouseEvent* event);
 
   void cameraMovementMouseStart(QMouseEvent* event);

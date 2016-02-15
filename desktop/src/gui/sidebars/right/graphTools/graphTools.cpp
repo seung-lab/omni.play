@@ -76,15 +76,18 @@ QWidget* GraphTools::thresholdBox() {
   return widget;
 }
 
-void GraphTools::updateGui() { om::event::Redraw2d(); }
+void GraphTools::updateGui() { om::event::Redraw2d(); om::event::Redraw3d(); }
 
 SegmentationDataWrapper GraphTools::GetSDW() { return mParent->GetSDW(); }
 
-void GraphTools::SetJoiningSplittingOff(om::common::JoinOrSplit joinOrSplit) {
-  if (joinOrSplit == om::common::JoinOrSplit::JOIN) {
-    signalJoiningOff();
-  } else {
-    signalSplittingOff();
+void GraphTools::SetJoiningSplittingOff(om::tool::mode tool) {
+  switch (tool) {
+    case om::tool::mode::JOIN:
+      signalJoiningOff();
+      break;
+    case om::tool::mode::SPLIT:
+      signalSplittingOff();
+      break;
   }
 }
 

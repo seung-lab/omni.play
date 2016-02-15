@@ -8,10 +8,13 @@
 #include "volume/omSegmentation.h"
 #include "viewGroup/omJoiningSplitting.hpp"
 #include "viewGroup/omViewGroupState.h"
-#include "common/enums.hpp"
+#include "system/omConnect.hpp"
 
 JoinButton::JoinButton(GraphTools* d)
-    : OmButton<GraphTools>(d, "Join", "Join objects", false) {}
+    : OmButton<GraphTools>(d, "Join", "Join objects", true) {
+  om::connect(this, SIGNAL(clicked(bool)), this,
+              SLOT(enterOrExitJoinMode(bool)));
+}
 
 void JoinButton::doAction() {
   /*SegmentationDataWrapper sdw = mParent->GetSDW();
@@ -30,7 +33,7 @@ void JoinButton::doAction() {
 void JoinButton::enterOrExitJoinMode(const bool isJoining) {
   if (isJoining) {
     mParent->GetViewGroupState().JoiningSplitting()
-      .Enter(om::common::JoinOrSplit::JOIN);
+      .Enter(om::tool::mode::JOIN);
   } else {
     mParent->GetViewGroupState().JoiningSplitting().Exit();
   }

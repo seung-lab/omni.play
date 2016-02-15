@@ -111,10 +111,11 @@ void OmSegmentContextMenu::addSelectionAction() {
 }
 
 /*
- *  Merge Segments
+ *  Join and Split Segments
  */
 void OmSegmentContextMenu::addDendActions() {
-  addAction("Merge Selected Segments", this, SLOT(mergeSegments()));
+  addAction("Join ALL Selected Segments", this, SLOT(joinAllSelectedSegments()));
+  addAction("Join THIS Selected Segment with ...", this, SLOT(joinThisSegment()));
   addAction("Split Segments", this, SLOT(splitSegments()));
   addAction("Cut Segment(s)", this, SLOT(cutSegments()));
 }
@@ -137,13 +138,18 @@ void OmSegmentContextMenu::unselectOthers() {
   sel.selectJustThisSegment(sdw_.GetID(), true);
 }
 
-void OmSegmentContextMenu::mergeSegments() {
+void OmSegmentContextMenu::joinAllSelectedSegments() {
   OmActions::JoinSegments(sdw_.MakeSegmentationDataWrapper());
 }
 
-void OmSegmentContextMenu::splitSegments() {
+void OmSegmentContextMenu::joinThisSegment() {
+  vgs_->JoiningSplitting().Enter(om::tool::mode::JOIN);
 
-  vgs_->JoiningSplitting().Enter(om::common::JoinOrSplit::SPLIT);
+  vgs_->JoiningSplitting().SetFirstPoint(sdw_, coord_);
+}
+
+void OmSegmentContextMenu::splitSegments() {
+  vgs_->JoiningSplitting().Enter(om::tool::mode::SPLIT);
 
   vgs_->JoiningSplitting().SetFirstPoint(sdw_, coord_);
 }

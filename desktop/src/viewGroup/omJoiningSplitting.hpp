@@ -7,7 +7,6 @@
 #include "gui/tools.hpp"
 #include "system/cache/omCacheManager.h"
 #include "events/events.h"
-#include "common/enums.hpp"
 
 class OmJoiningSplitting {
  private:
@@ -30,14 +29,8 @@ class OmJoiningSplitting {
 
   void SetToolBarManager(ToolBarManager* tbm) { toolBarManager_ = tbm; }
 
-  void Enter(om::common::JoinOrSplit joinOrSplit) {
+  void Enter(om::tool::mode tool) {
     showSegmentBrokenOut_ = true;
-    om::tool::mode tool;
-    if (om::common::JoinOrSplit::JOIN == joinOrSplit) {
-      tool = om::tool::mode::JOIN;
-    } else {
-      tool = om::tool::mode::SPLIT;
-    }
 
     OmStateManager::SetToolModeAndSendEvent(tool);
     om::event::Redraw3d();
@@ -54,8 +47,8 @@ class OmJoiningSplitting {
   }
 
   void ExitFixButton() {
-    toolBarManager_->SetJoiningSplittingOff(om::common::JoinOrSplit::JOIN);
-    toolBarManager_->SetJoiningSplittingOff(om::common::JoinOrSplit::SPLIT);
+    toolBarManager_->SetJoiningSplittingOff(om::tool::mode::JOIN);
+    toolBarManager_->SetJoiningSplittingOff(om::tool::mode::SPLIT);
     Exit();
   }
 

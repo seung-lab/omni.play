@@ -2,7 +2,7 @@
 #include "precomp.h"
 
 #include "gui/widgets/omWidget.hpp"
-#include "common/enums.hpp"
+#include "gui/tools.hpp"
 
 class MSTThresholdSpinBox;
 class SizeThresholdSpinBox;
@@ -25,7 +25,7 @@ class GraphTools : public OmWidget {
  public:
   GraphTools(om::sidebars::rightImpl*, OmViewGroupState& vgs);
 
-  void SetJoiningSplittingOff(om::common::JoinOrSplit joinOrSplit);
+  void SetJoiningSplittingOff(om::tool::mode tool);
   void SetShatteringOff();
 
   OmViewGroupState& GetViewGroupState() const { return vgs_; }

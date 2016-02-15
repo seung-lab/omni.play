@@ -11,7 +11,7 @@ class OmJoinSplitRunner {
   static void FindAndPerformOnSegments(const SegmentDataWrapper curSDW,
                                    OmViewGroupState& vgs,
                                    const om::coords::Global curClickPt,
-								   om::common::JoinOrSplit joinOrSplit) {
+                                   om::tool::mode tool) {
     const boost::optional<om::coords::Global> prevClickPt =
         vgs.JoiningSplitting().FirstCoord();
 
@@ -31,10 +31,14 @@ class OmJoinSplitRunner {
         log_debugs << "can't split--same segment";
         return;
       }
-      if (joinOrSplit == om::common::JoinOrSplit::JOIN) {
-        OmActions::JoinSegments(vgs.Segmentation(), seg1, seg2);
-      } else {
-        OmActions::FindAndSplitSegments(vgs.Segmentation(), seg1, seg2);
+
+      switch (tool) {
+        case om::tool::mode::JOIN:
+          OmActions::JoinSegments(vgs.Segmentation(), seg1, seg2);
+          break;
+        case om::tool::mode::SPLIT:
+          OmActions::FindAndSplitSegments(vgs.Segmentation(), seg1, seg2);
+          break;
       }
 
     } else {

@@ -5,7 +5,6 @@
 #include "system/omConnect.hpp"
 #include "viewGroup/omJoiningSplitting.hpp"
 #include "viewGroup/omViewGroupState.h"
-#include "common/enums.hpp"
 
 SplitButton::SplitButton(GraphTools* d)
     : OmButton<GraphTools>(d, "Split", "Split object mode", true) {
@@ -16,7 +15,7 @@ SplitButton::SplitButton(GraphTools* d)
 void SplitButton::enterOrExitSplitMode(const bool isSplitting) {
   if (isSplitting) {
     mParent->GetViewGroupState().JoiningSplitting()
-      .Enter(om::common::JoinOrSplit::SPLIT);
+      .Enter(om::tool::mode::SPLIT);
   } else {
     mParent->GetViewGroupState().JoiningSplitting().Exit();
   }
