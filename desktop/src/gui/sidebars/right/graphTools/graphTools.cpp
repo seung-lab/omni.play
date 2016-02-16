@@ -3,7 +3,6 @@
 #include "gui/sidebars/right/graphTools/breakThresholdGroup.h"
 #include "gui/sidebars/right/rightImpl.h"
 #include "gui/sidebars/right/graphTools/mstThresholdSpinBox.hpp"
-#include "gui/sidebars/right/graphTools/sizeThresholdSpinBox.hpp"
 #include "gui/sidebars/right/graphTools/automaticSpreadingThresholdSpinBox.hpp"
 #include "gui/sidebars/right/graphTools/graphTools.h"
 #include "gui/sidebars/right/graphTools/joinButton.h"
@@ -56,20 +55,16 @@ QWidget* GraphTools::makeBreakThresholdBox() {
 }
 
 QWidget* GraphTools::thresholdBox() {
-  QGroupBox* widget = new QGroupBox("Join Thresholds", this);
+  QGroupBox* widget = new QGroupBox("Minimum Affinity to Join", this);
 
-  QLabel *mstThresholdLabel = new QLabel(tr("Min Affinity"));
+  QLabel *mstThresholdLabel = new QLabel(tr("Global Threshold"));
   threshold_ = new MSTThresholdSpinBox(this);
-  QLabel *sizeThresholdLabel = new QLabel(tr("Max Size (Disabled!)"));
-  sizeThreshold_ = new SizeThresholdSpinBox(this);
-  QLabel *automaticSpreadThresholdLabel = new QLabel(tr("Min Affinity Auto Spread"));
+  QLabel *automaticSpreadThresholdLabel = new QLabel(tr("Auto Spread"));
   asthreshold_ = new AutomaticSpreadingThresholdSpinBox(this);
 
   QVBoxLayout* layout = new QVBoxLayout(widget);
   layout->addWidget(mstThresholdLabel);
   layout->addWidget(threshold_);
-  layout->addWidget(sizeThresholdLabel);
-  layout->addWidget(sizeThreshold_);
   layout->addWidget(automaticSpreadThresholdLabel);
   layout->addWidget(asthreshold_);
 

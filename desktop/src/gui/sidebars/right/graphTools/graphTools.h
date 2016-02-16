@@ -5,7 +5,6 @@
 #include "gui/tools.hpp"
 
 class MSTThresholdSpinBox;
-class SizeThresholdSpinBox;
 class AutomaticSpreadingThresholdSpinBox;
 class OmViewGroupState;
 class SegmentationDataWrapper;
@@ -59,7 +58,6 @@ Q_SIGNALS:
   ShatterButton* shatterButton;
 
   MSTThresholdSpinBox* threshold_;
-  SizeThresholdSpinBox* sizeThreshold_;
   AutomaticSpreadingThresholdSpinBox* asthreshold_;
 
   QWidget* thresholdBox();
