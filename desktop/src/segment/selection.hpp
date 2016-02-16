@@ -64,10 +64,13 @@ class Selection {
   bool UpdateSegmentSelection(const common::SegIDMap& segIDsToOrders,
                               const bool shouldAddToRecent) {
     zi::guard g(mutex_);
+    if (segIDsToOrders == selectedIDsToOrders_) {
+      return false;
+    }
 
-    bool selectionIsChanged = updateSelection(segIDsToOrders, shouldAddToRecent);
+    updateSelection(segIDsToOrders, shouldAddToRecent);
     OmCacheManager::TouchFreshness();
-    return selectionIsChanged;
+    return true;
   }
 
   void UpdateSegmentSelection(const common::SegIDSet& ids,
@@ -110,6 +113,7 @@ class Selection {
     zi::guard g(mutex_);
     common::SegIDMap old = selectedIDsToOrders_;
     updateSelection(old, false);
+    OmCacheManager::TouchFreshness();
   }
 
   uint32_t GetNextOrder() {
@@ -190,12 +194,8 @@ class Selection {
     selectedIDsToOrders_.insert(std::pair<common::SegID, uint32_t>(rootID, newOrder));
   }
 
-  bool updateSelection(const common::SegIDMap newSelectedIDsToOrders,
+  void updateSelection(const common::SegIDMap newSelectedIDsToOrders,
                        const bool shouldAddToRecent) {
-    if (newSelectedIDsToOrders == selectedIDsToOrders_) {
-      return false;
-    }
-
     selectedIDsToOrders_.clear();
     // invert the map to get correct iteration order
     for (auto orderToSegID : getOrderToSegIDs(newSelectedIDsToOrders)) {
@@ -205,7 +205,6 @@ class Selection {
         addToRecentMap(orderToSegID.second);
       }
     }
-    return true;
   }
 
   std::map<uint32_t, common::SegID> getOrderToSegIDs(common::SegIDMap segIDsToOrders) {

@@ -30,7 +30,12 @@ class OmJoiningSplitting {
   void SetToolBarManager(ToolBarManager* tbm) { toolBarManager_ = tbm; }
 
   void Enter(om::tool::mode tool) {
-    showSegmentBrokenOut_ = true;
+    // exit previous mode first
+    Exit();
+
+    if (tool == om::tool::mode::SPLIT) {
+      showSegmentBrokenOut_ = true;
+    }
 
     OmStateManager::SetToolModeAndSendEvent(tool);
     om::event::Redraw3d();
