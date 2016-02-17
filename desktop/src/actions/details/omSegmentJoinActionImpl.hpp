@@ -21,6 +21,7 @@ class OmSegmentJoinActionImpl {
     OmJoinSegments joiner(sdw_, segIDs_);
     segIDs_ = joiner.Join();
 
+    OmCacheManager::TouchFreshness();
     om::event::Redraw2d();
     om::event::Redraw2d();
   }
@@ -29,6 +30,7 @@ class OmSegmentJoinActionImpl {
     OmJoinSegments joiner(sdw_, segIDs_);
     segIDs_ = joiner.UnJoin();
 
+    OmCacheManager::TouchFreshness();
     om::event::Redraw3d();
     om::event::Redraw2d();
   }

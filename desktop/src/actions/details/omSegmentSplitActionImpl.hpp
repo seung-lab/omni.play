@@ -38,7 +38,8 @@ class OmSegmentSplitActionImpl {
     sdw.SegmentLists()->RefreshGUIlists();
 
     OmCacheManager::TouchFreshness();
-    om::event::SegmentModified();
+    om::event::Redraw2d();
+    om::event::Redraw3d();
   }
 
   void Undo() {
@@ -65,7 +66,8 @@ class OmSegmentSplitActionImpl {
     sdw.SegmentLists()->RefreshGUIlists();
 
     OmCacheManager::TouchFreshness();
-    om::event::SegmentModified();
+    om::event::Redraw2d();
+    om::event::Redraw3d();
   }
 
   std::string Description() const { return desc.toStdString(); }

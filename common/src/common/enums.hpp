@@ -32,7 +32,6 @@ enum class AllowOverwrite {
   WRITE_ONCE,
   OVERWRITE
 };
-
 enum class AddOrSubtract {
   ADD,
   SUBTRACT
