@@ -21,14 +21,14 @@ class OmJoinSplitRunner {
       OmSegment* seg1 = prevSDW.GetSegment();
       OmSegment* seg2 = curSDW.GetSegment();
 
-      vgs.JoiningSplitting().ExitFixButton();
+      vgs.JoiningSplitting().DeactivateTool();
 
       if (!seg1 || !seg2) {
         return;
       }
 
       if (seg1 == seg2) {
-        log_debugs << "can't split--same segment";
+        log_debugs << "can't perform action on same segment";
         return;
       }
 
@@ -44,7 +44,7 @@ class OmJoinSplitRunner {
     } else {
       if (curSDW.IsSegmentValid()) {
         // set segment to be split later...
-        vgs.JoiningSplitting().SetFirstPoint(curSDW, curClickPt);
+        vgs.JoiningSplitting().SetFirstPoint(tool, curSDW, curClickPt);
       }
     }
   }

@@ -112,7 +112,6 @@ om::segment::coloring OmViewGroupState::determineColorizationType(
 
 void OmViewGroupState::SetToolBarManager(ToolBarManager* tbm) {
   toolBarManager_ = tbm;
-  joiningSplitting_->SetToolBarManager(tbm);
 }
 
 ToolBarManager& OmViewGroupState::GetToolBarManager() {

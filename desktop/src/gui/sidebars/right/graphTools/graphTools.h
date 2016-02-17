@@ -1,6 +1,7 @@
 #pragma once
 #include "precomp.h"
 
+#include "events/listeners.h"
 #include "gui/widgets/omWidget.hpp"
 #include "gui/tools.hpp"
 
@@ -18,13 +19,14 @@ class rightImpl;
 }
 }
 
-class GraphTools : public OmWidget {
+class GraphTools : public OmWidget, public om::event::ToolModeEventListener {
   Q_OBJECT;
 
  public:
   GraphTools(om::sidebars::rightImpl*, OmViewGroupState& vgs);
 
-  void SetJoiningSplittingOff(om::tool::mode tool);
+  void ToolModeChangeEvent();
+  void ActivateToolButton(om::tool::mode tool);
   void SetShatteringOff();
 
   OmViewGroupState& GetViewGroupState() const { return vgs_; }
@@ -49,6 +51,8 @@ Q_SIGNALS:
   void signalShatteringOff();
 
  private:
+  void signalOff(om::tool::mode tool);
+
   om::sidebars::rightImpl* const mParent;
 
   OmViewGroupState& vgs_;
@@ -63,4 +67,5 @@ Q_SIGNALS:
   QWidget* thresholdBox();
   QWidget* makeBreakThresholdBox();
   QWidget* breakThresholdBox_;
+  std::vector<om::tool::mode> supportedTools_;
 };

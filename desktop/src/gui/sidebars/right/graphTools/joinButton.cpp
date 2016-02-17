@@ -32,9 +32,8 @@ void JoinButton::doAction() {
 
 void JoinButton::enterOrExitJoinMode(const bool isJoining) {
   if (isJoining) {
-    mParent->GetViewGroupState().JoiningSplitting()
-      .Enter(om::tool::mode::JOIN);
+    OmStateManager::SetToolModeAndSendEvent(om::tool::mode::JOIN);
   } else {
-    mParent->GetViewGroupState().JoiningSplitting().Exit();
+    OmStateManager::SetOldToolModeAndSendEvent();
   }
 }

@@ -1,23 +1,23 @@
 #pragma once
 #include "precomp.h"
 
+#include "events/listeners.h"
 #include "utility/dataWrappers.h"
 #include "system/omStateManager.h"
-#include "gui/toolbars/toolbarManager.h"
 #include "gui/tools.hpp"
 #include "system/cache/omCacheManager.h"
 #include "events/events.h"
 
-class OmJoiningSplitting {
+class OmJoiningSplitting : public om::event::ToolModeEventListener {
  private:
+  om::tool::mode currentTool;
   bool showSegmentBrokenOut_;
-  ToolBarManager* toolBarManager_;
 
   boost::optional<om::coords::Global> firstCoordinate_;
   SegmentDataWrapper firstSegment_;
 
  public:
-  OmJoiningSplitting() : showSegmentBrokenOut_(false), toolBarManager_(nullptr) {}
+  OmJoiningSplitting() : showSegmentBrokenOut_(false) {}
 
   inline bool ShowSegmentBrokenOut() const { return showSegmentBrokenOut_; }
 
@@ -27,38 +27,50 @@ class OmJoiningSplitting {
     return firstCoordinate_;
   }
 
-  void SetToolBarManager(ToolBarManager* tbm) { toolBarManager_ = tbm; }
+  // filter events to only listen for SPLIT and JOIN. should do nothing otherwise 
+  void ToolModeChangeEvent() {
+    switch(OmStateManager::GetToolMode()) {
+      case om::tool::mode::SPLIT:
+      case om::tool::mode::JOIN:
+        ActivateTool(OmStateManager::GetToolMode());
+        break;
+      default:
+        if (firstCoordinate_) {
+          Reset();
+        }
+    }
+  }
 
-  void Enter(om::tool::mode tool) {
+  void ActivateTool(om::tool::mode tool) {
+    // don't do anything if the tool is the same
+    if (currentTool == tool) {
+      return;
+    }
+
     // exit previous mode first
-    Exit();
+    Reset();
+    currentTool = tool;
 
     if (tool == om::tool::mode::SPLIT) {
       showSegmentBrokenOut_ = true;
     }
-
-    OmStateManager::SetToolModeAndSendEvent(tool);
-    om::event::Redraw3d();
-    om::event::Redraw2d();
   }
 
-  void Exit() {
+  // when we listen to the previous tool that was activated, we will reset 
+  // the segment and coordinate parameters
+  void DeactivateTool() {
+    OmStateManager::SetOldToolModeAndSendEvent();
+  }
+
+  void Reset() {
     showSegmentBrokenOut_ = false;
     firstCoordinate_.reset();
-
-    OmStateManager::SetOldToolModeAndSendEvent();
-    om::event::Redraw3d();
-    om::event::Redraw2d();
   }
 
-  void ExitFixButton() {
-    toolBarManager_->SetJoiningSplittingOff(om::tool::mode::JOIN);
-    toolBarManager_->SetJoiningSplittingOff(om::tool::mode::SPLIT);
-    Exit();
-  }
-
-  void SetFirstPoint(const SegmentDataWrapper& sdw,
+  // Activate this tool and notify listeners (buttons)
+  void SetFirstPoint(om::tool::mode tool, const SegmentDataWrapper& sdw,
                           const om::coords::Global& coord) {
+    OmStateManager::SetToolModeAndSendEvent(om::tool::mode::JOIN);
     firstSegment_ = sdw;
     firstCoordinate_ = boost::optional<om::coords::Global>(coord);
   }

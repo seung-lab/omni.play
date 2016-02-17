@@ -14,9 +14,8 @@ SplitButton::SplitButton(GraphTools* d)
 
 void SplitButton::enterOrExitSplitMode(const bool isSplitting) {
   if (isSplitting) {
-    mParent->GetViewGroupState().JoiningSplitting()
-      .Enter(om::tool::mode::SPLIT);
+    OmStateManager::SetToolModeAndSendEvent(om::tool::mode::SPLIT);
   } else {
-    mParent->GetViewGroupState().JoiningSplitting().Exit();
+    OmStateManager::SetOldToolModeAndSendEvent();
   }
 }

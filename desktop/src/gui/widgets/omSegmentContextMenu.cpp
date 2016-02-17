@@ -143,15 +143,11 @@ void OmSegmentContextMenu::joinAllSelectedSegments() {
 }
 
 void OmSegmentContextMenu::joinThisSegment() {
-  vgs_->JoiningSplitting().Enter(om::tool::mode::JOIN);
-
-  vgs_->JoiningSplitting().SetFirstPoint(sdw_, coord_);
+  vgs_->JoiningSplitting().SetFirstPoint(om::tool::mode::JOIN, sdw_, coord_);
 }
 
 void OmSegmentContextMenu::splitSegments() {
-  vgs_->JoiningSplitting().Enter(om::tool::mode::SPLIT);
-
-  vgs_->JoiningSplitting().SetFirstPoint(sdw_, coord_);
+  vgs_->JoiningSplitting().SetFirstPoint(om::tool::mode::SPLIT, sdw_, coord_);
 }
 
 void OmSegmentContextMenu::cutSegments() { OmActions::CutSegment(sdw_); }

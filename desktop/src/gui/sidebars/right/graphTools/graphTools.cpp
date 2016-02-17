@@ -41,6 +41,10 @@ GraphTools::GraphTools(om::sidebars::rightImpl* d, OmViewGroupState& vgs)
               SLOT(setSplittingOff()));
   om::connect(this, SIGNAL(signalShatteringOff()), this,
               SLOT(setShatteringOff()));
+
+  supportedTools_.push_back(om::tool::mode::JOIN);
+  supportedTools_.push_back(om::tool::mode::SPLIT);
+  supportedTools_.push_back(om::tool::mode::SHATTER);
 }
 
 QWidget* GraphTools::makeBreakThresholdBox() {
@@ -75,7 +79,20 @@ void GraphTools::updateGui() { om::event::Redraw2d(); om::event::Redraw3d(); }
 
 SegmentationDataWrapper GraphTools::GetSDW() { return mParent->GetSDW(); }
 
-void GraphTools::SetJoiningSplittingOff(om::tool::mode tool) {
+void GraphTools::ToolModeChangeEvent() {
+  std::cout << "CAUGHT EVENT!" << std::endl;
+  ActivateToolButton(OmStateManager::GetToolMode());
+}
+
+void GraphTools::ActivateToolButton(om::tool::mode tool) {
+  for (auto supportedTool : supportedTools_) {
+    if (tool != supportedTool) {
+      signalOff(supportedTool);
+    }
+  }
+}
+
+void GraphTools::signalOff(om::tool::mode tool) {
   switch (tool) {
     case om::tool::mode::JOIN:
       signalJoiningOff();
@@ -83,8 +100,16 @@ void GraphTools::SetJoiningSplittingOff(om::tool::mode tool) {
     case om::tool::mode::SPLIT:
       signalSplittingOff();
       break;
+    case om::tool::mode::SHATTER:
+      signalShatteringOff();
+      break;
+    default:
+      signalJoiningOff();
+      signalSplittingOff();
+      signalShatteringOff();
   }
 }
+
 
 void GraphTools::setJoiningOff() { joinButton->setChecked(false); }
 

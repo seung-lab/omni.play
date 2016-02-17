@@ -35,8 +35,8 @@ void ToolBarManager::UpdateGuiFromProjectLoadOrOpen(OmViewGroupState& vgs) {
 
 void ToolBarManager::UpdateGuiFromProjectClose() { deleteMainBar(); }
 
-void ToolBarManager::SetJoiningSplittingOff(om::tool::mode tool) {
-    rightSideBar_->SetJoiningSplittingOff(tool);
+void ToolBarManager::ActivateToolButton(om::tool::mode tool) {
+    rightSideBar_->ActivateToolButton(tool);
 }
 
 void ToolBarManager::SetShatteringOff() { rightSideBar_->SetShatteringOff(); }

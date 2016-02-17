@@ -35,10 +35,13 @@ class OmStateManagerImpl {
     toolModePrev_ = toolModeCur_;
     toolModeCur_ = tool;
 
+    std::cout << "Setting prev to: " << ttos(toolModePrev_) << " and current to : " <<
+      ttos(toolModeCur_) << std::endl;
     om::event::ToolChange();
   }
 
   inline void SetOldToolModeAndSendEvent() {
+    std::cout << "set old tool mode now!" << std::endl;
     std::swap(toolModePrev_, toolModeCur_);
 
     om::event::ToolChange();
@@ -48,4 +51,20 @@ class OmStateManagerImpl {
   ///////          UndoStack
 
   inline OmUndoStack& UndoStack() { return undoStack_; }
+  std::string ttos(om::tool::mode tool) {
+    switch (tool) {
+      case om::tool::mode::SPLIT:
+        return "SPLIT";
+        break;
+      case om::tool::mode::JOIN:
+        return "JOIN";
+        break;
+      case om::tool::mode::SHATTER:
+        return "SHATTER";
+        break;
+      default:
+        return "OTHER";
+    }
+  }
+
 };

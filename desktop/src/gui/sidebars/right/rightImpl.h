@@ -20,7 +20,7 @@ class rightImpl : public QWidget {
 
   void updateGui();
 
-  void SetJoiningSplittingOff(om::tool::mode tool);
+  void ActivateToolButton(om::tool::mode tool);
   void SetShatteringOff();
 
   SegmentationDataWrapper GetSDW();
