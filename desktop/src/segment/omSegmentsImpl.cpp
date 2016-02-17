@@ -271,8 +271,6 @@ om::common::SegIDSet OmSegmentsImpl::JoinTheseSegments(
     ++iter;
   }
 
-  OmCacheManager::TouchFreshness();
-
   if (!ret.empty()) {
     ret.insert(parentID);
   }
@@ -314,8 +312,6 @@ om::common::SegIDSet OmSegmentsImpl::UnJoinTheseSegments(
 
     ++iter;
   }
-
-  OmCacheManager::TouchFreshness();
 
   if (!ret.empty()) {
     ret.insert(parentID);

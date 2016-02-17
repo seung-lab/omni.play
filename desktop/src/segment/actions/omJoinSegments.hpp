@@ -27,14 +27,6 @@ class OmJoinSegments {
 
     sdw_.SegmentLists()->RefreshGUIlists();
 
-    // touch all meshes to update color to joined color
-    for (auto id : ids_) {
-      OmSegment* joinedSegment = sdw_.Segments()->GetSegment(id);
-      joinedSegment->touchFreshnessForMeshes();
-    }
-
-    OmCacheManager::TouchFreshness();
-    om::event::SegmentModified();
     return ret;
   }
 

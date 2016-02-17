@@ -64,8 +64,6 @@ void Ui::KeyPress(QKeyEvent* event) {
 void Ui::joinSplitModeMouseReleased(om::tool::mode tool, QMouseEvent* event) {
   auto pickPoint = pickVoxelMouseCrosshair(event);
 
-  view3d_.updateGL();
-
   if (!pickPoint.sdw.IsSegmentValid()) {
     return;
   }

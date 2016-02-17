@@ -58,7 +58,6 @@ class Selection {
                                  const bool addToRecentList) {
     zi::guard g(mutex_);
     setSegmentSelectedBatch(segID, isSelected, addToRecentList);
-    OmCacheManager::TouchFreshness();
   }
 
   bool UpdateSegmentSelection(const common::SegIDMap& segIDsToOrders,
@@ -69,7 +68,6 @@ class Selection {
     }
 
     updateSelection(segIDsToOrders, shouldAddToRecent);
-    OmCacheManager::TouchFreshness();
     return true;
   }
 
@@ -82,7 +80,6 @@ class Selection {
       setSegmentSelectedBatch(id, true, addToRecentList);
     }
 
-    OmCacheManager::TouchFreshness();
   }
 
   void RemoveFromSegmentSelection(const common::SegIDMap& ids) {
@@ -91,7 +88,6 @@ class Selection {
       setSegmentSelectedBatch(id.first, false, false);
     }
 
-    OmCacheManager::TouchFreshness();
   }
 
   void ToggleSegmentSelection(const om::common::SegIDSet& ids) {
@@ -106,14 +102,12 @@ class Selection {
       setSegmentSelectedBatch(id, toggle, true);
     }
 
-    OmCacheManager::TouchFreshness();
   }
 
   void RerootSegmentList() {
     zi::guard g(mutex_);
     common::SegIDMap old = selectedIDsToOrders_;
     updateSelection(old, false);
-    OmCacheManager::TouchFreshness();
   }
 
   uint32_t GetNextOrder() {
