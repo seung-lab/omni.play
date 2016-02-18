@@ -23,7 +23,7 @@ class OmSegmentJoinActionImpl {
 
     OmCacheManager::TouchFreshness();
     om::event::Redraw2d();
-    om::event::Redraw2d();
+    om::event::Redraw3d();
   }
 
   void Undo() {
@@ -31,8 +31,8 @@ class OmSegmentJoinActionImpl {
     segIDs_ = joiner.UnJoin();
 
     OmCacheManager::TouchFreshness();
-    om::event::Redraw3d();
     om::event::Redraw2d();
+    om::event::Redraw3d();
   }
 
   std::string Description() {
