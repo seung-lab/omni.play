@@ -10,6 +10,7 @@
 #include "gui/sidebars/right/graphTools/shatterButton.h"
 #include "utility/dataWrappers.h"
 #include "viewGroup/omViewGroupState.h"
+#include "system/omStateManager.h"
 
 GraphTools::GraphTools(om::sidebars::rightImpl* d, OmViewGroupState& vgs)
     : OmWidget(d),
@@ -34,13 +35,6 @@ GraphTools::GraphTools(om::sidebars::rightImpl* d, OmViewGroupState& vgs)
   breakThresholdBox_ = makeBreakThresholdBox();
   breakThresholdBox_->hide();
   box->addWidget(breakThresholdBox_);
-
-  om::connect(this, SIGNAL(signalJoiningOff()), this,
-              SLOT(setJoiningOff()));
-  om::connect(this, SIGNAL(signalSplittingOff()), this,
-              SLOT(setSplittingOff()));
-  om::connect(this, SIGNAL(signalShatteringOff()), this,
-              SLOT(setShatteringOff()));
 
   supportedTools_.push_back(om::tool::mode::JOIN);
   supportedTools_.push_back(om::tool::mode::SPLIT);
@@ -86,38 +80,24 @@ void GraphTools::ToolModeChangeEvent() {
 
 void GraphTools::ActivateToolButton(om::tool::mode tool) {
   for (auto supportedTool : supportedTools_) {
-    if (tool != supportedTool) {
-      signalOff(supportedTool);
-    }
+    QPushButton* button = getButton(supportedTool);
+    // by definition all supported tools have buttons
+    button->setChecked(tool == supportedTool);
   }
 }
 
-void GraphTools::signalOff(om::tool::mode tool) {
+QPushButton* GraphTools::getButton(om::tool::mode tool) {
   switch (tool) {
     case om::tool::mode::JOIN:
-      signalJoiningOff();
-      break;
+      return joinButton;
     case om::tool::mode::SPLIT:
-      signalSplittingOff();
-      break;
+      return splitButton;
     case om::tool::mode::SHATTER:
-      signalShatteringOff();
-      break;
+      return shatterButton;
     default:
-      signalJoiningOff();
-      signalSplittingOff();
-      signalShatteringOff();
+      return nullptr;
   }
 }
-
-
-void GraphTools::setJoiningOff() { joinButton->setChecked(false); }
-
-void GraphTools::setSplittingOff() { splitButton->setChecked(false); }
-
-void GraphTools::SetShatteringOff() { signalShatteringOff(); }
-
-void GraphTools::setShatteringOff() { shatterButton->setChecked(false); }
 
 void GraphTools::HideBreakThreasholdBox() { breakThresholdBox_->hide(); }
 

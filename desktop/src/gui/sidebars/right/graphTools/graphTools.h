@@ -26,32 +26,21 @@ class GraphTools : public OmWidget, public om::event::ToolModeEventListener {
   GraphTools(om::sidebars::rightImpl*, OmViewGroupState& vgs);
 
   void ToolModeChangeEvent();
-  void ActivateToolButton(om::tool::mode tool);
-  void SetShatteringOff();
 
   OmViewGroupState& GetViewGroupState() const { return vgs_; }
 
   SegmentationDataWrapper GetSDW();
   void updateGui();
 
+  void ActivateToolButton(om::tool::mode tool);
   void HideBreakThreasholdBox();
   void ShowBreakThreasholdBox();
 
   QString getName() { return "Graph Tools"; }
 
- private
-Q_SLOTS:
-  void setSplittingOff();
-  void setJoiningOff();
-  void setShatteringOff();
-
-Q_SIGNALS:
-  void signalSplittingOff();
-  void signalJoiningOff();
-  void signalShatteringOff();
-
  private:
   void signalOff(om::tool::mode tool);
+  QPushButton* getButton(om::tool::mode tool);
 
   om::sidebars::rightImpl* const mParent;
 

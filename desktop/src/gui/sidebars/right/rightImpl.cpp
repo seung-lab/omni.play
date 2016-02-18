@@ -34,11 +34,3 @@ SegmentationDataWrapper om::sidebars::rightImpl::GetSDW() {
 }
 
 void om::sidebars::rightImpl::updateGui() { om::event::Redraw2d(); om::event::Redraw3d(); }
-
-void om::sidebars::rightImpl::ActivateToolButton(om::tool::mode tool) {
-  graphTools_->ActivateToolButton(tool);
-}
-
-void om::sidebars::rightImpl::SetShatteringOff() {
-  graphTools_->SetShatteringOff();
-}

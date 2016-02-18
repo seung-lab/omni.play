@@ -35,12 +35,6 @@ void ToolBarManager::UpdateGuiFromProjectLoadOrOpen(OmViewGroupState& vgs) {
 
 void ToolBarManager::UpdateGuiFromProjectClose() { deleteMainBar(); }
 
-void ToolBarManager::ActivateToolButton(om::tool::mode tool) {
-    rightSideBar_->ActivateToolButton(tool);
-}
-
-void ToolBarManager::SetShatteringOff() { rightSideBar_->SetShatteringOff(); }
-
 void ToolBarManager::SetTool(const om::tool::mode tool) {
   mainToolBar_->SetTool(tool);
 }

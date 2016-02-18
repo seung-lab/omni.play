@@ -28,10 +28,6 @@ class right {
     mainWindow->addDockWidget(Qt::RightDockWidgetArea, dock);
   }
 
-  void ActivateToolButton(om::tool::mode tool) {
-    impl_->ActivateToolButton(tool); }
-
-  void SetShatteringOff() { impl_->SetShatteringOff(); }
 };
 
 }  // namespace sidebars
