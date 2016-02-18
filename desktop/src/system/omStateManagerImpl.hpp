@@ -12,13 +12,19 @@ class OmStateManagerImpl {
  private:
   om::tool::mode toolModeCur_;
   om::tool::mode toolModePrev_;
+  // these tools are temporary and they should not be reactivated.
+  std::set<om::tool::mode> transientTools_;
 
   OmBrushSize brushSize_;
   OmUndoStack undoStack_;
 
  public:
   OmStateManagerImpl()
-      : toolModeCur_(om::tool::PAN), toolModePrev_(om::tool::PAN) {}
+      : toolModeCur_(om::tool::PAN), toolModePrev_(om::tool::PAN) {
+    transientTools_.insert(om::tool::mode::JOIN);
+    transientTools_.insert(om::tool::mode::SPLIT);
+    transientTools_.insert(om::tool::mode::SHATTER);
+  }
 
   OmBrushSize* BrushSize() { return &brushSize_; }
 
@@ -32,16 +38,16 @@ class OmStateManagerImpl {
       return;
     }
 
-    toolModePrev_ = toolModeCur_;
+    // we don't want to be able to return to these tools from SetOldToolModeAndSendEvent()
+    if (transientTools_.find(tool) == transientTools_.end()) {
+      toolModePrev_ = toolModeCur_;
+    }
     toolModeCur_ = tool;
 
-    std::cout << "Setting prev to: " << ttos(toolModePrev_) << " and current to : " <<
-      ttos(toolModeCur_) << std::endl;
     om::event::ToolChange();
   }
 
   inline void SetOldToolModeAndSendEvent() {
-    std::cout << "set old tool mode now!" << std::endl;
     std::swap(toolModePrev_, toolModeCur_);
 
     om::event::ToolChange();
@@ -51,20 +57,4 @@ class OmStateManagerImpl {
   ///////          UndoStack
 
   inline OmUndoStack& UndoStack() { return undoStack_; }
-  std::string ttos(om::tool::mode tool) {
-    switch (tool) {
-      case om::tool::mode::SPLIT:
-        return "SPLIT";
-        break;
-      case om::tool::mode::JOIN:
-        return "JOIN";
-        break;
-      case om::tool::mode::SHATTER:
-        return "SHATTER";
-        break;
-      default:
-        return "OTHER";
-    }
-  }
-
 };
