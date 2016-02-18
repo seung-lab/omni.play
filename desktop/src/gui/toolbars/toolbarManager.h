@@ -3,7 +3,6 @@
 
 #include "gui/tools.hpp"
 #include "common/common.h"
-#include "common/enums.hpp"
 
 class MainWindow;
 class MainToolBar;

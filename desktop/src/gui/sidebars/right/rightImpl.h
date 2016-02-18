@@ -2,7 +2,6 @@
 #include "precomp.h"
 
 #include "common/common.h"
-#include "gui/tools.hpp"
 
 class GraphTools;
 class MainWindow;
