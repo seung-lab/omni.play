@@ -70,7 +70,7 @@ class OmJoiningSplitting : public om::event::ToolModeEventListener {
   // Activate this tool and notify listeners (buttons)
   void SetFirstPoint(om::tool::mode tool, const SegmentDataWrapper& sdw,
                           const om::coords::Global& coord) {
-    OmStateManager::SetToolModeAndSendEvent(om::tool::mode::JOIN);
+    OmStateManager::SetToolModeAndSendEvent(tool);
     firstSegment_ = sdw;
     firstCoordinate_ = boost::optional<om::coords::Global>(coord);
   }

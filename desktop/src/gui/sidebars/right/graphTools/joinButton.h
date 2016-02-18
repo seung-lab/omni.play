@@ -11,7 +11,7 @@ class JoinButton : public OmButton<GraphTools> {
   JoinButton(GraphTools *);
 
  private:
-  void doAction();
+  void doAction() {}
 
  private
 Q_SLOTS:

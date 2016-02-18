@@ -1,5 +1,6 @@
 #include "events/events.h"
 #include "gui/sidebars/right/graphTools/breakButton.h"
+#include "gui/sidebars/right/graphTools/joinAllButton.h"
 #include "gui/sidebars/right/graphTools/breakThresholdGroup.h"
 #include "gui/sidebars/right/rightImpl.h"
 #include "gui/sidebars/right/graphTools/mstThresholdSpinBox.hpp"
@@ -18,6 +19,7 @@ GraphTools::GraphTools(om::sidebars::rightImpl* d, OmViewGroupState& vgs)
       vgs_(vgs),
       joinButton(new JoinButton(this)),
       splitButton(new SplitButton(this)),
+      breakButton(new BreakButton(this)),
       shatterButton(new ShatterButton(this)) {
   QFormLayout* box = new QFormLayout(this);
   box->addWidget(thresholdBox());
@@ -28,9 +30,10 @@ GraphTools::GraphTools(om::sidebars::rightImpl* d, OmViewGroupState& vgs)
   box->addWidget(wbox);
 
   box2->addWidget(joinButton, 0, 0, 1, 1);
-  box2->addWidget(splitButton, 0, 1, 1, 1);
-  box2->addWidget(shatterButton, 1, 0, 1, 1);
-  box2->addWidget(new BreakButton(this), 1, 1, 1, 1);
+  box2->addWidget(new JoinAllButton(this), 0, 1, 1, 1);
+  box2->addWidget(splitButton, 1, 0, 1, 1);
+  box2->addWidget(shatterButton, 1, 1, 1, 1);
+  box2->addWidget(breakButton, 2, 0, 1, 2);
 
   breakThresholdBox_ = makeBreakThresholdBox();
   breakThresholdBox_->hide();
@@ -83,6 +86,11 @@ void GraphTools::ActivateToolButton(om::tool::mode tool) {
     QPushButton* button = getButton(supportedTool);
     // by definition all supported tools have buttons
     button->setChecked(tool == supportedTool);
+  }
+
+  // if we use split, we automatically set the break button to true!
+  if (tool == om::tool::mode::SPLIT) {
+    breakButton->setChecked(true);
   }
 }
 

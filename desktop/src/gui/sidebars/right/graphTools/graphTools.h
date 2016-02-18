@@ -11,7 +11,9 @@ class OmViewGroupState;
 class SegmentationDataWrapper;
 class SplitButton;
 class JoinButton;
+class JoinAllButton;
 class ShatterButton;
+class BreakButton;
 
 namespace om {
 namespace sidebars {
@@ -48,7 +50,9 @@ class GraphTools : public OmWidget, public om::event::ToolModeEventListener {
 
   SplitButton* splitButton;
   JoinButton* joinButton;
+  JoinAllButton* joinAllButton;
   ShatterButton* shatterButton;
+  BreakButton* breakButton;
 
   MSTThresholdSpinBox* threshold_;
   AutomaticSpreadingThresholdSpinBox* asthreshold_;
