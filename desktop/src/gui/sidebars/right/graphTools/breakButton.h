@@ -12,9 +12,9 @@ class BreakButton : public OmButton<GraphTools> {
   BreakButton(GraphTools*);
 
  private:
-  void doAction();
+  void doAction() {}
 
  private
 Q_SLOTS:
-  void showOrHideBreakThresholdBox(const bool show);
+  void SetShouldVolumeBeShownBroken(const bool shouldVolumeBeShownBroken);
 };

@@ -45,9 +45,7 @@ class OmViewGroupState : public OmManageableObject {
   void SetToolBarManager(ToolBarManager* tbm);
   ToolBarManager& GetToolBarManager();
 
-  inline bool GetShatterMode() const { return mShatter; }
-
-  inline void ToggleShatterMode() { mShatter = !mShatter; }
+  void SetShouldVolumeBeShownBroken(bool shouldVolumeBeShownBroken);
 
   void SetShowValidMode(bool mode, bool incolor);
   bool shouldVolumeBeShownBroken();
@@ -125,7 +123,6 @@ class OmViewGroupState : public OmManageableObject {
 
   // toolbar stuff
   ToolBarManager* toolBarManager_;
-  bool mShatter;
   bool mShowValid;
   bool mShowValidInColor;
   bool mShowFilterInColor;

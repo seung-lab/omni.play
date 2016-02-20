@@ -4,22 +4,19 @@
 #include "system/cache/omCacheManager.h"
 #include "system/omConnect.hpp"
 #include "viewGroup/omViewGroupState.h"
+#include "viewGroup/omJoiningSplitting.hpp"
 
 BreakButton::BreakButton(GraphTools* d)
     : OmButton<GraphTools>(d, "Break", "Shatter object mode", true) {
   om::connect(this, SIGNAL(clicked(bool)), this,
-              SLOT(showOrHideBreakThresholdBox(bool)));
+              SLOT(SetShouldVolumeBeShownBroken(bool)));
 }
 
-void BreakButton::doAction() {
-  mParent->GetViewGroupState().ToggleShatterMode();
+void BreakButton::SetShouldVolumeBeShownBroken(const bool shouldVolumeBeShownBroken) {
+  mParent->GetViewGroupState().SetShouldVolumeBeShownBroken(shouldVolumeBeShownBroken);
   mParent->updateGui();
-}
-
-void BreakButton::showOrHideBreakThresholdBox(const bool show) {
-  if (show) {
+  if (shouldVolumeBeShownBroken) {
     mParent->ShowBreakThreasholdBox();
-
   } else {
     mParent->HideBreakThreasholdBox();
   }

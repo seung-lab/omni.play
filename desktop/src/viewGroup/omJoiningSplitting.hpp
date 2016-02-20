@@ -11,15 +11,22 @@
 class OmJoiningSplitting : public om::event::ToolModeEventListener {
  private:
   om::tool::mode currentTool;
-  bool showSegmentBrokenOut_;
+  bool shouldVolumeBeShownBroken_;
 
   boost::optional<om::coords::Global> firstCoordinate_;
   SegmentDataWrapper firstSegment_;
 
  public:
-  OmJoiningSplitting() : showSegmentBrokenOut_(false) {}
+  OmJoiningSplitting() : shouldVolumeBeShownBroken_(false) {}
 
-  inline bool ShowSegmentBrokenOut() const { return showSegmentBrokenOut_; }
+  void SetShouldVolumeBeShownBroken(bool shouldVolumeBeShownBroken) { 
+    shouldVolumeBeShownBroken_ = shouldVolumeBeShownBroken;
+
+    om::event::Redraw2d();
+    om::event::Redraw3d();
+  }
+
+  inline bool ShouldVolumeBeShownBroken() const { return shouldVolumeBeShownBroken_; }
 
   const SegmentDataWrapper& FirstSegment() const { return firstSegment_; }
 
@@ -29,19 +36,8 @@ class OmJoiningSplitting : public om::event::ToolModeEventListener {
 
   // filter events to only listen for SPLIT and JOIN. should do nothing otherwise 
   void ToolModeChangeEvent() {
-    switch(OmStateManager::GetToolMode()) {
-      case om::tool::mode::SPLIT:
-      case om::tool::mode::JOIN:
-        ActivateTool(OmStateManager::GetToolMode());
-        break;
-      default:
-        if (firstCoordinate_) {
-          Reset();
-        }
-    }
-  }
+    om::tool::mode tool = OmStateManager::GetToolMode();
 
-  void ActivateTool(om::tool::mode tool) {
     // don't do anything if the tool is the same
     if (currentTool == tool) {
       return;
@@ -49,11 +45,17 @@ class OmJoiningSplitting : public om::event::ToolModeEventListener {
 
     // exit previous mode first
     Reset();
-    currentTool = tool;
 
-    if (tool == om::tool::mode::SPLIT) {
-      showSegmentBrokenOut_ = true;
+    switch(tool) {
+      case om::tool::mode::SPLIT:
+        SetShouldVolumeBeShownBroken(true);
+        break;
+      case om::tool::mode::JOIN:
+        break;
     }
+
+    // use this as a block from reactivating the tool
+    currentTool = tool;
   }
 
   // when we listen to the previous tool that was activated, we will reset 
@@ -63,7 +65,7 @@ class OmJoiningSplitting : public om::event::ToolModeEventListener {
   }
 
   void Reset() {
-    showSegmentBrokenOut_ = false;
+    SetShouldVolumeBeShownBroken(false);
     firstCoordinate_.reset();
   }
 

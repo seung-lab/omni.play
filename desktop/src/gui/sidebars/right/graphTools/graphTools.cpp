@@ -77,7 +77,6 @@ void GraphTools::updateGui() { om::event::Redraw2d(); om::event::Redraw3d(); }
 SegmentationDataWrapper GraphTools::GetSDW() { return mParent->GetSDW(); }
 
 void GraphTools::ToolModeChangeEvent() {
-  std::cout << "CAUGHT EVENT!" << std::endl;
   ActivateToolButton(OmStateManager::GetToolMode());
 }
 
@@ -89,9 +88,7 @@ void GraphTools::ActivateToolButton(om::tool::mode tool) {
   }
 
   // if we use split, we automatically set the break button to true!
-  if (tool == om::tool::mode::SPLIT) {
-    breakButton->setChecked(true);
-  }
+  breakButton->setChecked(tool==om::tool::mode::SPLIT);
 }
 
 QPushButton* GraphTools::getButton(om::tool::mode tool) {

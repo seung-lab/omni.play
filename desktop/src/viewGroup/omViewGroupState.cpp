@@ -43,7 +43,6 @@ OmViewGroupState::OmViewGroupState(MainWindow* mainWindow)
       annotationSize_(3) {
   mBreakThreshold = 0;
   mDustThreshold = 90;
-  mShatter = false;
   mShowValid = false;
   mShowValidInColor = false;
   mShowFilterInColor = false;
@@ -118,6 +117,10 @@ ToolBarManager& OmViewGroupState::GetToolBarManager() {
   return *toolBarManager_;
 }
 
+void OmViewGroupState::SetShouldVolumeBeShownBroken(bool shouldVolumeBeShownBroken) { 
+  JoiningSplitting().SetShouldVolumeBeShownBroken(shouldVolumeBeShownBroken);
+}
+
 void OmViewGroupState::SetShowValidMode(bool mode, bool inColor) {
   mShowValid = mode;
   mShowValidInColor = inColor;
@@ -145,7 +148,7 @@ void OmViewGroupState::SetHowNonSelectedSegmentsAreColoredInFilter(
 }
 
 bool OmViewGroupState::shouldVolumeBeShownBroken() {
-  return mShatter || joiningSplitting_->ShowSegmentBrokenOut();
+  return joiningSplitting_->ShouldVolumeBeShownBroken();
 }
 
 void OmViewGroupState::setTool(const om::tool::mode tool) {
