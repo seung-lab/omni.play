@@ -68,10 +68,12 @@ class OmAutomaticSpreadingThresholdChangeAction
 class OmSegmentSelectAction : public OmActionBase<OmSegmentSelectActionImpl> {
  public:
   OmSegmentSelectAction(std::shared_ptr<OmSegmentSelectActionImpl> impl) {
+    SetRedrawParams(impl->GetParams());
     impl_ = impl;
   }
 
   OmSegmentSelectAction(std::shared_ptr<OmSelectSegmentsParams> params) {
+    SetRedrawParams(params);
     impl_ = std::make_shared<OmSegmentSelectActionImpl>(params);
   }
 };
@@ -88,16 +90,6 @@ class OmSegmentJoinAction : public OmActionBase<OmSegmentJoinActionImpl> {
     impl_ = std::make_shared<OmSegmentJoinActionImpl>(sdw, ids);
     SetUndoable(true);
   }
-
-  virtual void Action() {
-    impl_->Execute();
-    SetDescription();
-  }
-
-  virtual void UndoAction() {
-    impl_->Undo();
-    SetDescription();
-  }
 };
 
 #include "actions/details/omSegmentSplitActionImpl.hpp"
@@ -111,15 +103,5 @@ class OmSegmentSplitAction : public OmActionBase<OmSegmentSplitActionImpl> {
                       const om::segment::UserEdge& edge) {
     impl_ = std::make_shared<OmSegmentSplitActionImpl>(sdw, edge);
     SetUndoable(true);
-  }
-
-  virtual void Action() {
-    impl_->Execute();
-    SetDescription();
-  }
-
-  virtual void UndoAction() {
-    impl_->Undo();
-    SetDescription();
   }
 };

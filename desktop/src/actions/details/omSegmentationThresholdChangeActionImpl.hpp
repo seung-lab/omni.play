@@ -32,9 +32,7 @@ class OmSegmentationThresholdChangeActionImpl {
     OmSegmentation& seg = *sdw_.GetSegmentation();
     oldThreshold_ = seg.GetDendThreshold();
     seg.SetDendThreshold(threshold_);
-
     om::event::RefreshMSTthreshold();
-    om::event::SegmentModified();
   }
 
   void Undo() {
@@ -48,8 +46,6 @@ class OmSegmentationThresholdChangeActionImpl {
     seg.SetDendThreshold(oldThreshold_);
 
     om::event::RefreshMSTthreshold();
-
-    om::event::SegmentModified();
   }
 
   std::string Description() const {

@@ -20,19 +20,11 @@ class OmSegmentJoinActionImpl {
   void Execute() {
     OmJoinSegments joiner(sdw_, segIDs_);
     segIDs_ = joiner.Join();
-
-    OmCacheManager::TouchFreshness();
-    om::event::Redraw2d();
-    om::event::Redraw3d();
   }
 
   void Undo() {
     OmJoinSegments joiner(sdw_, segIDs_);
     segIDs_ = joiner.UnJoin();
-
-    OmCacheManager::TouchFreshness();
-    om::event::Redraw2d();
-    om::event::Redraw3d();
   }
 
   std::string Description() {

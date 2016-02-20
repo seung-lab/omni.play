@@ -1,14 +1,18 @@
 #pragma once
 #include "precomp.h"
 
+#include "system/cache/omCacheManager.h"
 #include "actions/details/omUndoCommand.hpp"
 #include "actions/io/omActionLogger.hpp"
 #include "common/common.h"
+#include "events/events.h"
 
 template <typename IMPL>
 class OmActionBase : public OmUndoCommand {
  protected:
   std::shared_ptr<IMPL> impl_;
+  // these are redraw params because we only care that they center/scroll the view
+  std::shared_ptr<OmSelectSegmentsParams> redrawParams_;
 
  public:
   OmActionBase() : impl_(std::make_shared<IMPL>()) {}
@@ -17,10 +21,30 @@ class OmActionBase : public OmUndoCommand {
 
   virtual ~OmActionBase() {}
 
- protected:
-  virtual void Action() { impl_->Execute(); }
+  void SetRedrawParams(std::shared_ptr<OmSelectSegmentsParams> redrawParams) {
+    redrawParams_ = redrawParams;
+  }
 
-  virtual void UndoAction() { impl_->Undo(); }
+  void notifyRedrawEvent() {
+    OmCacheManager::TouchFreshness();
+    if (redrawParams_) {
+      om::event::SegmentModified(redrawParams_);
+    } else {
+      om::event::Redraw2d();
+      om::event::Redraw3d();
+    }
+  }
+
+ protected:
+  virtual void Action() {
+    impl_->Execute();
+    notifyRedrawEvent();
+  }
+
+  virtual void UndoAction() {
+    impl_->Undo();
+    notifyRedrawEvent();
+  }
 
   virtual std::string Description() { return impl_->Description(); }
 
