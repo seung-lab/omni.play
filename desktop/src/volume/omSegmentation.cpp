@@ -120,11 +120,13 @@ std::string OmSegmentation::GetNameHyphen() const {
 void OmSegmentation::SetDendThreshold(const double t) {
   // TODO: lock
   OmProject::Globals().Users().UserSettings().setThreshold(t);
+  segments_->refreshTree();
 }
 
 void OmSegmentation::SetSizeThreshold(const double t) {
   // TODO: lock
   OmProject::Globals().Users().UserSettings().setSizeThreshold(t);
+  segments_->refreshTree();
 }
 
 double OmSegmentation::GetDendThreshold() {
