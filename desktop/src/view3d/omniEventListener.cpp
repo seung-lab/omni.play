@@ -36,7 +36,7 @@ void OmniEventListener::View3dRecenter() {
   auto globalCoord = vgs_.View2dState().GetScaledSliceDepth();
   camera.SetFocus(globalCoord);
 
-  view3d_.updateGL();  // TODO: do a TimedUpdate?
+  view3d_.TimedUpdate();
 }
 
 /*

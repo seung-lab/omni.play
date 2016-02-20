@@ -26,7 +26,7 @@ class OmSegmentSelectActionImpl {
 
     segments->Selection().UpdateSegmentSelection(params_->newSelectedIDs,
                                                    params_->addToRecentList);
-
+    OmCacheManager::TouchFreshness();
     om::event::SegmentModified(params_);
   }
 
@@ -36,6 +36,7 @@ class OmSegmentSelectActionImpl {
     segments->Selection().UpdateSegmentSelection(params_->oldSelectedIDs,
                                                  params_->addToRecentList);
 
+    OmCacheManager::TouchFreshness();
     om::event::SegmentModified(params_);
   }
 
