@@ -48,7 +48,12 @@ class OmStateManagerImpl {
   }
 
   inline void SetOldToolModeAndSendEvent() {
-    std::swap(toolModePrev_, toolModeCur_);
+    // we don't want to be able to return to these tools from SetOldToolModeAndSendEvent()
+    if (transientTools_.find(toolModeCur_) == transientTools_.end()) {
+      std::swap(toolModePrev_, toolModeCur_);
+    } else {
+      toolModeCur_ = toolModePrev_;
+    }
 
     om::event::ToolChange();
   }
