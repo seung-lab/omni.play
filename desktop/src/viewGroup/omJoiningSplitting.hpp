@@ -61,6 +61,7 @@ class OmJoiningSplitting : public om::event::ToolModeEventListener {
   // when we listen to the previous tool that was activated, we will reset 
   // the segment and coordinate parameters
   void DeactivateTool() {
+    Reset();
     OmStateManager::SetOldToolModeAndSendEvent();
   }
 
