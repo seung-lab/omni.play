@@ -18,7 +18,4 @@ void ShatterButton::enterOrExitShatterMode(const bool inShatterMode) {
   } else {
     OmStateManager::SetOldToolModeAndSendEvent();
   }
-
-  om::event::Redraw3d();
-  om::event::Redraw2d();
 }

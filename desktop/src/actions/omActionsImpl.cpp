@@ -1,5 +1,4 @@
 #include "actions/details/omActionImpls.hpp"
-#include "actions/details/omSegmentShatterAction.h"
 #include "actions/details/omSegmentUncertainAction.h"
 #include "actions/details/omSegmentValidateAction.h"
 #include "actions/details/omVoxelSetValueAction.h"

@@ -13,11 +13,10 @@ BreakButton::BreakButton(GraphTools* d)
 }
 
 void BreakButton::SetShouldVolumeBeShownBroken(const bool shouldVolumeBeShownBroken) {
-  mParent->GetViewGroupState().SetShouldVolumeBeShownBroken(shouldVolumeBeShownBroken);
-  mParent->updateGui();
   if (shouldVolumeBeShownBroken) {
     mParent->ShowBreakThreasholdBox();
   } else {
     mParent->HideBreakThreasholdBox();
   }
+  mParent->GetViewGroupState().SetShouldVolumeBeShownBroken(shouldVolumeBeShownBroken);
 }

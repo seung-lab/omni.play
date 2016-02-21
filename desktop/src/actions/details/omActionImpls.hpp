@@ -78,6 +78,19 @@ class OmSegmentSelectAction : public OmActionBase<OmSegmentSelectActionImpl> {
   }
 };
 
+#include "actions/details/omSegmentShatterActionImpl.hpp"
+class OmSegmentShatterAction : public OmActionBase<OmSegmentShatterActionImpl> {
+ public:
+  OmSegmentShatterAction(std::shared_ptr<OmSegmentShatterActionImpl> impl) {
+    impl_ = impl;
+  }
+
+  OmSegmentShatterAction(const SegmentDataWrapper& sdw) {
+    impl_ = std::make_shared<OmSegmentShatterActionImpl>(sdw);
+    SetUndoable(true);
+  }
+};
+
 #include "actions/details/omSegmentJoinActionImpl.hpp"
 class OmSegmentJoinAction : public OmActionBase<OmSegmentJoinActionImpl> {
  public:
