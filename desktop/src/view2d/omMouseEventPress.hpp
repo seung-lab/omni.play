@@ -1,4 +1,5 @@
 #pragma once
+
 #include "precomp.h"
 
 #include "annotation/annotation.h"
@@ -102,7 +103,7 @@ class OmMouseEventPress {
       return;
     }
 
-    OmJoinSplitRunner::FindAndPerformOnSegments(
+    om::JoinSplitRunner::FindAndPerformOnSegments(
         *sdw, state_->getViewGroupState(), dataClickPoint_, tool);
   }
 

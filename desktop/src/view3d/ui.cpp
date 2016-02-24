@@ -68,7 +68,7 @@ void Ui::joinSplitModeMouseReleased(om::tool::mode tool, QMouseEvent* event) {
     return;
   }
 
-  OmJoinSplitRunner::FindAndPerformOnSegments(pickPoint.sdw, vgs_,
+  om::JoinSplitRunner::FindAndPerformOnSegments(pickPoint.sdw, vgs_,
                                    pickPoint.coord, tool);
 }
 

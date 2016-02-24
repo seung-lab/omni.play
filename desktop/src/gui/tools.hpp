@@ -19,5 +19,7 @@ enum mode {
   SHATTER
 };
 
+std::string ToolToString(om::tool::mode tool);
+
 }  // namespace tool
 }  // namespace om

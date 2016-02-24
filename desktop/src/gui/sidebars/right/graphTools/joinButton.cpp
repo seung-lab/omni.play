@@ -1,9 +1,10 @@
 #include "actions/omActions.h"
-#include "common/logging.h"
+#include "gui/widgets/omButton.hpp"
 #include "gui/sidebars/right/graphTools/graphTools.h"
 #include "gui/sidebars/right/graphTools/joinButton.h"
-#include "viewGroup/omJoiningSplitting.hpp"
+#include "system/omStateManager.h"
 #include "system/omConnect.hpp"
+
 
 JoinButton::JoinButton(GraphTools* d)
     : OmButton<GraphTools>(d, "Join", "Join objects", true) {
