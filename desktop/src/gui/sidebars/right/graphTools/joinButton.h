@@ -5,7 +5,7 @@
 class GraphTools;
 
 class JoinButton : public OmButton<GraphTools> {
-  Q_OBJECT;
+  Q_OBJECT
 
  public:
   JoinButton(GraphTools *);

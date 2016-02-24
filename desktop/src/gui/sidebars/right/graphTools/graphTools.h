@@ -22,7 +22,7 @@ class rightImpl;
 }
 
 class GraphTools : public OmWidget, public om::event::ToolModeEventListener {
-  Q_OBJECT;
+  Q_OBJECT
 
  public:
   GraphTools(om::sidebars::rightImpl*, OmViewGroupState& vgs);
@@ -32,7 +32,6 @@ class GraphTools : public OmWidget, public om::event::ToolModeEventListener {
   OmViewGroupState& GetViewGroupState() const { return vgs_; }
 
   SegmentationDataWrapper GetSDW();
-  void updateGui();
 
   void ActivateToolButton(om::tool::mode tool);
   void HideBreakThreasholdBox();

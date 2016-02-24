@@ -32,5 +32,3 @@ om::sidebars::rightImpl::rightImpl(MainWindow* mainWindow,
 SegmentationDataWrapper om::sidebars::rightImpl::GetSDW() {
   return vgs_.Segmentation();
 }
-
-void om::sidebars::rightImpl::updateGui() { om::event::Redraw2d(); om::event::Redraw3d(); }

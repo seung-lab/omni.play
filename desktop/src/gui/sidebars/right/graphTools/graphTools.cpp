@@ -72,8 +72,6 @@ QWidget* GraphTools::thresholdBox() {
   return widget;
 }
 
-void GraphTools::updateGui() { om::event::Redraw2d(); om::event::Redraw3d(); }
-
 SegmentationDataWrapper GraphTools::GetSDW() { return mParent->GetSDW(); }
 
 void GraphTools::ToolModeChangeEvent() {

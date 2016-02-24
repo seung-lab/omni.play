@@ -9,10 +9,6 @@
 
 JoinAllButton::JoinAllButton(GraphTools* d)
     : OmButton<GraphTools>(d, "Join ALL", "Join all selected objects", false) {
-  /*
-   *om::connect(this, SIGNAL(clicked(bool)), this,
-   *            SLOT(enterOrExitJoinMode(bool)));
-   */
 }
 
 void JoinAllButton::doAction() {
