@@ -148,7 +148,7 @@ void OmViewGroupState::SetHowNonSelectedSegmentsAreColoredInFilter(
 }
 
 bool OmViewGroupState::shouldVolumeBeShownBroken() {
-  return joiningSplitting_->ShouldVolumeBeShownBroken();
+  return JoiningSplitting().ShouldVolumeBeShownBroken();
 }
 
 void OmViewGroupState::setTool(const om::tool::mode tool) {
