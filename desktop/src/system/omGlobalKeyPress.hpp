@@ -31,6 +31,8 @@ class OmGlobalKeyPress : public QWidget {
   std::unique_ptr<QShortcut> l_;
   std::unique_ptr<QShortcut> slash_;
   std::unique_ptr<QShortcut> t_;
+  std::unique_ptr<QShortcut> v_;
+  std::unique_ptr<QShortcut> shiftV_;
 
   void setShortcut(std::unique_ptr<QShortcut>& shortcut, const QKeySequence key,
                    const char* method) {
@@ -45,6 +47,13 @@ class OmGlobalKeyPress : public QWidget {
     auto* tbm = OmAppState::GetToolBarManager();
     if (tbm) {
       tbm->SetTool(tool);
+    }
+  }
+
+  void setValid(om::common::SetValid isValid) {
+    for (const auto& id : SegmentationDataWrapper::ValidIDs()) {
+      OmActions::ValidateSelectedSegments(SegmentationDataWrapper(id),
+          isValid);
     }
   }
 
@@ -75,10 +84,16 @@ Q_SLOTS:
     for (const auto& id : SegmentationDataWrapper::ValidIDs()) {
       OmActions::JoinSegments(SegmentationDataWrapper(id));
     }
-
-    om::event::Redraw2d();
-    om::event::Redraw3d();
   }
+
+  void keyV() {
+    setValid(om::common::SetValid::SET_VALID);
+  }
+
+  void keyShiftV() {
+    setValid(om::common::SetValid::SET_NOT_VALID);
+  }
+
 
  public:
   OmGlobalKeyPress(QWidget* parent) : QWidget(parent), parent_(parent) {
@@ -95,6 +110,8 @@ Q_SLOTS:
     setShortcut(k_, QKeySequence(Qt::Key_K), SLOT(keyK()));
     setShortcut(l_, QKeySequence(Qt::Key_L), SLOT(keyL()));
     setShortcut(t_, QKeySequence(Qt::Key_T), SLOT(keyT()));
+    setShortcut(v_, QKeySequence(Qt::Key_V), SLOT(keyV()));
+    setShortcut(shiftV_, QKeySequence(Qt::SHIFT + Qt::Key_V), SLOT(keyShiftV()));
     // setShortcut(slash_,   QKeySequence(Qt::Key_Slash),   SLOT(keySlash()));
   }
 };
