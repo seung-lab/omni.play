@@ -9,6 +9,7 @@
 #include "system/omStateManager.h"
 #include "viewGroup/omBrushSize.hpp"
 #include "utility/segmentationDataWrapper.hpp"
+#include "gui/toolbars/mainToolbar/filterWidget.hpp"
 
 class OmGlobalKeyPress : public QWidget {
   Q_OBJECT;
@@ -29,6 +30,7 @@ class OmGlobalKeyPress : public QWidget {
   std::unique_ptr<QShortcut> k_;
   std::unique_ptr<QShortcut> l_;
   std::unique_ptr<QShortcut> slash_;
+  std::unique_ptr<QShortcut> t_;
 
   void setShortcut(std::unique_ptr<QShortcut>& shortcut, const QKeySequence key,
                    const char* method) {
@@ -57,6 +59,7 @@ Q_SLOTS:
   void keyK() { setTool(om::tool::CUT); }
   void keyL() { setTool(om::tool::LANDMARK); }
   void keyR() { OmSegmentSelected::RandomizeColor(); }
+  void keyT() { FilterWidget::Cycle(); }
 
   void keyLess() {
     OmStateManager::BrushSize()->DecreaseSize();
@@ -91,6 +94,7 @@ Q_SLOTS:
     setShortcut(r_, QKeySequence(Qt::Key_R), SLOT(keyR()));
     setShortcut(k_, QKeySequence(Qt::Key_K), SLOT(keyK()));
     setShortcut(l_, QKeySequence(Qt::Key_L), SLOT(keyL()));
+    setShortcut(t_, QKeySequence(Qt::Key_T), SLOT(keyT()));
     // setShortcut(slash_,   QKeySequence(Qt::Key_Slash),   SLOT(keySlash()));
   }
 };

@@ -14,12 +14,12 @@ class FilterWidgetImpl : public QSlider {
   Q_OBJECT;
 
  private:
-  constexpr static const double delta_ = 0.1;
+  constexpr static const double delta_ = 0.5;
 
-  bool slideAlphaForward_;
+  double previousAlpha_;
 
  public:
-  FilterWidgetImpl() : QSlider(Qt::Horizontal), slideAlphaForward_(true) {
+  FilterWidgetImpl() : QSlider(Qt::Horizontal), previousAlpha_(0.0) {
     QSize size = sizeHint();
     size.setWidth(150);
     setMaximumSize(size);
@@ -93,15 +93,12 @@ Q_SLOTS:
       return;
     }
 
-    static const double jumpDistance = 0.6;
-
-    double newAlpha = 0;
-    if (slideAlphaForward_) {
-      newAlpha = jumpDistance;
-      slideAlphaForward_ = false;
+    double newAlpha;
+    if (previousAlpha_) {
+      newAlpha = previousAlpha_;
     } else {
+      previousAlpha_= filter->GetAlpha();
       newAlpha = 0;
-      slideAlphaForward_ = true;
     }
 
     doSetFilterAlpha(newAlpha);
