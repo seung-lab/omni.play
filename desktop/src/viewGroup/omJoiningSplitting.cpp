@@ -33,12 +33,14 @@ const boost::optional<om::coords::Global>& OmJoiningSplitting::FirstCoord() cons
 // filter events to only listen for SPLIT and JOIN. should do nothing otherwise 
 void OmJoiningSplitting::ToolModeChangeEvent() {
   om::tool::mode tool = OmStateManager::GetToolMode();
+  ActivateTool(tool);
+}
 
+void OmJoiningSplitting::ActivateTool(om::tool::mode tool) {
   // don't do anything if the tool is the same
   if (currentTool == tool) {
     return;
   }
-
   // exit previous mode first
   Reset();
 
@@ -69,7 +71,10 @@ void OmJoiningSplitting::Reset() {
 // Activate this tool and notify listeners (buttons)
 void OmJoiningSplitting::SetFirstPoint(om::tool::mode tool, const SegmentDataWrapper& sdw,
                         const om::coords::Global& coord) {
-  OmStateManager::SetToolModeAndSendEvent(tool);
+  ActivateTool(tool);
   firstSegment_ = sdw;
   firstCoordinate_ = boost::optional<om::coords::Global>(coord);
+
+  // notify (i.e. update button ui to reflect mode is activated)
+  OmStateManager::SetToolModeAndSendEvent(tool);
 }

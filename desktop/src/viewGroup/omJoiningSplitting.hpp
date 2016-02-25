@@ -14,6 +14,7 @@ class OmJoiningSplitting : public om::event::ToolModeEventListener {
   boost::optional<om::coords::Global> firstCoordinate_;
   SegmentDataWrapper firstSegment_;
 
+
  public:
   OmJoiningSplitting();
 
@@ -25,9 +26,11 @@ class OmJoiningSplitting : public om::event::ToolModeEventListener {
 
   const boost::optional<om::coords::Global>& FirstCoord() const;
 
-  // filter events to only listen for SPLIT and JOIN. should do nothing otherwise 
+  // listener for new tool
   void ToolModeChangeEvent();
 
+  // filter events to only listen for SPLIT and JOIN. should do nothing otherwise 
+  void ActivateTool(om::tool::mode tool);
   // when we listen to the previous tool that was activated, we will reset 
   // the segment and coordinate parameters
   void DeactivateTool();
