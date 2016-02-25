@@ -11,12 +11,15 @@ enum mode {
   ERASE,
   FILL,
   SPLIT,
+  JOIN,
   CUT,
   LANDMARK,
   ANNOTATE,
   ADVANCED,
   SHATTER
 };
+
+std::string ToolToString(om::tool::mode tool);
 
 }  // namespace tool
 }  // namespace om

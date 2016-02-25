@@ -19,9 +19,6 @@ class rightImpl : public QWidget {
 
   void updateGui();
 
-  void SetSplittingOff();
-  void SetShatteringOff();
-
   SegmentationDataWrapper GetSDW();
 
   static bool GetShowGroupsMode();

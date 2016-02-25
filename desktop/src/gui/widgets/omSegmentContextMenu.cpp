@@ -15,7 +15,7 @@
 #include "system/cache/omCacheManager.h"
 #include "system/omStateManager.h"
 #include "utility/dataWrappers.h"
-#include "viewGroup/omSplitting.hpp"
+#include "viewGroup/omJoiningSplitting.hpp"
 #include "viewGroup/omViewGroupState.h"
 
 /////////////////////////////////
@@ -111,10 +111,11 @@ void OmSegmentContextMenu::addSelectionAction() {
 }
 
 /*
- *  Merge Segments
+ *  Join and Split Segments
  */
 void OmSegmentContextMenu::addDendActions() {
-  addAction("Merge Selected Segments", this, SLOT(mergeSegments()));
+  addAction("Join ALL Selected Segments", this, SLOT(joinAllSelectedSegments()));
+  addAction("Join THIS Selected Segment with ...", this, SLOT(joinThisSegment()));
   addAction("Split Segments", this, SLOT(splitSegments()));
   addAction("Cut Segment(s)", this, SLOT(cutSegments()));
 }
@@ -137,15 +138,16 @@ void OmSegmentContextMenu::unselectOthers() {
   sel.selectJustThisSegment(sdw_.GetID(), true);
 }
 
-void OmSegmentContextMenu::mergeSegments() {
+void OmSegmentContextMenu::joinAllSelectedSegments() {
   OmActions::JoinSegments(sdw_.MakeSegmentationDataWrapper());
 }
 
+void OmSegmentContextMenu::joinThisSegment() {
+  vgs_->JoiningSplitting().SetFirstPoint(om::tool::mode::JOIN, sdw_, coord_);
+}
+
 void OmSegmentContextMenu::splitSegments() {
-
-  vgs_->Splitting().EnterSplitMode();
-
-  vgs_->Splitting().SetFirstSplitPoint(sdw_, coord_);
+  vgs_->JoiningSplitting().SetFirstPoint(om::tool::mode::SPLIT, sdw_, coord_);
 }
 
 void OmSegmentContextMenu::cutSegments() { OmActions::CutSegment(sdw_); }

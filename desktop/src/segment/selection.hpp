@@ -58,16 +58,17 @@ class Selection {
                                  const bool addToRecentList) {
     zi::guard g(mutex_);
     setSegmentSelectedBatch(segID, isSelected, addToRecentList);
-    OmCacheManager::TouchFreshness();
   }
 
   bool UpdateSegmentSelection(const common::SegIDMap& segIDsToOrders,
                               const bool shouldAddToRecent) {
     zi::guard g(mutex_);
+    if (segIDsToOrders == selectedIDsToOrders_) {
+      return false;
+    }
 
-    bool selectionIsChanged = updateSelection(segIDsToOrders, shouldAddToRecent);
-    OmCacheManager::TouchFreshness();
-    return selectionIsChanged;
+    updateSelection(segIDsToOrders, shouldAddToRecent);
+    return true;
   }
 
   void UpdateSegmentSelection(const common::SegIDSet& ids,
@@ -79,7 +80,6 @@ class Selection {
       setSegmentSelectedBatch(id, true, addToRecentList);
     }
 
-    OmCacheManager::TouchFreshness();
   }
 
   void RemoveFromSegmentSelection(const common::SegIDMap& ids) {
@@ -88,7 +88,6 @@ class Selection {
       setSegmentSelectedBatch(id.first, false, false);
     }
 
-    OmCacheManager::TouchFreshness();
   }
 
   void ToggleSegmentSelection(const om::common::SegIDSet& ids) {
@@ -103,7 +102,6 @@ class Selection {
       setSegmentSelectedBatch(id, toggle, true);
     }
 
-    OmCacheManager::TouchFreshness();
   }
 
   void RerootSegmentList() {
@@ -190,12 +188,8 @@ class Selection {
     selectedIDsToOrders_.insert(std::pair<common::SegID, uint32_t>(rootID, newOrder));
   }
 
-  bool updateSelection(const common::SegIDMap newSelectedIDsToOrders,
+  void updateSelection(const common::SegIDMap newSelectedIDsToOrders,
                        const bool shouldAddToRecent) {
-    if (newSelectedIDsToOrders == selectedIDsToOrders_) {
-      return false;
-    }
-
     selectedIDsToOrders_.clear();
     // invert the map to get correct iteration order
     for (auto orderToSegID : getOrderToSegIDs(newSelectedIDsToOrders)) {
@@ -205,7 +199,6 @@ class Selection {
         addToRecentMap(orderToSegID.second);
       }
     }
-    return true;
   }
 
   std::map<uint32_t, common::SegID> getOrderToSegIDs(common::SegIDMap segIDsToOrders) {

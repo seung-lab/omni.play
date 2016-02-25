@@ -5,9 +5,15 @@
 class GraphTools;
 
 class JoinButton : public OmButton<GraphTools> {
+  Q_OBJECT
+
  public:
   JoinButton(GraphTools *);
 
  private:
-  void doAction();
+  void doAction() {}
+
+ private
+Q_SLOTS:
+  void enterOrExitJoinMode(const bool show);
 };

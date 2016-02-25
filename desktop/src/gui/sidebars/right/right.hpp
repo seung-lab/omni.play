@@ -28,9 +28,6 @@ class right {
     mainWindow->addDockWidget(Qt::RightDockWidgetArea, dock);
   }
 
-  void SetSplittingOff() { impl_->SetSplittingOff(); }
-
-  void SetShatteringOff() { impl_->SetShatteringOff(); }
 };
 
 }  // namespace sidebars

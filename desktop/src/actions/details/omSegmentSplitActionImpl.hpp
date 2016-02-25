@@ -35,13 +35,7 @@ class OmSegmentSplitActionImpl {
 
     log_infos << desc.toStdString();
 
-    om::event::SegmentModified();
-
     sdw.SegmentLists()->RefreshGUIlists();
-
-    OmCacheManager::TouchFreshness();
-    om::event::Redraw2d();
-    om::event::Redraw3d();
   }
 
   void Undo() {
@@ -65,13 +59,7 @@ class OmSegmentSplitActionImpl {
     desc =
         QString("Joined seg %1 to %2").arg(mEdge.childID).arg(mEdge.parentID);
 
-    om::event::SegmentModified();
-
     sdw.SegmentLists()->RefreshGUIlists();
-
-    OmCacheManager::TouchFreshness();
-    om::event::Redraw2d();
-    om::event::Redraw3d();
   }
 
   std::string Description() const { return desc.toStdString(); }

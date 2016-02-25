@@ -25,9 +25,6 @@ class ToolBarManager : public QWidget {
   void UpdateGuiFromProjectLoadOrOpen(OmViewGroupState &);
   void UpdateGuiFromProjectClose();
 
-  void SetSplittingOff();
-  void SetShatteringOff();
-
   void SetTool(const om::tool::mode tool);
 
  private:

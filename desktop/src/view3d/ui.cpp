@@ -4,7 +4,7 @@
 #include "gui/tools.hpp"
 #include "landmarks/omLandmarks.hpp"
 #include "landmarks/omLandmarksTypes.h"
-#include "segment/actions/omSplitSegmentRunner.hpp"
+#include "segment/actions/omJoinSplitRunner.hpp"
 #include "segment/omSegmentCenter.hpp"
 #include "segment/omSegmentSelected.hpp"
 #include "segment/omSegmentSelector.h"
@@ -61,17 +61,15 @@ void Ui::KeyPress(QKeyEvent* event) {
   }
 }
 
-void Ui::splitModeMouseReleased(QMouseEvent* event) {
+void Ui::joinSplitModeMouseReleased(om::tool::mode tool, QMouseEvent* event) {
   auto pickPoint = pickVoxelMouseCrosshair(event);
-
-  view3d_.updateGL();
 
   if (!pickPoint.sdw.IsSegmentValid()) {
     return;
   }
 
-  OmSplitSegmentRunner::FindAndSplitSegments(pickPoint.sdw, vgs_,
-                                             pickPoint.coord);
+  om::JoinSplitRunner::FindAndPerformOnSegments(pickPoint.sdw, vgs_,
+                                   pickPoint.coord, tool);
 }
 
 void Ui::shatterModeMouseReleased(QMouseEvent* event) {
@@ -85,7 +83,6 @@ void Ui::shatterModeMouseReleased(QMouseEvent* event) {
 
   OmActions::ShatterSegment(pickPoint.sdw.MakeSegmentationDataWrapper(),
                             pickPoint.sdw.GetSegment());
-  vgs_.GetToolBarManager().SetShatteringOff();
   OmStateManager::SetOldToolModeAndSendEvent();
 }
 
@@ -144,28 +141,30 @@ void Ui::navigationModeMousePressed(QMouseEvent* event) {
 
   if (leftMouseButton) {
     const auto toolMode = OmStateManager::GetToolMode();
-    if (om::tool::mode::LANDMARK == toolMode) {
-      auto pickPoint = pickVoxelMouseCrosshair(event);
-      vgs_.Landmarks().Add(pickPoint.sdw, pickPoint.coord);
-      return;
-    }
-    if (om::tool::mode::SPLIT == toolMode) {
-      splitModeMouseReleased(event);
-      return;
-    }
-    if (om::tool::mode::SHATTER == toolMode) {
-      shatterModeMouseReleased(event);
-      return;
-    }
-    if (om::tool::mode::CUT == toolMode) {
-      if (cutSegment(event)) {
+    switch (toolMode) {
+      case om::tool::mode::LANDMARK:
+        {
+          auto pickPoint = pickVoxelMouseCrosshair(event);
+          vgs_.Landmarks().Add(pickPoint.sdw, pickPoint.coord);
+          return;
+        }
+      case om::tool::mode::SPLIT:
+      case om::tool::mode::JOIN:
+        joinSplitModeMouseReleased(toolMode, event);
         return;
-      }
-    }
-    if (om::tool::mode::ANNOTATE == toolMode) {
-      if (annotate(event)) {
+      case om::tool::mode::SHATTER:
+        shatterModeMouseReleased(event);
         return;
-      }
+      case om::tool::mode::CUT:
+        if (cutSegment(event)) {
+          return;
+        }
+        break;
+      case om::tool::mode::ANNOTATE:
+        if (annotate(event)) {
+          return;
+        }
+        break;
     }
 
     if (altModifier) {

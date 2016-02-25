@@ -31,13 +31,15 @@ class OmSegmentShatterActionImpl {
     removed_ = sdw_.GetSegmentation()->Segments().Shatter(sdw_.GetSegment());
 
     desc = QString("Shatter seg %1").arg(sdw_.GetSegmentID());
-    notify();
+
+    sdw_.GetSegmentation()->Segments().SegmentLists().RefreshGUIlists();
   }
 
   void Undo() {
     FOR_EACH(e, removed_) {
       std::pair<bool, om::segment::UserEdge> edge =
           sdw_.GetSegmentation()->Segments().JoinEdge(*e);
+
 
       if (!edge.first) {
         log_infos << "edge could not be rejoined...";
@@ -46,7 +48,8 @@ class OmSegmentShatterActionImpl {
     }
 
     desc = QString("Unshattered %1").arg(sdw_.GetSegmentID());
-    notify();
+
+    sdw_.GetSegmentation()->Segments().SegmentLists().RefreshGUIlists();
   }
 
   std::string Description() const { return desc.toStdString(); }
@@ -54,18 +57,6 @@ class OmSegmentShatterActionImpl {
   QString classNameForLogFile() const { return "OmSegmentShatterAction"; }
 
  private:
-  void notify() const {
-    log_infos << desc.toStdString();
-
-    om::event::SegmentModified();
-
-    sdw_.GetSegmentation()->Segments().SegmentLists().RefreshGUIlists();
-
-    OmCacheManager::TouchFreshness();
-    om::event::Redraw2d();
-    om::event::Redraw3d();
-  }
-
   template <typename T>
   friend class OmActionLoggerThread;
   friend class QDataStream& operator<<(QDataStream&,

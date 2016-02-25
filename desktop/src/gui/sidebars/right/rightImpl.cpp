@@ -32,13 +32,3 @@ om::sidebars::rightImpl::rightImpl(MainWindow* mainWindow,
 SegmentationDataWrapper om::sidebars::rightImpl::GetSDW() {
   return vgs_.Segmentation();
 }
-
-void om::sidebars::rightImpl::updateGui() { om::event::Redraw2d(); }
-
-void om::sidebars::rightImpl::SetSplittingOff() {
-  graphTools_->SetSplittingOff();
-}
-
-void om::sidebars::rightImpl::SetShatteringOff() {
-  graphTools_->SetShatteringOff();
-}

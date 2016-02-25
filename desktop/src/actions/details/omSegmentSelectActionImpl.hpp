@@ -21,13 +21,13 @@ class OmSegmentSelectActionImpl {
   OmSegmentSelectActionImpl(std::shared_ptr<OmSelectSegmentsParams> params)
       : params_(params) {}
 
+  std::shared_ptr<OmSelectSegmentsParams> GetParams() const { return params_; }
+
   void Execute() {
     OmSegments* segments = params_->sdw.Segments();
 
     segments->Selection().UpdateSegmentSelection(params_->newSelectedIDs,
                                                    params_->addToRecentList);
-
-    om::event::SegmentModified(params_);
   }
 
   void Undo() {
@@ -35,8 +35,6 @@ class OmSegmentSelectActionImpl {
 
     segments->Selection().UpdateSegmentSelection(params_->oldSelectedIDs,
                                                  params_->addToRecentList);
-
-    om::event::SegmentModified(params_);
   }
 
   std::string Description() const {

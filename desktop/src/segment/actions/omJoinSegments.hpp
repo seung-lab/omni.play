@@ -26,8 +26,6 @@ class OmJoinSegments {
     const om::common::SegIDSet ret = runOpp(join);
 
     sdw_.SegmentLists()->RefreshGUIlists();
-    om::event::Redraw2d();
-    om::event::Redraw3d();
 
     return ret;
   }

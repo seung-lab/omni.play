@@ -30,7 +30,6 @@ public:
         seg->SetASThreshold(threshold_);
 
         om::event::RefreshMSTthreshold();
-        om::event::SegmentModified();
     }
 
     void Undo() {
@@ -39,7 +38,6 @@ public:
         seg->SetASThreshold(oldThreshold_);
 
         om::event::RefreshMSTthreshold();
-        om::event::SegmentModified();
     }
 
     std::string Description() const {

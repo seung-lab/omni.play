@@ -5,6 +5,7 @@
 #include "segment/coloring.hpp"
 #include "segment/omSegmentIterator.h"
 #include "segment/omSegments.h"
+#include "events/events.h"
 //#include "chunk/uniqueValuesFileDataSource.hpp"
 
 namespace om {
@@ -35,6 +36,7 @@ void MeshSegmentListTask::run() {
 
   rootSegLists_.AddToCache(coord_, rootSeg_, key_.shouldVolumeBeShownBroken,
                            key_.breakThreshold, segmentsToDraw);
+
   // log_debugs << "done: " << rootSeg->value;
 }
 

@@ -145,6 +145,7 @@ bool OmSegmentSelector::UpdateSelectionNow() {
     selection_->UpdateSegmentSelection(params_->newSelectedIDs, params_->addToRecentList);
 
   if (selectionIsChanged) {
+    OmCacheManager::TouchFreshness();
     om::event::SegmentModified(params_);
   }
 

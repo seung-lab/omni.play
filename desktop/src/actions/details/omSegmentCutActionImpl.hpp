@@ -38,13 +38,7 @@ class OmSegmentCutActionImpl {
 
     log_infos << desc.toStdString();
 
-    om::event::SegmentModified();
-
     sdw_.GetSegmentation()->Segments().SegmentLists().RefreshGUIlists();
-
-    OmCacheManager::TouchFreshness();
-    om::event::Redraw2d();
-    om::event::Redraw3d();
   }
 
   void Undo() {
@@ -66,13 +60,7 @@ class OmSegmentCutActionImpl {
       desc += " with errors";
     }
 
-    om::event::SegmentModified();
-
     sdw_.GetSegmentation()->Segments().SegmentLists().RefreshGUIlists();
-
-    OmCacheManager::TouchFreshness();
-    om::event::Redraw2d();
-    om::event::Redraw3d();
   }
 
   std::string Description() const { return desc.toStdString(); }

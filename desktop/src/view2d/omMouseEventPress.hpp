@@ -1,4 +1,5 @@
 #pragma once
+
 #include "precomp.h"
 
 #include "annotation/annotation.h"
@@ -7,7 +8,7 @@
 #include "gui/widgets/omSegmentContextMenu.h"
 #include "gui/widgets/omTellInfo.hpp"
 #include "landmarks/omLandmarks.hpp"
-#include "segment/actions/omSplitSegmentRunner.hpp"
+#include "segment/actions/omJoinSplitRunner.hpp"
 #include "view2d/brush/omBrushSelect.hpp"
 #include "view2d/omFillTool.hpp"
 #include "view2d/omMouseEventUtils.hpp"
@@ -47,16 +48,14 @@ class OmMouseEventPress {
         om::coords::Screen(event->x(), event->y(), state_->Coords()));
 
     if (leftMouseButton_) {
-      if (om::tool::SPLIT == tool_) {
-        doFindAndSplitSegment();
-        v2d_->Redraw();
-        return;
-      }
-
-      if (om::tool::SHATTER == tool_) {
-        doFindAndShatterSegment();
-        v2d_->Redraw();
-        return;
+      switch (tool_) {
+        case om::tool::JOIN:
+        case om::tool::SPLIT:
+          doJoinSplitSegment(tool_);
+          return;
+        case om::tool::SHATTER:
+          doFindAndShatterSegment();
+          return;
       }
 
       const bool doCrosshair = controlKey_ && om::tool::PAN == tool_;
@@ -97,15 +96,15 @@ class OmMouseEventPress {
     dataClickPoint_ = clicked.ToGlobal();
   }
 
-  void doFindAndSplitSegment() {
+  void doJoinSplitSegment(om::tool::mode tool) {
     boost::optional<SegmentDataWrapper> sdw = getSelectedSegment();
 
     if (!sdw) {
       return;
     }
 
-    OmSplitSegmentRunner::FindAndSplitSegments(
-        *sdw, state_->getViewGroupState(), dataClickPoint_);
+    om::JoinSplitRunner::FindAndPerformOnSegments(
+        *sdw, state_->getViewGroupState(), dataClickPoint_, tool);
   }
 
   void doFindAndShatterSegment() {
@@ -117,7 +116,6 @@ class OmMouseEventPress {
 
     OmActions::ShatterSegment(sdw->MakeSegmentationDataWrapper(),
                               sdw->GetSegment());
-    state_->getViewGroupState().GetToolBarManager().SetShatteringOff();
     OmStateManager::SetOldToolModeAndSendEvent();
   }
 

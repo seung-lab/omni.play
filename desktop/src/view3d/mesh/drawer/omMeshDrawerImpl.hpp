@@ -58,7 +58,8 @@ class DrawerImpl {
     glPopName();
     glPopMatrix();
 
-    if (perc_done_.needsRedraw()) {
+    if (perc_done_.needsRedraw() || perc_done_.percentDone() < 1.0
+     || !meshPlan.HasAllSegments()) {
       event::Redraw3d();
     }
   }

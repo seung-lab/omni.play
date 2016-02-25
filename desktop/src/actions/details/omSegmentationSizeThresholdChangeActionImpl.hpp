@@ -33,7 +33,6 @@ class OmSegmentationSizeThresholdChangeActionImpl {
     seg.SetSizeThreshold(threshold_);
 
     om::event::RefreshMSTthreshold();
-    om::event::SegmentModified();
   }
 
   void Undo() {
@@ -46,7 +45,6 @@ class OmSegmentationSizeThresholdChangeActionImpl {
     seg.SetSizeThreshold(oldThreshold_);
 
     om::event::RefreshMSTthreshold();
-    om::event::SegmentModified();
   }
 
   std::string Description() const {

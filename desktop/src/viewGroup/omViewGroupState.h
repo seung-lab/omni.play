@@ -13,7 +13,7 @@ class MainWindow;
 class OmColorizers;
 class OmLandmarks;
 class OmSegmentColorizer;
-class OmSplitting;
+class OmJoiningSplitting;
 class OmSegmentSelector;
 class OmTileCoord;
 class OmViewGroupView2dState;
@@ -45,16 +45,14 @@ class OmViewGroupState : public OmManageableObject {
   void SetToolBarManager(ToolBarManager* tbm);
   ToolBarManager& GetToolBarManager();
 
-  inline bool GetShatterMode() const { return mShatter; }
-
-  inline void ToggleShatterMode() { mShatter = !mShatter; }
+  void SetShouldVolumeBeShownBroken(bool shouldVolumeBeShownBroken);
 
   void SetShowValidMode(bool mode, bool incolor);
   bool shouldVolumeBeShownBroken();
 
   void setTool(const om::tool::mode tool);
 
-  inline OmSplitting& Splitting() { return *splitting_; }
+  inline OmJoiningSplitting& JoiningSplitting() { return *joiningSplitting_; }
 
   std::shared_ptr<OmSegmentSelector> GetOrCreateSelector(om::common::ID segmentationID,
       const std::string& comment);
@@ -109,7 +107,7 @@ class OmViewGroupState : public OmManageableObject {
   std::unique_ptr<OmViewGroupView2dState> view2dState_;
   std::unique_ptr<OmColorizers> colorizers_;
   std::unique_ptr<OmZoomLevel> zoomLevel_;
-  std::unique_ptr<OmSplitting> splitting_;
+  std::unique_ptr<OmJoiningSplitting> joiningSplitting_;
   std::unique_ptr<OmLandmarks> landmarks_;
   std::shared_ptr<OmSegmentSelector> selector_;
 
@@ -125,7 +123,6 @@ class OmViewGroupState : public OmManageableObject {
 
   // toolbar stuff
   ToolBarManager* toolBarManager_;
-  bool mShatter;
   bool mShowValid;
   bool mShowValidInColor;
   bool mShowFilterInColor;

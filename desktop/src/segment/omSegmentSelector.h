@@ -38,7 +38,7 @@ class OmSegmentSelector {
   void augmentSelectedSet_toggle(const om::common::SegID segID); 
   /*
    * Propagate changes into the selection. This  bypasses the action event and it also
-   * triggers the event Segment::Modified (namely to kick off redrawing).
+   * triggers the event SegmentEvent::Modified (namely to kick off redrawing).
    * returns: true if there were any valid changes propagated into the selection.
    */
   bool UpdateSelectionNow();
