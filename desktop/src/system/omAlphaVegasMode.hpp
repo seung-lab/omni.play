@@ -18,7 +18,7 @@ class OmAlphaVegasMode : public QThread {
         return;
       }
 
-      FilterWidget::Cycle();
+      FilterWidget::Toggle();
       QThread::msleep(666);
     }
   }

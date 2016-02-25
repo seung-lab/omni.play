@@ -13,7 +13,7 @@ class FilterWidget : private om::singletonBase<FilterWidget> {
 
   static void Create() { instance().impl_ = new FilterWidgetImpl(); }
 
-  static void Cycle() { instance().impl_->Cycle(); }
+  static void Toggle() { instance().impl_->Toggle(); }
 
   static void IncreaseAlpha() { instance().impl_->IncreaseAlpha(); }
 

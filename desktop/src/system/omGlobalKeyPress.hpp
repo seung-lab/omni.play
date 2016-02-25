@@ -59,7 +59,7 @@ Q_SLOTS:
   void keyK() { setTool(om::tool::CUT); }
   void keyL() { setTool(om::tool::LANDMARK); }
   void keyR() { OmSegmentSelected::RandomizeColor(); }
-  void keyT() { FilterWidget::Cycle(); }
+  void keyT() { FilterWidget::Toggle(); }
 
   void keyLess() {
     OmStateManager::BrushSize()->DecreaseSize();

@@ -14,7 +14,7 @@ class FilterWidgetImpl : public QSlider {
   Q_OBJECT;
 
  private:
-  constexpr static const double delta_ = 0.5;
+  constexpr static const double delta_ = 0.2;
 
   double previousAlpha_;
 
@@ -34,19 +34,19 @@ class FilterWidgetImpl : public QSlider {
     om::connect(this, SIGNAL(signalDecreaseAlpha()), this,
                 SLOT(decreaseAlphaSlot()));
 
-    om::connect(this, SIGNAL(signalCycleAlpha()), this, SLOT(cycleAlphaSlot()));
+    om::connect(this, SIGNAL(signalToggleAlpha()), this, SLOT(toggleAlphaSlot()));
   }
 
   void IncreaseAlpha() { signalIncreaseAlpha(); }
 
   void DecreaseAlpha() { signalDecreaseAlpha(); }
 
-  void Cycle() { signalCycleAlpha(); }
+  void Toggle() { signalToggleAlpha(); }
 
 Q_SIGNALS:
   void signalIncreaseAlpha();
   void signalDecreaseAlpha();
-  void signalCycleAlpha();
+  void signalToggleAlpha();
 
  private
 Q_SLOTS:
@@ -54,7 +54,7 @@ Q_SLOTS:
 
   void decreaseAlphaSlot() { decreaseAlpha(); }
 
-  void cycleAlphaSlot() { cycle(); }
+  void toggleAlphaSlot() { toggle(); }
 
  private:
   void increaseAlpha() {
@@ -87,18 +87,19 @@ Q_SLOTS:
     doSetFilterAlpha(newAlpha);
   }
 
-  void cycle() {
+  void toggle() {
     const boost::optional<double> alpha = doGetFilterAlpha();
     if (!alpha) {
       return;
     }
 
     double newAlpha;
-    if (previousAlpha_) {
-      newAlpha = previousAlpha_;
-    } else {
-      previousAlpha_= filter->GetAlpha();
+    if (*alpha) {
       newAlpha = 0;
+      previousAlpha_= *alpha;
+    } else {
+      newAlpha = previousAlpha_;
+      previousAlpha_ = 0;
     }
 
     doSetFilterAlpha(newAlpha);
