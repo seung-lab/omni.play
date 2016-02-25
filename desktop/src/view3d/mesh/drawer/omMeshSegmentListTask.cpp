@@ -37,10 +37,6 @@ void MeshSegmentListTask::run() {
   rootSegLists_.AddToCache(coord_, rootSeg_, key_.shouldVolumeBeShownBroken,
                            key_.breakThreshold, segmentsToDraw);
 
-  // Now that we've loaded the segment into the cache, we should update the view
-  // since the mesh is now available to draw
-  OmCacheManager::TouchFreshness();
-  om::event::Redraw3d();
   // log_debugs << "done: " << rootSeg->value;
 }
 
