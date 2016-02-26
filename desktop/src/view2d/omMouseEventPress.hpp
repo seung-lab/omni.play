@@ -119,6 +119,16 @@ class OmMouseEventPress {
     OmStateManager::SetOldToolModeAndSendEvent();
   }
 
+  void doFindandSetSegmentValid(const om::common::SetValid setValid) {
+    boost::optional<SegmentDataWrapper> sdw = getSelectedSegment();
+
+    if (sdw && !sdw->IsSegmentValid()) {
+      return;
+    }
+
+    OmActions::ValidateSegment(*sdw, setValid, true);
+  }
+
   void doFindAndCutSegment() {
     boost::optional<SegmentDataWrapper> sdw = getSelectedSegment();
 
