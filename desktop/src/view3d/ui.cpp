@@ -9,6 +9,7 @@
 #include "segment/omSegmentSelected.hpp"
 #include "segment/omSegmentSelector.h"
 #include "segment/omSegmentUtils.hpp"
+#include "segment/selection.hpp"
 #include "system/omStateManager.h"
 #include "view3d/camera.h"
 #include "view3d/macOSXgestures.hpp"
@@ -72,10 +73,19 @@ void Ui::joinSplitModeMouseReleased(om::tool::mode tool, QMouseEvent* event) {
                                    pickPoint.coord, tool);
 }
 
-void Ui::shatterModeMouseReleased(QMouseEvent* event) {
+void Ui::validateModeMouseReleased(om::common::SetValid setValid, QMouseEvent* event) {
   auto pickPoint = pickVoxelMouseCrosshair(event);
 
-  view3d_.updateGL();
+  if (!pickPoint.sdw.IsSegmentValid()
+      || !pickPoint.sdw.Selection()->IsSegmentSelected(pickPoint.sdw.GetSegmentID())) {
+    return;
+  }
+
+  OmActions::ValidateSegment(pickPoint.sdw, setValid, true);
+}
+
+void Ui::shatterModeMouseReleased(QMouseEvent* event) {
+  auto pickPoint = pickVoxelMouseCrosshair(event);
 
   if (!pickPoint.sdw.IsSegmentValid()) {
     return;
@@ -151,6 +161,15 @@ void Ui::navigationModeMousePressed(QMouseEvent* event) {
       case om::tool::mode::SPLIT:
       case om::tool::mode::JOIN:
         joinSplitModeMouseReleased(toolMode, event);
+        return;
+      case om::tool::mode::VALIDATE:
+        om::common::SetValid setValid;
+        if (controlModifier) {
+          setValid = om::common::SetValid::SET_NOT_VALID;
+        } else {
+          setValid = om::common::SetValid::SET_VALID;
+        }
+        validateModeMouseReleased(setValid, event);
         return;
       case om::tool::mode::SHATTER:
         shatterModeMouseReleased(event);

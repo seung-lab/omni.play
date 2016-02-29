@@ -23,6 +23,10 @@ std::string om::tool::ToolToString(om::tool::mode tool) {
       return "LANDMARK";
     case ANNOTATE:
       return "ANNOTATE";
+    case SHATTER:
+      return "SHATTER";
+    case VALIDATE:
+      return "VALIDATE";
     default:
       return "OTHER";
   }

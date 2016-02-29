@@ -16,6 +16,7 @@ enum mode {
   LANDMARK,
   ANNOTATE,
   ADVANCED,
+  VALIDATE,
   SHATTER
 };
 

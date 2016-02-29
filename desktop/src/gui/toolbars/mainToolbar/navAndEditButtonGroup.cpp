@@ -40,9 +40,13 @@ NavAndEditButtonGroup::NavAndEditButtonGroup(QWidget* parent)
                      ":/toolbars/mainToolbar/icons/kcmfontinst.png"));
 
   addButton(
+      new ToolButton(parent, "Validate", "Validate", om::tool::VALIDATE,
+                     ":/toolbars/mainToolbar/icons/thumb-up-8x.png"));
+
+  addButton(
       new ToolButton(parent, "Advanced",
                      "Advanced Tools", om::tool::ADVANCED,
-                     ":/toolbars/mainToolbar/icons/1277962552_highlight.png"));
+                     ":/toolbars/mainToolbar/icons/growing.png"));
 
   om::connect(this, SIGNAL(buttonClicked(int)), this,
               SLOT(buttonWasClicked(int)));

@@ -15,6 +15,7 @@
 #include "view2d/omView2d.h"
 #include "view2d/omView2dState.hpp"
 #include "segment/omSegments.h"
+#include "segment/selection.hpp"
 
 class OmMouseEventPress {
  private:
@@ -52,6 +53,15 @@ class OmMouseEventPress {
         case om::tool::JOIN:
         case om::tool::SPLIT:
           doJoinSplitSegment(tool_);
+          return;
+        case om::tool::VALIDATE:
+          om::common::SetValid setValid;
+          if (controlKey_) {
+            setValid = om::common::SetValid::SET_NOT_VALID;
+          } else {
+            setValid = om::common::SetValid::SET_VALID;
+          }
+          doFindandSetSegmentValid(setValid);
           return;
         case om::tool::SHATTER:
           doFindAndShatterSegment();
@@ -117,6 +127,19 @@ class OmMouseEventPress {
     OmActions::ShatterSegment(sdw->MakeSegmentationDataWrapper(),
                               sdw->GetSegment());
     OmStateManager::SetOldToolModeAndSendEvent();
+  }
+
+  void doFindandSetSegmentValid(const om::common::SetValid setValid) {
+    boost::optional<SegmentDataWrapper> sdw = getSelectedSegment();
+
+    // return if we couldn't find the segment, or if the segment is invalid
+    // or if the segment clicked is not in our current selection
+    if (!sdw || !sdw->IsSegmentValid() 
+        || !sdw->Selection()->IsSegmentSelected(sdw->GetSegmentID())) {
+      return;
+    }
+
+    OmActions::ValidateSegment(*sdw, setValid, true);
   }
 
   void doFindAndCutSegment() {
