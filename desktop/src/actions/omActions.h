@@ -52,7 +52,8 @@ class OmActions : om::singletonBase<OmActions> {
                               const bool dontCenter = false);
 
   static void ValidateSelectedSegments(const SegmentationDataWrapper& sdw,
-                                       const om::common::SetValid valid);
+                                       const om::common::SetValid valid,
+                                       const bool dontCenter = false);
 
   static void UncertainSegment(const SegmentDataWrapper& sdw,
                                const bool uncertain);

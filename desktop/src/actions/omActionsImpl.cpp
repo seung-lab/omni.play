@@ -59,10 +59,11 @@ void OmActionsImpl::ValidateSegment(const SegmentDataWrapper sdw,
 }
 
 void OmActionsImpl::ValidateSelectedSegments(const SegmentationDataWrapper sdw,
-                                             const om::common::SetValid valid) {
+                                             const om::common::SetValid valid,
+                                             const bool dontCenter) {
   OmSetSegmentsValidRunner validator(sdw, valid);
   validator.Validate();
-  validator.JumpToNextSegment();
+  validator.JumpToNextSegment(dontCenter);
 }
 
 void OmActionsImpl::UncertainSegment(const SegmentDataWrapper sdw,

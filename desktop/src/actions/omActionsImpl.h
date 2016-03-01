@@ -45,7 +45,8 @@ class OmActionsImpl {
                        const bool dontCenter = false);
 
   void ValidateSelectedSegments(const SegmentationDataWrapper sdw,
-                                const om::common::SetValid valid);
+                                const om::common::SetValid valid,
+                                const bool dontCenter = false);
 
   void UncertainSegment(const SegmentDataWrapper sdw, const bool uncertain);
 

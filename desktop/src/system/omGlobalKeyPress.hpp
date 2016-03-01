@@ -53,7 +53,7 @@ class OmGlobalKeyPress : public QWidget {
   void setValid(om::common::SetValid isValid) {
     for (const auto& id : SegmentationDataWrapper::ValidIDs()) {
       OmActions::ValidateSelectedSegments(SegmentationDataWrapper(id),
-          isValid);
+          isValid, true);
     }
   }
 

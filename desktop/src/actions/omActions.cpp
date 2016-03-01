@@ -60,9 +60,10 @@ void OmActions::ValidateSegment(const SegmentDataWrapper& sdw,
 }
 
 void OmActions::ValidateSelectedSegments(const SegmentationDataWrapper& sdw,
-                                         const om::common::SetValid valid) {
+                                         const om::common::SetValid valid,
+                                         const bool dontCenter) {
   pool().push_back(zi::run_fn(
-      zi::bind(&OmActionsImpl::ValidateSelectedSegments, impl(), sdw, valid)));
+      zi::bind(&OmActionsImpl::ValidateSelectedSegments, impl(), sdw, valid, dontCenter)));
 }
 
 void OmActions::UncertainSegment(const SegmentDataWrapper& sdw,

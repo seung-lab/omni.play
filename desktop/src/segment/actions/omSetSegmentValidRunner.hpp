@@ -94,13 +94,14 @@ class OmSetSegmentsValidRunner {
     (new OmSegmentValidateAction(sdw_, children, valid))->Run();
   }
 
-  void JumpToNextSegment() {
+  void JumpToNextSegment(const bool dontCenter = false) {
     const bool segmentGettingSetAsValid =
         om::common::SetValid::SET_VALID == validEnum_;
     const bool shouldJump =
         OmLocalPreferences::GetShouldJumpToNextSegmentAfterValidate();
 
-    if (shouldJump && segmentGettingSetAsValid && nextSegmentIDtoJumpTo_) {
+    if (shouldJump && segmentGettingSetAsValid && nextSegmentIDtoJumpTo_
+        && !dontCenter) {
       OmSegmentSelector sel(sdw_, nullptr, "jump after validate");
       sel.selectJustThisSegment(nextSegmentIDtoJumpTo_, true);
       sel.AutoCenter(true);
