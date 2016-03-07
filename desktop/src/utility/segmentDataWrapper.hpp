@@ -69,9 +69,6 @@ class SegmentDataWrapper {
   QString GetName() const;
   void SetName(const QString& str) const;
 
-  QString GetTags() const;
-  void SetTags(const QString& str) const;
-
   uint64_t GetSize() const;
   int64_t GetSizeWithChildren() const;
 

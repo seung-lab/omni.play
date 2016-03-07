@@ -63,7 +63,6 @@ Node convert<OmSegmentsImpl>::encode(const OmSegmentsImpl& sc) {
   n["Selected Segments"] = om::common::SegIDSet();
 
   n["Segment Custom Names"] = sc.segmentCustomNames_;
-  n["Segment Custom Tags"] = sc.segmentCustomTags_;
   n["Segment Notes"] = sc.segmentNotes_;
   return n;
 }
@@ -74,13 +73,6 @@ bool convert<OmSegmentsImpl>::decode(const Node& node, OmSegmentsImpl& sc) {
         node["Segment Custom Names"]
         .as<std::unordered_map<om::common::ID, std::string>>();
   }
-
-  if (node["Segment Custom Tags"].size() > 0){
-    sc.segmentCustomTags_ =
-        node["Segment Custom Tags"]
-        .as<std::unordered_map<om::common::ID, std::string>>();
-  }
-
   if (node["Segment Notes"].size() > 0){
     sc.segmentNotes_ = node["Segment Notes"]
       .as<std::unordered_map<om::common::ID, std::string>>();

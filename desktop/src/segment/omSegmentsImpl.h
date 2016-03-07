@@ -92,9 +92,6 @@ class OmSegmentsImpl {
   std::string GetName(om::common::SegID segID);
   void SetName(om::common::SegID segID, std::string name);
 
-  std::string GetTags(om::common::SegID segID);
-  void SetTags(om::common::SegID segID, std::string name);
-
   std::string GetNote(om::common::SegID segID);
   void SetNote(om::common::SegID segID, std::string note);
 
@@ -117,7 +114,6 @@ class OmSegmentsImpl {
   std::unique_ptr<om::segment::GraphThresholder> thresholder_;
 
   std::unordered_map<om::common::ID, std::string> segmentCustomNames_;
-  std::unordered_map<om::common::ID, std::string> segmentCustomTags_;
   std::unordered_map<om::common::ID, std::string> segmentNotes_;
   std::unordered_map<om::common::SegID, std::vector <om::segment::Edge*>> adjacencyMap_;
 
