@@ -168,7 +168,7 @@ void OmActionsImpl::FindAndSplitSegments(const SegmentationDataWrapper sdw,
   om::segment::UserEdge edge =
       OmFindCommonEdge::FindClosestCommonEdge(sdw.Segments(), seg1, seg2);
 
-  if (!edge.valid) {
+  if (!edge.valid || sdw.Segments()->IsEdgeSplittable(edge)) {
     log_infos << "edge was not splittable";
     return;
   }
