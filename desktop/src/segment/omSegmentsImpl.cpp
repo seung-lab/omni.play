@@ -100,6 +100,10 @@ boost::optional<std::string> OmSegmentsImpl::IsEdgeSplittable(
   if (!e.valid) {
     return std::string("invalid edge");
   }
+  if (!store_->IsSegmentValid(e.childID) || 
+      !store_->IsSegmentValid(e.parentID)) {
+    return std::string("invalid child or parent");
+  }
 
   OmSegment* child = store_->GetSegment(e.childID);
 
@@ -108,6 +112,10 @@ boost::optional<std::string> OmSegmentsImpl::IsEdgeSplittable(
 
 boost::optional<std::string> OmSegmentsImpl::IsSegmentSplittable(
     OmSegment* child) {
+  if (!child) {
+    return std::string("No segment found");
+  }
+
   if (!child->getParent()) {
     return std::string("segment is the root");
   }
