@@ -450,6 +450,23 @@ void OmSegmentsImpl::SetName(om::common::SegID segID, std::string name) {
   segmentCustomNames_[segID] = name;
 }
 
+std::string OmSegmentsImpl::GetTags(om::common::SegID segID) {
+  if (segmentCustomTags_.empty()) {
+    return "";
+  }
+
+  auto it = segmentCustomTags_.find(segID);
+  if (segmentCustomTags_.end() == it) {
+    return "";  // std::string("segment%1").arg(segID);
+  }
+
+  return it->second;
+}
+
+void OmSegmentsImpl::SetTags(om::common::SegID segID, std::string name) {
+  segmentCustomTags_[segID] = name;
+}
+
 std::string OmSegmentsImpl::GetNote(om::common::SegID segID) {
   if (segmentNotes_.empty()) {
     return "";
