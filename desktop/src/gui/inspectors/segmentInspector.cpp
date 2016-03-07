@@ -20,6 +20,9 @@ SegmentInspector::SegmentInspector(const SegmentDataWrapper& sdw,
 
   om::connect(nameEdit, SIGNAL(editingFinished()), this,
               SLOT(nameEditChanged()));
+
+  om::connect(tagsEdit, SIGNAL(editingFinished()), this,
+              SLOT(tagsEditChanged()));
 }
 
 void SegmentInspector::set_initial_values() {
@@ -27,6 +30,9 @@ void SegmentInspector::set_initial_values() {
 
   nameEdit->setText(sdw_.GetName());
   nameEdit->setMinimumWidth(200);
+
+  tagsEdit->setText(sdw_.GetTags());
+  tagsEdit->setMinimumWidth(200);
 
   segmentIDEdit->setText(QString::number(sdw_.GetID()));
   segmentIDEdit->setMinimumWidth(200);
@@ -46,6 +52,11 @@ void SegmentInspector::set_initial_values() {
 
   origDataValueList->setText(QString::number(sdw_.GetID()));
   chunkList->setText("disabled");
+}
+
+void SegmentInspector::tagsEditChanged() {
+  sdw_.SetTags(tagsEdit->text());
+  om::event::SegmentModified();
 }
 
 void SegmentInspector::nameEditChanged() {
@@ -107,7 +118,7 @@ QGroupBox* SegmentInspector::makeSourcesBox() {
   grid->addWidget(tagsLabel, 2, 0);
 
   tagsEdit = new QLineEdit(sourceBox);
-  tagsEdit->setObjectName(QLatin1String(""));
+  tagsEdit->setObjectName(QLatin1String("tagsEdit"));
   tagsEdit->setText(QString());
   grid->addWidget(tagsEdit, 2, 1);
 

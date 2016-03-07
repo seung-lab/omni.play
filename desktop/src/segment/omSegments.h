@@ -48,6 +48,9 @@ class OmSegments {
   std::string GetName(om::common::SegID segID);
   void SetName(om::common::SegID segID, std::string name);
 
+  std::string GetTags(om::common::SegID segID);
+  void SetTags(om::common::SegID segID, std::string name);
+
   std::string GetNote(om::common::SegID segID);
   void SetNote(om::common::SegID segID, std::string note);
 

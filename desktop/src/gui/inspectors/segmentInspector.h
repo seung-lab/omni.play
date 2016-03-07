@@ -13,6 +13,7 @@ class SegmentInspector : public QWidget {
 Q_SLOTS:
   void setSegObjColor();
   void nameEditChanged();
+  void tagsEditChanged();
 
  private:
   const SegmentDataWrapper sdw_;

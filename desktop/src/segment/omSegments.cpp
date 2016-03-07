@@ -69,6 +69,16 @@ std::string OmSegments::GetName(common::SegID segID) {
   return impl_->GetName(segID);
 }
 
+void OmSegments::SetTags(common::SegID segID, std::string name) {
+  zi::guard g(mutex_);
+  impl_->SetTags(segID, name);
+}
+
+std::string OmSegments::GetTags(common::SegID segID) {
+  zi::guard g(mutex_);
+  return impl_->GetTags(segID);
+}
+
 void OmSegments::SetNote(common::SegID segID, std::string note) {
   zi::guard g(mutex_);
   impl_->SetNote(segID, note);
