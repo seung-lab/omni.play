@@ -178,6 +178,22 @@ void SegmentDataWrapper::SetName(const QString& str) const {
   }
 }
 
+QString SegmentDataWrapper::GetTags() const {
+  auto s = Segments();
+  if (s) {
+    return QString::fromStdString(s->GetTags(segmentID_));
+  } else {
+    return "";
+  }
+}
+
+void SegmentDataWrapper::SetTags(const QString& str) const {
+  auto s = Segments();
+  if (s) {
+    s->SetTags(segmentID_, str.toStdString());
+  }
+}
+
 OmSegmentation* SegmentDataWrapper::GetSegmentation() const {
   return OmProject::Volumes().Segmentations().GetSegmentation(segmentationID_);
 }
