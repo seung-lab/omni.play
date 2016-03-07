@@ -16,13 +16,21 @@ Store::Store(SegDataVector& data, SegListDataVector& listData,
   }
 }
 
-OmSegment* Store::GetSegment(const common::SegID value) const {
-  if (value >= data_.size()) {
-    log_debugs << "Invalid segid " << value;
-    return nullptr;
+/**
+ * if requested segID is not 0 and is within the range of our store,
+ * fetch the stored segment and return it only if it is valid
+ * and the segment's segid matches the requested one
+ **/
+OmSegment* Store::GetSegment(const common::SegID segID) const {
+  if (segID && segID < data_.size()) {
+    OmSegment* seg = const_cast<OmSegment*>(&segments_[segID]);
+    if (seg && segID == seg->value()) {
+      return seg;
+    }
   }
 
-  return const_cast<OmSegment*>(&segments_[value]);
+  log_debugs << "Invalid segid " << segID;
+  return nullptr;
 }
 
 OmSegment* Store::AddSegment(const common::SegID value)  {
@@ -57,21 +65,9 @@ void Store::Flush() {
   listData_.flush();
 }
 
-/**
- * a segment ptr is invalid if it is nullptr, or has an ID of 0
- **/
 bool Store::IsSegmentValid(const common::SegID value) {
-  if (!value) {
-    return false;
-  }
+  return GetSegment(value);
 
-  OmSegment* seg = GetSegment(value);
-
-  if (seg == nullptr) {
-    return false;
-  }
-
-  return value == seg->value();
 }
 }
 namespace data {
