@@ -4,6 +4,7 @@
 #include "common/common.h"
 #include "gui/toolbars/toolbarManager.h"
 #include "segment/omSegmentSelected.hpp"
+#include "segment/omSegmentUtils.hpp"
 #include "system/omAppState.hpp"
 #include "system/omConnect.hpp"
 #include "system/omStateManager.h"
@@ -33,6 +34,7 @@ class OmGlobalKeyPress : public QWidget {
   std::unique_ptr<QShortcut> t_;
   std::unique_ptr<QShortcut> v_;
   std::unique_ptr<QShortcut> shiftV_;
+  std::unique_ptr<QShortcut> space_;
 
   void setShortcut(std::unique_ptr<QShortcut>& shortcut, const QKeySequence key,
                    const char* method) {
@@ -69,6 +71,17 @@ Q_SLOTS:
   void keyL() { setTool(om::tool::LANDMARK); }
   void keyR() { OmSegmentSelected::RandomizeColor(); }
   void keyT() { FilterWidget::Toggle(); }
+
+  void keySpace() {
+    for (const auto& id : SegmentationDataWrapper::ValidIDs()) {
+      SegmentationDataWrapper sdw(id);
+      OmSegmentSelector sel(sdw, nullptr, "jump after validate");
+      sel.selectJustThisSegment(OmSegmentUtils::GetFirstSegIDInWorkingList(sdw), true);
+      sel.ShouldScroll(true);
+      sel.AddToRecentList(true);
+      sel.AutoCenter(true);
+    }
+  }
 
   void keyLess() {
     OmStateManager::BrushSize()->DecreaseSize();
@@ -112,6 +125,6 @@ Q_SLOTS:
     setShortcut(t_, QKeySequence(Qt::Key_T), SLOT(keyT()));
     setShortcut(v_, QKeySequence(Qt::Key_V), SLOT(keyV()));
     setShortcut(shiftV_, QKeySequence(Qt::SHIFT + Qt::Key_V), SLOT(keyShiftV()));
-    // setShortcut(slash_,   QKeySequence(Qt::Key_Slash),   SLOT(keySlash()));
+    setShortcut(space_, QKeySequence(Qt::Key_Space), SLOT(keySpace()));
   }
 };

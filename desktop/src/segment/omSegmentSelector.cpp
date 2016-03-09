@@ -51,11 +51,14 @@ void OmSegmentSelector::selectJustThisSegment(
   selectNoSegments();
 
   auto segID = segments_->FindRootID(segIDunknownLevel);
+    std::cout << "trying to add segment to selection " << segID << std::endl;
   if (!segID) {
     return;
   }
 
-  if (params_->oldSelectedIDs.size() > 1 || isSelected) {
+  // only select just one segment if we selected more than one previously?
+  if (isSelected) {
+    std::cout << "adding segment to selection " << segID << std::endl;
     addSegmentToSelectionParameters(segID);
   }
 }

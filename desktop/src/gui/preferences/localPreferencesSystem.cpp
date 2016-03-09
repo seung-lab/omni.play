@@ -11,6 +11,9 @@ LocalPreferencesSystem::LocalPreferencesSystem(QWidget* parent)
   overallContainer->insertStretch(4, 1);
   init_cache_prop_values();
 
+  om::connect(shouldJumpCheckBox, SIGNAL(stateChanged(int)), this,
+              SLOT(on_shouldJumpCheckBox_stateChanged()));
+
   om::connect(meshSlider, SIGNAL(valueChanged(int)), this,
               SLOT(on_meshSlider_valueChanged()));
   om::connect(tileSlider, SIGNAL(valueChanged(int)), this,
@@ -27,11 +30,17 @@ QGroupBox* LocalPreferencesSystem::makeCachePropBox() {
   QGridLayout* gridLayout = new QGridLayout;
   groupBox->setLayout(gridLayout);
 
+  shouldJumpCheckBox = new QCheckBox(groupBox);
+  shouldJumpCheckBox->setText("Should Jump to Next Segment on Validate");
+  bool shouldJump = OmLocalPreferences::GetShouldJumpToNextSegmentAfterValidate();
+  shouldJumpCheckBox->setChecked(shouldJump);
+  gridLayout->addWidget(shouldJumpCheckBox, 0, 0, 1, 1);
+
   QLabel* ramLabel = new QLabel(groupBox);
   ramLabel->setObjectName(QString("ramLabel"));
   ramLabel->setToolTip("(MB)");
   ramLabel->setText("Mesh Cache");
-  gridLayout->addWidget(ramLabel, 0, 0, 1, 1);
+  gridLayout->addWidget(ramLabel, 1, 0, 1, 1);
 
   meshSlider = new QSlider(groupBox);
   meshSlider->setObjectName(QString("meshSlider"));
@@ -40,17 +49,17 @@ QGroupBox* LocalPreferencesSystem::makeCachePropBox() {
   meshSlider->setSingleStep(1);
   meshSlider->setOrientation(Qt::Horizontal);
   meshSlider->setTickPosition(QSlider::TicksBelow);
-  gridLayout->addWidget(meshSlider, 0, 1, 1, 1);
+  gridLayout->addWidget(meshSlider, 1, 1, 1, 1);
 
   meshSizeLabel = new QLabel(groupBox);
   meshSizeLabel->setObjectName(QString("meshSizeLabel"));
   meshSizeLabel->setText("size");
-  gridLayout->addWidget(meshSizeLabel, 1, 1, 1, 1);
+  gridLayout->addWidget(meshSizeLabel, 2, 1, 1, 1);
 
   tileSizeLabel = new QLabel(groupBox);
   tileSizeLabel->setObjectName(QString("tileSizeLabel"));
   tileSizeLabel->setText("size");
-  gridLayout->addWidget(tileSizeLabel, 3, 1, 1, 1);
+  gridLayout->addWidget(tileSizeLabel, 4, 1, 1, 1);
 
   tileSlider = new QSlider(groupBox);
   tileSlider->setObjectName(QString("tileSlider"));
@@ -59,13 +68,13 @@ QGroupBox* LocalPreferencesSystem::makeCachePropBox() {
   tileSlider->setSingleStep(1);
   tileSlider->setOrientation(Qt::Horizontal);
   tileSlider->setTickPosition(QSlider::TicksBelow);
-  gridLayout->addWidget(tileSlider, 2, 1, 1, 1);
+  gridLayout->addWidget(tileSlider, 3, 1, 1, 1);
 
   vramLabel = new QLabel(groupBox);
   vramLabel->setObjectName(QString("vramLabel"));
   vramLabel->setToolTip("(MB)");
   vramLabel->setText("Tile Cache");
-  gridLayout->addWidget(vramLabel, 2, 0, 1, 1);
+  gridLayout->addWidget(vramLabel, 3, 0, 1, 1);
 
   return groupBox;
 }
@@ -96,4 +105,9 @@ void LocalPreferencesSystem::on_meshSlider_sliderReleased() {
 void LocalPreferencesSystem::on_tileSlider_sliderReleased() {
   tileSizeLabel->setNum(tileSlider->value());
   OmLocalPreferences::setTileCacheSizeMB(tileSlider->value());
+}
+
+void LocalPreferencesSystem::on_shouldJumpCheckBox_stateChanged() {
+  const bool val = GuiUtils::getBoolState(shouldJumpCheckBox->checkState());
+  OmLocalPreferences::SetShouldJumpToNextSegmentAfterValidate(val);
 }

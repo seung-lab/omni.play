@@ -144,6 +144,16 @@ class OmSegmentUtils {
     return sdw.SegmentLists()->GetNextSegIDinWorkingList(sdw);
   }
 
+  static om::common::SegID GetFirstSegIDInWorkingList(
+      const SegmentDataWrapper& sdw) {
+    return sdw.SegmentLists()->GetFirstSegIDInWorkingList(sdw.MakeSegmentationDataWrapper());
+  }
+
+  static om::common::SegID GetFirstSegIDInWorkingList(
+      const SegmentationDataWrapper& sdw) {
+    return sdw.SegmentLists()->GetFirstSegIDInWorkingList(sdw);
+  }
+
   static std::string ListTypeAsStr(const om::common::SegListType type) {
     switch (type) {
       case om::common::SegListType::WORKING:

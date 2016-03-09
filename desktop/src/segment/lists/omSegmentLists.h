@@ -52,6 +52,7 @@ class OmSegmentLists {
 
   om::common::SegID GetNextSegIDinWorkingList(const SegmentDataWrapper&);
   om::common::SegID GetNextSegIDinWorkingList(const SegmentationDataWrapper&);
+  om::common::SegID GetFirstSegIDInWorkingList(const SegmentationDataWrapper&);
 
   int64_t GetSizeWithChildren(const om::common::SegID segID);
   int64_t GetSizeWithChildren(OmSegment* seg);
