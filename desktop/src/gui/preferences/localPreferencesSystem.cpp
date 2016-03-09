@@ -40,7 +40,7 @@ QGroupBox* LocalPreferencesSystem::makeActionPropBox() {
   return actionGroupBox;
 }
 QGroupBox* LocalPreferencesSystem::makeCachePropBox() {
-  QGroupBox* groupBox = new QGroupBox("System Properties");
+  QGroupBox* groupBox = new QGroupBox("Cache Properties");
   QGridLayout* gridLayout = new QGridLayout;
   groupBox->setLayout(gridLayout);
 
