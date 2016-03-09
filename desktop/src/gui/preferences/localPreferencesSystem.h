@@ -27,5 +27,6 @@ Q_SLOTS:
   QSlider* tileSlider;
 
   QGroupBox* makeCachePropBox();
+  QGroupBox* makeActionPropBox();
   void init_cache_prop_values();
 };
