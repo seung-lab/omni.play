@@ -50,7 +50,6 @@ class OmSetSegmentValid {
     for (OmSegment* seg : segs) {
       seg->SetListType(listType);
       setSegEdge(seg, isValid);
-      std::cout << " Setting to valid: " << seg->value() << std::endl;
     }
 
     sdw_.ValidGroupNum()->Set(segs, isValid);

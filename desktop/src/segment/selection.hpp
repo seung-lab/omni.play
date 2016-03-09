@@ -68,7 +68,6 @@ class Selection {
     }
 
     updateSelection(segIDsToOrders, shouldAddToRecent);
-    std::cout << "updated selection" << std::endl;
     return true;
   }
 

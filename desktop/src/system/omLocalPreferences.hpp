@@ -84,7 +84,6 @@ class OmLocalPreferences : private om::SingletonBase<OmLocalPreferences> {
   // jump to next segment
   static bool GetShouldJumpToNextSegmentAfterValidate() {
     const bool defaultVal = true;
-    std::cout << "trying to read should jujmp" << std::endl;
     return LocalPrefFiles::readSettingBool(
         "shouldJumpToNextSegmentAfterValidate", defaultVal);
   }
