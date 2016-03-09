@@ -55,7 +55,8 @@ void OmSegmentSelector::selectJustThisSegment(
     return;
   }
 
-  if (params_->oldSelectedIDs.size() > 1 || isSelected) {
+  // only select just one segment if we selected more than one previously?
+  if (isSelected) {
     addSegmentToSelectionParameters(segID);
   }
 }

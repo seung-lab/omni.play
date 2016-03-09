@@ -68,6 +68,14 @@ class OmSegmentListForGUI {
     return boost::optional<SegInfo>(bySize_[segIndex]);
   }
 
+  boost::optional<SegInfo> GetFirstSegID() {
+    if (bySize_.size()) {
+      return boost::optional<SegInfo>(bySize_[0]);
+    } else {
+      return boost::optional<SegInfo>();
+    }
+  }
+
  private:
   std::shared_ptr<GUIPageOfSegments> getPageContainingSegment(
       const om::common::SegID segID, const int numToGet) {

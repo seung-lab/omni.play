@@ -7,9 +7,13 @@
 LocalPreferencesSystem::LocalPreferencesSystem(QWidget* parent)
     : QWidget(parent) {
   QVBoxLayout* overallContainer = new QVBoxLayout(this);
+  overallContainer->addWidget(makeActionPropBox());
   overallContainer->addWidget(makeCachePropBox());
   overallContainer->insertStretch(4, 1);
   init_cache_prop_values();
+
+  om::connect(shouldJumpCheckBox, SIGNAL(stateChanged(int)), this,
+              SLOT(on_shouldJumpCheckBox_stateChanged()));
 
   om::connect(meshSlider, SIGNAL(valueChanged(int)), this,
               SLOT(on_meshSlider_valueChanged()));
@@ -22,6 +26,19 @@ LocalPreferencesSystem::LocalPreferencesSystem(QWidget* parent)
               SLOT(on_tileSlider_sliderReleased()));
 }
 
+QGroupBox* LocalPreferencesSystem::makeActionPropBox() {
+  QGroupBox* actionGroupBox = new QGroupBox("Action Properties");
+  QGridLayout* actionLayout = new QGridLayout;
+  actionGroupBox->setLayout(actionLayout);
+
+  shouldJumpCheckBox = new QCheckBox(actionGroupBox);
+  shouldJumpCheckBox->setText("Should Jump to Next Segment on Validate");
+  bool shouldJump = OmLocalPreferences::GetShouldJumpToNextSegmentAfterValidate();
+  shouldJumpCheckBox->setChecked(shouldJump);
+  actionLayout->addWidget(shouldJumpCheckBox, 0, 0, 1, 1);
+  
+  return actionGroupBox;
+}
 QGroupBox* LocalPreferencesSystem::makeCachePropBox() {
   QGroupBox* groupBox = new QGroupBox("Cache Properties");
   QGridLayout* gridLayout = new QGridLayout;
@@ -96,4 +113,9 @@ void LocalPreferencesSystem::on_meshSlider_sliderReleased() {
 void LocalPreferencesSystem::on_tileSlider_sliderReleased() {
   tileSizeLabel->setNum(tileSlider->value());
   OmLocalPreferences::setTileCacheSizeMB(tileSlider->value());
+}
+
+void LocalPreferencesSystem::on_shouldJumpCheckBox_stateChanged() {
+  const bool val = GuiUtils::getBoolState(shouldJumpCheckBox->checkState());
+  OmLocalPreferences::SetShouldJumpToNextSegmentAfterValidate(val);
 }

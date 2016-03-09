@@ -16,7 +16,7 @@ class OmSetSegmentValidRunner {
   OmSetSegmentValidRunner(const SegmentDataWrapper& sdw,
                           const om::common::SetValid validEnum)
       : sdw_(sdw), validEnum_(validEnum) {
-    nextSegmentIDtoJumpTo_ = OmSegmentUtils::GetNextSegIDinWorkingList(sdw);
+    nextSegmentIDtoJumpTo_ = OmSegmentUtils::GetFirstSegIDInWorkingList(sdw);
   }
 
   void Validate() {
@@ -55,6 +55,8 @@ class OmSetSegmentValidRunner {
       OmSegmentSelector sel(sdw_.MakeSegmentationDataWrapper(), nullptr,
                             "jump after validate");
       sel.selectJustThisSegment(nextSegmentIDtoJumpTo_, true);
+      sel.ShouldScroll(true);
+      sel.AddToRecentList(true);
       sel.AutoCenter(true);
     }
   }
@@ -71,7 +73,7 @@ class OmSetSegmentsValidRunner {
   OmSetSegmentsValidRunner(const SegmentationDataWrapper& sdw,
                            const om::common::SetValid validEnum)
       : sdw_(sdw), validEnum_(validEnum) {
-    nextSegmentIDtoJumpTo_ = OmSegmentUtils::GetNextSegIDinWorkingList(sdw);
+    nextSegmentIDtoJumpTo_ = OmSegmentUtils::GetFirstSegIDInWorkingList(sdw);
   }
 
   void Validate() {
@@ -104,6 +106,8 @@ class OmSetSegmentsValidRunner {
         && !dontCenter) {
       OmSegmentSelector sel(sdw_, nullptr, "jump after validate");
       sel.selectJustThisSegment(nextSegmentIDtoJumpTo_, true);
+      sel.ShouldScroll(true);
+      sel.AddToRecentList(true);
       sel.AutoCenter(true);
     }
   }

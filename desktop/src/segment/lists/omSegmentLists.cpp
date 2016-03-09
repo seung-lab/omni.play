@@ -148,6 +148,22 @@ om::common::SegID OmSegmentLists::GetNextSegIDinWorkingList(
   return largest.segID;
 }
 
+om::common::SegID OmSegmentLists::GetFirstSegIDInWorkingList(
+    const SegmentationDataWrapper& sdw) {
+  zi::rwmutex::read_guard g(lock_);
+
+  if (!sdw.IsSegmentationValid()) {
+    return 0;
+  }
+
+  boost::optional<SegInfo> segInfo = working_->GetFirstSegID();
+  if (segInfo) {
+    return segInfo->segID;
+  } else {
+    return 0;
+  }
+}
+
 void OmSegmentLists::RefreshGUIlists() {
   segmentListsLL_->ForceRefreshGUIlists();
 }
