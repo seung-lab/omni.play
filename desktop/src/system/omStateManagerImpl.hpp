@@ -38,7 +38,8 @@ class OmStateManagerImpl {
       return;
     }
 
-    if (IsTransient(toolModeCur_)) {
+    // transient tools can not be returned to!
+    if (!IsTransient(toolModeCur_)) {
       toolModePrev_ = toolModeCur_;
     }
 
@@ -48,7 +49,7 @@ class OmStateManagerImpl {
 
   inline bool IsTransient(om::tool::mode tool) {
     // not found in the list of transient tools
-    return transientTools_.find(tool) == transientTools_.end();
+    return transientTools_.find(tool) != transientTools_.end();
   }
 
   inline void SetOldToolModeAndSendEvent() {
