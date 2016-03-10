@@ -12,7 +12,7 @@ class OmStateManagerImpl {
  private:
   om::tool::mode toolModeCur_;
   om::tool::mode toolModePrev_;
-  // these tools are temporary and they should not be reactivated.
+  // these tools are temporary and they should not be reactivated from previous
   std::set<om::tool::mode> transientTools_;
 
   OmBrushSize brushSize_;
@@ -38,24 +38,22 @@ class OmStateManagerImpl {
       return;
     }
 
-    // we don't want to be able to return to these tools from SetOldToolModeAndSendEvent()
-    if (transientTools_.find(tool) == transientTools_.end()) {
+    if (IsTransient(toolModeCur_)) {
       toolModePrev_ = toolModeCur_;
     }
-    toolModeCur_ = tool;
 
+    toolModeCur_ = tool;
     om::event::ToolChange();
   }
 
-  inline void SetOldToolModeAndSendEvent() {
-    // we don't want to be able to return to these tools from SetOldToolModeAndSendEvent()
-    if (transientTools_.find(toolModeCur_) == transientTools_.end()) {
-      std::swap(toolModePrev_, toolModeCur_);
-    } else {
-      toolModeCur_ = toolModePrev_;
-    }
+  inline bool IsTransient(om::tool::mode tool) {
+    // not found in the list of transient tools
+    return transientTools_.find(tool) == transientTools_.end();
+  }
 
-    om::event::ToolChange();
+  inline void SetOldToolModeAndSendEvent() {
+    SetToolModeAndSendEvent(toolModePrev_);
+    return;
   }
 
   /////////////////////////////////
