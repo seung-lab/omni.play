@@ -34,6 +34,9 @@ GraphTools::GraphTools(om::sidebars::rightImpl* d, OmViewGroupState& vgs)
   box2->addWidget(joinAllButton, 0, 1, 1, 1);
   box2->addWidget(splitButton, 1, 0, 1, 1);
   box2->addWidget(shatterButton, 1, 1, 1, 1);
+
+  // removing padding around the showbreakwidget so it looks connected
+  showBreakWidget->layout()->setContentsMargins( 0, 0, 0, 0);
   box2->addWidget(showBreakWidget, 2, 0, 1, 2);
 
 }

@@ -15,24 +15,25 @@ ShowBreakWidget::ShowBreakWidget(QWidget* widget, OmViewGroupState& vgs)
     breakSpinboxWidget_(new QGroupBox("Break Threshold", this)),
     breakThresholdSpinBox_(new BreakThresholdGroup(this, vgs)) {
 
-  QFormLayout* showBreakForm = new QFormLayout(this);
-  showBreakForm->addWidget(showBreakButton_);
+  QGridLayout* breakLayout = new QGridLayout(this);
 
-  QHBoxLayout* layout = new QHBoxLayout(breakSpinboxWidget_);
-  layout->addWidget(breakThresholdSpinBox_);
-  showBreakForm->addWidget(breakSpinboxWidget_);
+  breakLayout->addWidget(showBreakButton_, 0, 0, 1, 2);
+  breakLayout->addWidget(breakSpinboxWidget_, 1, 0, 1, 2);
+
+  QFormLayout* showBreakForm = new QFormLayout(breakSpinboxWidget_);
+  showBreakForm->addWidget(breakThresholdSpinBox_);
 
   breakSpinboxWidget_->hide();
 
-  om::connect(showBreakButton_, SIGNAL(clicked(bool)), this,
-      SLOT(updateShouldVolumeBeShownBroken()));
+  om::connect(showBreakButton_, SIGNAL(toggled(bool)), this,
+      SLOT(updateShouldVolumeBeShownBroken(bool)));
 }
 
 void ShowBreakWidget::updateShouldVolumeBeShownBroken(const bool shouldVolumeBeShownBroken) {
   if (shouldVolumeBeShownBroken) {
-    breakSpinboxWidget_->hide();
-  } else {
     breakSpinboxWidget_->show();
+  } else {
+    breakSpinboxWidget_->hide();
   }
   GetViewGroupState().SetShouldVolumeBeShownBroken(shouldVolumeBeShownBroken);
 }
