@@ -20,18 +20,15 @@ ValidationGroup::ValidationGroup(om::sidebars::rightImpl* d,
       setSelectionUncertain(new UncertainButton(this, vgs, true)),
       setSelectionNotUncertain(new UncertainButton(this, vgs, false)),
       showValidWidget(new ShowValidWidget(this, vgs)) {
-  mGroupName = new QLineEdit(this);
-  mGroupName->setText("Glia");
-
   QFormLayout* form = new QFormLayout(this);
   QWidget* w = new QWidget(this);
   form->addWidget(w);
 
   QGridLayout* box = new QGridLayout(w);
   box->addWidget(addSelectedSegmentButtons(), 0, 0, 2, 2);
-  box->addWidget(addSelectedSegmentButtons(), 0, 0, 2, 2);
-  box->addWidget(showValidWidget, 1, 0, 1, 2);
-  box->addWidget(mGroupName, 2, 1, 1, 1);
+  // removing padding around the showbreakwidget so it looks connected
+  showValidWidget->layout()->setContentsMargins( 0, 0, 0, 0);
+  box->addWidget(showValidWidget, 2, 0, 2, 2);
 }
 
 QWidget* ValidationGroup::addSelectedSegmentButtons() {
@@ -45,8 +42,6 @@ QWidget* ValidationGroup::addSelectedSegmentButtons() {
 
   return box;
 }
-
-QString ValidationGroup::getGroupNameFromGUI() { return mGroupName->text(); }
 
 OmViewGroupState& ValidationGroup::GetViewGroupState() const { return vgs_; }
 

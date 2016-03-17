@@ -20,7 +20,6 @@ class ValidationGroup : public OmWidget {
 
  public:
   ValidationGroup(om::sidebars::rightImpl*, OmViewGroupState& vgs);
-  QString getGroupNameFromGUI();
   bool isShowValidChecked();
 
   QString getName() { return "Validation"; }
@@ -33,7 +32,6 @@ class ValidationGroup : public OmWidget {
   OmViewGroupState& vgs_;
 
   ShowValidWidget* showValidWidget;
-  QLineEdit* mGroupName;
 
   ValidButton* setSelectionValid;
   ValidButton* setSelectionNotValid;

@@ -12,7 +12,7 @@ ValidButton::ValidButton(QWidget* widget, OmViewGroupState& vgs,
       : ViewGroupStateButton(widget,
           om::common::SetValid::SET_VALID == setValid ? "Valid" : "Not Valid",
           om::common::SetValid::SET_VALID == setValid ?
-          "Locking Selected Objects" : "Unlock Selected Objects", true, vgs),
+          "Locking Selected Objects" : "Unlock Selected Objects", false, vgs),
       setValid_(setValid) {}
 
 void ValidButton::onLeftClick() {
