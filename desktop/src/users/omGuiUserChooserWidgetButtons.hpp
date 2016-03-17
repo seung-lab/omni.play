@@ -8,14 +8,14 @@
 namespace om {
 namespace gui {
 
-class chooseUserButton : public OmButton<om::gui::userChooserWidget> {
+class chooseUserButton : public OmButton {
  private:
   userChooserWidget* const chooser_;
   const std::string userName_;
 
  public:
   chooseUserButton(userChooserWidget* chooser, const std::string& userName)
-      : OmButton<om::gui::userChooserWidget>(chooser,
+      : OmButton(chooser,
                                              QString::fromStdString(userName),
                                              QString::fromStdString(userName),
                                              false),
@@ -23,7 +23,7 @@ class chooseUserButton : public OmButton<om::gui::userChooserWidget> {
         userName_(userName) {}
 
  private:
-  void doAction() {
+  void onLeftClick() override {
     OmProject::Globals().Users().SwitchToUser(userName_);
     chooser_->Done();
   }

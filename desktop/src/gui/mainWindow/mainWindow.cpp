@@ -215,6 +215,7 @@ bool MainWindow::closeProjectIfOpen(bool closeTask) {
   windowTitleClear();
 
   updateReadOnlyRelatedWidgets();
+  updateToolState();
 
   vgs_.reset();
 
@@ -416,6 +417,14 @@ void MainWindow::updateReadOnlyRelatedWidgets() {
   }
 }
 
+void MainWindow::updateToolState() {
+  const bool toBeEnabled = OmProject::IsOpen() && !OmProject::IsReadOnly();
+  OmStateManager::EnableTool(om::tool::PAINT, toBeEnabled);
+  OmStateManager::EnableTool(om::tool::ERASE, toBeEnabled);
+  OmStateManager::EnableTool(om::tool::FILL, toBeEnabled);
+  OmStateManager::ResetTool();
+}
+
 void MainWindow::windowTitleSet(QString title) {
   QString str = "Omni - " + title;
 
@@ -446,6 +455,7 @@ void MainWindow::updateGuiFromProjectCreateOrOpen(QString fileName) {
   windowTitleSet(fileName);
   openInspector();
   updateReadOnlyRelatedWidgets();
+  updateToolState();
 
   OmStateManager::UndoStack().SetGlobalShortcut(this);
 }

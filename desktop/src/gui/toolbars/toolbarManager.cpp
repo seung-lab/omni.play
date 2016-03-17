@@ -34,7 +34,3 @@ void ToolBarManager::UpdateGuiFromProjectLoadOrOpen(OmViewGroupState& vgs) {
 }
 
 void ToolBarManager::UpdateGuiFromProjectClose() { deleteMainBar(); }
-
-void ToolBarManager::SetTool(const om::tool::mode tool) {
-  mainToolBar_->SetTool(tool);
-}

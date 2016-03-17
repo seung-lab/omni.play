@@ -27,9 +27,12 @@ class OmStateManager : private om::singletonBase<OmStateManager> {
   static OmBrushSize* BrushSize();
 
   // tool mode
+  static void ResetTool();
   static om::tool::mode GetToolMode();
-  static void SetToolModeAndSendEvent(const om::tool::mode mode);
+  static void SetToolModeAndSendEvent(const om::tool::mode tool);
   static void SetOldToolModeAndSendEvent();
+  static bool IsEnabled(const om::tool::mode tool);
+  static void EnableTool(const om::tool::mode tool, bool isEnabled);
 
   // undostack
   static OmUndoStack& UndoStack();

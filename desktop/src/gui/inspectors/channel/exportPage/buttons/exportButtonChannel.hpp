@@ -8,21 +8,21 @@
 namespace om {
 namespace channelInspector {
 
-class ExportButton : public OmButton<PageExport> {
+class ExportButton : public OmButton {
  public:
-  ExportButton(PageExport* d)
-      : OmButton<PageExport>(d, "Export", "Export", false) {}
+  ExportButton(QWidget* d, const ChannelDataWrapper& cdw)
+      : OmButton(d, "Export", "Export", false), cdw_(cdw) {}
 
  private:
-  void doAction() {
+  const ChannelDataWrapper& cdw_;
+
+  void onLeftClick() override {
     const QString fileName =
         QFileDialog::getSaveFileName(this, tr("Export As"));
 
     if (fileName == nullptr) return;
 
-    const ChannelDataWrapper& cdw = mParent->GetCDW();
-
-    OmExportVolToHdf5::Export(*cdw.GetChannel(), fileName);
+    OmExportVolToHdf5::Export(*cdw_.GetChannel(), fileName);
   }
 };
 

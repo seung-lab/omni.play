@@ -13,16 +13,16 @@
 namespace om {
 namespace gui {
 
-class SegListToggleButton : public OmButton<QWidget> {
+class SegListToggleButton : public OmButton {
  public:
   SegListToggleButton(QWidget* d, std::string name, common::SegIDSet segIDs)
-      : OmButton<QWidget>(d, QString::fromStdString(name), "", false),
+      : OmButton(d, QString::fromStdString(name), "", false),
         segIDs_(segIDs) {}
 
  private:
   common::SegIDSet segIDs_;
 
-  void doAction() override {
+  void onLeftClick() override {
     SegmentationDataWrapper sdw(1);
     if (!sdw.IsValidWrapper()) {
       return;
@@ -43,7 +43,7 @@ class SegListToggleButton : public OmButton<QWidget> {
     om::event::Redraw3d();
   }
 
-  void doRightClick() override { OmTellInfo tell(om::string::join(segIDs_)); }
+  void onRightClick() { OmTellInfo tell(om::string::join(segIDs_)); }
 };
 
 }  // namespace gui

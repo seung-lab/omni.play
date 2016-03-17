@@ -5,20 +5,21 @@
 #include "gui/inspectors/segmentation/exportPage/pageExport.h"
 #include "gui/widgets/omButton.hpp"
 #include "segment/omSegmentCenter.hpp"
+#include "gui/widgets/segmentationDataWrapperButton.hpp"
 
 namespace om {
 namespace segmentationInspector {
 
-class RebuildCenterOfSegmentDataButton : public OmButton<PageExport> {
+class RebuildCenterOfSegmentDataButton : public SegmentationDataWrapperButton {
  public:
-  RebuildCenterOfSegmentDataButton(PageExport* d)
-      : OmButton<PageExport>(d, "Rebuild segment center data", "Rebuild",
-                             false) {}
+  RebuildCenterOfSegmentDataButton(QWidget* widget,
+      SegmentationDataWrapper& segmentationDataWrapper)
+      : SegmentationDataWrapperButton(widget, "Rebuild segment center data",
+          "Rebuild", false, segmentationDataWrapper) {}
 
  private:
-  void doAction() {
-    const SegmentationDataWrapper& sdw = mParent->GetSDW();
-    OmSegmentCenter::RebuildCenterOfSegmentData(sdw);
+  void onLeftClick() override {
+    OmSegmentCenter::RebuildCenterOfSegmentData(GetSegmentationDataWrapper());
     OmActions::Save();
   }
 };

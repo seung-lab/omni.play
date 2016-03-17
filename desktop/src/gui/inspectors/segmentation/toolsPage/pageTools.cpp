@@ -14,7 +14,7 @@ QGroupBox* om::segmentationInspector::PageTools::makeToolsBox() {
   QGroupBox* segmentBox = new QGroupBox("Tools");
   QGridLayout* gridSegment = new QGridLayout(segmentBox);
 
-  AddSegmentButton* addSegmentButton = new AddSegmentButton(this);
+  AddSegmentButton* addSegmentButton = new AddSegmentButton(this, GetSDW());
   gridSegment->addWidget(addSegmentButton, 0, 0);
   return segmentBox;
 }

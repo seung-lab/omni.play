@@ -6,18 +6,20 @@
 #include "segment/omSegments.h"
 #include "utility/dataWrappers.h"
 #include "volume/omSegmentation.h"
+#include "gui/widgets/segmentationDataWrapperButton.hpp"
 
 namespace om {
 namespace segmentationInspector {
 
-class ExportMST : public OmButton<PageExport> {
+class ExportMST : public SegmentationDataWrapperButton {
  public:
-  ExportMST(PageExport* d)
-      : OmButton<PageExport>(d, "Export MST as text file", "export MST",
-                             false) {}
+  ExportMST(QWidget* widget,
+      const SegmentationDataWrapper& segmentationDataWrapper)
+      : SegmentationDataWrapperButton(widget, "Export MST as text file",
+          "export MST", false, segmentationDataWrapper) {}
 
  private:
-  void doAction() {
+  void onLeftClick() override {
     const QString outFile = OmProject::OmniFile() + ".mst.txt";
 
     QFile data(outFile);
@@ -29,7 +31,7 @@ class ExportMST : public OmButton<PageExport> {
 
     QTextStream out(&data);
 
-    const SegmentationDataWrapper& sdw = mParent->GetSDW();
+    const SegmentationDataWrapper& sdw = GetSegmentationDataWrapper();
     OmSegments* segments = sdw.Segments();
 
     QStringList headerLabels;

@@ -25,8 +25,6 @@ class ToolBarManager : public QWidget {
   void UpdateGuiFromProjectLoadOrOpen(OmViewGroupState &);
   void UpdateGuiFromProjectClose();
 
-  void SetTool(const om::tool::mode tool);
-
  private:
   MainWindow *const mainWindow_;
 

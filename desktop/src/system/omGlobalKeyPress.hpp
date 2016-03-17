@@ -45,13 +45,6 @@ class OmGlobalKeyPress : public QWidget {
     om::connect(shortcut.get(), SIGNAL(activated()), this, method);
   }
 
-  void setTool(const om::tool::mode tool) {
-    auto* tbm = OmAppState::GetToolBarManager();
-    if (tbm) {
-      tbm->SetTool(tool);
-    }
-  }
-
   void setValid(om::common::SetValid isValid) {
     for (const auto& id : SegmentationDataWrapper::ValidIDs()) {
       OmActions::ValidateSelectedSegments(SegmentationDataWrapper(id),
@@ -61,16 +54,22 @@ class OmGlobalKeyPress : public QWidget {
 
  private
 Q_SLOTS:
-  void keyA() { setTool(om::tool::ANNOTATE); }
-  void keyB() { setTool(om::tool::PAN); }
-  void keyN() { setTool(om::tool::SELECT); }
-  void keyM() { setTool(om::tool::PAINT); }
-  void keyComma() { setTool(om::tool::ERASE); }
-  void keyPeriod() { setTool(om::tool::FILL); }
-  void keyK() { setTool(om::tool::CUT); }
-  void keyL() { setTool(om::tool::LANDMARK); }
+  void keyA() { OmStateManager::SetToolModeAndSendEvent(om::tool::ANNOTATE); }
+  void keyB() { OmStateManager::SetToolModeAndSendEvent(om::tool::PAN); }
+  void keyN() { OmStateManager::SetToolModeAndSendEvent(om::tool::SELECT); }
+  void keyM() { OmStateManager::SetToolModeAndSendEvent(om::tool::PAINT); }
+  void keyComma() { OmStateManager::SetToolModeAndSendEvent(om::tool::ERASE); }
+  void keyPeriod() { OmStateManager::SetToolModeAndSendEvent(om::tool::FILL); }
+  void keyK() { OmStateManager::SetToolModeAndSendEvent(om::tool::CUT); }
+  void keyL() { OmStateManager::SetToolModeAndSendEvent(om::tool::LANDMARK); }
   void keyR() { OmSegmentSelected::RandomizeColor(); }
   void keyT() { FilterWidget::Toggle(); }
+  //void keyJ() { 
+    //FilterWidget::Toggle();
+  //}
+  //void keyS() {
+    //FilterWidget::Toggle();
+  //}
 
   void keySpace() {
     for (const auto& id : SegmentationDataWrapper::ValidIDs()) {

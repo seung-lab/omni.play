@@ -1,5 +1,4 @@
 #include "gui/inspectors/segmentation/exportPage/buttons/exportButton.hpp"
-#include "gui/inspectors/segmentation/exportPage/buttons/exportButtonRaw.hpp"
 #include "gui/inspectors/segmentation/exportPage/buttons/exportDescendantList.hpp"
 #include "gui/inspectors/segmentation/exportPage/buttons/exportMST.hpp"
 #include "gui/inspectors/segmentation/exportPage/buttons/exportSegmentList.hpp"
@@ -18,23 +17,23 @@ QGroupBox* om::segmentationInspector::PageExport::makeActionsBox() {
   QGroupBox* actionsBox = new QGroupBox("Actions");
   QGridLayout* gridAction = new QGridLayout(actionsBox);
 
-  ExportButton* exportButton = new ExportButton(this);
+  ExportButton* exportButton = new ExportButton(this, GetSDW(), true);
   gridAction->addWidget(exportButton, 2, 0, 1, 1);
 
-  ExportButtonRaw* exportButtonRaw = new ExportButtonRaw(this);
+  ExportButton* exportButtonRaw = new ExportButton(this, GetSDW(), false);
   gridAction->addWidget(exportButtonRaw, 2, 1, 1, 1);
 
-  ExportSegmentList* segList = new ExportSegmentList(this);
+  ExportSegmentList* segList = new ExportSegmentList(this, GetSDW());
   gridAction->addWidget(segList, 3, 0, 1, 1);
 
-  ExportMST* mstList = new ExportMST(this);
+  ExportMST* mstList = new ExportMST(this, GetSDW());
   gridAction->addWidget(mstList, 3, 1, 1, 1);
 
   RebuildCenterOfSegmentDataButton* rebuildSegmentButton =
-      new RebuildCenterOfSegmentDataButton(this);
+      new RebuildCenterOfSegmentDataButton(this, GetSDW());
   gridAction->addWidget(rebuildSegmentButton, 5, 1, 1, 1);
 
-  ExportDescendantList* exportSegmentList = new ExportDescendantList(this);
+  ExportDescendantList* exportSegmentList = new ExportDescendantList(this, GetSDW());
   gridAction->addWidget(exportSegmentList, 6, 0, 1, 1);
 
   return actionsBox;

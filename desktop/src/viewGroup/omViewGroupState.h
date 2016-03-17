@@ -50,8 +50,6 @@ class OmViewGroupState : public OmManageableObject {
   void SetShowValidMode(bool mode, bool incolor);
   bool shouldVolumeBeShownBroken();
 
-  void setTool(const om::tool::mode tool);
-
   inline OmJoiningSplitting& JoiningSplitting() { return *joiningSplitting_; }
 
   std::shared_ptr<OmSegmentSelector> GetOrCreateSelector(om::common::ID segmentationID,

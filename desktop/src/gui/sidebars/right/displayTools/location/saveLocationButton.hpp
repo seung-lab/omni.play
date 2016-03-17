@@ -9,10 +9,10 @@
 namespace om {
 namespace displayTools {
 
-class saveLocationButton : public OmButton<QWidget> {
+class saveLocationButton : public OmButton {
  public:
   saveLocationButton(QWidget* dt, OmViewGroupState& vgs)
-      : OmButton<QWidget>(dt, "Save Location", "save current location to file",
+      : OmButton(dt, "Save Location", "save current location to file",
                           false),
         vgs_(vgs) {
     file_.reset(new QFile(OmProject::FilesFolder() + "/locations"));
@@ -26,7 +26,7 @@ class saveLocationButton : public OmButton<QWidget> {
   std::unique_ptr<QFile> file_;
   std::unique_ptr<QTextStream> stream_;
 
-  void doAction() {
+  void onLeftClick() override {
     float x = vgs_.View2dState().GetScaledSliceDepth(om::common::ZY_VIEW);
     float y = vgs_.View2dState().GetScaledSliceDepth(om::common::XZ_VIEW);
     float z = vgs_.View2dState().GetScaledSliceDepth(om::common::XY_VIEW);

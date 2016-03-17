@@ -10,14 +10,14 @@
 namespace om {
 namespace gui {
 
-class ColorButton : public OmButton<QWidget> {
+class ColorButton : public OmButton {
  private:
   OmViewGroupState& vgs_;
   QColor cur_;
 
  public:
   ColorButton(QWidget* d, OmViewGroupState& vgs)
-      : OmButton<QWidget>(d, "", "Choose a Color", false),
+      : OmButton(d, "", "Choose a Color", false),
         vgs_(vgs),
         cur_(QColor(255, 0, 0)) {
     updateColor();
@@ -34,7 +34,7 @@ class ColorButton : public OmButton<QWidget> {
     update();
   }
 
-  void doAction() {
+  void onLeftClick() override {
     QColor color = QColorDialog::getColor(cur_, this);
 
     if (!color.isValid()) {

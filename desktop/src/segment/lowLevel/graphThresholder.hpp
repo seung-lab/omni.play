@@ -46,7 +46,6 @@ class GraphThresholder {
 
     const double stopThreshold =
         OmProject::Globals().Users().UserSettings().getThreshold();
-    std::cout << "Stop threshold currently is: " << stopThreshold << std::endl;
 
     for (int i = 0; i < edges_.size(); ++i) {
       adjacencyMap_[edges_[i].node1ID].push_back(&edges_[i]);
@@ -88,7 +87,6 @@ class GraphThresholder {
 
     const double stopThreshold =
         OmProject::Globals().Users().UserSettings().getThreshold();
-    std::cout << "Stop threshold currently is: " << stopThreshold << std::endl;
 
     for (int i = 0; i < edges_.size(); ++i) {
       if (1 == edges_[i].userSplit) {

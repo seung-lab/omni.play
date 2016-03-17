@@ -7,15 +7,15 @@
 namespace om {
 namespace displayTools {
 
-class AlphaVegasButton : public OmButton<QWidget> {
+class AlphaVegasButton : public OmButton {
  public:
   AlphaVegasButton(QWidget *dt)
-      : OmButton<QWidget>(dt, "Vegas Mode", "cycle alpha slider", true) {}
+      : OmButton(dt, "Vegas Mode", "cycle alpha slider", true) {}
 
  private:
   std::unique_ptr<OmAlphaVegasMode> vegas_;
 
-  void doAction() {
+  void onLeftClick() override {
     if (vegas_) {
       vegas_.reset();
     } else {

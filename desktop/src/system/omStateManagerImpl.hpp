@@ -13,14 +13,17 @@ class OmStateManagerImpl {
   om::tool::mode toolModeCur_;
   om::tool::mode toolModePrev_;
   // these tools are temporary and they should not be reactivated from previous
-  std::set<om::tool::mode> transientTools_;
+  std::unordered_set<om::tool::mode, std::hash<int>> transientTools_;
+
+  // these tools are disabled, by default this is empty so all tools are enabled!
+  std::unordered_set<om::tool::mode, std::hash<int>> disabledTools_;
 
   OmBrushSize brushSize_;
   OmUndoStack undoStack_;
 
  public:
-  OmStateManagerImpl()
-      : toolModeCur_(om::tool::PAN), toolModePrev_(om::tool::PAN) {
+  OmStateManagerImpl() {
+    ResetTool();
     transientTools_.insert(om::tool::mode::JOIN);
     transientTools_.insert(om::tool::mode::SPLIT);
     transientTools_.insert(om::tool::mode::SHATTER);
@@ -31,10 +34,16 @@ class OmStateManagerImpl {
   /////////////////////////////////
   ///////          Tool Mode
 
+
+  inline void ResetTool() {
+    toolModeCur_ = toolModePrev_ = om::tool::mode::PAN;
+    om::event::ToolChange();
+  }
+
   inline om::tool::mode GetToolMode() const { return toolModeCur_; }
 
   inline void SetToolModeAndSendEvent(const om::tool::mode tool) {
-    if (tool == toolModeCur_) {
+    if (tool == toolModeCur_ || !IsEnabled(tool)) {
       return;
     }
 
@@ -47,9 +56,22 @@ class OmStateManagerImpl {
     om::event::ToolChange();
   }
 
+  inline bool EnableTool(om::tool::mode tool, bool isEnabled) {
+    if (isEnabled) {
+      disabledTools_.erase(tool);
+    } else {
+      disabledTools_.insert(tool);
+    }
+  }
+
   inline bool IsTransient(om::tool::mode tool) {
-    // not found in the list of transient tools
+    // is found in the list of transient tools
     return transientTools_.find(tool) != transientTools_.end();
+  }
+
+  inline bool IsEnabled(om::tool::mode tool) {
+    // not found in the disabled list
+    return disabledTools_.find(tool) == transientTools_.end();
   }
 
   inline void SetOldToolModeAndSendEvent() {

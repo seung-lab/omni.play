@@ -99,6 +99,7 @@ Q_SLOTS:
 
   void updateGuiFromProjectCreateOrOpen(QString fileName);
   void updateReadOnlyRelatedWidgets();
+  void updateToolState();
   void windowTitleClear();
   void windowTitleSet(QString title);
 
