@@ -23,11 +23,14 @@ class OmGlobalKeyPress : public QWidget {
   std::unique_ptr<QShortcut> comma_;
   std::unique_ptr<QShortcut> greater_;
   std::unique_ptr<QShortcut> j_;
+  std::unique_ptr<QShortcut> shiftJ_;
   std::unique_ptr<QShortcut> less_;
   std::unique_ptr<QShortcut> m_;
   std::unique_ptr<QShortcut> n_;
   std::unique_ptr<QShortcut> period_;
   std::unique_ptr<QShortcut> r_;
+  std::unique_ptr<QShortcut> s_;
+  std::unique_ptr<QShortcut> shiftS_;
   std::unique_ptr<QShortcut> k_;
   std::unique_ptr<QShortcut> l_;
   std::unique_ptr<QShortcut> slash_;
@@ -64,12 +67,6 @@ Q_SLOTS:
   void keyL() { OmStateManager::SetToolModeAndSendEvent(om::tool::LANDMARK); }
   void keyR() { OmSegmentSelected::RandomizeColor(); }
   void keyT() { FilterWidget::Toggle(); }
-  //void keyJ() { 
-    //FilterWidget::Toggle();
-  //}
-  //void keyS() {
-    //FilterWidget::Toggle();
-  //}
 
   void keySpace() {
     for (const auto& id : SegmentationDataWrapper::ValidIDs()) {
@@ -92,11 +89,17 @@ Q_SLOTS:
     om::event::Redraw2d();
   }
 
-  void keyJ() {
+  void keyJ() { OmStateManager::SetToolModeAndSendEvent(om::tool::JOIN); }
+
+  void keyShiftJ() {
     for (const auto& id : SegmentationDataWrapper::ValidIDs()) {
       OmActions::JoinSegments(SegmentationDataWrapper(id));
     }
   }
+
+  void keyS() { OmStateManager::SetToolModeAndSendEvent(om::tool::SPLIT); }
+
+  void keyShiftS() { OmStateManager::SetToolModeAndSendEvent(om::tool::SHATTER); }
 
   void keyV() {
     setValid(om::common::SetValid::SET_VALID);
@@ -112,6 +115,7 @@ Q_SLOTS:
     setShortcut(a_, QKeySequence(Qt::Key_A), SLOT(keyA()));
     setShortcut(b_, QKeySequence(Qt::Key_B), SLOT(keyB()));
     setShortcut(j_, QKeySequence(Qt::Key_J), SLOT(keyJ()));
+    setShortcut(shiftJ_, QKeySequence(Qt::SHIFT + Qt::Key_J), SLOT(keyShiftJ()));
     setShortcut(comma_, QKeySequence(Qt::Key_Comma), SLOT(keyComma()));
     setShortcut(greater_, QKeySequence(Qt::Key_Greater), SLOT(keyGreater()));
     setShortcut(less_, QKeySequence(Qt::Key_Less), SLOT(keyLess()));
@@ -119,6 +123,8 @@ Q_SLOTS:
     setShortcut(n_, QKeySequence(Qt::Key_N), SLOT(keyN()));
     setShortcut(period_, QKeySequence(Qt::Key_Period), SLOT(keyPeriod()));
     setShortcut(r_, QKeySequence(Qt::Key_R), SLOT(keyR()));
+    setShortcut(s_, QKeySequence(Qt::Key_S), SLOT(keyS()));
+    setShortcut(shiftS_, QKeySequence(Qt::SHIFT + Qt::Key_S), SLOT(keyShiftS()));
     setShortcut(k_, QKeySequence(Qt::Key_K), SLOT(keyK()));
     setShortcut(l_, QKeySequence(Qt::Key_L), SLOT(keyL()));
     setShortcut(t_, QKeySequence(Qt::Key_T), SLOT(keyT()));
