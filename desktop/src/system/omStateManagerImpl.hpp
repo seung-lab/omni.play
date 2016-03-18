@@ -56,7 +56,7 @@ class OmStateManagerImpl {
     om::event::ToolChange();
   }
 
-  inline bool EnableTool(om::tool::mode tool, bool isEnabled) {
+  inline void EnableTool(om::tool::mode tool, bool isEnabled) {
     if (isEnabled) {
       disabledTools_.erase(tool);
     } else {
