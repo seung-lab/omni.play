@@ -11,7 +11,7 @@ ValidButton::ValidButton(QWidget* widget, OmViewGroupState& vgs,
     om::common::SetValid setValid)
       : ViewGroupStateButton(widget,
           om::common::SetValid::SET_VALID == setValid ? "Valid" : "Not Valid",
-          om::common::SetValid::SET_VALID == setValid ?
+          om::common::SetValid::SET_NOT_VALID == setValid ?
           "Locking Selected Objects" : "Unlock Selected Objects", false, vgs),
       setValid_(setValid) {}
 

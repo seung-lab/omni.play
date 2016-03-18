@@ -21,11 +21,6 @@ ShowValidWidget::ShowValidWidget(QWidget* widget, OmViewGroupState& vgs)
   radioButtonGroup_->addButton(validAsColor_);
   radioButtonGroup_->addButton(validAsBlack_);
 
-
-  //QHBoxLayout* radioLayout = new QHBoxLayout();
-
-  //gridLayout->addWidget(validAsColor_, 1, 0, 1, 1);
-  //gridLayout->addWidget(validAsBlack_, 1, 1, 1, 1);
   validAsBlack_->setChecked(true);
 
   om::connect(validAsColor_, SIGNAL(toggled(bool)), this, SLOT(changeMapColors()));

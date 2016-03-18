@@ -215,7 +215,6 @@ bool MainWindow::closeProjectIfOpen(bool closeTask) {
   windowTitleClear();
 
   updateReadOnlyRelatedWidgets();
-  updateToolState();
 
   vgs_.reset();
 
