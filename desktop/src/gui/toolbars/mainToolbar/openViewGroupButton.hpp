@@ -38,7 +38,6 @@ class OpenViewGroupButton : public ViewGroupStateButton {
     switch(viewConfiguration_) {
       case om::gui::ViewConfiguration::SINGLE:
         return "Display Single View";
-        break;
       case om::gui::ViewConfiguration::DUAL:
         return "Display Dual Views";
       case om::gui::ViewConfiguration::ALL:
