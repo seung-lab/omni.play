@@ -50,7 +50,6 @@ class OpenViewGroupButton : public ViewGroupStateButton {
     switch(viewConfiguration_) {
       case om::gui::ViewConfiguration::SINGLE:
         return "Open Single 2D XY View";
-        break;
       case om::gui::ViewConfiguration::DUAL:
         return "Open 2D XY and 3D View";
       case om::gui::ViewConfiguration::ALL:
