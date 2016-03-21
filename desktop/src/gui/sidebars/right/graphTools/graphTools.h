@@ -1,19 +1,17 @@
 #pragma once
 #include "precomp.h"
 
-#include "events/listeners.h"
 #include "gui/widgets/omWidget.hpp"
 #include "gui/tools.hpp"
+#include "gui/widgets/toolButton.hpp"
 
 class MSTThresholdSpinBox;
 class AutomaticSpreadingThresholdSpinBox;
 class OmViewGroupState;
 class SegmentationDataWrapper;
-class SplitButton;
-class JoinButton;
 class JoinAllButton;
 class ShatterButton;
-class BreakButton;
+class ShowBreakWidget;
 
 namespace om {
 namespace sidebars {
@@ -21,21 +19,15 @@ class rightImpl;
 }
 }
 
-class GraphTools : public OmWidget, public om::event::ToolModeEventListener {
+class GraphTools : public OmWidget {
   Q_OBJECT
 
  public:
   GraphTools(om::sidebars::rightImpl*, OmViewGroupState& vgs);
 
-  void ToolModeChangeEvent();
-
   OmViewGroupState& GetViewGroupState() const { return vgs_; }
 
   SegmentationDataWrapper GetSDW();
-
-  void ActivateToolButton(om::tool::mode tool);
-  void HideBreakThreasholdBox();
-  void ShowBreakThreasholdBox();
 
   QString getName() { return "Graph Tools"; }
 
@@ -47,17 +39,15 @@ class GraphTools : public OmWidget, public om::event::ToolModeEventListener {
 
   OmViewGroupState& vgs_;
 
-  SplitButton* splitButton;
-  JoinButton* joinButton;
+  ToolButton* joinButton;
+  ToolButton* splitButton;
+  ToolButton* shatterButton;
   JoinAllButton* joinAllButton;
-  ShatterButton* shatterButton;
-  BreakButton* breakButton;
+  ShowBreakWidget* showBreakWidget;
 
   MSTThresholdSpinBox* threshold_;
   AutomaticSpreadingThresholdSpinBox* asthreshold_;
 
   QWidget* thresholdBox();
-  QWidget* makeBreakThresholdBox();
-  QWidget* breakThresholdBox_;
   std::vector<om::tool::mode> supportedTools_;
 };

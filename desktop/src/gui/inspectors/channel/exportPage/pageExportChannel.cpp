@@ -14,7 +14,7 @@ QGroupBox* om::channelInspector::PageExport::makeExportBox() {
   QGroupBox* actionsBox = new QGroupBox("Actions");
   QGridLayout* gridAction = new QGridLayout(actionsBox);
 
-  ExportButton* exportButton = new ExportButton(this);
+  ExportButton* exportButton = new ExportButton(this, GetCDW());
   gridAction->addWidget(exportButton, 2, 0, 1, 1);
 
   return actionsBox;

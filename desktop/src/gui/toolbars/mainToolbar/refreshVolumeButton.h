@@ -5,11 +5,11 @@
 
 class MainWindow;
 
-class VolumeRefreshButton : public OmButton<MainWindow> {
+class VolumeRefreshButton : public OmButton {
 
  public:
   VolumeRefreshButton(MainWindow* mw);
 
  private:
-  void doAction();
+  void onLeftClick() override;
 };

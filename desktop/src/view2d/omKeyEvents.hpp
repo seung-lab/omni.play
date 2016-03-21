@@ -60,15 +60,12 @@ class OmKeyEvents {
         OmSegmentCenter::CenterSegment(state_->getViewGroupState());
         break;
 
-      case Qt::Key_W:
       case Qt::Key_PageUp:
         blockingKeyDown_.restart();
         state_->MoveUpStackCloserToViewer();
         om::event::ViewCenterChanged();
         break;
 
-      case Qt::Key_S:
-      case Qt::Key_E:
       case Qt::Key_PageDown:
         blockingKeyDown_.restart();
         state_->MoveDownStackFartherFromViewer();

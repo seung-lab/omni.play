@@ -155,7 +155,7 @@ class OmMouseEventPress {
   void mouseSetCrosshair() {
     v2d_->Redraw();
     setDepth();
-    state_->getViewGroupState().setTool(om::tool::PAN);
+    OmStateManager::SetToolModeAndSendEvent(om::tool::PAN);
   }
 
   void setDepth() {

@@ -151,10 +151,6 @@ bool OmViewGroupState::shouldVolumeBeShownBroken() {
   return JoiningSplitting().ShouldVolumeBeShownBroken();
 }
 
-void OmViewGroupState::setTool(const om::tool::mode tool) {
-  toolBarManager_->SetTool(tool);
-}
-
 SegmentationDataWrapper OmViewGroupState::Segmentation() const { return *sdw_; }
 
 ChannelDataWrapper OmViewGroupState::Channel() const { return *cdw_; }

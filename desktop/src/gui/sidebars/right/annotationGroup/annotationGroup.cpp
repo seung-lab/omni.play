@@ -9,16 +9,16 @@
 namespace om {
 namespace sidebars {
 
-class ToggleAnnotationButton : public OmButton<QWidget> {
+class ToggleAnnotationButton : public OmButton {
  public:
   ToggleAnnotationButton(QWidget *widget, OmViewGroupState &vgs)
-      : OmButton<QWidget>(widget, "show annotations", "show annotations", true),
+      : OmButton(widget, "show annotations", "show annotations", true),
         vgs_(vgs) {}
 
  private:
   OmViewGroupState &vgs_;
 
-  void doAction() {
+  void onLeftClick() override {
 
     vgs_.setAnnotationVisible(!this->isChecked());
     om::event::Redraw2d();

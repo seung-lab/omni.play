@@ -4,10 +4,10 @@
 #include "gui/widgets/omButton.hpp"
 #include "gui/toolbars/mainToolbar/mainToolbar.h"
 
-class SaveButton : public OmButton<MainToolBar> {
+class SaveButton : public OmButton {
  public:
   SaveButton(MainToolBar* mw);
 
  private:
-  void doAction();
+  void onLeftClick() override;
 };

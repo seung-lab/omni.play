@@ -5,14 +5,16 @@
 #include "segment/omSegments.h"
 #include "segment/selection.hpp"
 #include "utility/dataWrappers.h"
+#include "viewGroup/omViewGroupState.h"
 #include "volume/omSegmentation.h"
 
-JoinAllButton::JoinAllButton(GraphTools* d)
-    : OmButton<GraphTools>(d, "Join ALL", "Join all selected objects", false) {
-}
+JoinAllButton::JoinAllButton(QWidget* widget, OmViewGroupState& vgs)
+      : ViewGroupStateButton(widget, "Join All", "Join all selected objects",
+          false, vgs) {}
 
-void JoinAllButton::doAction() {
-  SegmentationDataWrapper sdw = mParent->GetSDW();
+void JoinAllButton::onLeftClick() {
+  SegmentationDataWrapper sdw = GetViewGroupState().Segmentation();
+
   if (!sdw.IsSegmentationValid()) {
     return;
   }

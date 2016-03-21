@@ -3,6 +3,7 @@
 
 #include "datalayer/file.h"
 #include "gui/inspectors/segmentation/exportPage/pageExport.h"
+#include "gui/widgets/segmentationDataWrapperButton.hpp"
 #include "gui/widgets/omButton.hpp"
 #include "segment/omSegments.h"
 #include "utility/dataWrappers.h"
@@ -10,15 +11,16 @@
 namespace om {
 namespace segmentationInspector {
 
-class ExportSegmentList : public OmButton<PageExport> {
+class ExportSegmentList : public SegmentationDataWrapperButton {
  public:
-  ExportSegmentList(PageExport* d)
-      : OmButton<PageExport>(d, "Export Segment Info (Valid)",
-                             "export segment info", false) {}
+  ExportSegmentList(QWidget* widget,
+      const SegmentationDataWrapper& segmentationDataWrapper)
+      : SegmentationDataWrapperButton(widget, "Export Segment Info (Valid)",
+          "export segment info", false, segmentationDataWrapper) {}
 
  private:
-  void doAction() {
-    const SegmentationDataWrapper& sdw = mParent->GetSDW();
+  void onLeftClick() override {
+    const SegmentationDataWrapper& sdw = GetSegmentationDataWrapper();
 
     OmSegments* segments = sdw.Segments();
 

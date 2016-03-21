@@ -4,8 +4,8 @@
 #include "actions/omActions.h"
 #include "common/logging.h"
 #include "events/events.h"
-#include "gui/sidebars/right/graphTools/graphTools.h"
 #include "gui/widgets/omDoubleSpinBox.hpp"
+#include "gui/widgets/omWidget.hpp"
 #include "system/cache/omCacheManager.h"
 #include "utility/dataWrappers.h"
 #include "viewGroup/omViewGroupState.h"
@@ -15,7 +15,7 @@ class BreakThresholdGroup : public OmDoubleSpinBox {
   Q_OBJECT;
 
  public:
-  BreakThresholdGroup(GraphTools* d, OmViewGroupState& vgs)
+  BreakThresholdGroup(OmWidget* d, OmViewGroupState& vgs)
       : OmDoubleSpinBox(d, true), vgs_(vgs) {
     setSingleStep(0.002);
     setMaximum(1.0);

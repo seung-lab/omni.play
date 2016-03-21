@@ -62,38 +62,41 @@ void Ui::KeyPress(QKeyEvent* event) {
   }
 }
 
-void Ui::joinSplitModeMouseReleased(om::tool::mode tool, QMouseEvent* event) {
+bool Ui::joinSplitModeMouseReleased(om::tool::mode tool, QMouseEvent* event) {
   auto pickPoint = pickVoxelMouseCrosshair(event);
 
   if (!pickPoint.sdw.IsSegmentValid()) {
-    return;
+    return false;
   }
 
   om::JoinSplitRunner::FindAndPerformOnSegments(pickPoint.sdw, vgs_,
                                    pickPoint.coord, tool);
+  return true;
 }
 
-void Ui::validateModeMouseReleased(om::common::SetValid setValid, QMouseEvent* event) {
+bool Ui::validateModeMouseReleased(om::common::SetValid setValid, QMouseEvent* event) {
   auto pickPoint = pickVoxelMouseCrosshair(event);
 
   if (!pickPoint.sdw.IsSegmentValid()
       || !pickPoint.sdw.Selection()->IsSegmentSelected(pickPoint.sdw.GetSegmentID())) {
-    return;
+    return false;
   }
 
   OmActions::ValidateSegment(pickPoint.sdw, setValid, true);
+  return true;
 }
 
-void Ui::shatterModeMouseReleased(QMouseEvent* event) {
+bool Ui::shatterModeMouseReleased(QMouseEvent* event) {
   auto pickPoint = pickVoxelMouseCrosshair(event);
 
   if (!pickPoint.sdw.IsSegmentValid()) {
-    return;
+    return false;
   }
 
   OmActions::ShatterSegment(pickPoint.sdw.MakeSegmentationDataWrapper(),
                             pickPoint.sdw.GetSegment());
   OmStateManager::SetOldToolModeAndSendEvent();
+  return true;
 }
 
 bool Ui::cutSegment(QMouseEvent* event) {
@@ -160,8 +163,10 @@ void Ui::navigationModeMousePressed(QMouseEvent* event) {
         }
       case om::tool::mode::SPLIT:
       case om::tool::mode::JOIN:
-        joinSplitModeMouseReleased(toolMode, event);
-        return;
+        if (joinSplitModeMouseReleased(toolMode, event)) {
+          return;
+        }
+        break;
       case om::tool::mode::VALIDATE:
         om::common::SetValid setValid;
         if (controlModifier) {
@@ -169,11 +174,15 @@ void Ui::navigationModeMousePressed(QMouseEvent* event) {
         } else {
           setValid = om::common::SetValid::SET_VALID;
         }
-        validateModeMouseReleased(setValid, event);
-        return;
+        if (validateModeMouseReleased(setValid, event)) {
+          return;
+        }
+        break;
       case om::tool::mode::SHATTER:
-        shatterModeMouseReleased(event);
-        return;
+        if (shatterModeMouseReleased(event)) {
+          return;
+        }
+        break;
       case om::tool::mode::CUT:
         if (cutSegment(event)) {
           return;

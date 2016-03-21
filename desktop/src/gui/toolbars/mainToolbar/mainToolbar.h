@@ -20,15 +20,14 @@ class MainToolBar : public QToolBar {
   MainToolBar(MainWindow *mw);
 
   void UpdateToolbar();
-  void SetTool(const om::tool::mode tool);
 
  private:
   MainWindow *const mainWindow_;
 
   SaveButton *const saveButton;
   OpenViewGroupButton *const openViewGroupButton_;
-  OpenSingleViewButton *const openSingleViewButton_;
-  OpenDualViewButton *const openDoubleViewButton_;
+  OpenViewGroupButton *const openSingleViewButton_;
+  OpenViewGroupButton *const openDoubleViewButton_;
   VolumeRefreshButton *const volumeRefreshButton;
   NavAndEditButtonGroup *const navEditButtons_;
 

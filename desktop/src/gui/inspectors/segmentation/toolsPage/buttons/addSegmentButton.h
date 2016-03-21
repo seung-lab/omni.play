@@ -2,7 +2,7 @@
 #include "precomp.h"
 #include "gui/inspectors/segmentation/toolsPage/pageTools.h"
 #include "gui/segmentLists/elementListBox.hpp"
-#include "gui/widgets/omButton.hpp"
+#include "gui/widgets/segmentationDataWrapperButton.hpp"
 #include "segment/omSegmentSelector.h"
 #include "segment/omSegments.h"
 #include "segment/omSegment.h"
@@ -11,14 +11,16 @@
 namespace om {
 namespace segmentationInspector {
 
-class AddSegmentButton : public OmButton<PageTools> {
+class AddSegmentButton : public SegmentationDataWrapperButton {
  public:
-  AddSegmentButton(PageTools* d)
-      : OmButton<PageTools>(d, "Add Segment", "Add Segment", false) {}
+  AddSegmentButton(QWidget* widget,
+      const SegmentationDataWrapper& segmentationDataWrapper)
+      : SegmentationDataWrapperButton(widget, "Add Segment",
+          "Add Segment", false, segmentationDataWrapper) {}
 
  private:
-  void doAction() {
-    const SegmentationDataWrapper& sdw = mParent->GetSDW();
+  void onLeftClick() override {
+    const SegmentationDataWrapper& sdw = GetSegmentationDataWrapper();
 
     OmSegment* newSeg = sdw.Segments()->AddSegment();
 

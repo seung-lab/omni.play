@@ -3,8 +3,6 @@
 #include "gui/toolbars/mainToolbar/filterWidget.hpp"
 #include "gui/toolbars/mainToolbar/mainToolbar.h"
 #include "gui/toolbars/mainToolbar/navAndEditButtonGroup.h"
-#include "gui/toolbars/mainToolbar/openDualViewButton.hpp"
-#include "gui/toolbars/mainToolbar/openSingleViewButton.hpp"
 #include "gui/toolbars/mainToolbar/openViewGroupButton.hpp"
 #include "gui/toolbars/mainToolbar/refreshVolumeButton.h"
 #include "gui/toolbars/mainToolbar/saveButton.h"
@@ -15,9 +13,15 @@ MainToolBar::MainToolBar(MainWindow* mainWindow)
     : QToolBar("Tools", mainWindow),
       mainWindow_(mainWindow),
       saveButton(new SaveButton(this)),
-      openViewGroupButton_(new OpenViewGroupButton(mainWindow)),
-      openSingleViewButton_(new OpenSingleViewButton(mainWindow)),
-      openDoubleViewButton_(new OpenDualViewButton(mainWindow)),
+      openViewGroupButton_(new OpenViewGroupButton(
+            mainWindow, mainWindow->GetViewGroupState(),
+            om::gui::ViewConfiguration::ALL)),
+      openSingleViewButton_(new OpenViewGroupButton(
+            mainWindow, mainWindow->GetViewGroupState(),
+            om::gui::ViewConfiguration::SINGLE)),
+      openDoubleViewButton_(new OpenViewGroupButton(
+            mainWindow, mainWindow->GetViewGroupState(),
+            om::gui::ViewConfiguration::DUAL)),
       volumeRefreshButton(new VolumeRefreshButton(mainWindow)),
       navEditButtons_(new NavAndEditButtonGroup(mainWindow)) {
   mainWindow_->addToolbarTop(this);
@@ -47,15 +51,10 @@ MainToolBar::MainToolBar(MainWindow* mainWindow)
 void MainToolBar::EnableWidgets() {
   const bool toBeEnabled = !OmProject::IsReadOnly();
   saveButton->setEnabled(toBeEnabled);
-  navEditButtons_->EnableModifyingWidgets(toBeEnabled);
 }
 
 void MainToolBar::UpdateToolbar() {
   EnableWidgets();
-}
-
-void MainToolBar::SetTool(const om::tool::mode tool) {
-  navEditButtons_->SetTool(tool);
 }
 
 void MainToolBar::addNavEditButtons() {

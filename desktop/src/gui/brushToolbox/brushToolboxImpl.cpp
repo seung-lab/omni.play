@@ -13,15 +13,15 @@
 #include "viewGroup/omBrushSize.hpp"
 #include "viewGroup/omViewGroupState.h"
 
-class BrushColor : public OmButton<QWidget>,
+class BrushColor : public OmButton,
                    public om::event::SegmentEventListener {
  public:
-  BrushColor(QWidget* d) : OmButton<QWidget>(d, "", "Brush Color", false) {
+  BrushColor(QWidget* d) : OmButton(d, "", "Brush Color", false) {
     update();
   }
 
  private:
-  void doAction() {}
+  void onLeftClick() override {}
 
   void SegmentModificationEvent(om::event::SegmentEvent*) {}
   void SegmentGUIlistEvent(om::event::SegmentEvent*) {}
@@ -46,13 +46,13 @@ class BrushColor : public OmButton<QWidget>,
   }
 };
 
-class AddSegmentButton : public OmButton<QWidget> {
+class AddSegmentButton : public OmButton {
  public:
   AddSegmentButton(QWidget* d)
-      : OmButton<QWidget>(d, "Add Segment", "Add Segment", false) {}
+      : OmButton(d, "Add Segment", "Add Segment", false) {}
 
  private:
-  void doAction() {
+  void onLeftClick() override {
     const SegmentationDataWrapper sdw(1);
 
     OmSegment* newSeg = sdw.Segments()->AddSegment();
@@ -93,17 +93,17 @@ class OmBrushSizeSpinBox : public OmIntSpinBox {
   }
 };
 
-class SetBlackColorButton : public OmButton<QWidget> {
+class SetBlackColorButton : public OmButton {
  public:
   SetBlackColorButton(QWidget* d, OmViewGroupState& vgs)
-      : OmButton<QWidget>(d, "Set No Segment for Color",
+      : OmButton(d, "Set No Segment for Color",
                           "Set No Segment for Color", false),
         vgs_(vgs) {}
 
  private:
   OmViewGroupState& vgs_;
 
-  void doAction() {
+  void onLeftClick() override {
     SegmentDataWrapper sdw(vgs_.Segmentation(), 0);
     OmSegmentSelected::SetSegmentForPainting(sdw);
   }

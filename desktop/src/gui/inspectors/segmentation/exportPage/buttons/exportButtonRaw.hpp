@@ -1,19 +1,20 @@
 #pragma once
 #include "precomp.h"
 
-#include "gui/widgets/omButton.hpp"
+#include "gui/widgets/segmentationDataWrapperButton.hpp"
 #include "gui/inspectors/segmentation/exportPage/pageExport.h"
+#include "gui/widgets/segmentationDataWrapperButton.hpp"
 
 namespace om {
 namespace segmentationInspector {
 
-class ExportButtonRaw : public OmButton<PageExport> {
+class ExportButtonRaw : public OmButton {
  public:
-  ExportButtonRaw(PageExport* d)
-      : OmButton<PageExport>(d, "Export Raw", "Export Raw", false) {}
+  ExportButtonRaw(QWidget* widget)
+      : SegmentationDataWrapperButton(widget, "Export Raw", "Export Raw", false) {}
 
  private:
-  void doAction() {
+  void onLeftClick() override {
     const QString fileName =
         QFileDialog::getSaveFileName(this, tr("Export As"));
 

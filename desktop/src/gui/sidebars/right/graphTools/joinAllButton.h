@@ -1,15 +1,15 @@
 #pragma once
 #include "precomp.h"
 
-#include "gui/widgets/omButton.hpp"
-class GraphTools;
+#include "gui/widgets/viewGroupStateButton.hpp"
 
-class JoinAllButton : public OmButton<GraphTools> {
+class OmViewGroupState;
+
+class JoinAllButton : public ViewGroupStateButton {
   Q_OBJECT;
 
  public:
-  JoinAllButton(GraphTools *);
+  JoinAllButton(QWidget* widget, OmViewGroupState& vgs);
 
- private:
-  void doAction();
+  void onLeftClick();
 };

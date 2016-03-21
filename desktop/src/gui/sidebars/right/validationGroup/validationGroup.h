@@ -3,13 +3,11 @@
 
 #include "gui/widgets/omWidget.hpp"
 
-class SetValid;
-class SetNotValid;
-class SetUncertain;
-class SetNotUncertain;
-class ShowValidatedButton;
+class ValidButton;
+class UncertainButton;
 class SegmentationDataWrapper;
 class OmViewGroupState;
+class ShowValidWidget;
 
 namespace om {
 namespace sidebars {
@@ -22,7 +20,6 @@ class ValidationGroup : public OmWidget {
 
  public:
   ValidationGroup(om::sidebars::rightImpl*, OmViewGroupState& vgs);
-  QString getGroupNameFromGUI();
   bool isShowValidChecked();
 
   QString getName() { return "Validation"; }
@@ -31,25 +28,16 @@ class ValidationGroup : public OmWidget {
 
   SegmentationDataWrapper GetSDW() const;
 
- private
-Q_SLOTS:
-  void changeMapColors();
-
  private:
   OmViewGroupState& vgs_;
 
-  QButtonGroup* validGroup;
-  QRadioButton* showValid;
-  QRadioButton* dontShowValid;
-  QLineEdit* mGroupName;
+  ShowValidWidget* showValidWidget;
 
-  SetValid* setSelectionValid;
-  SetNotValid* setSelectionNotValid;
+  ValidButton* setSelectionValid;
+  ValidButton* setSelectionNotValid;
 
-  SetUncertain* setSelectionUncertain;
-  SetNotUncertain* setSelectionNotUncertain;
-
-  ShowValidatedButton* showValidatedButton;
+  UncertainButton* setSelectionUncertain;
+  UncertainButton* setSelectionNotUncertain;
 
   QWidget* addSelectedSegmentButtons();
 };
