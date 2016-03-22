@@ -3,6 +3,7 @@
 
 #include "gui/widgets/viewGroupStateWidget.hpp"
 #include "events/listeners.h"
+#include "gui/tools.hpp"
 
 class OmButton;
 class OmViewGroupState;
@@ -17,7 +18,7 @@ Q_OBJECT
 
   QString getName() { return "ShowBreakWidget"; }
 
-  void ToolModeChangeEvent();
+  void ToolModeChangeEvent(om::tool::mode tool) override;
 
  private:
   OmButton* showBreakButton_;

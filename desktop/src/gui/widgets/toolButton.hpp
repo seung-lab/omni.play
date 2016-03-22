@@ -16,17 +16,17 @@ Q_OBJECT
       QPushButton::setFlat(true);
       OmButton::setIconAndText(iconPath);
     }
-    ToolModeChangeEvent();
+    ToolModeChangeEvent(OmStateManager::GetToolMode());
   }
 
   const om::tool::mode Tool() {
     return tool_;
   }
 
-  void ToolModeChangeEvent() {
+  void ToolModeChangeEvent(om::tool::mode eventTool) override {
     QPushButton::setEnabled(OmStateManager::IsEnabled(Tool()));
 
-    bool isCorrectTool = tool_ == OmStateManager::GetToolMode();
+    bool isCorrectTool = tool_ == eventTool;
     QPushButton::setChecked(isCorrectTool);
     QPushButton::setDown(isCorrectTool);
   }

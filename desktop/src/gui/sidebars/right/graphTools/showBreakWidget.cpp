@@ -8,6 +8,8 @@
 #include "gui/sidebars/right/graphTools/breakThresholdGroup.h"
 #include "viewGroup/omViewGroupState.h"
 #include "system/omStateManager.h"
+#include "events/events.h"
+#include "gui/tools.hpp"
 
 ShowBreakWidget::ShowBreakWidget(QWidget* widget, OmViewGroupState& vgs)
   : ViewGroupStateWidget(widget, vgs),
@@ -36,8 +38,10 @@ void ShowBreakWidget::updateShouldVolumeBeShownBroken(const bool shouldVolumeBeS
     breakSpinboxWidget_->hide();
   }
   GetViewGroupState().SetShouldVolumeBeShownBroken(shouldVolumeBeShownBroken);
+  om::event::Redraw2d();
+  om::event::Redraw3d();
 }
 
-void ShowBreakWidget::ToolModeChangeEvent() {
-  showBreakButton_->setChecked(OmStateManager::GetToolMode()==om::tool::mode::SPLIT);
+void ShowBreakWidget::ToolModeChangeEvent(om::tool::mode eventTool) {
+  showBreakButton_->setChecked(eventTool == om::tool::mode::SPLIT);
 }

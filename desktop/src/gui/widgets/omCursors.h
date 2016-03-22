@@ -1,5 +1,6 @@
 #pragma once
 #include "precomp.h"
+#include "gui/tools.hpp"
 
 class OmBusyCursorWrapper {
  public:
@@ -12,8 +13,8 @@ class OmBusyCursorWrapper {
 
 class OmCursors {
  public:
-  static void setToolCursor(QWidget*);
+  static void setToolCursor(QWidget*, om::tool::mode);
 
  private:
-  static QCursor figureOutCursor();
+  static QCursor figureOutCursor(om::tool::mode);
 };

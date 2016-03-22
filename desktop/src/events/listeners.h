@@ -2,6 +2,7 @@
 #include "precomp.h"
 
 #include "events/details/listener.h"
+#include "gui/tools.hpp"
 
 namespace om {
 namespace event {
@@ -44,7 +45,7 @@ struct SegmentEventListener : public Listener {
 
 struct ToolModeEventListener : public Listener {
   ToolModeEventListener() : Listener(Klass::tool) {}
-  virtual void ToolModeChangeEvent() = 0;
+  virtual void ToolModeChangeEvent(om::tool::mode tool) = 0;
 };
 
 struct UIEventListener : public Listener {

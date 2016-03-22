@@ -4,6 +4,7 @@
 #include "view2d/omView2d.h"
 #include "view2d/omView2dEvents.hpp"
 #include "view2d/omView2dZoom.hpp"
+#include "system/omStateManager.h"
 
 OmView2d::OmView2d(const om::common::ViewType viewtype, QWidget* parent,
                    OmViewGroupState& vgs, OmMipVolume& vol,
@@ -20,7 +21,7 @@ OmView2d::OmView2d(const om::common::ViewType viewtype, QWidget* parent,
   setAutoFillBackground(false);  // necessary for proper QPainter functionality
 
   state_->SetIntialWindowState();
-  OmCursors::setToolCursor(this);
+  OmCursors::setToolCursor(this, OmStateManager::GetToolMode());
   om::event::ViewCenterChanged();
 }
 

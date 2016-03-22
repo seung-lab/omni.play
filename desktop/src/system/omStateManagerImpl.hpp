@@ -25,7 +25,7 @@ class OmStateManagerImpl {
 
   inline void ResetTool() {
     toolModeCur_ = toolModePrev_ = om::tool::mode::PAN;
-    om::event::ToolChange();
+    notifyToolChange();
   }
 
   inline om::tool::mode GetToolMode() const { return toolModeCur_; }
@@ -41,19 +41,19 @@ class OmStateManagerImpl {
     }
 
     toolModeCur_ = tool;
-    om::event::ToolChange();
+    notifyToolChange();
   }
 
-  inline void EnableTools(std::set<om::tool::mode> tools, bool isEnabled) {
+  inline void EnableTools(const std::set<om::tool::mode> tools, bool isEnabled) {
     for (om::tool::mode tool : tools) {
       enableTool(tool, isEnabled);
     }
-    om::event::ToolChange();
+    notifyToolChange();
   }
 
   inline void EnableTool(om::tool::mode tool, bool isEnabled) {
     enableTool(tool, isEnabled);
-    om::event::ToolChange();
+    notifyToolChange();
   }
 
   inline bool IsTransient(om::tool::mode tool) {
@@ -96,4 +96,7 @@ class OmStateManagerImpl {
     }
   }
 
+  inline void notifyToolChange() {
+    om::event::ToolChange(toolModeCur_);
+  }
 };
