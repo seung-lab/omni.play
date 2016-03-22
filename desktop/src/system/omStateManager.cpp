@@ -20,6 +20,10 @@ bool OmStateManager::IsEnabled(const om::tool::mode tool) {
   return impl().IsEnabled(tool);
 }
 
+void OmStateManager::EnableTools(const std::set<om::tool::mode> tools, bool isEnabled) {
+  impl().EnableTools(tools, isEnabled);
+}
+
 void OmStateManager::EnableTool(const om::tool::mode tool, bool isEnabled) {
   impl().EnableTool(tool, isEnabled);
 }

@@ -418,9 +418,7 @@ void MainWindow::updateReadOnlyRelatedWidgets() {
 
 void MainWindow::updateToolState() {
   const bool toBeEnabled = OmProject::IsOpen() && !OmProject::IsReadOnly();
-  OmStateManager::EnableTool(om::tool::PAINT, toBeEnabled);
-  OmStateManager::EnableTool(om::tool::ERASE, toBeEnabled);
-  OmStateManager::EnableTool(om::tool::FILL, toBeEnabled);
+  OmStateManager::EnableTools(WRITE_ENABLED_TOOLS, toBeEnabled);
   OmStateManager::ResetTool();
 }
 

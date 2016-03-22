@@ -9,18 +9,6 @@
 #include "system/omUndoStack.hpp"
 
 class OmStateManagerImpl {
- private:
-  om::tool::mode toolModeCur_;
-  om::tool::mode toolModePrev_;
-  // these tools are temporary and they should not be reactivated from previous
-  std::unordered_set<om::tool::mode, std::hash<int>> transientTools_;
-
-  // these tools are disabled, by default this is empty so all tools are enabled!
-  std::unordered_set<om::tool::mode, std::hash<int>> disabledTools_;
-
-  OmBrushSize brushSize_;
-  OmUndoStack undoStack_;
-
  public:
   OmStateManagerImpl() {
     ResetTool();
@@ -56,12 +44,16 @@ class OmStateManagerImpl {
     om::event::ToolChange();
   }
 
-  inline void EnableTool(om::tool::mode tool, bool isEnabled) {
-    if (isEnabled) {
-      disabledTools_.erase(tool);
-    } else {
-      disabledTools_.insert(tool);
+  inline void EnableTools(std::set<om::tool::mode> tools, bool isEnabled) {
+    for (om::tool::mode tool : tools) {
+      enableTool(tool, isEnabled);
     }
+    om::event::ToolChange();
+  }
+
+  inline void EnableTool(om::tool::mode tool, bool isEnabled) {
+    enableTool(tool, isEnabled);
+    om::event::ToolChange();
   }
 
   inline bool IsTransient(om::tool::mode tool) {
@@ -83,4 +75,25 @@ class OmStateManagerImpl {
   ///////          UndoStack
 
   inline OmUndoStack& UndoStack() { return undoStack_; }
+
+ private:
+  om::tool::mode toolModeCur_;
+  om::tool::mode toolModePrev_;
+  // these tools are temporary and they should not be reactivated from previous
+  std::unordered_set<om::tool::mode, std::hash<int>> transientTools_;
+
+  // these tools are disabled, by default this is empty so all tools are enabled!
+  std::unordered_set<om::tool::mode, std::hash<int>> disabledTools_;
+
+  OmBrushSize brushSize_;
+  OmUndoStack undoStack_;
+
+  inline void enableTool(om::tool::mode tool, bool isEnabled) {
+    if (isEnabled) {
+      disabledTools_.erase(tool);
+    } else {
+      disabledTools_.insert(tool);
+    }
+  }
+
 };

@@ -32,6 +32,7 @@ class OmStateManager : private om::singletonBase<OmStateManager> {
   static void SetToolModeAndSendEvent(const om::tool::mode tool);
   static void SetOldToolModeAndSendEvent();
   static bool IsEnabled(const om::tool::mode tool);
+  static void EnableTools(const std::set<om::tool::mode> tools, bool isEnabled);
   static void EnableTool(const om::tool::mode tool, bool isEnabled);
 
   // undostack

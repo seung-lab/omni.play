@@ -2,6 +2,7 @@
 #include "precomp.h"
 
 #include "common/common.h"
+#include "gui/tools.hpp"
 
 class CacheMonitorDialog;
 class InspectorWidget;
@@ -67,6 +68,10 @@ Q_SLOTS:
   void dumpActionLog();
 
  private:
+  const std::set<om::tool::mode> WRITE_ENABLED_TOOLS {
+    om::tool::PAINT, om::tool::ERASE, om::tool::FILL
+  };
+
   bool editsMade;
 
   InspectorWidget* inspector_;
