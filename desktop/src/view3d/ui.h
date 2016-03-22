@@ -45,7 +45,9 @@ class Ui {
   void navigationModeMouseDoubleClick(QMouseEvent* event);
   void navigationModeMouseWheel(QWheelEvent* event);
 
+  bool joinSplitModeMousePressed(om::tool::mode tool, QMouseEvent* event);
   bool joinSplitModeMouseReleased(om::tool::mode tool, QMouseEvent* event);
+
   bool validateModeMouseReleased(om::common::SetValid, QMouseEvent* event);
   bool shatterModeMouseReleased(QMouseEvent* event);
 

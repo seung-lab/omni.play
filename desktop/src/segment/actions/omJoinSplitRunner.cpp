@@ -13,16 +13,16 @@ void om::JoinSplitRunner::FindAndPerformOnSegments(const SegmentDataWrapper curS
                                  OmViewGroupState& vgs,
                                  const om::coords::Global curClickPt,
                                  om::tool::mode tool) {
-  const boost::optional<om::coords::Global> prevClickPt =
-      vgs.JoiningSplitting().FirstCoord();
+  const boost::optional<om::coords::Global> prevClickPt;
+      //vgs.JoiningSplitting().FirstCoord();
 
   if (prevClickPt) {
-    const SegmentDataWrapper prevSDW = vgs.JoiningSplitting().FirstSegment();
+    const SegmentDataWrapper prevSDW;// = vgs.JoiningSplitting().FirstSegment();
 
     OmSegment* seg1 = prevSDW.GetSegment();
     OmSegment* seg2 = curSDW.GetSegment();
 
-    vgs.JoiningSplitting().DeactivateTool();
+    //vgs.JoiningSplitting().DeactivateTool();
 
     if (!seg1 || !seg2) {
       return;
@@ -45,7 +45,20 @@ void om::JoinSplitRunner::FindAndPerformOnSegments(const SegmentDataWrapper curS
   } else {
     if (curSDW.IsSegmentValid()) {
       // set segment to be split later...
-      vgs.JoiningSplitting().SetFirstPoint(tool, curSDW, curClickPt);
+      //vgs.JoiningSplitting().SetFirstPoint(tool, curSDW, curClickPt);
     }
   }
+}
+
+void om::JoinSplitRunner::PrepareNextState(const OmViewGroupState& vgs,
+    const om::tool::mode tool) {
+  vgs.JoiningSplitting().PrepareNextState(tool);
+}
+
+void om::JoinSplitRunner::AddSegment(const OmViewGroupState& vgs, const om::tool::mode tool, 
+    const SegmentDataWrapper segmentDataWrapper) {
+  if (!sdw) {
+    return;
+  }
+  vgs.JoiningSplitting().AddSegment(segmentDataWrapper);
 }

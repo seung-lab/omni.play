@@ -245,7 +245,25 @@ void Ui::navigationModeMouseRelease(QMouseEvent* event) {
 }
 
 void Ui::navigationModeMouseMove(QMouseEvent* event) {
-  cameraMovementMouseUpdate(event);
+  const auto modifiers = event->modifiers();
+  const bool controlModifier = modifiers & Qt::ControlModifier;
+
+  const auto tool = OmStateManager::GetToolMode();
+  switch(tool) {
+    case om::tool::SELECT:
+      {
+        auto pickPoint = pickVoxelMouseCrosshair(event);
+        if (pickPoint.sdw.IsSegmentValid()) {
+          std::cout << "Picked! " << pickPoint.sdw.GetID() << std::endl;
+          if (controlModifier) {
+            deselectSegment(pickPoint.sdw);
+          }
+          return;
+        }
+      }
+    default:
+      cameraMovementMouseUpdate(event);
+  }
 }
 
 void Ui::navigationModeMouseDoubleClick(QMouseEvent* event) {

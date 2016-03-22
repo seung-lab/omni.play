@@ -44,6 +44,11 @@ class OmStateManagerImpl {
     notifyToolChange();
   }
 
+  inline void SetOldToolModeAndSendEvent() {
+    SetToolModeAndSendEvent(toolModePrev_);
+    return;
+  }
+
   inline void EnableTools(const std::set<om::tool::mode> tools, bool isEnabled) {
     for (om::tool::mode tool : tools) {
       enableTool(tool, isEnabled);
@@ -66,11 +71,6 @@ class OmStateManagerImpl {
     return disabledTools_.find(tool) == transientTools_.end();
   }
 
-  inline void SetOldToolModeAndSendEvent() {
-    SetToolModeAndSendEvent(toolModePrev_);
-    return;
-  }
-
   /////////////////////////////////
   ///////          UndoStack
 
@@ -79,6 +79,7 @@ class OmStateManagerImpl {
  private:
   om::tool::mode toolModeCur_;
   om::tool::mode toolModePrev_;
+  //
   // these tools are temporary and they should not be reactivated from previous
   std::unordered_set<om::tool::mode, std::hash<int>> transientTools_;
 
