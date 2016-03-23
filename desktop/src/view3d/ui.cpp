@@ -28,14 +28,14 @@ Ui::Ui(View3d& view3d, OmViewGroupState& vgs)
 
 Ui::~Ui() {}
 
-void Ui::MousePressed(QMouseEvent* event) { navigationModeMousePressed(event); }
+void Ui::MousePressed(QMouseEvent* event) { std::cout << "mouse pressed" << std::endl; navigationModeMousePressed(event); }
 
-void Ui::MouseRelease(QMouseEvent* event) { navigationModeMouseRelease(event); }
+void Ui::MouseRelease(QMouseEvent* event) { std::cout << "mouse released" << std::endl; navigationModeMouseRelease(event); }
 
 void Ui::MouseMove(QMouseEvent* event) {
   // ignore movement without buttons
   if (!event->buttons()) return;
-
+  std::cout << "mouse moved" << std::endl; 
   navigationModeMouseMove(event);
 }
 
@@ -62,15 +62,19 @@ void Ui::KeyPress(QKeyEvent* event) {
   }
 }
 
-bool Ui::joinSplitModeMouseReleased(om::tool::mode tool, QMouseEvent* event) {
+bool Ui::joinSplitModeSelectSegment(om::tool::mode tool, QMouseEvent* event) {
   auto pickPoint = pickVoxelMouseCrosshair(event);
 
   if (!pickPoint.sdw.IsSegmentValid()) {
     return false;
   }
 
-  om::JoinSplitRunner::FindAndPerformOnSegments(pickPoint.sdw, vgs_,
-                                   pickPoint.coord, tool);
+  om::JoinSplitRunner::SelectSegment(vgs_, tool, pickPoint.sdw);
+  return true;
+}
+
+bool Ui::joinSplitModeMouseReleased(om::tool::mode tool, QMouseEvent* event) {
+  om::JoinSplitRunner::PrepareNextState(vgs_);
   return true;
 }
 
@@ -163,7 +167,7 @@ void Ui::navigationModeMousePressed(QMouseEvent* event) {
         }
       case om::tool::mode::SPLIT:
       case om::tool::mode::JOIN:
-        if (joinSplitModeMouseReleased(toolMode, event)) {
+        if (joinSplitModeSelectSegment(toolMode, event)) {
           return;
         }
         break;
@@ -241,6 +245,15 @@ void Ui::doSelectSegment(const SegmentDataWrapper& sdw,
 }
 
 void Ui::navigationModeMouseRelease(QMouseEvent* event) {
+  const auto toolMode = OmStateManager::GetToolMode();
+  switch (toolMode) {
+    case om::tool::JOIN:
+    case om::tool::SPLIT:
+      if (joinSplitModeMouseReleased(toolMode, event)) {
+        return;
+      }
+      break;
+  }
   cameraMovementMouseEnd(event);
 }
 
@@ -261,9 +274,15 @@ void Ui::navigationModeMouseMove(QMouseEvent* event) {
           return;
         }
       }
-    default:
-      cameraMovementMouseUpdate(event);
+      break;
+    case om::tool::JOIN:
+    case om::tool::SPLIT:
+      if (joinSplitModeSelectSegment(tool, event)) {
+        return;
+      }
+      break;
   }
+  cameraMovementMouseUpdate(event);
 }
 
 void Ui::navigationModeMouseDoubleClick(QMouseEvent* event) {

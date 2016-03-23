@@ -55,10 +55,10 @@ void om::JoinSplitRunner::PrepareNextState(OmViewGroupState& vgs) {
 }
 
 //mouse click
-void om::JoinSplitRunner::AddSegment(OmViewGroupState& vgs, const om::tool::mode tool,
+void om::JoinSplitRunner::SelectSegment(OmViewGroupState& vgs, const om::tool::mode tool,
     const SegmentDataWrapper segmentDataWrapper) {
   if (!segmentDataWrapper.IsSegmentValid()) {
     return;
   }
-  vgs.JoiningSplitting().AddSegment(tool, segmentDataWrapper);
+  vgs.JoiningSplitting().SelectSegment(tool, segmentDataWrapper);
 }

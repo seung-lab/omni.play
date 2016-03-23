@@ -113,8 +113,9 @@ class OmMouseEventPress {
       return;
     }
 
-    om::JoinSplitRunner::FindAndPerformOnSegments(
-        *sdw, state_->getViewGroupState(), dataClickPoint_, tool);
+    om::JoinSplitRunner::SelectSegment(state_->getViewGroupState(), tool, *sdw);
+    //om::JoinSplitRunner::FindAndPerformOnSegments(
+        //*sdw, state_->getViewGroupState(), dataClickPoint_, tool);
   }
 
   void doFindAndShatterSegment() {

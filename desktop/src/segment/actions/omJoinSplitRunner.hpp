@@ -18,7 +18,7 @@ namespace JoinSplitRunner {
                                    const om::coords::Global curClickPt,
                                    om::tool::mode tool);
   void PrepareNextState(OmViewGroupState& vgs);
-  void AddSegment(OmViewGroupState& vgs, const om::tool::mode tool,
+  void SelectSegment(OmViewGroupState& vgs, const om::tool::mode tool,
     const SegmentDataWrapper segmentDataWrapper);
 }
 }

@@ -9,8 +9,18 @@
 #include "events/events.h"
 #include "viewGroup/omJoiningSplitting.hpp"
 
+template <typename T>
+std::string SetToString(std::set<T> set) {
+  std::ostringstream toReturn;
+  toReturn << "[";
+  for (T item : set) {
+    toReturn << item << ", ";
+  }
+  toReturn << "]";
+  return toReturn.str();
+}
 OmJoiningSplitting::OmJoiningSplitting() : shouldVolumeBeShownBroken_(false),
-  currentState_(State::NOT_INITIALIZED), currentTool_(om::tool::mode::PAN) {}
+  currentState_(State::FINISHED_STATE), currentTool_(om::tool::mode::PAN) {}
 
 const om::common::SegIDSet& OmJoiningSplitting::FirstBuffer() const {
   return const_cast<const om::common::SegIDSet&>(firstBuffer_);
@@ -34,23 +44,33 @@ void OmJoiningSplitting::ToolModeChangeEvent(const om::tool::mode eventTool) {
 }
 
 // Activate this tool and notify listeners (buttons)
-void OmJoiningSplitting::AddSegment(const om::tool::mode tool,
+void OmJoiningSplitting::SelectSegment(const om::tool::mode tool,
     const SegmentDataWrapper segmentDataWrapper) {
   activateTool(tool);
   bufferPointer_->insert(segmentDataWrapper.GetID());
+  std::cout << "current state" << StateToString(currentState_) << std::endl;
+  std::cout << "selected segment : " << segmentDataWrapper.GetID() << std::endl;
+  std::cout << "firstBuffer: " << SetToString(firstBuffer_) << std::endl;
+  std::cout << "secondBuffer: " << SetToString(secondBuffer_) << std::endl;
 }
 
 void OmJoiningSplitting::PrepareNextState() {
   switch(currentState_) {
+    case State::FINISHED_STATE:
+      prepareFirstState();
+      break;
     case State::FIRST_STATE:
       prepareSecondState();
       break;
-    case State::NOT_INITIALIZED:
     case State::SECOND_STATE:
     default:
-      prepareFirstState();
+      prepareFinishedState();
   }
   bufferPointer_->clear();
+}
+
+bool OmJoiningSplitting::IsFinished() {
+  return currentState_ == State::FINISHED_STATE;
 }
 
 void OmJoiningSplitting::activateTool(const om::tool::mode tool) {
@@ -67,7 +87,7 @@ void OmJoiningSplitting::activateTool(const om::tool::mode tool) {
 }
 
 void OmJoiningSplitting::reset() {
-  currentState_ = State::NOT_INITIALIZED;
+  currentState_ = State::FINISHED_STATE;
   PrepareNextState();
 }
 
@@ -92,6 +112,10 @@ void OmJoiningSplitting::prepareSecondState() {
   currentState_ = State::SECOND_STATE;
   secondBuffer_.clear();
   bufferPointer_ = &secondBuffer_;
+}
+
+void OmJoiningSplitting::prepareFinishedState() {
+  currentState_ = State::FINISHED_STATE;
 }
 
 bool OmJoiningSplitting::isToolSupported(om::tool::mode tool) {

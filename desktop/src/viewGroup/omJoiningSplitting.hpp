@@ -8,7 +8,7 @@
 
 class OmJoiningSplitting : public om::event::ToolModeEventListener {
  public:
-  enum class State { NOT_INITIALIZED = 0, FIRST_STATE = 1, SECOND_STATE = 2 };
+  enum class State { FINISHED_STATE = 0, FIRST_STATE = 1, SECOND_STATE = 2 };
 
   OmJoiningSplitting();
 
@@ -22,25 +22,28 @@ class OmJoiningSplitting : public om::event::ToolModeEventListener {
   void ToolModeChangeEvent(const om::tool::mode tool) override;
 
   // Activate the tool (if not activated already) and 
-  // add segment to the current segment buffer.
-  void AddSegment(const om::tool::mode tool,
+  // Select segment to the current segment buffer.
+  void SelectSegment(const om::tool::mode tool,
       const SegmentDataWrapper segmentDataWrapper);
 
   /*
    * Get the next buffer ready to accept segments.
    * This is a state machine where:
    *
-   * NOT_INITIALIZED --> FIRST_STATE --> SECOND_STATE
-   *                          ^              |
-   *                          |              |
-   *                          *--------------*
+   * FINISHED_STATE --------> FIRST_STATE
+   *      ^                        |
+   *      |                        |
+   *      *----- SECOND_STATE -----* 
    */
   void PrepareNextState();
 
+  // is the data ready to be read (i.e. first and second states completed)
+  bool IsFinished();
+  
   static std::string StateToString(const State state) {
     switch(state) {
-      case State::NOT_INITIALIZED:
-        return "NOT_INITIALIZED";
+      case State::FINISHED_STATE:
+        return "FINISHED_STATE";
       case State::FIRST_STATE:
         return "FIRST_STATE";
       case State::SECOND_STATE:
@@ -59,8 +62,11 @@ class OmJoiningSplitting : public om::event::ToolModeEventListener {
   void prepareFirstState();
   // clear out second buffer and set thet state to SECOND_STATE
   void prepareSecondState();
+  // just set the current state to finished state
+  void prepareFinishedState();
 
   bool isToolSupported(om::tool::mode tool);
+
   bool shouldVolumeBeShownBroken_;
 
   // pointer to the buffer our current state is working on
