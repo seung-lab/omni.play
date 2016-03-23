@@ -27,8 +27,7 @@ void om::JoinSplitRunner::FindAndPerformOnSegments(const SegmentDataWrapper curS
     if (!seg1 || !seg2) {
       return;
     }
-
-    if (seg1 == seg2) {
+if (seg1 == seg2) {
       log_debugs << "can't perform action on same segment";
       return;
     }
@@ -50,15 +49,16 @@ void om::JoinSplitRunner::FindAndPerformOnSegments(const SegmentDataWrapper curS
   }
 }
 
-void om::JoinSplitRunner::PrepareNextState(const OmViewGroupState& vgs,
-    const om::tool::mode tool) {
-  vgs.JoiningSplitting().PrepareNextState(tool);
+// mouse release
+void om::JoinSplitRunner::PrepareNextState(OmViewGroupState& vgs) {
+  vgs.JoiningSplitting().PrepareNextState();
 }
 
-void om::JoinSplitRunner::AddSegment(const OmViewGroupState& vgs, const om::tool::mode tool, 
+//mouse click
+void om::JoinSplitRunner::AddSegment(OmViewGroupState& vgs, const om::tool::mode tool,
     const SegmentDataWrapper segmentDataWrapper) {
-  if (!sdw) {
+  if (!segmentDataWrapper.IsSegmentValid()) {
     return;
   }
-  vgs.JoiningSplitting().AddSegment(segmentDataWrapper);
+  vgs.JoiningSplitting().AddSegment(tool, segmentDataWrapper);
 }

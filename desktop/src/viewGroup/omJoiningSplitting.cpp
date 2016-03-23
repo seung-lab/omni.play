@@ -10,7 +10,7 @@
 #include "viewGroup/omJoiningSplitting.hpp"
 
 OmJoiningSplitting::OmJoiningSplitting() : shouldVolumeBeShownBroken_(false),
-  currentState_(State::NOT_INITIALIZED) {}
+  currentState_(State::NOT_INITIALIZED), currentTool_(om::tool::mode::PAN) {}
 
 const om::common::SegIDSet& OmJoiningSplitting::FirstBuffer() const {
   return const_cast<const om::common::SegIDSet&>(firstBuffer_);
@@ -33,24 +33,14 @@ void OmJoiningSplitting::ToolModeChangeEvent(const om::tool::mode eventTool) {
   activateTool(eventTool);
 }
 
-
 // Activate this tool and notify listeners (buttons)
-void OmJoiningSplitting::AddSegment(const SegmentDataWrapper segmentDataWrapper) {
+void OmJoiningSplitting::AddSegment(const om::tool::mode tool,
+    const SegmentDataWrapper segmentDataWrapper) {
+  activateTool(tool);
   bufferPointer_->insert(segmentDataWrapper.GetID());
 }
 
-void OmJoiningSplitting::activateTool(const om::tool::mode tool) {
-  // don't do anything if the tool is the same (i.e. for multithreading events)
-  if (currentTool_ == tool) {
-    return;
-  }
-
-  currentState_ = State::NOT_INITIALIZED;
-  currentTool_ = tool;
-}
-
-void OmJoiningSplitting::PrepareNextState(const om::tool::mode tool) {
-  activateTool(tool);
+void OmJoiningSplitting::PrepareNextState() {
   switch(currentState_) {
     case State::FIRST_STATE:
       prepareSecondState();
@@ -61,6 +51,24 @@ void OmJoiningSplitting::PrepareNextState(const om::tool::mode tool) {
       prepareFirstState();
   }
   bufferPointer_->clear();
+}
+
+void OmJoiningSplitting::activateTool(const om::tool::mode tool) {
+  // don't do anything if the tool is the same (i.e. for multithreading events)
+  if (currentTool_ == tool) {
+    return;
+  }
+
+  currentTool_ = tool;
+
+  if (isToolSupported(currentTool_)) {
+    reset();
+  }
+}
+
+void OmJoiningSplitting::reset() {
+  currentState_ = State::NOT_INITIALIZED;
+  PrepareNextState();
 }
 
 void OmJoiningSplitting::prepareFirstState() {
@@ -86,4 +94,12 @@ void OmJoiningSplitting::prepareSecondState() {
   bufferPointer_ = &secondBuffer_;
 }
 
+bool OmJoiningSplitting::isToolSupported(om::tool::mode tool) {
+  return JOIN_SPLIT_TOOLS.find(tool) != JOIN_SPLIT_TOOLS.end();
+}
 
+const om::tool::mode JS_TOOLS[] = {
+  om::tool::mode::JOIN, om::tool::mode::SPLIT
+};
+const std::set<om::tool::mode> OmJoiningSplitting::JOIN_SPLIT_TOOLS(
+    JS_TOOLS, JS_TOOLS + sizeof(JS_TOOLS)/sizeof(JS_TOOLS[0]));

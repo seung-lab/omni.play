@@ -21,24 +21,21 @@ class OmJoiningSplitting : public om::event::ToolModeEventListener {
   // listener for new tool change
   void ToolModeChangeEvent(const om::tool::mode tool) override;
 
-  // Add segment to the current list
-  void AddSegment(const SegmentDataWrapper segmentDataWrapper);
+  // Activate the tool (if not activated already) and 
+  // add segment to the current segment buffer.
+  void AddSegment(const om::tool::mode tool,
+      const SegmentDataWrapper segmentDataWrapper);
 
   /*
    * Get the next buffer ready to accept segments.
    * This is a state machine where:
    *
-   * NOT_INITIALIZED
-   *       | NextState()
-   *       v               NextState()
-   * FIRST_STATE --------------------------> SECOND_STATE
-   *  ^   |   ^                                   |
-   *  |   |   |     NextState() || tool change    |
-   *  *---*   *-----------------------------------*
-   * tool change
-   *
+   * NOT_INITIALIZED --> FIRST_STATE --> SECOND_STATE
+   *                          ^              |
+   *                          |              |
+   *                          *--------------*
    */
-  void PrepareNextState(const om::tool::mode tool);
+  void PrepareNextState();
 
   static std::string StateToString(const State state) {
     switch(state) {
@@ -52,8 +49,10 @@ class OmJoiningSplitting : public om::event::ToolModeEventListener {
   }
 
  private:
-  // Set state to NOT_INITIALIZED if the tool has changed
+  // If tool not already activated, reset the statemachine for the next state
   void activateTool(om::tool::mode tool);
+
+  void reset();
 
   // clear out first and second buffer and set thet state to FIRST_STATE
   // Also set the volume to be shown broken if we are splitting
@@ -61,6 +60,7 @@ class OmJoiningSplitting : public om::event::ToolModeEventListener {
   // clear out second buffer and set thet state to SECOND_STATE
   void prepareSecondState();
 
+  bool isToolSupported(om::tool::mode tool);
   bool shouldVolumeBeShownBroken_;
 
   // pointer to the buffer our current state is working on
@@ -72,7 +72,10 @@ class OmJoiningSplitting : public om::event::ToolModeEventListener {
 
   // use this as a block from reactivating the tool
   om::tool::mode currentTool_;
-  
+
   // current state of this component
   State currentState_;
+
+  // Create a static const set of the supported tools list
+  static const std::set<om::tool::mode> JOIN_SPLIT_TOOLS;
 };
