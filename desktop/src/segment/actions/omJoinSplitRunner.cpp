@@ -8,6 +8,7 @@
 #include "segment/omSegment.h"
 #include "utility/segmentationDataWrapper.hpp"
 #include "common/enums.hpp"
+#include "system/omStateManager.h"
 
 void om::JoinSplitRunner::FindAndPerformOnSegments(const SegmentDataWrapper curSDW,
                                  OmViewGroupState& vgs,
@@ -32,14 +33,6 @@ if (seg1 == seg2) {
       return;
     }
 
-    switch (tool) {
-      case om::tool::mode::JOIN:
-        OmActions::JoinSegments(vgs.Segmentation(), seg1, seg2);
-        break;
-      case om::tool::mode::SPLIT:
-        OmActions::FindAndSplitSegments(vgs.Segmentation(), seg1, seg2);
-        break;
-    }
 
   } else {
     if (curSDW.IsSegmentValid()) {
@@ -50,8 +43,33 @@ if (seg1 == seg2) {
 }
 
 // mouse release
-void om::JoinSplitRunner::GoToNextState(OmViewGroupState& vgs) {
-  vgs.JoiningSplitting().GoToNextState();
+void om::JoinSplitRunner::GoToNextState(OmViewGroupState& vgs, om::tool::mode tool) {
+  OmJoiningSplitting& joiningSplitting = vgs.JoiningSplitting();
+
+  joiningSplitting.GoToNextState();
+
+  const om::common::SegIDSet firstBuffer = joiningSplitting.FirstBuffer();
+  const om::common::SegIDSet secondBuffer = joiningSplitting.SecondBuffer();
+
+  if (joiningSplitting.IsFinished() && !firstBuffer.empty() && !secondBuffer.empty()) {
+
+    OmSegment* firstSegment = SegmentDataWrapper(vgs.Segmentation(), 
+        *joiningSplitting.FirstBuffer().begin()).GetSegment();
+    OmSegment* secondSegment = SegmentDataWrapper(vgs.Segmentation(), 
+        *joiningSplitting.SecondBuffer().begin()).GetSegment();
+
+    switch (tool) {
+      case om::tool::mode::JOIN:
+        OmActions::JoinSegments(
+            vgs.Segmentation(), firstSegment, secondSegment);
+        break;
+      case om::tool::mode::SPLIT:
+        OmActions::FindAndSplitSegments(
+            vgs.Segmentation(), firstSegment, secondSegment);
+        break;
+    }
+    //OmStateManager::SetOldToolModeAndSendEvent();
+  }
 }
 
 //mouse click

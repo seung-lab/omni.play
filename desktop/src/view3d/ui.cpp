@@ -28,14 +28,13 @@ Ui::Ui(View3d& view3d, OmViewGroupState& vgs)
 
 Ui::~Ui() {}
 
-void Ui::MousePressed(QMouseEvent* event) { std::cout << "mouse pressed" << std::endl; navigationModeMousePressed(event); }
+void Ui::MousePressed(QMouseEvent* event) { navigationModeMousePressed(event); }
 
-void Ui::MouseRelease(QMouseEvent* event) { std::cout << "mouse released" << std::endl; navigationModeMouseRelease(event); }
+void Ui::MouseRelease(QMouseEvent* event) { navigationModeMouseRelease(event); }
 
 void Ui::MouseMove(QMouseEvent* event) {
   // ignore movement without buttons
   if (!event->buttons()) return;
-  std::cout << "mouse moved" << std::endl; 
   navigationModeMouseMove(event);
 }
 
@@ -74,7 +73,7 @@ bool Ui::joinSplitModeSelectSegment(om::tool::mode tool, QMouseEvent* event) {
 }
 
 bool Ui::joinSplitModeMouseReleased(om::tool::mode tool, QMouseEvent* event) {
-  om::JoinSplitRunner::GoToNextState(vgs_);
+  om::JoinSplitRunner::GoToNextState(vgs_, tool);
   return true;
 }
 
