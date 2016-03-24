@@ -74,7 +74,7 @@ bool Ui::joinSplitModeSelectSegment(om::tool::mode tool, QMouseEvent* event) {
 }
 
 bool Ui::joinSplitModeMouseReleased(om::tool::mode tool, QMouseEvent* event) {
-  om::JoinSplitRunner::PrepareNextState(vgs_);
+  om::JoinSplitRunner::GoToNextState(vgs_);
   return true;
 }
 

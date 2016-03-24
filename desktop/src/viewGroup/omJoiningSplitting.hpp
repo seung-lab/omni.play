@@ -35,7 +35,7 @@ class OmJoiningSplitting : public om::event::ToolModeEventListener {
    *      |                        |
    *      *----- SECOND_STATE -----* 
    */
-  void PrepareNextState();
+  void GoToNextState();
 
   // is the data ready to be read (i.e. first and second states completed)
   bool IsFinished();
@@ -59,11 +59,11 @@ class OmJoiningSplitting : public om::event::ToolModeEventListener {
 
   // clear out first and second buffer and set thet state to FIRST_STATE
   // Also set the volume to be shown broken if we are splitting
-  void prepareFirstState();
+  void goToFirstState();
   // clear out second buffer and set thet state to SECOND_STATE
-  void prepareSecondState();
+  void goToSecondState();
   // just set the current state to finished state
-  void prepareFinishedState();
+  void goToFinishedState();
 
   bool isToolSupported(om::tool::mode tool);
 

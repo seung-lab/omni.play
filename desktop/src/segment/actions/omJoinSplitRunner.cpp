@@ -50,8 +50,8 @@ if (seg1 == seg2) {
 }
 
 // mouse release
-void om::JoinSplitRunner::PrepareNextState(OmViewGroupState& vgs) {
-  vgs.JoiningSplitting().PrepareNextState();
+void om::JoinSplitRunner::GoToNextState(OmViewGroupState& vgs) {
+  vgs.JoiningSplitting().GoToNextState();
 }
 
 //mouse click

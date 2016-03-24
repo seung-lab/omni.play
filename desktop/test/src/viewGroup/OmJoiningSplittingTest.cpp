@@ -70,7 +70,7 @@ TEST(omJoiningSplittingTest , testSecondBuffer) {
   joiningSplitting.SelectSegment(om::tool::mode::JOIN,
       SegmentDataWrapper(TEST_SEGMENTATION_ID, TEST_SEGMENT_ID_A));
 
-  joiningSplitting.PrepareNextState();
+  joiningSplitting.GoToNextState();
   joiningSplitting.SelectSegment(om::tool::mode::JOIN,
       SegmentDataWrapper(TEST_SEGMENTATION_ID, TEST_SEGMENT_ID_C));
   joiningSplitting.SelectSegment(om::tool::mode::JOIN,
@@ -99,7 +99,7 @@ TEST(omJoiningSplittingTest , testFinished) {
       SegmentDataWrapper(TEST_SEGMENTATION_ID, TEST_SEGMENT_ID_B));
 
   // advance to second buffer
-  joiningSplitting.PrepareNextState();
+  joiningSplitting.GoToNextState();
 
   // select to second buffer
   joiningSplitting.SelectSegment(om::tool::mode::JOIN,
@@ -108,7 +108,7 @@ TEST(omJoiningSplittingTest , testFinished) {
       SegmentDataWrapper(TEST_SEGMENTATION_ID, TEST_SEGMENT_ID_D));
   
   // this should set the data to be ready for consumption
-  joiningSplitting.PrepareNextState();
+  joiningSplitting.GoToNextState();
 
   // test
   const om::common::SegIDSet& firstBuffer = joiningSplitting.FirstBuffer();
@@ -135,7 +135,7 @@ TEST(omJoiningSplittingTest , testFinishedRestart) {
       SegmentDataWrapper(TEST_SEGMENTATION_ID, TEST_SEGMENT_ID_B));
 
   // advance to second buffer
-  joiningSplitting.PrepareNextState();
+  joiningSplitting.GoToNextState();
 
   // select to second buffer
   joiningSplitting.SelectSegment(om::tool::mode::JOIN,
@@ -144,10 +144,10 @@ TEST(omJoiningSplittingTest , testFinishedRestart) {
       SegmentDataWrapper(TEST_SEGMENTATION_ID, TEST_SEGMENT_ID_D));
   
   // this should set the data to be ready for consumption
-  joiningSplitting.PrepareNextState();
+  joiningSplitting.GoToNextState();
 
   // this should reset the buffers as we are back into the first state
-  joiningSplitting.PrepareNextState();
+  joiningSplitting.GoToNextState();
 
   // test that buffers are not clear
   const om::common::SegIDSet& firstBuffer = joiningSplitting.FirstBuffer();
@@ -166,14 +166,14 @@ TEST(omJoiningSplittingTest , testFinishedSelectAgain) {
       SegmentDataWrapper(TEST_SEGMENTATION_ID, TEST_SEGMENT_ID_A));
 
   // advance to second buffer
-  joiningSplitting.PrepareNextState();
+  joiningSplitting.GoToNextState();
 
   // select to second buffer
   joiningSplitting.SelectSegment(om::tool::mode::JOIN,
       SegmentDataWrapper(TEST_SEGMENTATION_ID, TEST_SEGMENT_ID_B));
   
   // this should set the data to be ready for consumption
-  joiningSplitting.PrepareNextState();
+  joiningSplitting.GoToNextState();
 
   // this should reset the buffers as we are back into the first state
   joiningSplitting.SelectSegment(om::tool::mode::JOIN,
@@ -233,13 +233,13 @@ TEST(omJoiningSplittingTest , testIsFinished) {
   EXPECT_FALSE(joiningSplitting.IsFinished());
   
   // second state is not finished
-  joiningSplitting.PrepareNextState();
+  joiningSplitting.GoToNextState();
   joiningSplitting.SelectSegment(om::tool::mode::JOIN,
       SegmentDataWrapper(TEST_SEGMENTATION_ID, TEST_SEGMENT_ID_B));
   EXPECT_FALSE(joiningSplitting.IsFinished());
 
   // finished state is finished
-  joiningSplitting.PrepareNextState();
+  joiningSplitting.GoToNextState();
   EXPECT_TRUE(joiningSplitting.IsFinished());
 
   // selecting automatically jumps first state which is not finished
@@ -259,7 +259,7 @@ TEST(omJoiningSplittingTest , testJoinShowBroken) {
   EXPECT_FALSE(joiningSplitting.ShouldVolumeBeShownBroken());
 
   // Second state with JOIN should be false
-  joiningSplitting.PrepareNextState();
+  joiningSplitting.GoToNextState();
   joiningSplitting.SelectSegment(om::tool::mode::JOIN,
       SegmentDataWrapper(TEST_SEGMENTATION_ID, TEST_SEGMENT_ID_B));
   EXPECT_FALSE(joiningSplitting.ShouldVolumeBeShownBroken());
@@ -276,7 +276,7 @@ TEST(omJoiningSplittingTest , testSplitShowBroken) {
   EXPECT_TRUE(joiningSplitting.ShouldVolumeBeShownBroken());
 
   // Second state with SPLIT should be true
-  joiningSplitting.PrepareNextState();
+  joiningSplitting.GoToNextState();
   joiningSplitting.SelectSegment(om::tool::mode::SPLIT,
       SegmentDataWrapper(TEST_SEGMENTATION_ID, TEST_SEGMENT_ID_B));
   EXPECT_TRUE(joiningSplitting.ShouldVolumeBeShownBroken());
@@ -321,7 +321,7 @@ TEST(omJoiningSplittingTest , testJoinToSplitShowBrokenSecondState) {
   // Second state with join
   joiningSplitting.SelectSegment(om::tool::mode::JOIN,
       SegmentDataWrapper(TEST_SEGMENTATION_ID, TEST_SEGMENT_ID_A));
-  joiningSplitting.PrepareNextState();
+  joiningSplitting.GoToNextState();
 
   // Reset state with split should now show broken = true
   joiningSplitting.SelectSegment(om::tool::mode::SPLIT,
@@ -337,7 +337,7 @@ TEST(omJoiningSplittingTest , testSplitToJoinShowBrokenSecondState) {
   // Second state with split
   joiningSplitting.SelectSegment(om::tool::mode::SPLIT,
       SegmentDataWrapper(TEST_SEGMENTATION_ID, TEST_SEGMENT_ID_A));
-  joiningSplitting.PrepareNextState();
+  joiningSplitting.GoToNextState();
 
   // Reset state with join should now show broken = false
   joiningSplitting.SelectSegment(om::tool::mode::JOIN,

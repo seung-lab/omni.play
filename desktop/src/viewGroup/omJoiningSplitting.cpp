@@ -52,17 +52,17 @@ void OmJoiningSplitting::SelectSegment(const om::tool::mode tool,
   bufferPointer_->insert(segmentDataWrapper.GetID());
 }
 
-void OmJoiningSplitting::PrepareNextState() {
+void OmJoiningSplitting::GoToNextState() {
   switch(currentState_) {
     case State::FINISHED_STATE:
-      prepareFirstState();
+      goToFirstState();
       break;
     case State::FIRST_STATE:
-      prepareSecondState();
+      goToSecondState();
       break;
     case State::SECOND_STATE:
     default:
-      prepareFinishedState();
+      goToFinishedState();
   }
 }
 
@@ -70,7 +70,6 @@ bool OmJoiningSplitting::IsFinished() {
   return currentState_ == State::FINISHED_STATE;
 }
 
-// reset if newly active
 void OmJoiningSplitting::activateTool(const om::tool::mode tool) {
   // don't do anything if the tool is the same
   if (currentTool_ == tool && !IsFinished()) {
@@ -86,10 +85,10 @@ void OmJoiningSplitting::activateTool(const om::tool::mode tool) {
 
 void OmJoiningSplitting::reset() {
   currentState_ = State::FINISHED_STATE;
-  PrepareNextState();
+  GoToNextState();
 }
 
-void OmJoiningSplitting::prepareFirstState() {
+void OmJoiningSplitting::goToFirstState() {
   currentState_ = State::FIRST_STATE;
   firstBuffer_.clear();
   secondBuffer_.clear();
@@ -106,13 +105,13 @@ void OmJoiningSplitting::prepareFirstState() {
   }
 }
 
-void OmJoiningSplitting::prepareSecondState() {
+void OmJoiningSplitting::goToSecondState() {
   currentState_ = State::SECOND_STATE;
   secondBuffer_.clear();
   bufferPointer_ = &secondBuffer_;
 }
 
-void OmJoiningSplitting::prepareFinishedState() {
+void OmJoiningSplitting::goToFinishedState() {
   currentState_ = State::FINISHED_STATE;
 }
 
