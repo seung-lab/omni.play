@@ -4,6 +4,7 @@
 #include "view2d/omMouseEventUtils.hpp"
 #include "view2d/omView2d.h"
 #include "view2d/omView2dState.hpp"
+#include "segment/actions/omJoinSplitRunner.hpp"
 
 class OmMouseEventRelease {
  private:
@@ -20,8 +21,9 @@ class OmMouseEventRelease {
 
     state_->setScribbling(false);
     state_->SetLastDataPoint(dataClickPoint_);
+    om::tool::mode tool = OmStateManager::GetToolMode();
 
-    switch (OmStateManager::GetToolMode()) {
+    switch (tool) {
       case om::tool::PAINT:
       case om::tool::ERASE:
       case om::tool::LANDMARK:
@@ -32,7 +34,11 @@ class OmMouseEventRelease {
           OmBrushSelect::EndSelector(state_);
         }
         state_->OverrideToolModeForPan(false);
-
+        break;
+      case om::tool::JOIN:
+      case om::tool::SPLIT:
+        om::JoinSplitRunner::GoToNextState(
+            state_->getViewGroupState(), tool);
       default:
         break;
     }
