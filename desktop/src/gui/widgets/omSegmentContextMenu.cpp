@@ -12,10 +12,12 @@
 #include "segment/omSegmentIterator.h"
 #include "segment/omSegmentSelector.h"
 #include "segment/omSegmentUtils.hpp"
+#include "system/omStateManager.h"
 #include "system/cache/omCacheManager.h"
 #include "system/omStateManager.h"
 #include "utility/dataWrappers.h"
 #include "viewGroup/omJoiningSplitting.hpp"
+#include "segment/actions/omJoinSplitRunner.hpp"
 #include "viewGroup/omViewGroupState.h"
 
 /////////////////////////////////
@@ -143,13 +145,19 @@ void OmSegmentContextMenu::joinAllSelectedSegments() {
 }
 
 void OmSegmentContextMenu::joinThisSegment() {
-  //TODO
-  //vgs_->JoiningSplitting().SetFirstPoint(om::tool::mode::JOIN, sdw_, coord_);
+  om::JoinSplitRunner::SelectSegment(*vgs_, om::tool::JOIN, sdw_);
+  om::JoinSplitRunner::GoToNextState(*vgs_, om::tool::JOIN);
+  // we send the event after so we don't run into a race condition with 
+  // selecting a segment then resetting it immediately after
+  OmStateManager::SetToolModeAndSendEvent(om::tool::JOIN);
 }
 
 void OmSegmentContextMenu::splitSegments() {
-  //TODO
-  //vgs_->JoiningSplitting().SetFirstPoint(om::tool::mode::SPLIT, sdw_, coord_);
+  om::JoinSplitRunner::SelectSegment(*vgs_, om::tool::SPLIT, sdw_);
+  om::JoinSplitRunner::GoToNextState(*vgs_, om::tool::SPLIT);
+  // we send the event after so we don't run into a race condition with 
+  // selecting a segment then resetting it immediately after
+  OmStateManager::SetToolModeAndSendEvent(om::tool::SPLIT);
 }
 
 void OmSegmentContextMenu::cutSegments() { OmActions::CutSegment(sdw_); }
