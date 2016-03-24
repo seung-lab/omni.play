@@ -181,8 +181,7 @@ TEST(omJoiningSplittingTest , testFinishedSelectAgain) {
   joiningSplitting.SelectSegment(om::tool::mode::JOIN,
       SegmentDataWrapper(TEST_SEGMENTATION_ID, TEST_SEGMENT_ID_D));
 
-  // test A and B were selected to the first buffer
-  // test that buffers are not clear
+  // test C and D are added into the first buffer
   const om::common::SegIDSet firstBuffer = joiningSplitting.FirstBuffer();
   const om::common::SegIDSet secondBuffer = joiningSplitting.SecondBuffer();
   EXPECT_FALSE(isSegmentInBuffer(TEST_SEGMENT_ID_A, firstBuffer));
@@ -356,7 +355,7 @@ TEST(omJoiningSplittingTest , toolChangeEventSame) {
       SegmentDataWrapper(TEST_SEGMENTATION_ID, TEST_SEGMENT_ID_A));
 
   // this should have no affect
-  joiningSplitting.ToolModeChangeEvent(om::tool::mode::JOIN);
+  joiningSplitting.ToolModeChangeEvent(om::tool::mode::SPLIT);
 
   // first state select some more
   joiningSplitting.SelectSegment(om::tool::mode::SPLIT,
@@ -383,6 +382,30 @@ TEST(omJoiningSplittingTest , toolChangeEventDifferent) {
   joiningSplitting.ToolModeChangeEvent(om::tool::mode::JOIN);
 
   joiningSplitting.SelectSegment(om::tool::mode::JOIN,
+      SegmentDataWrapper(TEST_SEGMENTATION_ID, TEST_SEGMENT_ID_B));
+
+  // test only B was selected to the first buffer
+  const om::common::SegIDSet& firstBuffer = joiningSplitting.FirstBuffer();
+  const om::common::SegIDSet& secondBuffer = joiningSplitting.SecondBuffer();
+  EXPECT_FALSE(isSegmentInBuffer(TEST_SEGMENT_ID_A, firstBuffer));
+  EXPECT_TRUE(isSegmentInBuffer(TEST_SEGMENT_ID_B, firstBuffer));
+  EXPECT_TRUE(secondBuffer.empty());
+}
+
+/*
+ * Tool mode change with different tool event resets even though you select with 
+ * original tool
+ */
+TEST(omJoiningSplittingTest , toolChangeEventDifferentButOriginalTool) {
+  OmJoiningSplitting joiningSplitting;
+  // first state with split
+  joiningSplitting.SelectSegment(om::tool::mode::SPLIT,
+      SegmentDataWrapper(TEST_SEGMENTATION_ID, TEST_SEGMENT_ID_A));
+
+  // this should reset
+  joiningSplitting.ToolModeChangeEvent(om::tool::mode::JOIN);
+
+  joiningSplitting.SelectSegment(om::tool::mode::SPLIT,
       SegmentDataWrapper(TEST_SEGMENTATION_ID, TEST_SEGMENT_ID_B));
 
   // test only B was selected to the first buffer

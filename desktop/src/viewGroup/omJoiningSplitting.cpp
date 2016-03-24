@@ -20,7 +20,9 @@ std::string SetToString(std::set<T> set) {
   return toReturn.str();
 }
 OmJoiningSplitting::OmJoiningSplitting() : shouldVolumeBeShownBroken_(false),
-  currentState_(State::FINISHED_STATE), currentTool_(om::tool::mode::PAN) {}
+  currentState_(State::FINISHED_STATE), currentTool_(om::tool::mode::PAN) {
+  reset();
+  }
 
 const om::common::SegIDSet& OmJoiningSplitting::FirstBuffer() const {
   return const_cast<const om::common::SegIDSet&>(firstBuffer_);
@@ -48,10 +50,6 @@ void OmJoiningSplitting::SelectSegment(const om::tool::mode tool,
     const SegmentDataWrapper segmentDataWrapper) {
   activateTool(tool);
   bufferPointer_->insert(segmentDataWrapper.GetID());
-  std::cout << "current state" << StateToString(currentState_) << std::endl;
-  std::cout << "selected segment : " << segmentDataWrapper.GetID() << std::endl;
-  std::cout << "firstBuffer: " << SetToString(firstBuffer_) << std::endl;
-  std::cout << "secondBuffer: " << SetToString(secondBuffer_) << std::endl;
 }
 
 void OmJoiningSplitting::PrepareNextState() {
@@ -66,16 +64,16 @@ void OmJoiningSplitting::PrepareNextState() {
     default:
       prepareFinishedState();
   }
-  bufferPointer_->clear();
 }
 
 bool OmJoiningSplitting::IsFinished() {
   return currentState_ == State::FINISHED_STATE;
 }
 
+// reset if newly active
 void OmJoiningSplitting::activateTool(const om::tool::mode tool) {
-  // don't do anything if the tool is the same (i.e. for multithreading events)
-  if (currentTool_ == tool) {
+  // don't do anything if the tool is the same
+  if (currentTool_ == tool && !IsFinished()) {
     return;
   }
 
