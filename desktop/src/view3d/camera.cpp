@@ -257,5 +257,9 @@ void Camera::MovementUpdate(const Vector2<float>& point) {
 void Camera::MovementEnd(const Vector2<float>&) {
   movementType_ = CameraMovementType::NONE;
 }
+
+bool Camera::IsMoving() {
+  return movementType_ != CameraMovementType::NONE;
+}
 }
 }  // om::v3d::

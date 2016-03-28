@@ -72,9 +72,8 @@ bool Ui::joinSplitModeSelectSegment(om::tool::mode tool, QMouseEvent* event) {
   return true;
 }
 
-bool Ui::joinSplitModeMouseReleased(om::tool::mode tool, QMouseEvent* event) {
+void Ui::joinSplitModeMouseReleased(om::tool::mode tool, QMouseEvent* event) {
   om::JoinSplitRunner::GoToNextState(vgs_, tool);
-  return true;
 }
 
 bool Ui::validateModeMouseReleased(om::common::SetValid setValid, QMouseEvent* event) {
@@ -248,9 +247,7 @@ void Ui::navigationModeMouseRelease(QMouseEvent* event) {
   switch (toolMode) {
     case om::tool::JOIN:
     case om::tool::SPLIT:
-      if (joinSplitModeMouseReleased(toolMode, event)) {
-        return;
-      }
+      joinSplitModeMouseReleased(toolMode, event);
       break;
   }
   cameraMovementMouseEnd(event);
@@ -258,30 +255,20 @@ void Ui::navigationModeMouseRelease(QMouseEvent* event) {
 
 void Ui::navigationModeMouseMove(QMouseEvent* event) {
   const auto modifiers = event->modifiers();
-  const bool controlModifier = modifiers & Qt::ControlModifier;
-
+  const bool controlModifier = modifiers & Qt::ControlModifier; 
   const auto tool = OmStateManager::GetToolMode();
+
+  if (cameraIsMoving()) {
+    cameraMovementMouseUpdate(event);
+    return;
+  }
+
   switch(tool) {
-    case om::tool::SELECT:
-      {
-        auto pickPoint = pickVoxelMouseCrosshair(event);
-        if (pickPoint.sdw.IsSegmentValid()) {
-          std::cout << "Picked! " << pickPoint.sdw.GetID() << std::endl;
-          if (controlModifier) {
-            deselectSegment(pickPoint.sdw);
-          }
-          return;
-        }
-      }
-      break;
     case om::tool::JOIN:
     case om::tool::SPLIT:
-      if (joinSplitModeSelectSegment(tool, event)) {
-        return;
-      }
+      joinSplitModeSelectSegment(tool, event);
       break;
   }
-  cameraMovementMouseUpdate(event);
 }
 
 void Ui::navigationModeMouseDoubleClick(QMouseEvent* event) {
@@ -327,6 +314,10 @@ void Ui::cameraMovementMouseUpdate(QMouseEvent* event) {
   Vector2f point = Vector2f(event->x(), event->y());
   view3d_.GetCamera().MovementUpdate(point);
   view3d_.updateGL();
+}
+
+bool Ui::cameraIsMoving() {
+  return view3d_.GetCamera().IsMoving();
 }
 
 void Ui::cameraMovementMouseWheel(QWheelEvent* event) {

@@ -68,6 +68,7 @@ class Camera {
   void MovementStart(CameraMovementType type, const Vector2<float>& point);
   void MovementUpdate(const Vector2<float>& point);
   void MovementEnd(const Vector2<float>& point);
+  bool IsMoving();
 
  private:
   // viewport props
