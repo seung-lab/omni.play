@@ -43,6 +43,7 @@ class OmSegmentsImpl {
   std::pair<bool, om::segment::UserEdge> JoinFromUserAction(
       const om::segment::UserEdge& e);
   om::segment::UserEdge SplitEdgeUserAction(const om::segment::UserEdge& e);
+  om::segment::UserEdge SplitEdgeMinCutUserAction(const om::segment::UserEdge& e);
   om::common::SegIDSet JoinTheseSegments(
       const om::common::SegIDSet& segmentList);
   om::common::SegIDSet UnJoinTheseSegments(
