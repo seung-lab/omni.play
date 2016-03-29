@@ -10,38 +10,6 @@
 #include "common/enums.hpp"
 #include "system/omStateManager.h"
 
-void om::JoinSplitRunner::FindAndPerformOnSegments(const SegmentDataWrapper curSDW,
-                                 OmViewGroupState& vgs,
-                                 const om::coords::Global curClickPt,
-                                 om::tool::mode tool) {
-  const boost::optional<om::coords::Global> prevClickPt;
-      //vgs.JoiningSplitting().FirstCoord();
-
-  if (prevClickPt) {
-    const SegmentDataWrapper prevSDW;// = vgs.JoiningSplitting().FirstSegment();
-
-    OmSegment* seg1 = prevSDW.GetSegment();
-    OmSegment* seg2 = curSDW.GetSegment();
-
-    //vgs.JoiningSplitting().DeactivateTool();
-
-    if (!seg1 || !seg2) {
-      return;
-    }
-if (seg1 == seg2) {
-      log_debugs << "can't perform action on same segment";
-      return;
-    }
-
-
-  } else {
-    if (curSDW.IsSegmentValid()) {
-      // set segment to be split later...
-      //vgs.JoiningSplitting().SetFirstPoint(tool, curSDW, curClickPt);
-    }
-  }
-}
-
 // mouse release
 void om::JoinSplitRunner::GoToNextState(OmViewGroupState& vgs, om::tool::mode tool) {
   OmJoiningSplitting& joiningSplitting = vgs.JoiningSplitting();
