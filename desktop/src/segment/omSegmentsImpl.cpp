@@ -3,6 +3,7 @@
 #include "segment/lowLevel/children.hpp"
 #include "segment/lowLevel/graphThresholder.hpp"
 #include "segment/lowLevel/store.h"
+#include "volume/omSegmentation.h"
 #include "segment/omSegmentsImpl.h"
 #include "segment/selection.hpp"
 #include "segment/userEdgeVector.hpp"
@@ -14,6 +15,9 @@
 using namespace om::segment;
 
 // entry into this class via OmSegments hopefully guarantees proper locking...
+OmSegmentsImpl::OmSegmentsImpl(OmSegmentation* segmentation)
+    : mst_(segmentation->MST()), userEdges_(segmentation->UserEdges()),
+      valid_(segmentation->ValidGroupNum()), meta_(segmentation->Metadata()) {}
 
 OmSegmentsImpl::OmSegmentsImpl(SegDataVector& data, SegListDataVector& listData,
                                EdgeVector& mst, UserEdgeVector& userEdges,

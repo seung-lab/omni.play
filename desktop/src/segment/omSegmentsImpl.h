@@ -32,6 +32,9 @@ class OmSegmentsImpl {
                  SegmentationDataWrapper sdw);
   virtual ~OmSegmentsImpl();
 
+  // barebones constructor for mocking
+  OmSegmentsImpl(OmSegmentation* segmentation);
+
   void Flush();
 
   OmSegment* AddSegment();
@@ -61,7 +64,7 @@ class OmSegmentsImpl {
   std::vector<om::segment::UserEdge> Shatter(OmSegment* seg);
 
   // EX ImplLowLevel
-  inline om::common::SegID FindRootID(const om::common::SegID segID) {
+  virtual om::common::SegID FindRootID(const om::common::SegID segID) {
     if (!segID) {
       return 0;
     }
@@ -69,7 +72,7 @@ class OmSegmentsImpl {
     return graph_->Root(segID);
   }
 
-  inline om::common::SegID FindRootID(OmSegment* segment) {
+  virtual om::common::SegID FindRootID(OmSegment* segment) {
     if (!segment) {
       return 0;
     }
@@ -84,8 +87,8 @@ class OmSegmentsImpl {
   om::segment::Selection& Selection() const { return *selection_; }
   OmSegmentLists& SegmentLists() const { return *segmentLists_; }
 
-  OmSegment* FindRoot(const om::common::SegID segID);
-  OmSegment* FindRoot(OmSegment* segment);
+  virtual OmSegment* FindRoot(const om::common::SegID segID);
+  virtual OmSegment* FindRoot(OmSegment* segment);
 
   bool IsSegmentValid(om::common::SegID seg);
   OmSegment* GetSegment(const om::common::SegID value) const;

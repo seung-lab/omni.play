@@ -15,6 +15,9 @@ OmSegments::OmSegments(OmSegmentation* vol)
                                vol->ValidGroupNum(),
                                SegmentationDataWrapper(vol))) {}
 
+OmSegments::OmSegments(OmSegmentation* vol, std::unique_ptr<OmSegmentsImpl> impl)
+    : meta_(vol->Metadata()), impl_(std::move(impl)) {}
+
 OmSegments::~OmSegments() {}
 
 void OmSegments::refreshTree() {
