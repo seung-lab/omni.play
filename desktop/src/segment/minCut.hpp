@@ -41,8 +41,10 @@ class MinCut {
         rootSegment->value();
       return om::segment::UserEdge();
     }
+    om::segment::UserEdge edge;
+    edge.valid = true;
 
-    return om::segment::UserEdge();
+    return edge;
   }
 
   void addEdge(Vertex& vertex1, Vertex& vertex2, int threshold) {

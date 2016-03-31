@@ -20,11 +20,11 @@ class Children {
   void Resize(const size_t size) { list_.resize(size); }
 
   // Child segments not including itself
-  const segChildCont_t& GetChildren(const om::common::SegID segID) const {
+  virtual const segChildCont_t& GetChildren(const om::common::SegID segID) const {
     return list_[segID];
   }
 
-  const segChildCont_t& GetChildren(OmSegment* seg) const {
+  virtual const segChildCont_t& GetChildren(OmSegment* seg) const {
     return list_[seg->value()];
   }
 
