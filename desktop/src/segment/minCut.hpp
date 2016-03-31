@@ -56,16 +56,42 @@ class MinCut {
       residual_capacity = boost::get(boost::edge_residual_capacity, g);
     boost::property_map<Graph , boost::edge_reverse_t>::type
       rev = boost::get(boost::edge_reverse, g);
+    boost::property_map<Graph, boost::vertex_name_t>::type
+      name = boost::get(boost::vertex_name, g);
+    boost::property_map<Graph, boost::vertex_color_t>::type
+      color = boost::get(boost::vertex_color, g);
 
-    std::list<Vertex> vertices(10);
-    for (int i = 0; i < 10; i ++) {
-      vertices.push_back(boost::add_vertex(g));
+    std::vector<Vertex> vertices;
+    for (int i = 0; i < 10; ++i) {
+      Vertex v = boost::add_vertex(g);
+      vertices.push_back(v);
+      boost::put(name, v, std::to_string(i));
     }
 
+    for (int i = 1; i < 10; ++i) {
+      Edge e1, e2;
+      bool in1, in2;
+      boost::tie(e1, in1) = boost::add_edge(vertices[i-1], vertices[i], g);
+      boost::tie(e2, in2) = boost::add_edge(vertices[i], vertices[i-1], g);
+      if (!in1 || !in2) {
+        continue;
+      }
+      if (i == 5) {
+        capacity[e1] = 1;
+      } else {
+        capacity[e1] = 2;
+      }
+      capacity[e2] = 0;
+      rev[e1] = e2;
+      rev[e2] = e1;
+    }
     Vertex s, t;
 
+    s = *vertices.begin();
+    t = *(vertices.end() - 1);
     //std::vector<boost::default_color_type> color(boost::num_vertices(g));
     //std::vector<long> distance(boost::num_vertices(g));
+    std::cout << "running boykov from " << name[s] << " to " << name[t] << std::endl;
     long flow = boost::boykov_kolmogorov_max_flow(g, s, t);
 
     boost::template graph_traits<Graph>::vertex_iterator u_iter, u_end;
@@ -73,9 +99,11 @@ class MinCut {
 
     for (boost::tie(u_iter, u_end) = boost::vertices(g); u_iter != u_end; ++u_iter) {
       for (boost::tie(ei, e_end) = boost::out_edges(*u_iter, g); ei != e_end; ++ei) {
+        Vertex target = boost::target(*ei, g);
         if (capacity[*ei] > 0) {
-          std::cout << "f " << *u_iter << " " << boost::target(*ei, g) << " "
-            << (capacity[*ei] - residual_capacity[*ei]) << std::endl;
+          std::cout << "f " << *u_iter << " (name = " << name[*u_iter] <<
+            "color = " << color[*u_iter] << ") to " << target << " (name = " << name[target] <<
+            "color = " << color[target] << ") - " <<(capacity[*ei] - residual_capacity[*ei]) << std::endl;
         }
       }
     }
