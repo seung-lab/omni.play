@@ -31,16 +31,26 @@ class MinCut {
       om::common::SegIDSet sinks) {
     if (sources.empty() || sinks.empty()) {
       log_debugs << "Source or sink empty";
+      std::cout << "Source or sink empty" << std::endl;
       return om::segment::UserEdge();
     }
     OmSegment* rootSegment = segments_.FindRoot(*sources.begin());
+
+    if (!rootSegment) {
+      log_errors << "No root segment found for segID " << *sources.begin();
+      std::cout << "No root segment found for segID " << *sources.begin() << std::endl;;
+      return om::segment::UserEdge();
+    }
 
     if (!hasRoot(sources, rootSegment)
           || !hasRoot(sinks, rootSegment)) {
       log_debugs << "Source and sink do not share the same root seg " <<
         rootSegment->value();
+      std::cout << "Source and sink do not share the same root seg " <<
+        rootSegment->value() << std::endl;
       return om::segment::UserEdge();
     }
+    std::cout << "returning good edge" << std::endl;
     om::segment::UserEdge edge;
     edge.valid = true;
 
@@ -56,6 +66,8 @@ class MinCut {
         boost::add_edge(vertex2, vertex1, graph_);
       if (!isForwardCreated || !isReverseCreated) {
         log_errors << "Unable to create edge correctly between " << vertex1 <<
+                  " and " << vertex2;
+        std::cout << "Unable to create edge correctly between " << vertex1 <<
                   " and " << vertex2 << std::endl;
         return;
       }
@@ -123,6 +135,10 @@ class MinCut {
   bool hasRoot(om::common::SegIDSet segIDSet, OmSegment* desiredRoot) {
     for (auto segID : segIDSet) {
       OmSegment* checkingRoot = segments_.FindRoot(segID);
+      if (!checkingRoot) {
+        log_errors << "No root segment found for segID " << segID << std::endl;
+        return false;
+      }
       if (checkingRoot != desiredRoot) {
         return false;
       }
