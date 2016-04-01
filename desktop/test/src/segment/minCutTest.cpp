@@ -7,7 +7,7 @@
 #include "segment/lowLevel/children.hpp"
 #include "volume/omSegmentation.h"
 #include "project/omProject.h"
-#include "utility/boostSegmentGraph.hpp"
+#include "utility/boost/segmentGraph/types.hpp"
 
 /*
  * Tests minCut class.
@@ -207,6 +207,64 @@ TEST(minCut, testNotSameRoot) {
 
   // test
   om::segment::UserEdge returnEdge = minCut.findEdge(sources, sinks);
+
+  // verify
+  EXPECT_FALSE(returnEdge.valid);
+}
+
+TEST(minCut, testConvertToGraph) {
+  // necessary setup for OmSegments
+  OmProject::New(QString::fromStdString(fnp));
+  OmSegmentation* segmentation = &SegmentationDataWrapper().Create();
+
+  // set up mock children
+  testing::NiceMock<MockChildren> mockChildren;
+
+  // set up MockSegmentsImpl with ownership and retrieve it into a pointer
+  std::unique_ptr<OmSegmentsImpl> 
+    mockSegmentsPtr(new testing::NiceMock<MockSegmentsImpl>(segmentation));
+  testing::NiceMock<MockSegmentsImpl>& mockSegmentsImpl 
+    = static_cast<testing::NiceMock<MockSegmentsImpl>&>(*mockSegmentsPtr);
+
+  /*
+   * prepare test data naming convention helps identify structure
+   * i.e. parentID_childID_grandChildId_
+   */
+  std::vector<om::segment::Data> data;
+  std::vector<std::set<OmSegment*>> childrenList;
+  std::tie(data, childrenList) = prepareSegmentData(4);
+  std::unique_ptr<OmSegment> segment1 =
+    createSegment(1, data, mockChildren, childrenList);
+  std::unique_ptr<OmSegment> segment1_2 =
+    createSegment(2, data, mockChildren, childrenList);
+  std::unique_ptr<OmSegment> segment1_2_3 =
+    createSegment(3, data, mockChildren, childrenList);
+  std::unique_ptr<OmSegment> segment1_2_4 =
+    createSegment(4, data, mockChildren, childrenList);
+  std::unique_ptr<OmSegment> segment1_5 =
+    createSegment(5, data, mockChildren, childrenList);
+  std::unique_ptr<OmSegment> segment1_5_6 =
+    createSegment(6, data, mockChildren, childrenList);
+
+  // thresholds weights are 1/10 of the childID
+  connectSegment(nullptr, segment1.get(), 0, mockSegmentsImpl, mockChildren);
+  connectSegment(segment1.get(), segment1_2.get(), segment1_2->value()/10.0,
+      mockSegmentsImpl, mockChildren);
+  connectSegment(segment1_2.get(), segment1_2_3.get(), segment1_2_3->value()/10.0,
+      mockSegmentsImpl, mockChildren);
+  connectSegment(segment1_2.get(), segment1_2_4.get(), segment1_2_4->value()/10.0,
+      mockSegmentsImpl, mockChildren);
+  connectSegment(segment1_5.get(), segment1_5.get(), segment1_5->value()/10.0,
+      mockSegmentsImpl, mockChildren);
+
+  // mockSegmentsImpl is no longer valid after move!
+  OmSegments mockSegments(segmentation, std::move(mockSegmentsPtr));
+
+  // prepare test inputs
+  MinCut minCut(mockSegments);
+
+  // test
+  Graph g = minCut.createGraph(segment1.get());
 
   // verify
   EXPECT_FALSE(returnEdge.valid);

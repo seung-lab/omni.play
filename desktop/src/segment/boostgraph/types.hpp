@@ -3,6 +3,7 @@
 
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/properties.hpp>
+#include "segment/omSegment.h"
 
 namespace om {
 namespace segment {
@@ -21,7 +22,7 @@ typedef typename boost::property<boost::vertex_name_t, std::string,
           boost::property<boost::vertex_color_t, boost::default_color_type,
           boost::property<boost::vertex_distance_t, long,
           boost::property<boost::vertex_predecessor_t, Edge,
-          boost::property<vertex_segment_t, std::string>>>>>> VertexProperties;
+          boost::property<vertex_segment_t, OmSegment*>>>>>> VertexProperties;
 typedef typename boost::property<boost::edge_capacity_t, long,
           boost::property<boost::edge_residual_capacity_t, long,
           boost::property<boost::edge_reverse_t, Edge>>> EdgeProperties;
