@@ -9,6 +9,12 @@
 #include "project/omProject.h"
 #include "utility/boostSegmentGraph.hpp"
 
+/*
+ * Tests minCut class.
+ * WARNING: please topologically add nodes using helper functions because
+ * because omSegmentsImpl and Children ONLY mock the return values.
+ * i.e. add roots first because FindRoot will only update based on previous root
+ */
 const std::string fnp("../../test_data/build_project/meshTest.omni");
 
 namespace test {
@@ -16,6 +22,8 @@ namespace minCut {
 
 om::coords::VolumeSystem VOLUME_SYSTEM;
 om::common::SegListType SEG_LIST_TYPE = om::common::SegListType::WORKING;
+
+typedef std::vector<std::set<OmSegment*>> ChildrenList;
 
 class MockSegmentsImpl : public OmSegmentsImpl {
  public:
@@ -33,43 +41,64 @@ class MockChildren : public om::segment::Children {
  public:
   MockChildren() : Children(0) {
       ON_CALL(*this, GetChildren(testing::An<om::common::SegID>()))
-        .WillByDefault(testing::Return(std::set<OmSegment*>()));
+        .WillByDefault(testing::ReturnRef(EMPTY_CHILDREN));
       ON_CALL(*this, GetChildren(testing::A<const OmSegment*>()))
-        .WillByDefault(testing::Return(std::set<OmSegment*>()));
+        .WillByDefault(testing::ReturnRef(EMPTY_CHILDREN));
   }
 
-  MOCK_METHOD1(GetChildren, const std::set<OmSegment*>(const om::common::SegID));
-  MOCK_METHOD1(GetChildren, const std::set<OmSegment*>(const OmSegment*));
+  MOCK_CONST_METHOD1(GetChildren,
+      const std::set<OmSegment*>&(const om::common::SegID));
+  MOCK_CONST_METHOD1(GetChildren,
+      const std::set<OmSegment*>&(const OmSegment*));
+
+ private:
+  std::set<OmSegment*> EMPTY_CHILDREN;
 };
 
 /*
- * Create test segment data but skip id 0
+ * create segment data and it's children set
  */
-std::vector<om::segment::Data> prepareSegmentData(int numSegments) {
+std::tuple<std::vector<om::segment::Data>, ChildrenList>
+    prepareSegmentData(int numSegments) {
   std::vector<om::segment::Data> data;
+  ChildrenList children;
   for (om::common::SegID i = 0; i < numSegments; i++) {
     data.push_back({.value = i + 1});
+    children.emplace_back();
   }
-  return data;
+  return std::make_tuple(data,children);
 }
 
 /*
- * This void assertion function is only here because google test supports asserts
- * within void functions!
+ * This void assertion function is only here because google test ONLY supports 
+ * asserts within void functions!
  */
 void checkIndex(std::vector<om::segment::Data>& data, om::common::SegID segID) {
   ASSERT_TRUE((segID > 0 && segID < data.size() + 1))
     << " Created out of bounds segment " <<
     " Data is of size " << data.size() << " but requested " << segID;
 }
-std::unique_ptr<OmSegment> createSegment(std::vector<om::segment::Data>& data,
-    om::common::SegID segID) {
+
+/*
+ * Create a segment and set children list in the mockchildren
+ */
+std::unique_ptr<OmSegment> createSegment(om::common::SegID segID, 
+    std::vector<om::segment::Data>& data,
+    MockChildren& mockChildren,
+    ChildrenList& childrenList) {
   checkIndex(data, segID);
   // offset data by -1 because in this unit test we choose not to express segment 0
-  std::unique_ptr<OmSegment> ptr(new OmSegment(data[segID - 1], SEG_LIST_TYPE, VOLUME_SYSTEM));
-  std::cout << "creating segment " << segID << " " << ptr->value() << std::endl;
+  std::unique_ptr<OmSegment> ptr(
+      new OmSegment(data[segID - 1], SEG_LIST_TYPE, VOLUME_SYSTEM));
+
+  // set up the mockchildren call to reference the correct data
+  ON_CALL(mockChildren, GetChildren(
+        testing::TypedEq<om::common::SegID>(ptr->value())))
+    .WillByDefault(testing::ReturnRef(childrenList[segID - 1]));
+  ON_CALL(mockChildren, GetChildren(
+        testing::TypedEq<const OmSegment*>(ptr.get())))
+    .WillByDefault(testing::ReturnRef(childrenList[segID - 1]));
   return ptr;
-      
 }
 
 /*
@@ -79,74 +108,40 @@ std::unique_ptr<OmSegment> createSegment(std::vector<om::segment::Data>& data,
  */
 void establishRoot(OmSegment* parent, OmSegment* child,
     MockSegmentsImpl& mockSegments) {
-  std::cout << "trying to find root" << std::endl;
   OmSegment* rootSegment = mockSegments.FindRoot(parent);
 
-  std::cout << "finished finding root" << std::endl;
   if (!rootSegment) {
-    std::cout << "no root found " << std::endl;
     rootSegment = child;
   }
 
-  std::cout << "Establishing root child :" << rootSegment << " " << rootSegment->value() << std::endl;
-  ON_CALL(mockSegments, FindRoot(testing::TypedEq<om::common::SegID>(child->value())))
+  ON_CALL(mockSegments, FindRoot(
+        testing::TypedEq<om::common::SegID>(child->value())))
     .WillByDefault(testing::Return(rootSegment));
-  std::cout << "Establishing root finsihed findroot by id" << std::endl;
   ON_CALL(mockSegments, FindRoot(testing::TypedEq<OmSegment*>(child)))
     .WillByDefault(testing::Return(rootSegment));
-  std::cout << "Establishing root finsihed findroot by pointer" << std::endl;
-  ON_CALL(mockSegments, FindRootID(testing::TypedEq<om::common::SegID>(child->value())))
+  ON_CALL(mockSegments, FindRootID(
+        testing::TypedEq<om::common::SegID>(child->value())))
     .WillByDefault(testing::Return(rootSegment->value()));
-  std::cout << "Establishing root finsihed findrootIDDD by id" << std::endl;
   ON_CALL(mockSegments, FindRootID(testing::TypedEq<OmSegment*>(child)))
     .WillByDefault(testing::Return(rootSegment->value()));
-  std::cout << "Establishing root finsihed findrootIDDD by pointer" << std::endl;
 }
 
 /*
  * Make sure that the children list of the parent now includes this child.
  */
-void establishChildren(OmSegment* parent, OmSegment* child, double threshold,
+void addToChildren(OmSegment* parent, OmSegment* child, double threshold,
     MockChildren& mockChildren) {
-  // TODO since get children returns a reference, we need to store children outside somewhere...
   if (!parent) {
     return;
   }
-  child->setParent(parent, threshold);
-  std::cout << "getting mock children" << std::endl;
-  std::set<OmSegment*> children = mockChildren.GetChildren(parent);
-  std::cout << "got children" << std::endl;
-  std::cout << "is children emty?" << children.empty() << std::endl;
-  if (children.empty()) {
-    std::cout << "children is tmepty" << std::endl;
-    ON_CALL(mockChildren, GetChildren(testing::TypedEq<om::common::SegID>(parent->value())))
-      .WillByDefault(testing::Return(children));
-    std::cout << "finish est children by id" << std::endl;
-    ON_CALL(mockChildren, GetChildren(testing::TypedEq<const OmSegment*>(parent)))
-      .WillByDefault(testing::Return(children));
-    std::cout << "finish est children by pointer" << std::endl;
-  }
-  children.insert(child);
-
-  std::cout << "insertd! " << child->value() << " into " << parent->value() << " now has total: " ;
-  for(auto i : children) {
-    std::cout << i->value() << " " << std::endl;
-  }
-  std::cout << std::endl;
-  std::cout << "from mock! " << child->value() << " into " << parent->value() << " now has total: ";
-  for(auto i : mockChildren.GetChildren(parent)) {
-    std::cout << i->value() << " " << std::endl;
-  }
-  std::cout << std::endl;
+  const std::set<OmSegment*>& children = mockChildren.GetChildren(parent);
+  const_cast<std::set<OmSegment*>&>(children).insert(child);
 }
 
-void connectSegment(OmSegment* parent, OmSegment* child, double threshold,
+void connectSegment(OmSegment* parent, OmSegment* child, double threshold, 
     MockSegmentsImpl& mockSegments, MockChildren& mockChildren) {
-  std::cout << "child has id " << child->value() << std::endl;
   establishRoot(parent, child, mockSegments);
-  if (parent) {
-    establishChildren(parent, child, threshold, mockChildren);
-  }
+  addToChildren(parent, child, threshold, mockChildren);
 }
 
 TEST(minCut, testEmpty) {
@@ -177,13 +172,22 @@ TEST(minCut, testNotSameRoot) {
   testing::NiceMock<MockSegmentsImpl>& mockSegmentsImpl 
     = static_cast<testing::NiceMock<MockSegmentsImpl>&>(*mockSegmentsPtr);
 
-  // prepare test data
-  // segmentds with id 3 and 4 will have roots 1 and 2, respectively.
-  std::vector<om::segment::Data> data = prepareSegmentData(4);
-  std::unique_ptr<OmSegment> segment1 = createSegment(data, 1);
-  std::unique_ptr<OmSegment> segment2 = createSegment(data, 2);
-  std::unique_ptr<OmSegment> segment1_3 = createSegment(data, 3);
-  std::unique_ptr<OmSegment> segment2_4 = createSegment(data, 4);
+  /*
+   * prepare test data naming convention helps identify structure
+   * i.e. parentID_childID_grandChildId_
+   * segments with id 3 and 4 will have roots 1 and 2, respectively.
+   */
+  std::vector<om::segment::Data> data;
+  std::vector<std::set<OmSegment*>> childrenList;
+  std::tie(data, childrenList) = prepareSegmentData(4);
+  std::unique_ptr<OmSegment> segment1 =
+    createSegment(1, data, mockChildren, childrenList);
+  std::unique_ptr<OmSegment> segment2 =
+    createSegment(2, data, mockChildren, childrenList);
+  std::unique_ptr<OmSegment> segment1_3 =
+    createSegment(3, data, mockChildren, childrenList);
+  std::unique_ptr<OmSegment> segment2_4 =
+    createSegment(4, data, mockChildren, childrenList);
 
   // 2 root nodes
   connectSegment(nullptr, segment1.get(), 0, mockSegmentsImpl, mockChildren);
@@ -191,40 +195,14 @@ TEST(minCut, testNotSameRoot) {
   connectSegment(segment1.get(), segment1_3.get(), .5, mockSegmentsImpl, mockChildren);
   connectSegment(segment2.get(), segment2_4.get(), .5, mockSegmentsImpl, mockChildren);
 
-std::set<OmSegment*> segsByPointer;
-std::set<OmSegment*> segsByID;
-  segsByPointer = mockChildren.GetChildren(segment1.get());
-  segsByID = mockChildren.GetChildren(segment1.get()->value());
-  std::cout << "HERE IS Children by pointer ";
-  for(auto i : segsByPointer) {
-    std::cout << i->value() << " " << std::endl;
-  }
-  std::cout << " BLAH BLAH " << std::endl;
-  std::cout << "HERE IS Children by ID ";
-  for(auto i : segsByID) {
-    std::cout << i->value() << " "; 
-  }
-  std::cout << " BLAH BLAH " << std::endl;
-  segsByPointer = mockChildren.GetChildren(segment2.get());
-  segsByID = mockChildren.GetChildren(segment2.get()->value());
-  std::cout << "HERE IS 2 Children by pointer ";
-  for(auto i : segsByPointer) {
-    std::cout << i->value() << " " << std::endl;
-  }
-  std::cout << " BLAH BLAH " << std::endl;
-  std::cout << "HERE IS 2 Children by ID ";
-  for(auto i : segsByID) {
-    std::cout << i->value() << " " << std::endl;
-  }
-  std::cout << " BLAH BLAH " << std::endl;
-  OmSegments mockSegments(segmentation, std::move(mockSegmentsPtr));
   // mockSegmentsImpl is no longer valid after move!
+  OmSegments mockSegments(segmentation, std::move(mockSegmentsPtr));
 
   // prepare test inputs
   om::common::SegIDSet sources;
   om::common::SegIDSet sinks;
-  sources.insert(3);
-  sinks.insert(4);
+  sources.insert(segment1_3->value());
+  sinks.insert(segment2_4->value());
   MinCut minCut(mockSegments);
 
   // test
@@ -232,9 +210,6 @@ std::set<OmSegment*> segsByID;
 
   // verify
   EXPECT_FALSE(returnEdge.valid);
-}
-
-TEST(minCut, findMinCutBoostGraph) {
 }
 
 } //namespace mincut
