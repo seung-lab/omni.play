@@ -497,7 +497,7 @@ void OmSegmentsImpl::SetNote(om::common::SegID segID, std::string note) {
   segmentNotes_[segID] = note;
 }
 
-OmSegment* OmSegmentsImpl::FindRoot(const om::common::SegID segID) {
+OmSegment* OmSegmentsImpl::FindRoot(const om::common::SegID segID) const {
   auto root = FindRootID(segID);
   if (root) {
     return store_->GetSegment(root);
@@ -506,7 +506,7 @@ OmSegment* OmSegmentsImpl::FindRoot(const om::common::SegID segID) {
   }
 }
 
-OmSegment* OmSegmentsImpl::FindRoot(OmSegment* segment) {
+OmSegment* OmSegmentsImpl::FindRoot(const OmSegment* segment) const {
   auto root = FindRootID(segment);
   if (root) {
     return store_->GetSegment(root);

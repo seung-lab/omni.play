@@ -2,97 +2,61 @@
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/boykov_kolmogorov_max_flow.hpp>
 #include <boost/graph/properties.hpp>
+#include "segment/lowLevel/children.hpp"
+#include "segment/boostgraph/types.hpp"
+#include "segment/boostgraph/boostGraph.hpp"
 #include "common/logging.h"
 #include <algorithm>
 
 using namespace om::segment::boostgraph;
+BoostGraph::BoostGraph(const om::segment::Children& children) 
+  : children_(children) {}
 
-BoostGraphFactory::BoostGraphFactory() {};
-BoostGraphFactory::BoostGraphFactory(const Children& children) 
-  : children_(children) {};
-
-std::shared_ptr<BoostGraph> BoostGraphFactory::Get(OmSegment* rootSegment) {
-  return std::make_shared<BoostGraph>(children_, rootSegment);
-}
-
-BoostGraph::BoostGraph(const Children& children, OmSegment* rootSegment)
-  : children_(children), 
-    graph_(GetGraph(rootSegment)), idToVertex_(GetVertexMapping(graph_)),
-    capacityProperty_(boost::get(boost::edge_capacity, graph_)),
-    colorProperty_(boost::get(boost::vertex_color, graph_)),
+BoostGraph::BoostGraph(const om::segment::Children& children, const OmSegment* rootSegment)
+  : children_(children),
     nameProperty_(boost::get(boost::vertex_name, graph_)),
-    residualCapacityProperty_(boost::get(boost::edge_residual_capacity, graph_)),
-    reverseProperty_(boost::get(boost::edge_reverse, graph_)) {}
+    capacityProperty_(boost::get(boost::edge_capacity, graph_)),
+    reverseProperty_(boost::get(boost::edge_reverse, graph_)),
+    colorProperty_(boost::get(boost::vertex_color, graph_)) {
+      BuildGraph(rootSegment);
+    }
+    //residualCapacityProperty_(boost::get(boost::edge_residual_capacity, graph_)),
 
-Graph BoostGraph::GetGraph(OmSegment* rootSeg) {
-  return Graph();
-}
+Graph BoostGraph::GetGraph() { return graph_; }
+void BoostGraph::SetGraph(Graph graph) { graph_ = graph; }
 
-std::unordered_map<om::common::SegID, Vertex> GetVertexMapping(Graph graph) {
-  std::unordered_map<om::common::SegID, Vertex> idToVertex(
-      boost::numVertices(graph));
-  for (boost::tie(u_iter, u_end) = boost::vertices(graph_);
-      u_iter != u_end; ++u_iter) {
-    // todo save segment* as graph prop?
-  }
-}
-
-om::segment::Edge MinCut::toSegmentEdge(Edge edge) {
-  om::segment::Edge segmentEdge;
-  segmentEdge.valid = true;
-  return segmentEdge;
-}
-
-std::vector<om::segment::Edge> BoostGraph::MinCut(
-    om::common::SegIDSet sources, om::common::SegIDSet sinks) {
-  // origin source and sink node
+std::vector<om::segment::UserEdge> BoostGraph::MinCut(
+    const om::common::SegIDSet sources, const om::common::SegIDSet sinks) {
+  // source and sink vertices
   Vertex vertexS, vertexT;
   if (sources.size() > 1 || sinks.size() > 1) {
-    std::tie(vertexS, vertexT) = ConvertToMulti(graph, sources, sinks);
+    std::tie(vertexS, vertexT) = MakeSingleSourceSink(sources, sinks);
   } else {
-    auto iterS = idToVertex.find(*sources.begin());
-    auto iterT = idToVertex.find(*sinks.begin());
-    if (iterS == sources.end() && iterT == sources.end()) {
-      logs_errors << "Unable to find source or sink segments";
-      return std::vector<om::common::Edge>();
+    auto iterS = idToVertex_.find(*sources.begin());
+    auto iterT = idToVertex_.find(*sinks.begin());
+    if (iterS == idToVertex_.end() && iterT == idToVertex_.end()) {
+      log_errors << "Unable to find source or sink segments";
+      return std::vector<om::segment::UserEdge>();
     }
-    vertexS = *iterS;
-    vertexT = *iterT;
+    vertexS = iterS->second;
+    vertexT = iterT->second;
   }
 
   boost::boykov_kolmogorov_max_flow(graph_, vertexS, vertexT);
 
   std::vector<Edge> edges = GetMinCutEdges();
-  return std::transform(edges.begin(), edges().end(), ToSegmentEdge);
+  std::vector<om::segment::UserEdge> userEdges;
+  std::transform(edges.begin(), edges.end(), std::back_inserter(userEdges),
+      [](Edge edge) { return ToSegmentUserEdge(edge); });
+  return userEdges;
 }
 
-void MinCut::populateGraph() {
-  std::vector<Vertex> vertices;
-  for (int i = 0; i < 10; ++i) {
-    Vertex v = boost::add_vertex(graph_);
-    vertices.push_back(v);
-    boost::put(nameProperty_, v, std::to_string(i));
-  }
-
-  for (int i = 1; i < 10; ++i) {
-    int cap;
-    if (i == 5) {
-      cap = 1;
-    } else {
-      cap = 2;
-    }
-    addEdge(vertices[i], vertices[i-1], cap);
-  }
-  Vertex s, t;
-
-  s = *vertices.begin();
-  t = *(vertices.end() - 1);
-  //std::vector<boost::default_color_type> color(boost::num_vertices(graph_));
-  //std::vector<long> distance(boost::num_vertices(graph_));
-  std::cout << "running boykov from " << nameProperty_[s] << " to " << nameProperty_[t] << std::endl;
+std::tuple<Vertex, Vertex> BoostGraph::MakeSingleSourceSink(
+    const om::common::SegIDSet sources, const om::common::SegIDSet sinks) {
+  return std::tuple<Vertex, Vertex>(Vertex(), Vertex());
 }
-
-std::vector<Edge> MinCut::getMinCutEdges(Graph graph) {
+// TODO
+std::vector<Edge> BoostGraph::GetMinCutEdges() {
   boost::template graph_traits<Graph>::vertex_iterator u_iter, u_end;
   boost::template graph_traits<Graph>::out_edge_iterator ei, e_end;
 
@@ -104,25 +68,66 @@ std::vector<Edge> MinCut::getMinCutEdges(Graph graph) {
         std::cout << "f " << *u_iter << " (name = " << nameProperty_[*u_iter] <<
           "color = " << colorProperty_[*u_iter] << ") to " << target <<
           " (name = " << nameProperty_[target] <<
-          "color = " << colorProperty_[target] << ") - " <<
-          (capacityProperty_[*ei] - residualCapacityProperty_[*ei]) << std::endl;
+          "color = " << colorProperty_[target] << ") - ";
+        //<< (capacityProperty_[*ei] - residualCapacityProperty_[*ei]) << std::endl;
       }
     }
   }
+  return minEdges;
 }
 
-Graph toGraphFromRootSeg(OmSegment* rootSegment, OmSegments& segments,
-      Children& children) {
+// TODO 
+om::segment::UserEdge BoostGraph::ToSegmentUserEdge(const Edge edge) {
+  om::segment::UserEdge segmentEdge;
+  segmentEdge.valid = true;
+  return segmentEdge;
+}
 
+Graph BoostGraph::BuildGraph(const OmSegment* rootSegment) {
+  graph_.clear();
+
+  // These are the only properties we are interested
+  nameProperty_ = boost::get(boost::vertex_name, graph_);
+  capacityProperty_ = boost::get(boost::edge_capacity, graph_);
+  reverseProperty_ = boost::get(boost::edge_reverse, graph_);
+
+  std::cout << "Buildg raph now" << std::endl;
+  Vertex rootVertex = addVertex(rootSegment);
+  buildGraphDfsVisit(rootSegment);
+  return graph_;
+}
+
+void BoostGraph::buildGraphDfsVisit(const OmSegment* parent) {
+  std::cout << "Buildg raph now" << parent->value() << std::endl;
+  for (const OmSegment* child : children_.GetChildren(parent->value())) {
+  std::cout << "Buildg raph now" << child->value() << std::endl;
+    Vertex childVertex = addVertex(child);
+    auto parentVertexIter = idToVertex_.find(parent->value());
+    if (parentVertexIter != idToVertex_.end()) {
+      addEdge(parentVertexIter->second, childVertex, child->getThreshold());
+    } else {
+      log_errors << "Should have already created vertex for " << parent->value() <<
+        " but it was not found";
+      return;
+    }
+    buildGraphDfsVisit(child);
   }
+}
 
-void addEdge(Vertex& vertex1, Vertex& vertex2, int threshold) {
+// Uses graph_, idToVertex_, nameProperty_
+Vertex BoostGraph::addVertex(const OmSegment* segment) {
+  Vertex vertex = boost::add_vertex(graph_);
+  idToVertex_.insert({segment->value(), vertex});
+  boost::put(nameProperty_, vertex, std::to_string(segment->value()));
+  return vertex;
+}
+
+// Uses graph_, capacityProperty_ and reverseProperty_
+void BoostGraph::addEdge(Vertex& vertex1, Vertex& vertex2, int threshold) {
   Edge edgeForward, edgeReverse;
   bool isForwardCreated, isReverseCreated;
   boost::tie(edgeForward, isForwardCreated) =
     boost::add_edge(vertex1, vertex2, graph_);
-  boost::tie(edgeReverse, isReverseCreated) =
-    boost::add_edge(vertex2, vertex1, graph_);
   if (!isForwardCreated || !isReverseCreated) {
     log_errors << "Unable to create edge correctly between " << vertex1 <<
               " and " << vertex2;
@@ -136,6 +141,11 @@ void addEdge(Vertex& vertex1, Vertex& vertex2, int threshold) {
   reverseProperty_[edgeReverse] = edgeForward;
 }
 
-} //namespace boostgraph
-} //namespace segment
+BoostGraphFactory::BoostGraphFactory(const om::segment::Children& children) 
+  : children_(children) {
+    std::cout << "BG Base done" << std::endl;};
+
+std::shared_ptr<BoostGraph> BoostGraphFactory::Get(const OmSegment* rootSegment) const {
+  return std::make_shared<BoostGraph>(children_, rootSegment);
 }
+

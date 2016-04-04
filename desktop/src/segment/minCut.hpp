@@ -3,6 +3,7 @@
 
 #include "segment/types.hpp"
 #include "segment/boostgraph/types.hpp"
+#include "segment/boostgraph/boostGraph.hpp"
 #include "common/logging.h"
 
 class OmSegment;
@@ -16,19 +17,19 @@ using namespace om::segment::boostgraph;
  */
 class MinCut {
  public:
-  MinCut(OmSegments& segments);
+  MinCut(const OmSegments& segments);
 
   // i.e. for testing
-  MinCut(OmSegments& segments, BoostGraph boostGraph);
+  MinCut(const OmSegments& segments, const BoostGraphFactory boostGraphFactory);
 
   // Find the next min cut edge for this source and sink
-  om::segment::UserEdge FindEdge(om::common::SegIDSet sources,
-      om::common::SegIDSet sinks);
+  om::segment::UserEdge FindEdge(const om::common::SegIDSet sources,
+      const om::common::SegIDSet sinks) const;
 
  private:
-  OmSegments& segments_;
-  BoostGraph boostGraph_;
+  const OmSegments& segments_;
+  const BoostGraphFactory boostGraphFactory_;
 
-  bool hasRoot(om::common::SegIDSet segIDSet, OmSegment* desiredRoot);
+  bool hasRoot(const om::common::SegIDSet segIDSet, const OmSegment* desiredRoot) const;
 };
 

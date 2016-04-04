@@ -40,6 +40,6 @@ typedef boost::template property_map<Graph,
 typedef boost::template property_map<Graph,
         boost::vertex_color_t>::type ColorProperty;
 
-} //namespace boostgraph
-} //namespace segment
-} //namespace om
+} // namespace boostgraph
+} // namespace segment
+} // namespace om
