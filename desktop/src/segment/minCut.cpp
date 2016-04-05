@@ -15,22 +15,20 @@
 using namespace om::segment::boostgraph;
 
 MinCut::MinCut(const OmSegments& segments)
-  : segments_(segments), boostGraphFactory_(segments.Children()) {
-    std::cout << "min cut ctor" << std::endl;};
+  : segments_(segments),
+    boostGraphFactory_(
+        std::make_shared<BoostGraphFactory>(segments.Children())) {}
 
-MinCut::MinCut(const OmSegments& segments, const BoostGraphFactory boostGraphFactory)
-  : segments_(segments), boostGraphFactory_(boostGraphFactory) {
-    std::cout << "min cut ctor with bg don" << std::endl;};
+MinCut::MinCut(const OmSegments& segments, std::shared_ptr<BoostGraphFactory> boostGraphFactory)
+  : segments_(segments), boostGraphFactory_(boostGraphFactory) {};
 
 om::segment::UserEdge MinCut::FindEdge(const om::common::SegIDSet sources,
     const om::common::SegIDSet sinks) const {
-  std::cout << "begin" << std::endl;
   if (sources.empty() || sinks.empty()) {
     log_debugs << "Source or sink empty";
     std::cout << "Source or sink empty" << std::endl;
     return om::segment::UserEdge();
   }
-  std::cout << "begin" << std::endl;
   OmSegment* rootSegment = segments_.FindRoot(*sources.begin());
 
   if (!rootSegment) {
@@ -47,7 +45,9 @@ om::segment::UserEdge MinCut::FindEdge(const om::common::SegIDSet sources,
     return om::segment::UserEdge();
   }
 
-  std::vector<om::segment::UserEdge> edges = boostGraphFactory_.Get(rootSegment)->MinCut(sources, sinks);
+  std::cout << "get!" << std::endl;
+  std::shared_ptr<BoostGraph> boostGraph = boostGraphFactory_->Get(rootSegment);
+  std::vector<om::segment::UserEdge> edges = boostGraph->MinCut(sources, sinks);
 
   if (edges.empty()) {
     log_debugs << "Unable to find a min cut!" << rootSegment->value();

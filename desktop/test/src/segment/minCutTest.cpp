@@ -30,13 +30,13 @@ TEST(minCut, testEmpty) {
   OmProject::New(QString::fromStdString(fnp));
   OmSegmentation* segmentation = &SegmentationDataWrapper().Create();
 
-  std::cout << "Create mock segments"<< std::endl;
   OmSegments mockSegments(segmentation,
       std::unique_ptr<OmSegmentsImpl>(new MockSegmentsImpl(segmentation)));
 
-  std::cout << "Create mincut"<< std::endl;
-  MinCut minCut(mockSegments, MockBoostGraphFactory());
-  std::cout << "Create perform mincut"<< std::endl;
+  std::shared_ptr<BoostGraph> mockBoostGraph(new MockBoostGraph());
+  MinCut minCut(mockSegments,
+      std::make_shared<MockBoostGraphFactory>(mockBoostGraph));
+
   om::segment::UserEdge returnEdge = minCut.FindEdge(om::common::SegIDSet(),
       om::common::SegIDSet());
   EXPECT_FALSE(returnEdge.valid);
@@ -56,11 +56,9 @@ TEST(minCut, testNotSameRoot) {
   testing::NiceMock<MockSegmentsImpl>& mockSegmentsImpl 
     = static_cast<testing::NiceMock<MockSegmentsImpl>&>(*mockSegmentsPtr);
 
-  /*
-   * prepare test data naming convention helps identify structure
-   * i.e. parentID_childID_grandChildId_
-   * segments with id 3 and 4 will have roots 1 and 2, respectively.
-   */
+   //prepare test data naming convention helps identify structure
+   //i.e. parentID_childID_grandChildId_
+   //segments with id 3 and 4 will have roots 1 and 2, respectively.
   std::vector<om::segment::Data> data;
   std::vector<std::set<OmSegment*>> childrenList;
   std::tie(data, childrenList) = prepareSegmentData(4);
@@ -78,12 +76,15 @@ TEST(minCut, testNotSameRoot) {
   // mockSegmentsImpl is no longer valid after move!
   OmSegments mockSegments(segmentation, std::move(mockSegmentsPtr));
 
+  std::shared_ptr<BoostGraph> mockBoostGraph(new MockBoostGraph());
+  MinCut minCut(mockSegments,
+      std::make_shared<MockBoostGraphFactory>(mockBoostGraph));
+
   // prepare test inputs
   om::common::SegIDSet sources;
   om::common::SegIDSet sinks;
   sources.insert(segment1_3->value());
   sinks.insert(segment2_4->value());
-  MinCut minCut(mockSegments, MockBoostGraphFactory());
 
   // test
   om::segment::UserEdge returnEdge = minCut.FindEdge(sources, sinks);
@@ -106,11 +107,9 @@ TEST(minCut, testNoEdgeFound) {
   testing::NiceMock<MockSegmentsImpl>& mockSegmentsImpl 
     = static_cast<testing::NiceMock<MockSegmentsImpl>&>(*mockSegmentsPtr);
 
-  /*
-   * prepare test data naming convention helps identify structure
-   * i.e. parentID_childID_grandChildId_
-   * segments with id 3 and 4 will have roots 1 and 2, respectively.
-   */
+   //prepare test data naming convention helps identify structure
+   //i.e. parentID_childID_grandChildId_
+   //segments with id 3 and 4 will have roots 1 and 2, respectively.
   std::vector<om::segment::Data> data;
   std::vector<std::set<OmSegment*>> childrenList;
   std::tie(data, childrenList) = prepareSegmentData(4);
@@ -126,12 +125,15 @@ TEST(minCut, testNoEdgeFound) {
   // mockSegmentsImpl is no longer valid after move!
   OmSegments mockSegments(segmentation, std::move(mockSegmentsPtr));
 
+  std::shared_ptr<BoostGraph> mockBoostGraph(new MockBoostGraph());
+  MinCut minCut(mockSegments,
+      std::make_shared<MockBoostGraphFactory>(mockBoostGraph));
+
   // prepare test inputs
   om::common::SegIDSet sources;
   om::common::SegIDSet sinks;
   sources.insert(segment1_2->value());
   sinks.insert(segment1_3->value());
-  MinCut minCut(mockSegments, MockBoostGraphFactory());
 
   // test
   om::segment::UserEdge returnEdge = minCut.FindEdge(sources, sinks);
@@ -141,6 +143,7 @@ TEST(minCut, testNoEdgeFound) {
 }
 
 TEST(minCut, testEdgeFoundSuccess) {
+  std::cout << "test edge found success`" << std::endl;
   // necessary setup for OmSegments
   OmProject::New(QString::fromStdString(fnp));
   OmSegmentation* segmentation = &SegmentationDataWrapper().Create();
@@ -154,11 +157,9 @@ TEST(minCut, testEdgeFoundSuccess) {
   testing::NiceMock<MockSegmentsImpl>& mockSegmentsImpl 
     = static_cast<testing::NiceMock<MockSegmentsImpl>&>(*mockSegmentsPtr);
 
-  /*
-   * prepare test data naming convention helps identify structure
-   * i.e. parentID_childID_grandChildId_
-   * segments with id 3 and 4 will have roots 1 and 2, respectively.
-   */
+   //prepare test data naming convention helps identify structure
+   //i.e. parentID_childID_grandChildId_
+   //segments with id 3 and 4 will have roots 1 and 2, respectively.
   std::vector<om::segment::Data> data;
   std::vector<std::set<OmSegment*>> childrenList;
   std::tie(data, childrenList) = prepareSegmentData(4);
@@ -178,17 +179,20 @@ TEST(minCut, testEdgeFoundSuccess) {
   userEdge.valid = true;
   std::vector<om::segment::UserEdge> validEdges;
   validEdges.push_back(userEdge);
-  std::shared_ptr<MockBoostGraph> mockBoostGraph
-    = std::make_shared<MockBoostGraph>();
-  EXPECT_CALL(*mockBoostGraph, MinCut(testing::_, testing::_))
-      .WillRepeatedly(testing::Return(validEdges));
+
+  std::shared_ptr<MockBoostGraph> mockBoostGraph(new MockBoostGraph());
+  EXPECT_CALL(*mockBoostGraph,
+      MinCut(testing::_, testing::_))
+    .WillRepeatedly(testing::Return(validEdges));
+
+  MinCut minCut(mockSegments,
+      std::make_shared<MockBoostGraphFactory>(mockBoostGraph));
 
   // prepare test inputs
   om::common::SegIDSet sources;
   om::common::SegIDSet sinks;
   sources.insert(segment1_2->value());
   sinks.insert(segment1_3->value());
-  MinCut minCut(mockSegments, MockBoostGraphFactory(mockBoostGraph));
 
   // test
   om::segment::UserEdge returnEdge = minCut.FindEdge(sources, sinks);

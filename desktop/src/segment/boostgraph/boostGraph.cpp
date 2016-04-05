@@ -10,7 +10,9 @@
 
 using namespace om::segment::boostgraph;
 BoostGraph::BoostGraph(const om::segment::Children& children) 
-  : children_(children) {}
+  : children_(children) {
+    std::cout<< "boost graph ctor" << std::endl;
+  }
 
 BoostGraph::BoostGraph(const om::segment::Children& children, const OmSegment* rootSegment)
   : children_(children),
@@ -18,7 +20,9 @@ BoostGraph::BoostGraph(const om::segment::Children& children, const OmSegment* r
     capacityProperty_(boost::get(boost::edge_capacity, graph_)),
     reverseProperty_(boost::get(boost::edge_reverse, graph_)),
     colorProperty_(boost::get(boost::vertex_color, graph_)) {
+      std::cout<< "creating boost graph buildgraph" << std::endl;
       BuildGraph(rootSegment);
+      std::cout<< "finish creatin boost graph" << std::endl;
     }
     //residualCapacityProperty_(boost::get(boost::edge_residual_capacity, graph_)),
 
@@ -91,16 +95,13 @@ Graph BoostGraph::BuildGraph(const OmSegment* rootSegment) {
   capacityProperty_ = boost::get(boost::edge_capacity, graph_);
   reverseProperty_ = boost::get(boost::edge_reverse, graph_);
 
-  std::cout << "Buildg raph now" << std::endl;
   Vertex rootVertex = addVertex(rootSegment);
   buildGraphDfsVisit(rootSegment);
   return graph_;
 }
 
 void BoostGraph::buildGraphDfsVisit(const OmSegment* parent) {
-  std::cout << "Buildg raph now" << parent->value() << std::endl;
   for (const OmSegment* child : children_.GetChildren(parent->value())) {
-  std::cout << "Buildg raph now" << child->value() << std::endl;
     Vertex childVertex = addVertex(child);
     auto parentVertexIter = idToVertex_.find(parent->value());
     if (parentVertexIter != idToVertex_.end()) {
@@ -142,10 +143,10 @@ void BoostGraph::addEdge(Vertex& vertex1, Vertex& vertex2, int threshold) {
 }
 
 BoostGraphFactory::BoostGraphFactory(const om::segment::Children& children) 
-  : children_(children) {
-    std::cout << "BG Base done" << std::endl;};
+  : children_(children) {};
 
 std::shared_ptr<BoostGraph> BoostGraphFactory::Get(const OmSegment* rootSegment) const {
+  std::cout << "Base bgf called get!" << std::endl;
   return std::make_shared<BoostGraph>(children_, rootSegment);
 }
 

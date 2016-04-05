@@ -62,25 +62,18 @@ class MockBoostGraph : public BoostGraph {
 class MockBoostGraphFactory : public BoostGraphFactory {
 
  public:
-  MockBoostGraphFactory()
-    : mockChildren_(om::segment::Children(0)),
+  MockBoostGraphFactory(std::shared_ptr<BoostGraph> boostGraph)
+    : mockChildren_(om::segment::Children(1)),
+      boostGraph_(boostGraph),
       BoostGraphFactory(mockChildren_) {
-        std::cout << "boost graph factory dfa ctor" << std::endl;
-    ON_CALL(*this, Get(testing::_))
-      .WillByDefault(
-          testing::Return(std::shared_ptr<BoostGraph>(new MockBoostGraph())));
-        std::cout << "boost graph factory dfa ctor done" << std::endl;
+    ON_CALL(*this, Get(testing::_)).WillByDefault(testing::Return(boostGraph_));
   }
 
-  MockBoostGraphFactory(std::shared_ptr<BoostGraph> boostGraph)
-  : MockBoostGraphFactory() {
-        std::cout << "boost graph factory bg ctor" << std::endl;
-    ON_CALL(*this, Get(testing::_)).WillByDefault(testing::Return(boostGraph));
-  }
   MOCK_CONST_METHOD1(Get, std::shared_ptr<BoostGraph>(const OmSegment*));
 
  private:
   om::segment::Children mockChildren_;
+  std::shared_ptr<BoostGraph> boostGraph_;
 };
 
 /*
@@ -116,6 +109,7 @@ std::unique_ptr<OmSegment> createSegment(om::common::SegID segID,
   // offset data by -1 because in this unit test we choose not to express seg 0
   std::unique_ptr<OmSegment> ptr(
       new OmSegment(data[segID - 1], SEG_LIST_TYPE, VOLUME_SYSTEM));
+  return ptr;
 }
 
 void mockSegmentChildren(OmSegment* segment,
@@ -144,18 +138,18 @@ void establishRoot(const OmSegment* parent, OmSegment* child,
     rootSegment = child;
   }
 
-  //ON_CALL(mockSegmentsImpl, FindRoot(
-        //testing::TypedEq<om::common::SegID>(child->value())))
-    //.WillByDefault(testing::Return(rootSegment));
-  //ON_CALL(mockSegmentsImpl,
-      //FindRoot(testing::TypedEq<const OmSegment*>(child)))
-    //.WillByDefault(testing::Return(rootSegment));
-  //ON_CALL(mockSegmentsImpl, FindRootID(
-        //testing::TypedEq<om::common::SegID>(child->value())))
-    //.WillByDefault(testing::Return(rootSegment->value()));
-  //ON_CALL(mockSegmentsImpl, 
-      //FindRootID(testing::TypedEq<const OmSegment*>(child)))
-    //.WillByDefault(testing::Return(rootSegment->value()));
+  ON_CALL(mockSegmentsImpl, FindRoot(
+        testing::TypedEq<om::common::SegID>(child->value())))
+    .WillByDefault(testing::Return(rootSegment));
+  ON_CALL(mockSegmentsImpl,
+      FindRoot(testing::TypedEq<const OmSegment*>(child)))
+    .WillByDefault(testing::Return(rootSegment));
+  ON_CALL(mockSegmentsImpl, FindRootID(
+        testing::TypedEq<om::common::SegID>(child->value())))
+    .WillByDefault(testing::Return(rootSegment->value()));
+  ON_CALL(mockSegmentsImpl,
+      FindRootID(testing::TypedEq<const OmSegment*>(child)))
+    .WillByDefault(testing::Return(rootSegment->value()));
 }
 
 /*

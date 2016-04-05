@@ -20,7 +20,7 @@ class MinCut {
   MinCut(const OmSegments& segments);
 
   // i.e. for testing
-  MinCut(const OmSegments& segments, const BoostGraphFactory boostGraphFactory);
+  MinCut(const OmSegments& segments, std::shared_ptr<BoostGraphFactory> boostGraphFactory);
 
   // Find the next min cut edge for this source and sink
   om::segment::UserEdge FindEdge(const om::common::SegIDSet sources,
@@ -28,7 +28,7 @@ class MinCut {
 
  private:
   const OmSegments& segments_;
-  const BoostGraphFactory boostGraphFactory_;
+  const std::shared_ptr<BoostGraphFactory> boostGraphFactory_;
 
   bool hasRoot(const om::common::SegIDSet segIDSet, const OmSegment* desiredRoot) const;
 };
