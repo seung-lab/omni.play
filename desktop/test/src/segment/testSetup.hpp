@@ -15,6 +15,11 @@ typedef std::vector<std::set<OmSegment*>> ChildrenList;
 om::coords::VolumeSystem VOLUME_SYSTEM;
 om::common::SegListType SEG_LIST_TYPE = om::common::SegListType::WORKING;
 
+/*
+ * WARNING: please topologically add nodes using helper functions because
+ * because omSegmentsImpl and Children ONLY mock the return values.
+ * i.e. add roots first because FindRoot will only update based on previous root
+ */
 class MockChildren : public om::segment::Children {
  public:
   MockChildren() : Children(0) {

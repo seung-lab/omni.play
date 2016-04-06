@@ -10,9 +10,7 @@
 
 using namespace om::segment::boostgraph;
 BoostGraph::BoostGraph(const om::segment::Children& children) 
-  : children_(children) {
-    std::cout<< "boost graph ctor" << std::endl;
-  }
+  : children_(children) {}
 
 BoostGraph::BoostGraph(const om::segment::Children& children, const OmSegment* rootSegment)
   : children_(children),

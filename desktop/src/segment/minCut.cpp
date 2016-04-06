@@ -26,14 +26,12 @@ om::segment::UserEdge MinCut::FindEdge(const om::common::SegIDSet sources,
     const om::common::SegIDSet sinks) const {
   if (sources.empty() || sinks.empty()) {
     log_debugs << "Source or sink empty";
-    std::cout << "Source or sink empty" << std::endl;
     return om::segment::UserEdge();
   }
   OmSegment* rootSegment = segments_.FindRoot(*sources.begin());
 
   if (!rootSegment) {
     log_errors << "No root segment found for segID " << *sources.begin();
-    std::cout << "No root segment found for segID " << *sources.begin() << std::endl;;
     return om::segment::UserEdge();
   }
 
@@ -41,21 +39,17 @@ om::segment::UserEdge MinCut::FindEdge(const om::common::SegIDSet sources,
         || !hasRoot(sinks, rootSegment)) {
     log_debugs << "Source and sink do not share the same root seg " <<
       rootSegment->value();
-    std::cout << "Source and sink do not share the same root seg " << rootSegment->value() << std::endl;
     return om::segment::UserEdge();
   }
 
-  std::cout << "get!" << std::endl;
   std::shared_ptr<BoostGraph> boostGraph = boostGraphFactory_->Get(rootSegment);
   std::vector<om::segment::UserEdge> edges = boostGraph->MinCut(sources, sinks);
 
   if (edges.empty()) {
     log_debugs << "Unable to find a min cut!" << rootSegment->value();
-    std::cout << "Unable to find a min cut!" << rootSegment->value() << std::endl;
     return om::segment::UserEdge();
   }
 
-  std::cout << "returning good edge" << std::endl;
   return *edges.begin();
 }
 

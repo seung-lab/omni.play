@@ -12,12 +12,6 @@
 #include "segment/boostgraph/boostGraph.hpp"
 #include "segment/testSetup.hpp"
 
-/*
- * Tests minCut class.
- * WARNING: please topologically add nodes using helper functions because
- * because omSegmentsImpl and Children ONLY mock the return values.
- * i.e. add roots first because FindRoot will only update based on previous root
- */
 const std::string fnp("../../test_data/build_project/meshTest.omni");
 
 using namespace test::segment;
@@ -33,9 +27,11 @@ TEST(minCut, testEmpty) {
   OmSegments mockSegments(segmentation,
       std::unique_ptr<OmSegmentsImpl>(new MockSegmentsImpl(segmentation)));
 
-  std::shared_ptr<BoostGraph> mockBoostGraph(new MockBoostGraph());
+  std::shared_ptr<BoostGraph> mockBoostGraph(
+      new testing::NiceMock<MockBoostGraph>());
   MinCut minCut(mockSegments,
-      std::make_shared<MockBoostGraphFactory>(mockBoostGraph));
+      std::make_shared<testing::NiceMock<MockBoostGraphFactory>>(
+        mockBoostGraph));
 
   om::segment::UserEdge returnEdge = minCut.FindEdge(om::common::SegIDSet(),
       om::common::SegIDSet());
@@ -125,9 +121,11 @@ TEST(minCut, testNoEdgeFound) {
   // mockSegmentsImpl is no longer valid after move!
   OmSegments mockSegments(segmentation, std::move(mockSegmentsPtr));
 
-  std::shared_ptr<BoostGraph> mockBoostGraph(new MockBoostGraph());
+  std::shared_ptr<BoostGraph> mockBoostGraph(
+      new testing::NiceMock<MockBoostGraph>());
   MinCut minCut(mockSegments,
-      std::make_shared<MockBoostGraphFactory>(mockBoostGraph));
+      std::make_shared<testing::NiceMock<MockBoostGraphFactory>>(
+        mockBoostGraph));
 
   // prepare test inputs
   om::common::SegIDSet sources;
@@ -143,7 +141,6 @@ TEST(minCut, testNoEdgeFound) {
 }
 
 TEST(minCut, testEdgeFoundSuccess) {
-  std::cout << "test edge found success`" << std::endl;
   // necessary setup for OmSegments
   OmProject::New(QString::fromStdString(fnp));
   OmSegmentation* segmentation = &SegmentationDataWrapper().Create();
@@ -180,13 +177,15 @@ TEST(minCut, testEdgeFoundSuccess) {
   std::vector<om::segment::UserEdge> validEdges;
   validEdges.push_back(userEdge);
 
-  std::shared_ptr<MockBoostGraph> mockBoostGraph(new MockBoostGraph());
+  std::shared_ptr<MockBoostGraph> mockBoostGraph(
+      new testing::NiceMock<MockBoostGraph>());
   EXPECT_CALL(*mockBoostGraph,
       MinCut(testing::_, testing::_))
     .WillRepeatedly(testing::Return(validEdges));
 
   MinCut minCut(mockSegments,
-      std::make_shared<MockBoostGraphFactory>(mockBoostGraph));
+      std::make_shared<testing::NiceMock<MockBoostGraphFactory>>(
+        mockBoostGraph));
 
   // prepare test inputs
   om::common::SegIDSet sources;
