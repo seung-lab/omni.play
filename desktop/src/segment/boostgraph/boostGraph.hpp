@@ -37,6 +37,7 @@ class BoostGraph {
   CapacityProperty capacityProperty_;
   ReverseProperty reverseProperty_;
   ColorProperty colorProperty_;
+  SegmentProperty segmentProperty_;
   //ResidualCapacityProperty residualCapacityProperty_;
 
   // Graph creation helper functions

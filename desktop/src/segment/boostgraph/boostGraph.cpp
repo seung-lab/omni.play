@@ -17,7 +17,8 @@ BoostGraph::BoostGraph(const om::segment::Children& children, const OmSegment* r
     nameProperty_(boost::get(boost::vertex_name, graph_)),
     capacityProperty_(boost::get(boost::edge_capacity, graph_)),
     reverseProperty_(boost::get(boost::edge_reverse, graph_)),
-    colorProperty_(boost::get(boost::vertex_color, graph_)) {
+    colorProperty_(boost::get(boost::vertex_color, graph_)),
+    segmentProperty_(boost::get(segment_t(), graph_)) {
       std::cout<< "creating boost graph buildgraph" << std::endl;
       BuildGraph(rootSegment);
       std::cout<< "finish creatin boost graph" << std::endl;
@@ -93,12 +94,15 @@ Graph BoostGraph::BuildGraph(const OmSegment* rootSegment) {
   capacityProperty_ = boost::get(boost::edge_capacity, graph_);
   reverseProperty_ = boost::get(boost::edge_reverse, graph_);
 
+  std::cout << "Buid Graph adding vertex " << rootSegment->value() << std::endl;
   Vertex rootVertex = addVertex(rootSegment);
+  std::cout << "Buid Graph done adding vertex for " << rootSegment->value() << std::endl;
   buildGraphDfsVisit(rootSegment);
   return graph_;
 }
 
 void BoostGraph::buildGraphDfsVisit(const OmSegment* parent) {
+  std::cout << "buildGraphdfsvisit " << parent->value() << std::endl;
   for (const OmSegment* child : children_.GetChildren(parent->value())) {
     Vertex childVertex = addVertex(child);
     auto parentVertexIter = idToVertex_.find(parent->value());
@@ -115,9 +119,17 @@ void BoostGraph::buildGraphDfsVisit(const OmSegment* parent) {
 
 // Uses graph_, idToVertex_, nameProperty_
 Vertex BoostGraph::addVertex(const OmSegment* segment) {
+  std::cout << "adding vertex to graph" << std::endl;
   Vertex vertex = boost::add_vertex(graph_);
+  std::cout << "insertinging id to vertex_" << std::endl;
   idToVertex_.insert({segment->value(), vertex});
-  boost::put(nameProperty_, vertex, std::to_string(segment->value()));
+  std::cout << "putting name prop" << std::endl;
+  nameProperty_[vertex] = std::to_string(segment->value());
+  //boost::put(nameProperty_, vertex, 
+  std::cout << "putting segment prop" << std::endl;
+  segmentProperty_[vertex] = "Hello";
+  //boost::put(segmentProperty_, vertex, "HELLO");
+  std::cout << "returning " << std::endl;
   return vertex;
 }
 
@@ -144,7 +156,6 @@ BoostGraphFactory::BoostGraphFactory(const om::segment::Children& children)
   : children_(children) {};
 
 std::shared_ptr<BoostGraph> BoostGraphFactory::Get(const OmSegment* rootSegment) const {
-  std::cout << "Base bgf called get!" << std::endl;
   return std::make_shared<BoostGraph>(children_, rootSegment);
 }
 

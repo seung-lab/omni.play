@@ -1,4 +1,6 @@
+#pragma once
 #include "precomp.h"
+#include "gmock/gmock.h"
 #include "gtest/gtest.h"
 #include "segment/omSegment.h"
 #include "segment/omSegments.h"
@@ -12,8 +14,6 @@ namespace segment {
 
 typedef std::vector<std::set<OmSegment*>> ChildrenList;
 
-om::coords::VolumeSystem VOLUME_SYSTEM;
-om::common::SegListType SEG_LIST_TYPE = om::common::SegListType::WORKING;
 
 /*
  * WARNING: please topologically add nodes using helper functions because
@@ -85,49 +85,29 @@ class MockBoostGraphFactory : public BoostGraphFactory {
  * create segment data and it's children set
  */
 std::tuple<std::vector<om::segment::Data>, ChildrenList>
-    prepareSegmentData(int numSegments) {
-  std::vector<om::segment::Data> data;
-  ChildrenList children;
-  for (om::common::SegID i = 0; i < numSegments; i++) {
-    data.push_back({.value = i + 1});
-    children.emplace_back();
-  }
-  return std::make_tuple(data,children);
-}
+    prepareSegmentData(int numSegments);
 
 /*
  * This void assertion function is only here because google test ONLY supports 
  * asserts within void functions!
  */
-void checkIndex(std::vector<om::segment::Data>& data, om::common::SegID segID) {
-  ASSERT_TRUE((segID > 0 && segID < data.size() + 1))
-    << " Created out of bounds segment " <<
-    " Data is of size " << data.size() << " but requested " << segID;
-}
+void checkIndex(std::vector<om::segment::Data>& data, om::common::SegID segID);
 
 /*
- * Create a segment and set children list in the mockchildren
+ * return the corresponding children list for the segment
+ */
+void mockSegmentChildren(OmSegment* segment, MockChildren& mockChildren,
+    ChildrenList& childrenList);
+
+/*
+ * Create a segment with the corresponding data
  */
 std::unique_ptr<OmSegment> createSegment(om::common::SegID segID, 
-    std::vector<om::segment::Data>& data) {
-  checkIndex(data, segID);
-  // offset data by -1 because in this unit test we choose not to express seg 0
-  std::unique_ptr<OmSegment> ptr(
-      new OmSegment(data[segID - 1], SEG_LIST_TYPE, VOLUME_SYSTEM));
-  return ptr;
-}
+    std::vector<om::segment::Data>& data);
 
-void mockSegmentChildren(OmSegment* segment,
-    MockChildren& mockChildren,
-    ChildrenList& childrenList) {
-  // set up the mockchildren call to reference the correct data
-  ON_CALL(mockChildren, GetChildren(
-        testing::TypedEq<om::common::SegID>(segment->value())))
-    .WillByDefault(testing::ReturnRef(childrenList[segment->value() - 1]));
-  ON_CALL(mockChildren, GetChildren(
-        testing::TypedEq<const OmSegment*>(segment)))
-    .WillByDefault(testing::ReturnRef(childrenList[segment->value() - 1]));
-}
+std::unique_ptr<OmSegment> createSegment(om::common::SegID segID, 
+    std::vector<om::segment::Data>& data, MockChildren& mockChildren,
+    ChildrenList& childrenList);
 
 /*
  * Establish the root in findRoot* functions for the given child.
@@ -136,49 +116,18 @@ void mockSegmentChildren(OmSegment* segment,
  * then set the root to itself
  */
 void establishRoot(const OmSegment* parent, OmSegment* child,
-    MockSegmentsImpl& mockSegmentsImpl) {
-  OmSegment* rootSegment = mockSegmentsImpl.FindRoot(parent);
-
-  if (!rootSegment) {
-    rootSegment = child;
-  }
-
-  ON_CALL(mockSegmentsImpl, FindRoot(
-        testing::TypedEq<om::common::SegID>(child->value())))
-    .WillByDefault(testing::Return(rootSegment));
-  ON_CALL(mockSegmentsImpl,
-      FindRoot(testing::TypedEq<const OmSegment*>(child)))
-    .WillByDefault(testing::Return(rootSegment));
-  ON_CALL(mockSegmentsImpl, FindRootID(
-        testing::TypedEq<om::common::SegID>(child->value())))
-    .WillByDefault(testing::Return(rootSegment->value()));
-  ON_CALL(mockSegmentsImpl,
-      FindRootID(testing::TypedEq<const OmSegment*>(child)))
-    .WillByDefault(testing::Return(rootSegment->value()));
-}
+    MockSegmentsImpl& mockSegmentsImpl);
 
 /*
  * Make sure that the children list of the parent now includes this child.
  */
-void addToChildren(OmSegment* parent, OmSegment* child, double threshold) {
-  child->setParent(parent, threshold);
-}
+void addToChildren(OmSegment* parent, OmSegment* child, double threshold);
 
 void addToChildren(OmSegment* parent, OmSegment* child, double threshold,
-    MockChildren& mockChildren) {
-  addToChildren(parent, child, threshold);
-  if (!parent) {
-    return;
-  }
-  const std::set<OmSegment*>& children = mockChildren.GetChildren(parent);
-  const_cast<std::set<OmSegment*>&>(children).insert(child);
-}
+    MockChildren& mockChildren);
 
 void connectSegment(OmSegment* parent, OmSegment* child, double threshold, 
-    MockSegmentsImpl& mockSegments, MockChildren& mockChildren) {
-  establishRoot(parent, child, mockSegments);
-  addToChildren(parent, child, threshold, mockChildren);
-}
+    MockSegmentsImpl& mockSegments, MockChildren& mockChildren);
 
 } //namespace segment
 } //namespace test

@@ -5,12 +5,21 @@
 #include <boost/graph/properties.hpp>
 #include "segment/omSegment.h"
 
+enum vertex_segment_t { vertex_segment };
+
+namespace boost {
+  BOOST_INSTALL_PROPERTY(vertex, segment_t);
+}
+
 namespace om {
 namespace segment {
 namespace boostgraph {
-struct vertex_segment_t {
-  typedef boost::vertex_property_tag kind;
-};
+
+
+//struct segment_t {
+  //typedef boost::vertex_property_tag kind;
+//};
+
 
 typedef typename boost::color_traits<boost::default_color_type> DefaultColors;
 typedef typename boost::default_color_type Color;
@@ -22,7 +31,7 @@ typedef typename boost::property<boost::vertex_name_t, std::string,
           boost::property<boost::vertex_color_t, boost::default_color_type,
           boost::property<boost::vertex_distance_t, long,
           boost::property<boost::vertex_predecessor_t, Edge,
-          boost::property<vertex_segment_t, OmSegment*>>>>>> VertexProperties;
+          boost::property<vertex_segment_t, std::string>>>>>> VertexProperties;
 typedef typename boost::property<boost::edge_capacity_t, long,
           boost::property<boost::edge_residual_capacity_t, long,
           boost::property<boost::edge_reverse_t, Edge>>> EdgeProperties;
@@ -39,6 +48,8 @@ typedef boost::template property_map<Graph,
         boost::vertex_name_t>::type NameProperty;
 typedef boost::template property_map<Graph,
         boost::vertex_color_t>::type ColorProperty;
+typedef boost::template property_map<Graph,
+        segment_t>::type SegmentProperty;
 
 } // namespace boostgraph
 } // namespace segment
