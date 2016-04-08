@@ -14,7 +14,7 @@ class BoostGraph {
   BoostGraph(const om::segment::Children& children);
   BoostGraph(const om::segment::Children& children, const OmSegment* rootSeg);
 
-  Graph GetGraph();
+  Graph& GetGraph();
   void SetGraph(Graph graph);
 
   virtual std::vector<om::segment::UserEdge> MinCut(
@@ -26,7 +26,7 @@ class BoostGraph {
   static om::segment::UserEdge ToSegmentUserEdge(const Edge edge);
   std::vector<Edge> GetMinCutEdges();
 
-  Graph BuildGraph(const OmSegment* rootSeg);
+  void BuildGraph(const OmSegment* rootSeg);
 
  private:
   const om::segment::Children& children_;
@@ -40,6 +40,7 @@ class BoostGraph {
   SegmentProperty segmentProperty_;
   //ResidualCapacityProperty residualCapacityProperty_;
 
+  void setProperties();
   // Graph creation helper functions
   void buildGraphDfsVisit(const OmSegment* segment);
   Vertex addVertex(const OmSegment* segment);

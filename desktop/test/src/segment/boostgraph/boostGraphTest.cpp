@@ -31,20 +31,22 @@ TEST(boostGraph, testBasicGraph) {
   addToChildren(segment1_2.get(), segment1_2_3.get(), segment1_2->value()/10., mockChildren);
   addToChildren(segment1_2_3.get(), segment1_2_3_4.get(), segment1_2_3->value()/10., mockChildren);
 
-  Graph graph = boostGraph.BuildGraph(segment1.get());
+  boostGraph.BuildGraph(segment1.get());
+  Graph& graph = boostGraph.GetGraph();
 
-/*  SegmentProperty segmentProperty = boost::get(segment_t(), graph);*/
-  //Vertex rootSegmentVertex;
-  //boost::template graph_traits<Graph>::vertex_iterator u_iter, u_end;
-  //for (boost::tie(u_iter, u_end) = boost::vertices(graph); u_iter != u_end; ++u_iter) {
-    //const OmSegment* vertexSegment = segmentProperty[*u_iter];
-    //if (vertexSegment == segment1.get()) {
-      //rootSegmentVertex = *u_iter;
-      //break;
-    //}
-  //}
+  SegmentProperty segmentProperty = boost::get(vertex_segment_t(), graph);
+  Vertex rootSegmentVertex;
+  boost::template graph_traits<Graph>::vertex_iterator u_iter, u_end;
+  for (boost::tie(u_iter, u_end) = boost::vertices(graph); u_iter != u_end; ++u_iter) {
+    const OmSegment* vertexSegment = segmentProperty[*u_iter];
+    if (vertexSegment == segment1.get()) {
+      rootSegmentVertex = *u_iter;
+      break;
+    }
+  }
 
-  //ASSERT_TRUE(segmentProperty[rootSegmentVertex] == segment1.get());
+  ASSERT_TRUE(segmentProperty[rootSegmentVertex] == segment1.get());
+  
 
 }
 
