@@ -18,14 +18,15 @@ BoostGraph::BoostGraph(const om::segment::Children& children, const OmSegment* r
     capacityProperty_(boost::get(boost::edge_capacity, graph_)),
     reverseProperty_(boost::get(boost::edge_reverse, graph_)),
     colorProperty_(boost::get(boost::vertex_color, graph_)),
-    segmentProperty_(boost::get(vertex_segment_t(), graph_)) {
+    segmentIDProperty_(boost::get(vertex_segmentID(), graph_)) {
       std::cout<< "creating boost graph buildgraph" << std::endl;
       BuildGraph(rootSegment);
       std::cout<< "finish creatin boost graph" << std::endl;
     }
 
-Graph& BoostGraph::GetGraph() { return graph_; }
 void BoostGraph::SetGraph(Graph graph) { graph_ = graph; setProperties(); }
+Graph& BoostGraph::GetGraph() { return graph_; }
+Vertex& BoostGraph::GetVertex(om::common::SegID segID) { return idToVertex_[segID]; }
 
 std::vector<om::segment::UserEdge> BoostGraph::MinCut(
     const om::common::SegIDSet sources, const om::common::SegIDSet sinks) {
@@ -101,7 +102,7 @@ void BoostGraph::setProperties() {
   capacityProperty_ = boost::get(boost::edge_capacity, graph_);
   reverseProperty_ = boost::get(boost::edge_reverse, graph_);
   colorProperty_ = boost::get(boost::vertex_color, graph_);
-  segmentProperty_ = boost::get(vertex_segment_t(), graph_);
+  segmentIDProperty_ = boost::get(vertex_segmentID(), graph_);
 }
 
 void BoostGraph::buildGraphDfsVisit(const OmSegment* parent) {
@@ -129,7 +130,7 @@ Vertex BoostGraph::addVertex(const OmSegment* segment) {
   std::cout << "putting name prop" << std::endl;
   nameProperty_[vertex] = std::to_string(segment->value());
   std::cout << "putting segment prop" << std::endl;
-  segmentProperty_[vertex] = segment;
+  segmentIDProperty_[vertex] = segment->value();
   std::cout << "returning " << std::endl;
   return vertex;
 }

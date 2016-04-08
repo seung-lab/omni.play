@@ -10,7 +10,7 @@ namespace segment {
 namespace boostgraph {
 
 
-struct vertex_segment_t {
+struct vertex_segmentID {
   typedef boost::vertex_property_tag kind;
 };
 
@@ -25,7 +25,7 @@ typedef typename boost::property<boost::vertex_name_t, std::string,
           boost::property<boost::vertex_color_t, boost::default_color_type,
           boost::property<boost::vertex_distance_t, long,
           boost::property<boost::vertex_predecessor_t, Edge,
-          boost::property<vertex_segment_t,const OmSegment*>>>>>> VertexProperties;
+          boost::property<vertex_segmentID,om::common::SegID>>>>>> VertexProperties;
 
 typedef typename boost::property<boost::edge_capacity_t, long,
           boost::property<boost::edge_residual_capacity_t, long,
@@ -44,7 +44,7 @@ typedef boost::template property_map<Graph,
 typedef boost::template property_map<Graph,
         boost::vertex_color_t>::type ColorProperty;
 typedef boost::template property_map<Graph,
-        vertex_segment_t>::type SegmentProperty;
+        vertex_segmentID>::type SegmentIDProperty;
 
 } // namespace boostgraph
 } // namespace segment

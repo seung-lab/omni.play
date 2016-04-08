@@ -12,6 +12,43 @@ using namespace test::segment;
 namespace test {
 namespace boostGraph {
 
+/*
+ * Makes sure that the given element exists and it's connect to the correct
+ * parent with the correct weight
+ */
+void validateSegment(OmSegment* segment, Graph graph) {
+  OmSegment* parentSegment = segment->getParent();
+  SegmentIDProperty segmentIDProperty = boost::get(vertex_segmentID(), graph);
+  CapacityProperty capacityProperty = boost::get(boost::edge_capacity, graph);
+
+  bool segmentIsFound;
+  bool parentIsFound;
+  Vertex segmentVertex;
+  Vertex parentVertex;
+
+  boost::template graph_traits<Graph>::vertex_iterator u_iter, u_end;
+  for (boost::tie(u_iter, u_end) = boost::vertices(graph);
+      u_iter != u_end; ++u_iter) {
+    om::common::SegID vertexSegmentID = segmentIDProperty[*u_iter];
+    if (vertexSegmentID == segment->value()) {
+      segmentIsFound = true;
+      segmentVertex = *u_iter;
+    } else if (parentSegment && vertexSegmentID == parentSegment->value()) {
+      parentIsFound = true;
+      parentIsFound = *u_iter;
+    }
+  }
+  EXPECT_TRUE(segmentIsFound);
+  if (parentSegment) {
+    EXPECT_TRUE(parentIsFound);
+    Edge edge;
+    bool edgeIsFound;
+    std::tie(edge, edgeIsFound) = boost::edge(segmentVertex, parentVertex, graph);
+    EXPECT_TRUE(edgeIsFound);
+    EXPECT_EQ(capacityProperty[edge], segment->getThreshold());
+  }
+}
+
 TEST(boostGraph, testBasicGraph) {
   testing::NiceMock<MockChildren> mockChildren;
   BoostGraph boostGraph(mockChildren);
@@ -34,19 +71,7 @@ TEST(boostGraph, testBasicGraph) {
   boostGraph.BuildGraph(segment1.get());
   Graph& graph = boostGraph.GetGraph();
 
-  SegmentProperty segmentProperty = boost::get(vertex_segment_t(), graph);
-  Vertex rootSegmentVertex;
-  boost::template graph_traits<Graph>::vertex_iterator u_iter, u_end;
-  for (boost::tie(u_iter, u_end) = boost::vertices(graph); u_iter != u_end; ++u_iter) {
-    const OmSegment* vertexSegment = segmentProperty[*u_iter];
-    if (vertexSegment == segment1.get()) {
-      rootSegmentVertex = *u_iter;
-      break;
-    }
-  }
-
-  ASSERT_TRUE(segmentProperty[rootSegmentVertex] == segment1.get());
-  
+  validateSegment(segment1.get(), graph);
 
 }
 
