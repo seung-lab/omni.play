@@ -51,32 +51,63 @@ void validateSegment(OmSegment* segment, Graph graph) {
   }
 }
 
+std::vector<std::unique_ptr<OmSegment>> getBasicLineGraph(uint32_t numNodes,
+    std::vector<om::segment::Data>& data, MockChildren& mockChildren,
+    ChildrenList& childrenList) {
+
+  std::vector<std::unique_ptr<OmSegment>> segments;
+  segments.push_back(createSegment(1, data, mockChildren, childrenList));
+
+  for (uint32_t segmentID = 2; segmentID < numNodes; ++segmentID) {
+    segments.push_back(createSegment(segmentID, data, mockChildren, childrenList));
+    // offset segments[0] = segmentID 1
+    uint32_t segmentIndex = segmentID - 1;
+
+    addToChildren(segments[segmentIndex - 1].get(),
+        segments[segmentIndex].get(), segments[segmentIndex - 1]->value()/10,
+        mockChildren);
+  }
+  return segments;
+}
+
 TEST(boostGraph, testBasicGraph) {
   testing::NiceMock<MockChildren> mockChildren;
   BoostGraph boostGraph(mockChildren);
   std::vector<om::segment::Data> data;
   std::vector<std::set<OmSegment*>> childrenList;
   std::tie(data, childrenList) = prepareSegmentData(4);
-  std::unique_ptr<OmSegment> segment1 = createSegment(1, data,
-      mockChildren, childrenList);
-  std::unique_ptr<OmSegment> segment1_2 = createSegment(2, data,
-      mockChildren, childrenList);
-  std::unique_ptr<OmSegment> segment1_2_3 = createSegment(3, data,
-      mockChildren, childrenList);
-  std::unique_ptr<OmSegment> segment1_2_3_4 = createSegment(4, data,
-      mockChildren, childrenList);
 
-  addToChildren(segment1.get(), segment1_2.get(), segment1->value()/10., mockChildren);
-  addToChildren(segment1_2.get(), segment1_2_3.get(), segment1_2->value()/10., mockChildren);
-  addToChildren(segment1_2_3.get(), segment1_2_3_4.get(), segment1_2_3->value()/10., mockChildren);
+  std::vector<std::unique_ptr<OmSegment>> segments =
+    getBasicLineGraph(4, data, mockChildren, childrenList);
 
-  boostGraph.BuildGraph(segment1.get());
+  boostGraph.BuildGraph(segments[0].get());
   Graph& graph = boostGraph.GetGraph();
 
-  validateSegment(segment1.get(), graph);
-  validateSegment(segment1_2.get(), graph);
-  validateSegment(segment1_2_3.get(), graph);
-  validateSegment(segment1_2_3_4.get(), graph);
+  for (auto& segment : segments) {
+    validateSegment(segment.get(), graph);
+  }
+/*
+ *  std::unique_ptr<OmSegment> segment1 = createSegment(1, data,
+ *      mockChildren, childrenList);
+ *  std::unique_ptr<OmSegment> segment1_2 = createSegment(2, data,
+ *      mockChildren, childrenList);
+ *  std::unique_ptr<OmSegment> segment1_2_3 = createSegment(3, data,
+ *      mockChildren, childrenList);
+ *  std::unique_ptr<OmSegment> segment1_2_3_4 = createSegment(4, data,
+ *      mockChildren, childrenList);
+ *
+ *  addToChildren(segment1.get(), segment1_2.get(), segment1->value()/10., mockChildren);
+ *  addToChildren(segment1_2.get(), segment1_2_3.get(), segment1_2->value()/10., mockChildren);
+ *  addToChildren(segment1_2_3.get(), segment1_2_3_4.get(), segment1_2_3->value()/10., mockChildren);
+ *
+ *  boostGraph.BuildGraph(segment1.get());
+ *  Graph& graph = boostGraph.GetGraph();
+ *
+ *  validateSegment(segment1.get(), graph);
+ *  validateSegment(segment1_2.get(), graph);
+ *  validateSegment(segment1_2_3.get(), graph);
+ *  validateSegment(segment1_2_3_4.get(), graph);
+ */
 }
 
 void verifySinkSource(Vertex newSourceVertex, Vertex newSinkVertex,
@@ -110,7 +141,9 @@ void verifySinkSource(Vertex newSourceVertex, Vertex newSinkVertex,
 
     bool isDesiredSink = sinks.find(segmentID) != sinks.end();
     EXPECT_TRUE(isDesiredSink == edgeIsFound);
-    EXPECT_EQ(BoostGraph::HARD_LINK_WEIGHT, capacityProperty[edge]);
+    if (edgeIsFound) {
+      EXPECT_EQ(BoostGraph::HARD_LINK_WEIGHT, capacityProperty[edge]);
+    }
   }
 }
 
@@ -120,25 +153,17 @@ TEST(boostGraph, testSingleSourceSinkSingle) {
   std::vector<om::segment::Data> data;
   std::vector<std::set<OmSegment*>> childrenList;
   std::tie(data, childrenList) = prepareSegmentData(4);
-  std::unique_ptr<OmSegment> segment1 = createSegment(1, data,
-      mockChildren, childrenList);
-  std::unique_ptr<OmSegment> segment1_2 = createSegment(2, data,
-      mockChildren, childrenList);
-  std::unique_ptr<OmSegment> segment1_2_3 = createSegment(3, data,
-      mockChildren, childrenList);
-  std::unique_ptr<OmSegment> segment1_2_3_4 = createSegment(4, data,
-      mockChildren, childrenList);
 
-  addToChildren(segment1.get(), segment1_2.get(), segment1->value()/10., mockChildren);
-  addToChildren(segment1_2.get(), segment1_2_3.get(), segment1_2->value()/10., mockChildren);
-  addToChildren(segment1_2_3.get(), segment1_2_3_4.get(), segment1_2_3->value()/10., mockChildren);
+  std::vector<std::unique_ptr<OmSegment>> segments =
+    getBasicLineGraph(4, data, mockChildren, childrenList);
 
-  boostGraph.BuildGraph(segment1.get());
+  boostGraph.BuildGraph(segments[0].get());
+  Graph& graph = boostGraph.GetGraph();
 
   om::common::SegIDSet sources;
-  sources.insert(segment1->value());
+  sources.insert(segments[0]->value());
   om::common::SegIDSet sinks;
-  sinks.insert(segment1_2_3_4->value());
+  sinks.insert(segments[segments.size() - 1]->value());
 
   Vertex sourceVertex, sinkVertex;
   std::tie(sourceVertex, sinkVertex) =
@@ -146,35 +171,27 @@ TEST(boostGraph, testSingleSourceSinkSingle) {
 
   verifySinkSource(sourceVertex, sinkVertex, sources, sinks,
       boostGraph);
-  }
+}
 
-TEST(boostGraph, testMultiSourceSink) {
+TEST(boostGraph, testMultieSourceSinkSingle) {
   testing::NiceMock<MockChildren> mockChildren;
   BoostGraph boostGraph(mockChildren);
   std::vector<om::segment::Data> data;
   std::vector<std::set<OmSegment*>> childrenList;
   std::tie(data, childrenList) = prepareSegmentData(4);
-  std::unique_ptr<OmSegment> segment1 = createSegment(1, data,
-      mockChildren, childrenList);
-  std::unique_ptr<OmSegment> segment1_2 = createSegment(2, data,
-      mockChildren, childrenList);
-  std::unique_ptr<OmSegment> segment1_2_3 = createSegment(3, data,
-      mockChildren, childrenList);
-  std::unique_ptr<OmSegment> segment1_2_3_4 = createSegment(4, data,
-      mockChildren, childrenList);
 
-  addToChildren(segment1.get(), segment1_2.get(), segment1->value()/10., mockChildren);
-  addToChildren(segment1_2.get(), segment1_2_3.get(), segment1_2->value()/10., mockChildren);
-  addToChildren(segment1_2_3.get(), segment1_2_3_4.get(), segment1_2_3->value()/10., mockChildren);
+  std::vector<std::unique_ptr<OmSegment>> segments =
+    getBasicLineGraph(4, data, mockChildren, childrenList);
 
-  boostGraph.BuildGraph(segment1.get());
+  boostGraph.BuildGraph(segments[0].get());
+  Graph& graph = boostGraph.GetGraph();
 
   om::common::SegIDSet sources;
-  sources.insert(segment1->value());
-  sources.insert(segment1_2->value());
+  sources.insert(segments[0]->value());
+  sources.insert(segments[1]->value());
   om::common::SegIDSet sinks;
-  sinks.insert(segment1_2_3->value());
-  sinks.insert(segment1_2_3_4->value());
+  sinks.insert(segments[segments.size() - 1]->value());
+  sinks.insert(segments[segments.size() - 2]->value());
 
   Vertex sourceVertex, sinkVertex;
   std::tie(sourceVertex, sinkVertex) =

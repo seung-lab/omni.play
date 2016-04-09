@@ -75,13 +75,14 @@ std::tuple<Vertex, Vertex> BoostGraph::MakeSingleSourceSink(
     }
   }
 
-  // create a new common sink and connect it to the desired sources
+  // create a new common sink and connect it to the desired sinks
   Vertex commonSink = boost::add_vertex(graph_);
   nameProperty_[commonSink] = "Sink";
   for (auto id : sinks) {
     auto userSinkVertexIter = idToVertex_.find(id);
     if (userSinkVertexIter != idToVertex_.end()) {
-      addEdge(userSinkVertexIter->second, commonSink, 1000);
+      addEdge(userSinkVertexIter->second, commonSink,
+          BoostGraph::HARD_LINK_WEIGHT);
 
       // disallow reverse flow from this edge!
       Edge edge;
