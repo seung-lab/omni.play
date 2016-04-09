@@ -52,6 +52,8 @@ void mockSegmentChildren(OmSegment* segment,
   ON_CALL(mockChildren, GetChildren(
         testing::TypedEq<const OmSegment*>(segment)))
     .WillByDefault(testing::ReturnRef(childrenList[segment->value() - 1]));
+  std::cout << "Segment id " << segment->value() << " has childlist " <<
+    &childrenList[segment->value() - 1] << std::endl;
 }
 
 /*
@@ -108,6 +110,8 @@ void establishRoot(const OmSegment* parent, OmSegment* child,
  * Make sure that the children list of the parent now includes this child.
  */
 void addToChildren(OmSegment* parent, OmSegment* child, double threshold) {
+  std::cout << "add to children parent:" << parent->value() <<
+    "child " << child->value() << " threshold " << threshold << std::endl;
   child->setParent(parent, threshold);
 }
 
@@ -119,6 +123,7 @@ void addToChildren(OmSegment* parent, OmSegment* child, double threshold,
   }
   const std::set<OmSegment*>& children = mockChildren.GetChildren(parent);
   const_cast<std::set<OmSegment*>&>(children).insert(child);
+  std::cout << "adding " << child->value() << " to " << parent->value()  << " addr is " << &children << std::endl;
 }
 
 void connectSegment(OmSegment* parent, OmSegment* child, double threshold, 

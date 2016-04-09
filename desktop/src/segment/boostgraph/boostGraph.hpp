@@ -7,10 +7,12 @@
 using namespace om::segment::boostgraph;
 
 class BoostGraph {
-  Color SOURCE = DefaultColors::black();
-  Color SINK = DefaultColors::white();
-
  public:
+  static const double HARD_LINK_WEIGHT;
+  static const Color COLOR_SOURCE;
+  static const Color COLOR_SINK;
+
+
   BoostGraph(const om::segment::Children& children);
   BoostGraph(const om::segment::Children& children, const OmSegment* rootSeg);
 
@@ -43,9 +45,9 @@ class BoostGraph {
 
   void setProperties();
   // Graph creation helper functions
-  void buildGraphDfsVisit(const OmSegment* segment);
+  void buildGraphDfsVisit(Vertex parentVertex);
   Vertex addVertex(const OmSegment* segment);
-  void addEdge(Vertex& vertex1, Vertex& vertex2, int threshold);
+  void addEdge(Vertex& vertex1, Vertex& vertex2, double threshold);
 };
 
 class BoostGraphFactory {

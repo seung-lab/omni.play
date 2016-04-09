@@ -27,8 +27,8 @@ typedef typename boost::property<boost::vertex_name_t, std::string,
           boost::property<boost::vertex_predecessor_t, Edge,
           boost::property<vertex_segmentID,om::common::SegID>>>>>> VertexProperties;
 
-typedef typename boost::property<boost::edge_capacity_t, long,
-          boost::property<boost::edge_residual_capacity_t, long,
+typedef typename boost::property<boost::edge_capacity_t, double,
+          boost::property<boost::edge_residual_capacity_t, double,
           boost::property<boost::edge_reverse_t, Edge>>> EdgeProperties;
 
 typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::directedS,

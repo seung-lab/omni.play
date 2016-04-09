@@ -9,6 +9,10 @@
 #include <algorithm>
 
 using namespace om::segment::boostgraph;
+const double BoostGraph::HARD_LINK_WEIGHT = 100;
+const Color BoostGraph::COLOR_SOURCE = DefaultColors::black();
+const Color BoostGraph::COLOR_SINK = DefaultColors::white();
+
 BoostGraph::BoostGraph(const om::segment::Children& children) 
   : children_(children) {}
 
@@ -19,9 +23,7 @@ BoostGraph::BoostGraph(const om::segment::Children& children, const OmSegment* r
     reverseProperty_(boost::get(boost::edge_reverse, graph_)),
     colorProperty_(boost::get(boost::vertex_color, graph_)),
     segmentIDProperty_(boost::get(vertex_segmentID(), graph_)) {
-      std::cout<< "creating boost graph buildgraph" << std::endl;
       BuildGraph(rootSegment);
-      std::cout<< "finish creatin boost graph" << std::endl;
     }
 
 void BoostGraph::SetGraph(Graph graph) { graph_ = graph; setProperties(); }
@@ -56,7 +58,41 @@ std::vector<om::segment::UserEdge> BoostGraph::MinCut(
 
 std::tuple<Vertex, Vertex> BoostGraph::MakeSingleSourceSink(
     const om::common::SegIDSet sources, const om::common::SegIDSet sinks) {
-  return std::tuple<Vertex, Vertex>(Vertex(), Vertex());
+  // create a new common source and connect it to the desired sources
+  Vertex commonSource = boost::add_vertex(graph_);
+  nameProperty_[commonSource] = "Source";
+  for (auto id : sources) {
+    auto userSourceVertexIter = idToVertex_.find(id);
+    if (userSourceVertexIter != idToVertex_.end()) {
+      addEdge(commonSource, userSourceVertexIter->second, HARD_LINK_WEIGHT);
+
+      // disallow reverse flow from this edge!
+      Edge edge;
+      bool edgeIsFound;
+      std::tie(edge, edgeIsFound) =
+        boost::edge(userSourceVertexIter->second, commonSource, graph_);
+      capacityProperty_[edge] = 0;
+    }
+  }
+
+  // create a new common sink and connect it to the desired sources
+  Vertex commonSink = boost::add_vertex(graph_);
+  nameProperty_[commonSink] = "Sink";
+  for (auto id : sinks) {
+    auto userSinkVertexIter = idToVertex_.find(id);
+    if (userSinkVertexIter != idToVertex_.end()) {
+      addEdge(userSinkVertexIter->second, commonSink, 1000);
+
+      // disallow reverse flow from this edge!
+      Edge edge;
+      bool edgeIsFound;
+      std::tie(edge, edgeIsFound) =
+        boost::edge(commonSink, userSinkVertexIter->second, graph_);
+      capacityProperty_[edge] = 0;
+    }
+  }
+
+  return std::tuple<Vertex, Vertex>(commonSource, commonSink);
 }
 // TODO
 std::vector<Edge> BoostGraph::GetMinCutEdges() {
@@ -92,8 +128,7 @@ void BoostGraph::BuildGraph(const OmSegment* rootSegment) {
   setProperties();
   std::cout << "Buid Graph adding vertex " << rootSegment->value() << std::endl;
   Vertex rootVertex = addVertex(rootSegment);
-  std::cout << "Buid Graph done adding vertex for " << rootSegment->value() << std::endl;
-  buildGraphDfsVisit(rootSegment);
+  buildGraphDfsVisit(rootVertex);
 }
 
 void BoostGraph::setProperties() {
@@ -105,48 +140,56 @@ void BoostGraph::setProperties() {
   segmentIDProperty_ = boost::get(vertex_segmentID(), graph_);
 }
 
-void BoostGraph::buildGraphDfsVisit(const OmSegment* parent) {
-  std::cout << "buildGraphdfsvisit " << parent->value() << std::endl;
-  for (const OmSegment* child : children_.GetChildren(parent->value())) {
+void BoostGraph::buildGraphDfsVisit(Vertex parentVertex) {
+  om::common::SegID parentSegmentID = segmentIDProperty_[parentVertex];
+  std::cout << "buildGraphdfsvisit " << parentSegmentID << std::endl;
+
+  for (const OmSegment* child : children_.GetChildren(parentSegmentID)) {
+    std::cout << "parent " << parentSegmentID << " has child " << 
+      child->value() << std::endl;
     Vertex childVertex = addVertex(child);
-    auto parentVertexIter = idToVertex_.find(parent->value());
+    auto parentVertexIter = idToVertex_.find(parentSegmentID);
     if (parentVertexIter != idToVertex_.end()) {
       addEdge(parentVertexIter->second, childVertex, child->getThreshold());
     } else {
-      log_errors << "Should have already created vertex for " << parent->value() <<
+      log_errors << "Should have already created vertex for " << parentSegmentID <<
         " but it was not found";
       return;
     }
-    buildGraphDfsVisit(child);
+    buildGraphDfsVisit(childVertex);
   }
 }
 
 // Uses graph_, idToVertex_, nameProperty_
 Vertex BoostGraph::addVertex(const OmSegment* segment) {
-  std::cout << "adding vertex to graph" << std::endl;
   Vertex vertex = boost::add_vertex(graph_);
-  std::cout << "insertinging id to vertex_" << std::endl;
   idToVertex_.insert({segment->value(), vertex});
-  std::cout << "putting name prop" << std::endl;
   nameProperty_[vertex] = std::to_string(segment->value());
-  std::cout << "putting segment prop" << std::endl;
   segmentIDProperty_[vertex] = segment->value();
-  std::cout << "returning " << std::endl;
   return vertex;
 }
 
 // Uses graph_, capacityProperty_ and reverseProperty_
-void BoostGraph::addEdge(Vertex& vertex1, Vertex& vertex2, int threshold) {
+void BoostGraph::addEdge(Vertex& vertex1, Vertex& vertex2, double threshold) {
   Edge edgeForward, edgeReverse;
   bool isForwardCreated, isReverseCreated;
   boost::tie(edgeForward, isForwardCreated) =
     boost::add_edge(vertex1, vertex2, graph_);
+  boost::tie(edgeReverse, isReverseCreated) =
+    boost::add_edge(vertex2, vertex1, graph_);
   if (!isForwardCreated || !isReverseCreated) {
     log_errors << "Unable to create edge correctly between " << vertex1 <<
-              " and " << vertex2;
+              " and " << vertex2 << " created forward " << 
+              isForwardCreated << " created reverse " << isReverseCreated <<
+              std::endl;
     std::cout << "Unable to create edge correctly between " << vertex1 <<
-              " and " << vertex2 << std::endl;
+              " and " << vertex2 << " created forward " << 
+              isForwardCreated << " created reverese " << isReverseCreated <<
+              std::endl;
     return;
+  } else {
+    std::cout << " Added edge from " << segmentIDProperty_[vertex1] << " to " << segmentIDProperty_[vertex2] << 
+  "with threshold " << threshold << std::endl;
   }
   capacityProperty_[edgeForward] = threshold;
   capacityProperty_[edgeReverse] = threshold;
