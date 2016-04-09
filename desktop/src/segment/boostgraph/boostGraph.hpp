@@ -12,7 +12,6 @@ class BoostGraph {
   static const Color COLOR_SOURCE;
   static const Color COLOR_SINK;
 
-
   BoostGraph(const om::segment::Children& children);
   BoostGraph(const om::segment::Children& children, const OmSegment* rootSeg);
 

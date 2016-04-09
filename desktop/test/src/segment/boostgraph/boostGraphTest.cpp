@@ -96,8 +96,7 @@ void verifySinkSource(Vertex newSourceVertex, Vertex newSinkVertex,
     std::tie(edge, edgeIsFound) =
       boost::edge(newSourceVertex, connectedSource, graph);
     EXPECT_TRUE(edgeIsFound);
-    double blah = BoostGraph::HARD_LINK_WEIGHT;
-    EXPECT_EQ(blah, capacityProperty[edge]);
+    EXPECT_EQ(BoostGraph::HARD_LINK_WEIGHT, capacityProperty[edge]);
   }
 
   // Because this is technically a directional graph (not bidirectional)
