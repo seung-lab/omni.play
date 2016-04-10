@@ -103,9 +103,9 @@ TEST(minCut, testNoEdgeFound) {
   testing::NiceMock<MockSegmentsImpl>& mockSegmentsImpl 
     = static_cast<testing::NiceMock<MockSegmentsImpl>&>(*mockSegmentsPtr);
 
-   //prepare test data naming convention helps identify structure
-   //i.e. parentID_childID_grandChildId_
-   //segments with id 3 and 4 will have roots 1 and 2, respectively.
+  //prepare test data naming convention helps identify structure
+  //i.e. parentID_childID_grandChildId_
+  //segments with id 3 and 4 will have roots 1 and 2, respectively.
   std::vector<om::segment::Data> data;
   std::vector<std::set<OmSegment*>> childrenList;
   std::tie(data, childrenList) = prepareSegmentData(4);

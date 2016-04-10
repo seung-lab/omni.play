@@ -114,7 +114,10 @@ std::vector<Edge> BoostGraph::GetMinCutEdges(Vertex sourceVertex) {
       Vertex targetVertex = boost::target(*eIter, graph_);
 
       // we found a source --> sink edge, add this to the list
-      if (colorProperty_[targetVertex] == COLOR_SINK) {
+      // also we only add to the list if it has a valid segmentID (non-zero)
+      if (colorProperty_[targetVertex] == COLOR_SINK
+          && segmentIDProperty_[sourceVertex]
+          && segmentIDProperty_[targetVertex]) {
         minEdges.push_back(*eIter);
         continue;
       }

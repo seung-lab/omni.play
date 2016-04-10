@@ -6,6 +6,7 @@
 #include "segment/boostgraph/types.hpp"
 #include "segment/boostgraph/boostGraph.hpp"
 #include "segment/testSetup.hpp"
+#include <algorithm>
 
 using namespace test::segment;
 
@@ -182,6 +183,25 @@ TEST(boostGraph, testMultieSourceSinkSingle) {
       boostGraph);
 }
 
+void validateCutEdges(std::vector<std::tuple<Vertex, Vertex>>& desiredEdges,
+    std::vector<Edge>& cutEdges, Graph& graph) {
+  desiredEdges.erase(std::remove_if(desiredEdges.begin(), desiredEdges.end(),
+        [&cutEdges, &graph](std::tuple<Vertex, Vertex> vertexTuple) {
+          return std::count_if(cutEdges.begin(), cutEdges.end(),
+            [&vertexTuple, &graph](Edge cutEdge) {
+              Vertex edgeSource, edgeTarget;
+              std::tie(edgeSource, edgeTarget) = vertexTuple;
+              Vertex cutSource = boost::source(cutEdge, graph);
+              Vertex cutTarget = boost::target(cutEdge, graph);
+              // in this case we're just cutting so order doesn't matter
+              return (edgeSource == cutSource && edgeTarget == cutTarget)
+                || (edgeSource == cutTarget && edgeTarget == cutSource);
+            }) > 0;
+        }), desiredEdges.end());
+  EXPECT_EQ(0, desiredEdges.size()) << " Cut edges returned did not include" <<
+    " all expected edges";
+}
+
 TEST(boostGraph, testFindMinCutEdgesBasic) {
   testing::NiceMock<MockChildren> mockChildren;
   BoostGraph boostGraph(mockChildren);
@@ -198,7 +218,6 @@ TEST(boostGraph, testFindMinCutEdgesBasic) {
 
   // set the edge between seg 2 and 3 to be the min cut edge
   ColorProperty colorProperty = boost::get(boost::vertex_color, graph);
-  SegmentIDProperty segmentIDProperty = boost::get(vertex_segmentID(), graph);
   uint32_t pivot = 2;
   for (auto& segment : segments) {
     Vertex vertex = boostGraph.GetVertex(segment->value());
@@ -210,12 +229,73 @@ TEST(boostGraph, testFindMinCutEdgesBasic) {
       boostGraph.GetVertex(segments[0]->value()));
 
   // check to make sure the cut edge is between seg 2 and 3
-  ASSERT_EQ(1, cutEdges.size());
-  Edge cutEdge = cutEdges[0];
-  Vertex source = boost::source(cutEdge, graph);
-  Vertex target = boost::target(cutEdge, graph);
-  EXPECT_EQ(segments[1]->value(), segmentIDProperty[source]);
-  EXPECT_EQ(segments[2]->value(), segmentIDProperty[target]);
+  std::vector<std::tuple<Vertex, Vertex>> desiredEdges;
+  desiredEdges.emplace_back(boostGraph.GetVertex(segments[1]->value()),
+      boostGraph.GetVertex(segments[2]->value()));
+
+  validateCutEdges(desiredEdges, cutEdges, graph);
+}
+
+TEST(boostGraph, testFindMinCutEdgesNotSoBasic) {
+  testing::NiceMock<MockChildren> mockChildren;
+  BoostGraph boostGraph(mockChildren);
+  std::vector<om::segment::Data> data;
+  std::vector<std::set<OmSegment*>> childrenList;
+  uint32_t numSegments = 6;
+  
+  // prepare test data naming convention helps identify structure
+  // i.e. parentID_childID_grandChildId_
+  // segments with id 3 and 4 will have roots 1 and 2, respectively.
+  std::tie(data, childrenList) = prepareSegmentData(numSegments);
+  std::unique_ptr<OmSegment> segment1 =
+    createSegment(1, data, mockChildren, childrenList);
+  std::unique_ptr<OmSegment> segment1_2 =
+    createSegment(2, data, mockChildren, childrenList);
+  std::unique_ptr<OmSegment> segment1_2_3 =
+    createSegment(3, data, mockChildren, childrenList);
+  std::unique_ptr<OmSegment> segment1_2_4 =
+    createSegment(4, data, mockChildren, childrenList);
+  std::unique_ptr<OmSegment> segment1_2_4_5 =
+    createSegment(5, data, mockChildren, childrenList);
+  std::unique_ptr<OmSegment> segment1_6 =
+    createSegment(6, data, mockChildren, childrenList);
+
+  addToChildren(segment1.get(), segment1_2.get(), .5, mockChildren);
+  addToChildren(segment1_2.get(), segment1_2_3.get(), .5, mockChildren);
+  addToChildren(segment1_2.get(), segment1_2_4.get(), .5, mockChildren);
+  addToChildren(segment1_2_4.get(), segment1_2_4_5.get(), .5, mockChildren);
+  addToChildren(segment1.get(), segment1_6.get(), .5, mockChildren);
+
+  boostGraph.BuildGraph(segment1.get());
+  Graph& graph = boostGraph.GetGraph();
+
+  // cut edges 2-4 and 1-6
+  ColorProperty colorProperty = boost::get(boost::vertex_color, graph);
+  SegmentIDProperty segmentIDProperty = boost::get(vertex_segmentID(), graph);
+  colorProperty[boostGraph.GetVertex(segment1->value())] =
+    BoostGraph::COLOR_SOURCE;
+  colorProperty[boostGraph.GetVertex(segment1_2->value())] =
+    BoostGraph::COLOR_SOURCE;
+  colorProperty[boostGraph.GetVertex(segment1_2_3->value())] =
+    BoostGraph::COLOR_SOURCE;
+  colorProperty[boostGraph.GetVertex(segment1_2_4->value())] =
+    BoostGraph::COLOR_SINK;
+  colorProperty[boostGraph.GetVertex(segment1_2_4_5->value())] =
+    BoostGraph::COLOR_SINK;
+  colorProperty[boostGraph.GetVertex(segment1_6->value())] =
+    BoostGraph::COLOR_SINK;
+
+  std::vector<Edge> cutEdges = boostGraph.GetMinCutEdges(
+      boostGraph.GetVertex(segment1->value()));
+
+  // check to make sure the cut edge is between seg 2-4 and 1-6
+  std::vector<std::tuple<Vertex, Vertex>> desiredEdges;
+  desiredEdges.emplace_back(boostGraph.GetVertex(segment1_2->value()),
+      boostGraph.GetVertex(segment1_2_4->value()));
+  desiredEdges.emplace_back(boostGraph.GetVertex(segment1->value()),
+      boostGraph.GetVertex(segment1_6->value()));
+
+  validateCutEdges(desiredEdges, cutEdges, graph);
 }
 
 } //namespace boostgraph
