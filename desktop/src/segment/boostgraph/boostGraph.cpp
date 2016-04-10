@@ -96,29 +96,21 @@ std::tuple<Vertex, Vertex> BoostGraph::MakeSingleSourceSink(
   return std::tuple<Vertex, Vertex>(commonSource, commonSink);
 }
 // TODO
-std::vector<Edge> BoostGraph::GetMinCutEdges() {
-  boost::template graph_traits<Graph>::vertex_iterator u_iter, u_end;
-  boost::template graph_traits<Graph>::out_edge_iterator ei, e_end;
+std::vector<Edge> BoostGraph::GetMinCutEdges(Vertex sourceVertex) {
+  boost::template graph_traits<Graph>::vertex_iterator vIter, vIterEnd;
+  boost::template graph_traits<Graph>::out_edge_iterator eIter, eIterEnd;
+
+  //std::unordered_set<vertex>
+  //std::queue<Vertex> queue
 
   std::vector<Edge> minEdges;
-  for (boost::tie(u_iter, u_end) = boost::vertices(graph_); u_iter != u_end; ++u_iter) {
-    for (boost::tie(ei, e_end) = boost::out_edges(*u_iter, graph_); ei != e_end; ++ei) {
-      Vertex target = boost::target(*ei, graph_);
-      if (capacityProperty_[*ei] > 0) {
-        std::cout << "f " << *u_iter << " (name = " << nameProperty_[*u_iter] <<
-          "color = " << colorProperty_[*u_iter] << ") to " << target <<
-          " (name = " << nameProperty_[target] <<
-          "color = " << colorProperty_[target] << ") - ";
-        //<< (capacityProperty_[*ei] - residualCapacityProperty_[*ei]) << std::endl;
-      }
-    }
-  }
   return minEdges;
 }
 
-// TODO 
 om::segment::UserEdge BoostGraph::ToSegmentUserEdge(const Edge edge) {
   om::segment::UserEdge segmentEdge;
+  segmentEdge.parentID = segmentIDProperty_[boost::source(edge, graph_)];
+  segmentEdge.childID = segmentIDProperty_[boost::target(edge, graph_)];
   segmentEdge.valid = true;
   return segmentEdge;
 }
