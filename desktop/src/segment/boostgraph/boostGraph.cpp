@@ -49,10 +49,10 @@ std::vector<om::segment::UserEdge> BoostGraph::MinCut(
 
   boost::boykov_kolmogorov_max_flow(graph_, vertexS, vertexT);
 
-  std::vector<Edge> edges = GetMinCutEdges();
+  std::vector<Edge> edges = GetMinCutEdges(vertexS);
   std::vector<om::segment::UserEdge> userEdges;
   std::transform(edges.begin(), edges.end(), std::back_inserter(userEdges),
-      [](Edge edge) { return ToSegmentUserEdge(edge); });
+      [this](Edge edge) { return ToSegmentUserEdge(edge); });
   return userEdges;
 }
 
@@ -97,13 +97,37 @@ std::tuple<Vertex, Vertex> BoostGraph::MakeSingleSourceSink(
 }
 // TODO
 std::vector<Edge> BoostGraph::GetMinCutEdges(Vertex sourceVertex) {
-  boost::template graph_traits<Graph>::vertex_iterator vIter, vIterEnd;
-  boost::template graph_traits<Graph>::out_edge_iterator eIter, eIterEnd;
-
-  //std::unordered_set<vertex>
-  //std::queue<Vertex> queue
+  std::queue<Vertex> queue;
+  std::unordered_set<Vertex> visited;
 
   std::vector<Edge> minEdges;
+
+  queue.push(sourceVertex);
+
+  while(!queue.empty()) {
+    Vertex sourceVertex = queue.front();
+    visited.insert(sourceVertex);
+
+    boost::template graph_traits<Graph>::out_edge_iterator eIter, eIterEnd;
+    for(boost::tie(eIter, eIterEnd) = boost::out_edges(sourceVertex, graph_);
+        eIter != eIterEnd; ++eIter) {
+      Vertex targetVertex = boost::target(*eIter, graph_);
+
+      // we found a source --> sink edge, add this to the list
+      if (colorProperty_[targetVertex] == COLOR_SINK) {
+        minEdges.push_back(*eIter);
+        continue;
+      }
+
+      // only add the target vertex if it is a source and we haven't visited yet
+      if (colorProperty_[targetVertex] == COLOR_SOURCE
+         && visited.find(targetVertex) == visited.end()) {
+        queue.push(targetVertex);
+      }
+    }
+    queue.pop();
+  }
+
   return minEdges;
 }
 

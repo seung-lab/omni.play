@@ -14,7 +14,6 @@ struct vertex_segmentID {
   typedef boost::vertex_property_tag kind;
 };
 
-
 typedef typename boost::color_traits<boost::default_color_type> DefaultColors;
 typedef typename boost::default_color_type Color;
 typedef boost::adjacency_list_traits<boost::vecS, boost::vecS, boost::directedS> Traits;

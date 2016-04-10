@@ -25,8 +25,8 @@ class BoostGraph {
   std::tuple<Vertex, Vertex> MakeSingleSourceSink(
       const om::common::SegIDSet sources, const om::common::SegIDSet sinks);
 
-  static om::segment::UserEdge ToSegmentUserEdge(const Edge edge);
-  std::vector<Edge> GetMinCutEdges();
+  om::segment::UserEdge ToSegmentUserEdge(const Edge edge);
+  std::vector<Edge> GetMinCutEdges(Vertex vertex);
 
   void BuildGraph(const OmSegment* rootSeg);
 
