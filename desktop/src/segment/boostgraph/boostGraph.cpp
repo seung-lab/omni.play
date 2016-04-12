@@ -34,18 +34,7 @@ std::vector<om::segment::UserEdge> BoostGraph::MinCut(
     const om::common::SegIDSet sources, const om::common::SegIDSet sinks) {
   // source and sink vertices
   Vertex vertexS, vertexT;
-  if (sources.size() > 1 || sinks.size() > 1) {
-    std::tie(vertexS, vertexT) = MakeSingleSourceSink(sources, sinks);
-  } else {
-    auto iterS = idToVertex_.find(*sources.begin());
-    auto iterT = idToVertex_.find(*sinks.begin());
-    if (iterS == idToVertex_.end() && iterT == idToVertex_.end()) {
-      log_errors << "Unable to find source or sink segments";
-      return std::vector<om::segment::UserEdge>();
-    }
-    vertexS = iterS->second;
-    vertexT = iterT->second;
-  }
+  std::tie(vertexS, vertexT) = MakeSingleSourceSink(sources, sinks);
 
   boost::boykov_kolmogorov_max_flow(graph_, vertexS, vertexT);
 
@@ -58,44 +47,12 @@ std::vector<om::segment::UserEdge> BoostGraph::MinCut(
 
 std::tuple<Vertex, Vertex> BoostGraph::MakeSingleSourceSink(
     const om::common::SegIDSet sources, const om::common::SegIDSet sinks) {
-  // create a new common source and connect it to the desired sources
-  Vertex commonSource = boost::add_vertex(graph_);
-  nameProperty_[commonSource] = "Source";
-  for (auto id : sources) {
-    auto userSourceVertexIter = idToVertex_.find(id);
-    if (userSourceVertexIter != idToVertex_.end()) {
-      addEdge(commonSource, userSourceVertexIter->second, HARD_LINK_WEIGHT);
-
-      // disallow reverse flow from this edge!
-      Edge edge;
-      bool edgeIsFound;
-      std::tie(edge, edgeIsFound) =
-        boost::edge(userSourceVertexIter->second, commonSource, graph_);
-      capacityProperty_[edge] = 0;
-    }
-  }
-
-  // create a new common sink and connect it to the desired sinks
-  Vertex commonSink = boost::add_vertex(graph_);
-  nameProperty_[commonSink] = "Sink";
-  for (auto id : sinks) {
-    auto userSinkVertexIter = idToVertex_.find(id);
-    if (userSinkVertexIter != idToVertex_.end()) {
-      addEdge(userSinkVertexIter->second, commonSink,
-          BoostGraph::HARD_LINK_WEIGHT);
-
-      // disallow reverse flow from this edge!
-      Edge edge;
-      bool edgeIsFound;
-      std::tie(edge, edgeIsFound) =
-        boost::edge(commonSink, userSinkVertexIter->second, graph_);
-      capacityProperty_[edge] = 0;
-    }
-  }
+  Vertex commonSource = createCommonVertex(sources, true);
+  Vertex commonSink = createCommonVertex(sinks, false);
 
   return std::tuple<Vertex, Vertex>(commonSource, commonSink);
 }
-// TODO
+
 std::vector<Edge> BoostGraph::GetMinCutEdges(Vertex sourceVertex) {
   std::queue<Vertex> queue;
   std::unordered_set<Vertex> visited;
@@ -145,6 +102,10 @@ om::segment::UserEdge BoostGraph::ToSegmentUserEdge(const Edge edge) {
 void BoostGraph::BuildGraph(const OmSegment* rootSegment) {
   graph_.clear();
 
+  if (!rootSegment) {
+    return;
+  }
+
   setProperties();
   std::cout << "Buid Graph adding vertex " << rootSegment->value() << std::endl;
   Vertex rootVertex = addVertex(rootSegment);
@@ -165,6 +126,9 @@ void BoostGraph::buildGraphDfsVisit(Vertex parentVertex) {
   std::cout << "buildGraphdfsvisit " << parentSegmentID << std::endl;
 
   for (const OmSegment* child : children_.GetChildren(parentSegmentID)) {
+    if (!child) {
+      continue;
+    }
     std::cout << "parent " << parentSegmentID << " has child " << 
       child->value() << std::endl;
     Vertex childVertex = addVertex(child);
@@ -190,9 +154,10 @@ Vertex BoostGraph::addVertex(const OmSegment* segment) {
 }
 
 // Uses graph_, capacityProperty_ and reverseProperty_
-void BoostGraph::addEdge(Vertex& vertex1, Vertex& vertex2, double threshold) {
+std::tuple<Edge, Edge, bool> BoostGraph::addEdge(Vertex& vertex1,
+    Vertex& vertex2, double threshold) {
   Edge edgeForward, edgeReverse;
-  bool isForwardCreated, isReverseCreated;
+  bool isForwardCreated, isReverseCreated, isSuccess = true;
   boost::tie(edgeForward, isForwardCreated) =
     boost::add_edge(vertex1, vertex2, graph_);
   boost::tie(edgeReverse, isReverseCreated) =
@@ -206,15 +171,46 @@ void BoostGraph::addEdge(Vertex& vertex1, Vertex& vertex2, double threshold) {
               " and " << vertex2 << " created forward " << 
               isForwardCreated << " created reverese " << isReverseCreated <<
               std::endl;
-    return;
+    isSuccess = false;
   } else {
     std::cout << " Added edge from " << segmentIDProperty_[vertex1] << " to " << segmentIDProperty_[vertex2] << 
   "with threshold " << threshold << std::endl;
+    capacityProperty_[edgeForward] = threshold;
+    capacityProperty_[edgeReverse] = threshold;
+    reverseProperty_[edgeForward] = edgeReverse;
+    reverseProperty_[edgeReverse] = edgeForward;
   }
-  capacityProperty_[edgeForward] = threshold;
-  capacityProperty_[edgeReverse] = threshold;
-  reverseProperty_[edgeForward] = edgeReverse;
-  reverseProperty_[edgeReverse] = edgeForward;
+  return std::make_tuple(edgeForward, edgeReverse, isSuccess);
+}
+
+Vertex BoostGraph::createCommonVertex(om::common::SegIDSet ids,
+    bool isSource) {
+  Vertex commonVertex = boost::add_vertex(graph_);
+  nameProperty_[commonVertex] = isSource ? "Source" : "Sink";
+  for (auto id : ids) {
+    auto connectingVertexIter = idToVertex_.find(id);
+    if (connectingVertexIter != idToVertex_.end()) {
+      Vertex connectingVertex = connectingVertexIter->second;
+
+      Edge forwardEdge, reverseEdge;
+      bool isEdgesCreated;
+      std::tie(forwardEdge, reverseEdge, isEdgesCreated) =
+        addEdge(commonVertex, connectingVertex, HARD_LINK_WEIGHT);
+
+      if (isEdgesCreated) {
+        // disallow reverse flow from this edge!
+        capacityProperty_[isSource ? forwardEdge : reverseEdge] = 0;
+      } else {
+        log_errors << "Unable to create common vertex edge to " <<
+          id << std::endl;
+      }
+    } else {
+      log_errors << "Unable to find vertex with id " << id <<
+        " (Generated mincut graph does not match OmSegment structure!" <<
+        std::endl;
+    }
+  }
+  return commonVertex;
 }
 
 BoostGraphFactory::BoostGraphFactory(const om::segment::Children& children) 

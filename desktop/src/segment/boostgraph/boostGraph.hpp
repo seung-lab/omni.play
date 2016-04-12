@@ -46,7 +46,12 @@ class BoostGraph {
   // Graph creation helper functions
   void buildGraphDfsVisit(Vertex parentVertex);
   Vertex addVertex(const OmSegment* segment);
-  void addEdge(Vertex& vertex1, Vertex& vertex2, double threshold);
+  std::tuple<Edge, Edge, bool> addEdge(Vertex& vertex1,
+      Vertex& vertex2, double threshold);
+
+  // attach all vertices with these ids to a common vertex
+  // isSource = true, means we flow into selected segIds
+  Vertex createCommonVertex(om::common::SegIDSet ids, bool isSource);
 };
 
 class BoostGraphFactory {

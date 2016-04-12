@@ -370,5 +370,67 @@ TEST(boostGraph, testMinCutBasic) {
   validateCutEdges(expectedEdges, cutUserEdges, graph, sourceFunction,
       targetFunction);
 }
+
+TEST(boostGraph, testMinCutTriangle) {
+  testing::NiceMock<MockChildren> mockChildren;
+  BoostGraph boostGraph(mockChildren);
+  std::vector<om::segment::Data> data;
+  std::vector<std::set<OmSegment*>> childrenList;
+  uint32_t numSegments = 4;
+  std::tie(data, childrenList) = prepareSegmentData(numSegments);
+
+  std::vector<std::unique_ptr<OmSegment>> segments;
+  for (int index = 0; index < numSegments) {
+    segments.push_back(createSegment(segmentID, data, mockChildren, childrenList));
+  }
+  // anything at index before numSegments/2 (index = 2, segmentId = 3) has
+  // root of numSegments/2 
+  int pivotIndex = numSegments/2; 
+
+  // before pivot has pivot as root
+  for (int index = pivotIndex - 1; index >= 0; ++index) {
+    addToChildren(segments[index].get(),
+        segments[index + 1].get(), segments[index 1]->value()/10.0,
+        mockChildren);
+  }
+  //after pivot as pivot as root
+  for (int index = pivotIndex + 1; index >= 0; ++index) {
+    addToChildren(segments[index - 1].get(),
+        segments[index].get(), segments[index - 1]->value()/10.0,
+        mockChildren);
+  }
+
+  boostGraph.BuildGraph(segments[0].get());
+  Graph& graph = boostGraph.GetGraph();
+
+  // set the edge between seg 2 and 3 is the weakest link
+  CapacityProperty capacityProperty = boost::get(boost::edge_capacity, graph);
+  Vertex segment2Vertex = boostGraph.GetVertex(segments[1]->value());
+  Vertex segment3Vertex = boostGraph.GetVertex(segments[2]->value());
+  Edge edge;
+  bool edgeIsFound;
+  std::tie(edge, edgeIsFound) =
+    boost::edge(segment2Vertex, segment3Vertex, graph);
+  ASSERT_TRUE(edgeIsFound);
+  capacityProperty[edge] = .00001;
+
+  om::common::SegIDSet sources;
+  sources.insert(segments[0]->value());
+  om::common::SegIDSet sinks;
+  sinks.insert(segments[segments.size() - 1]->value());
+
+  std::vector<om::segment::UserEdge> cutUserEdges = boostGraph.MinCut(
+      sources, sinks);
+
+  // check to make sure the cut edge is between seg 2 and 3
+  std::vector<std::tuple<om::common::SegID, om::common::SegID>> expectedEdges;
+  expectedEdges.emplace_back(segments[1]->value(), segments[2]->value());
+
+  std::function<om::common::SegID(om::segment::UserEdge)>
+    sourceFunction, targetFunction;
+  std::tie(sourceFunction, targetFunction) = getUserEdgeToSegIDFunctions();
+  validateCutEdges(expectedEdges, cutUserEdges, graph, sourceFunction,
+      targetFunction);
+}
 } //namespace boostgraph
 } //namespace test
