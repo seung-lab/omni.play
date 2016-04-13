@@ -32,6 +32,15 @@ Vertex& BoostGraph::GetVertex(om::common::SegID segID) { return idToVertex_[segI
 
 std::vector<om::segment::UserEdge> BoostGraph::MinCut(
     const om::common::SegIDSet sources, const om::common::SegIDSet sinks) {
+  std::cout << "Searching for cut between ";
+  for (auto id : sources) {
+    std::cout << id << ", ";
+  }
+  std::cout << ") to (";
+  for (auto id : sinks) {
+    std::cout << id << ", ";
+  }
+  std::cout << ")" << std::endl;
   // source and sink vertices
   Vertex vertexS, vertexT;
   std::tie(vertexS, vertexT) = MakeSingleSourceSink(sources, sinks);
@@ -151,6 +160,7 @@ Vertex BoostGraph::addVertex(const OmSegment* segment) {
   idToVertex_.insert({segment->value(), vertex});
   nameProperty_[vertex] = std::to_string(segment->value());
   segmentIDProperty_[vertex] = segment->value();
+  std::cout << "created vertex[" << vertex << "] with segmentID = " << segmentIDProperty_[vertex] << "]" << std::endl;
   return vertex;
 }
 
