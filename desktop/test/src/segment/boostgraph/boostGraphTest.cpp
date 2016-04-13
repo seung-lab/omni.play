@@ -72,26 +72,6 @@ std::vector<std::unique_ptr<OmSegment>> getBasicLineGraph(uint32_t numSegments,
   return segments;
 }
 
-TEST(boostGraph, testBuildBasicGraph) {
-  testing::NiceMock<MockChildren> mockChildren;
-  BoostGraph boostGraph(mockChildren);
-  std::vector<om::segment::Data> data;
-  std::vector<std::set<OmSegment*>> childrenList;
-  uint32_t numSegments = 4;
-  std::tie(data, childrenList) = prepareSegmentData(numSegments);
-
-  std::vector<std::unique_ptr<OmSegment>> segments =
-    getBasicLineGraph(numSegments, data, mockChildren, childrenList);
-
-  boostGraph.BuildGraph(segments[0].get());
-  Graph& graph = boostGraph.GetGraph();
-
-  EXPECT_EQ(numSegments, boost::num_vertices(graph));
-  for (auto& segment : segments) {
-    validateSegmentBuilt(segment.get(), graph);
-  }
-}
-
 void verifySinkSource(Vertex newSourceVertex, Vertex newSinkVertex,
     om::common::SegIDSet sources, om::common::SegIDSet sinks,
     BoostGraph boostGraph) {
@@ -125,6 +105,74 @@ void verifySinkSource(Vertex newSourceVertex, Vertex newSinkVertex,
     if (edgeIsFound) {
       EXPECT_EQ(BoostGraph::HARD_LINK_WEIGHT, capacityProperty[edge]);
     }
+  }
+}
+
+template <typename U_EXP, typename V_ACT>
+void validateCutEdges(std::vector<std::tuple<U_EXP, U_EXP>>& expectedEdges,
+    std::vector<V_ACT>& actualEdges, Graph& graph,
+    std::function<U_EXP(V_ACT)> edgeToSourceFunction,
+    std::function<U_EXP(V_ACT)> edgeToTargetFunction) {
+  expectedEdges.erase(std::remove_if(expectedEdges.begin(), expectedEdges.end(),
+        [&actualEdges, &graph, &edgeToSourceFunction, &edgeToTargetFunction]
+        (std::tuple<U_EXP, U_EXP> vertexTuple) {
+          return std::count_if(actualEdges.begin(), actualEdges.end(),
+            [&vertexTuple, &graph, &edgeToSourceFunction,
+            &edgeToTargetFunction](V_ACT actualEdge) {
+              U_EXP edgeSource, edgeTarget;
+              std::tie(edgeSource, edgeTarget) = vertexTuple;
+              U_EXP cutSource = edgeToSourceFunction(actualEdge);
+              U_EXP cutTarget = edgeToTargetFunction(actualEdge);
+              // in this case we're just cutting so order doesn't matter
+              return (edgeSource == cutSource && edgeTarget == cutTarget)
+                || (edgeSource == cutTarget && edgeTarget == cutSource);
+            }) > 0;
+        }), expectedEdges.end());
+  EXPECT_EQ(0, expectedEdges.size()) << " Cut edges returned did not include" <<
+    " all expected edges";
+  if (expectedEdges.size() > 0) {
+    std::cerr << "Expected edge that wasn't returned ";
+    for (auto edge : expectedEdges) {
+      std::cerr << "(" << std::get<0>(edge) << ", " << std::get<1>(edge) << "), ";
+    }
+    std::cerr << std::endl;
+  }
+}
+
+std::tuple<std::function<Vertex(Edge)>, std::function<Vertex(Edge)>>
+  getEdgeToVertexFunctions(Graph& graph) {
+  return std::make_tuple(
+      [&graph](Edge edge) { return boost::source(edge, graph); },
+      [&graph](Edge edge) { return boost::target(edge, graph); });
+}
+
+std::tuple<std::function<om::common::SegID(om::segment::UserEdge)>,
+  std::function<om::common::SegID(om::segment::UserEdge)>>
+  getUserEdgeToSegIDFunctions() {
+  std::function<om::common::SegID(om::segment::UserEdge)> sourceFunction =
+    [](om::segment::UserEdge userEdge) { return userEdge.parentID; };
+  std::function<om::common::SegID(om::segment::UserEdge)> targetFunction =
+    [](om::segment::UserEdge userEdge) { return userEdge.childID; };
+  return std::make_tuple(sourceFunction, targetFunction);
+}
+
+TEST(boostGraph, testBuildBasicGraph) {
+  testing::NiceMock<MockChildren> mockChildren;
+  BoostGraph boostGraph(mockChildren);
+  std::vector<om::segment::Data> data;
+  std::vector<std::set<OmSegment*>> childrenList;
+  uint32_t numSegments = 4;
+  std::tie(data, childrenList) = prepareSegmentData(numSegments);
+
+  std::vector<std::unique_ptr<OmSegment>> segments =
+    getBasicLineGraph(numSegments, data, mockChildren, childrenList);
+
+  boostGraph.BuildGraph(segments[0].get());
+  Graph& graph = boostGraph.GetGraph();
+
+  EXPECT_EQ(numSegments, boost::num_vertices(graph));
+  for (auto& segment : segments) {
+    validateSegmentBuilt(segment.get(), graph);
   }
 }
 
@@ -182,37 +230,6 @@ TEST(boostGraph, testMultiSourceSinkSingle) {
 
   verifySinkSource(sourceVertex, sinkVertex, sources, sinks,
       boostGraph);
-}
-
-template <typename U_EXP, typename V_ACT>
-void validateCutEdges(std::vector<std::tuple<U_EXP, U_EXP>>& expectedEdges,
-    std::vector<V_ACT>& actualEdges, Graph& graph,
-    std::function<U_EXP(V_ACT)> edgeToSourceFunction,
-    std::function<U_EXP(V_ACT)> edgeToTargetFunction) {
-  expectedEdges.erase(std::remove_if(expectedEdges.begin(), expectedEdges.end(),
-        [&actualEdges, &graph, &edgeToSourceFunction, &edgeToTargetFunction]
-        (std::tuple<U_EXP, U_EXP> vertexTuple) {
-          return std::count_if(actualEdges.begin(), actualEdges.end(),
-            [&vertexTuple, &graph, &edgeToSourceFunction,
-            &edgeToTargetFunction](V_ACT actualEdge) {
-              U_EXP edgeSource, edgeTarget;
-              std::tie(edgeSource, edgeTarget) = vertexTuple;
-              U_EXP cutSource = edgeToSourceFunction(actualEdge);
-              U_EXP cutTarget = edgeToTargetFunction(actualEdge);
-              // in this case we're just cutting so order doesn't matter
-              return (edgeSource == cutSource && edgeTarget == cutTarget)
-                || (edgeSource == cutTarget && edgeTarget == cutSource);
-            }) > 0;
-        }), expectedEdges.end());
-  EXPECT_EQ(0, expectedEdges.size()) << " Cut edges returned did not include" <<
-    " all expected edges";
-}
-
-std::tuple<std::function<Vertex(Edge)>, std::function<Vertex(Edge)>>
-  getEdgeToVertexFunctions(Graph& graph) {
-  return std::make_tuple(
-      [&graph](Edge edge) { return boost::source(edge, graph); },
-      [&graph](Edge edge) { return boost::target(edge, graph); });
 }
 
 TEST(boostGraph, testFindMinCutEdgesBasic) {
@@ -317,16 +334,6 @@ TEST(boostGraph, testFindMinCutEdgesNotSoBasic) {
       targetFunction);
 }
 
-std::tuple<std::function<om::common::SegID(om::segment::UserEdge)>,
-  std::function<om::common::SegID(om::segment::UserEdge)>>
-  getUserEdgeToSegIDFunctions() {
-  std::function<om::common::SegID(om::segment::UserEdge)> sourceFunction =
-    [](om::segment::UserEdge userEdge) { return userEdge.parentID; };
-  std::function<om::common::SegID(om::segment::UserEdge)> targetFunction =
-    [](om::segment::UserEdge userEdge) { return userEdge.childID; };
-  return std::make_tuple(sourceFunction, targetFunction);
-}
-
 TEST(boostGraph, testMinCutBasic) {
   testing::NiceMock<MockChildren> mockChildren;
   BoostGraph boostGraph(mockChildren);
@@ -360,6 +367,10 @@ TEST(boostGraph, testMinCutBasic) {
   std::vector<om::segment::UserEdge> cutUserEdges = boostGraph.MinCut(
       sources, sinks);
 
+  std::cout << cutUserEdges.size() << std::endl;
+  for (auto edge : cutUserEdges) {
+    std::cout << "I cut (" << edge.parentID << ", " << edge.childID << ")" << std::endl;
+  }
   // check to make sure the cut edge is between seg 2 and 3
   std::vector<std::tuple<om::common::SegID, om::common::SegID>> expectedEdges;
   expectedEdges.emplace_back(segments[1]->value(), segments[2]->value());
@@ -380,23 +391,27 @@ TEST(boostGraph, testMinCutTriangle) {
   std::tie(data, childrenList) = prepareSegmentData(numSegments);
 
   std::vector<std::unique_ptr<OmSegment>> segments;
-  for (int index = 0; index < numSegments) {
-    segments.push_back(createSegment(segmentID, data, mockChildren, childrenList));
+  for (int index = 0; index < numSegments; ++index) {
+    // segment id = index + 1 since segment id 0 is not a valid id
+    segments.push_back(createSegment(index + 1, data, mockChildren,
+          childrenList));
   }
   // anything at index before numSegments/2 (index = 2, segmentId = 3) has
   // root of numSegments/2 
   int pivotIndex = numSegments/2; 
 
-  // before pivot has pivot as root
-  for (int index = pivotIndex - 1; index >= 0; ++index) {
-    addToChildren(segments[index].get(),
-        segments[index + 1].get(), segments[index 1]->value()/10.0,
+  // joining pivot as root to start
+  std::cout << "going from pivot to begin" << std::endl;
+  for (int parentIndex = pivotIndex; parentIndex > 0; --parentIndex) {
+    addToChildren(segments[parentIndex].get(),
+        segments[parentIndex - 1].get(), segments[parentIndex]->value()/10.0,
         mockChildren);
   }
-  //after pivot as pivot as root
-  for (int index = pivotIndex + 1; index >= 0; ++index) {
-    addToChildren(segments[index - 1].get(),
-        segments[index].get(), segments[index - 1]->value()/10.0,
+  // joining pivot as root to end
+  std::cout << " now going from pivot to end" << std::endl;
+  for (int parentIndex = pivotIndex; parentIndex >= 0; ++parentIndex) {
+    addToChildren(segments[parentIndex].get(),
+        segments[parentIndex + 1].get(), segments[parentIndex]->value()/10.0,
         mockChildren);
   }
 

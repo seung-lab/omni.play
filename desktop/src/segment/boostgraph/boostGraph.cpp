@@ -87,6 +87,7 @@ std::vector<Edge> BoostGraph::GetMinCutEdges(Vertex sourceVertex) {
     }
     queue.pop();
   }
+  std::cout << "min cut edges found size: " << minEdges.size() <<std::endl;
 
   return minEdges;
 }
@@ -199,7 +200,7 @@ Vertex BoostGraph::createCommonVertex(om::common::SegIDSet ids,
 
       if (isEdgesCreated) {
         // disallow reverse flow from this edge!
-        capacityProperty_[isSource ? forwardEdge : reverseEdge] = 0;
+        capacityProperty_[isSource ? reverseEdge : forwardEdge] = 0;
       } else {
         log_errors << "Unable to create common vertex edge to " <<
           id << std::endl;
