@@ -7,12 +7,13 @@
 #include "segment/boostgraph/boostGraph.hpp"
 #include "common/logging.h"
 #include <algorithm>
+#include <sstream>
 
 using namespace om::segment::boostgraph;
 const double BoostGraph::HARD_LINK_WEIGHT = 100;
 const Color BoostGraph::COLOR_SOURCE = DefaultColors::black();
 const Color BoostGraph::COLOR_SINK = DefaultColors::white();
-const Color BoostGraph::COLOR_UNKNOWN= DefaultColors::gray();
+const Color BoostGraph::COLOR_FREE = DefaultColors::gray();
 
 BoostGraph::BoostGraph(const om::segment::Children& children) 
   : children_(children) {}
@@ -33,15 +34,18 @@ Vertex& BoostGraph::GetVertex(om::common::SegID segID) { return idToVertex_[segI
 
 std::vector<om::segment::UserEdge> BoostGraph::MinCut(
     const om::common::SegIDSet sources, const om::common::SegIDSet sinks) {
-  std::cout << "Searching for cut between ";
+  std::stringstream cutInfoStream;
+  cutInfoStream << "Searching for cut between ";
   for (auto id : sources) {
-    std::cout << id << ", ";
+    cutInfoStream << id << ", ";
   }
-  std::cout << ") to (";
+  cutInfoStream << ") to (";
   for (auto id : sinks) {
-    std::cout << id << ", ";
+    cutInfoStream << id << ", ";
   }
-  std::cout << ")" << std::endl;
+  cutInfoStream << ")" << std::endl;
+  log_infos << cutInfoStream;
+
   // source and sink vertices
   Vertex vertexS, vertexT;
   std::tie(vertexS, vertexT) = MakeSingleSourceSink(sources, sinks);
@@ -52,6 +56,12 @@ std::vector<om::segment::UserEdge> BoostGraph::MinCut(
   std::vector<om::segment::UserEdge> userEdges;
   std::transform(edges.begin(), edges.end(), std::back_inserter(userEdges),
       [this](Edge edge) { return ToSegmentUserEdge(edge); });
+  std::stringstream returnCutEdgesStream;
+  returnCutEdgesStream << "trying to cut ";
+  for (auto edge : userEdges) {
+    returnCutEdgesStream << "(" << edge.parentID << "," << edge.childID << ")";
+  }
+  log_infos << returnCutEdgesStream;
   return userEdges;
 }
 
@@ -83,7 +93,7 @@ std::vector<Edge> BoostGraph::GetMinCutEdges(Vertex sourceVertex) {
       // we found a source --> sink edge, add this to the list
       // also we only add to the list if it has a valid segmentID (non-zero)
       if (colorProperty_[targetVertex] == COLOR_SINK
-          || colorProperty_[targetVertex] == COLOR_UNKNOWN
+          || colorProperty_[targetVertex] == COLOR_FREE
           && segmentIDProperty_[sourceVertex]
           && segmentIDProperty_[targetVertex]) {
         minEdges.push_back(*eIter);
@@ -98,7 +108,6 @@ std::vector<Edge> BoostGraph::GetMinCutEdges(Vertex sourceVertex) {
     }
     queue.pop();
   }
-  std::cout << "min cut edges found size: " << minEdges.size() <<std::endl;
 
   return minEdges;
 }
@@ -119,7 +128,6 @@ void BoostGraph::BuildGraph(const OmSegment* rootSegment) {
   }
 
   setProperties();
-  std::cout << "Buid Graph adding vertex " << rootSegment->value() << std::endl;
   Vertex rootVertex = addVertex(rootSegment);
   buildGraphDfsVisit(rootVertex);
 }
@@ -135,14 +143,11 @@ void BoostGraph::setProperties() {
 
 void BoostGraph::buildGraphDfsVisit(Vertex parentVertex) {
   om::common::SegID parentSegmentID = segmentIDProperty_[parentVertex];
-  std::cout << "buildGraphdfsvisit " << parentSegmentID << std::endl;
 
   for (const OmSegment* child : children_.GetChildren(parentSegmentID)) {
     if (!child) {
       continue;
     }
-    std::cout << "parent " << parentSegmentID << " has child " << 
-      child->value() << std::endl;
     Vertex childVertex = addVertex(child);
     auto parentVertexIter = idToVertex_.find(parentSegmentID);
     if (parentVertexIter != idToVertex_.end()) {
@@ -162,7 +167,6 @@ Vertex BoostGraph::addVertex(const OmSegment* segment) {
   idToVertex_.insert({segment->value(), vertex});
   nameProperty_[vertex] = std::to_string(segment->value());
   segmentIDProperty_[vertex] = segment->value();
-  std::cout << "created vertex[" << vertex << "] with segmentID = " << segmentIDProperty_[vertex] << "]" << std::endl;
   return vertex;
 }
 
@@ -180,14 +184,8 @@ std::tuple<Edge, Edge, bool> BoostGraph::addEdge(Vertex& vertex1,
               " and " << vertex2 << " created forward " << 
               isForwardCreated << " created reverse " << isReverseCreated <<
               std::endl;
-    std::cout << "Unable to create edge correctly between " << vertex1 <<
-              " and " << vertex2 << " created forward " << 
-              isForwardCreated << " created reverese " << isReverseCreated <<
-              std::endl;
     isSuccess = false;
   } else {
-    std::cout << " Added edge from " << segmentIDProperty_[vertex1] << " to " << segmentIDProperty_[vertex2] << 
-  "with threshold " << threshold << std::endl;
     capacityProperty_[edgeForward] = threshold;
     capacityProperty_[edgeReverse] = threshold;
     reverseProperty_[edgeForward] = edgeReverse;

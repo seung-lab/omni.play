@@ -8,7 +8,6 @@
 #include "segment/boostgraph/types.hpp"
 
 namespace test {
-namespace segment {
 namespace boostgraph {
 
 void validateSegmentBuilt(OmSegment* segment, Graph graph) {
@@ -134,6 +133,16 @@ void validateCutEdges(std::vector<std::tuple<U_EXP, U_EXP>>& expectedEdges,
   }
 }
 
+template void validateCutEdges<om::common::SegID, om::segment::UserEdge>(
+    std::vector<std::tuple<om::common::SegID, om::common::SegID>>&,
+    std::vector<om::segment::UserEdge>&, Graph&,
+    std::function<om::common::SegID(om::segment::UserEdge)>,
+    std::function<om::common::SegID(om::segment::UserEdge)>);
+template void validateCutEdges<Vertex, Edge>(
+  std::vector<std::tuple<Vertex, Vertex>>&, std::vector<Edge>&, Graph&,
+  std::function<Vertex(Edge)>, std::function<Vertex(Edge)>);
+
+
 std::tuple<std::function<Vertex(Edge)>, std::function<Vertex(Edge)>>
   getEdgeToVertexFunctions(Graph& graph) {
   return std::make_tuple(
@@ -152,6 +161,5 @@ std::tuple<std::function<om::common::SegID(om::segment::UserEdge)>,
 }
 
 } // namespace boostgraph
-} // namespace segment
 } // namespace test
 

@@ -7,7 +7,6 @@
 #include "segment/boostgraph/types.hpp"
 
 namespace test {
-namespace segment {
 namespace boostgraph {
 /*
  * Makes sure that the given element exists and it's connect to the correct
@@ -49,6 +48,5 @@ std::tuple<std::function<om::common::SegID(om::segment::UserEdge)>,
   getUserEdgeToSegIDFunctions();
 
 } // namespace boostgraph
-} // namespace segment
 } // namespace test
 

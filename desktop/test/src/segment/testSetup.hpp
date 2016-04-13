@@ -8,9 +8,10 @@
 #include "segment/boostgraph/boostGraph.hpp"
 #include "segment/boostgraph/types.hpp"
 #include "segment/lowLevel/children.hpp"
+#include <functional>
 
 namespace test {
-namespace segment {
+namespace boostgraph {
 
 typedef std::vector<std::set<OmSegment*>> ChildrenList;
 
@@ -126,8 +127,12 @@ void addToChildren(OmSegment* parent, OmSegment* child, double threshold);
 void addToChildren(OmSegment* parent, OmSegment* child, double threshold,
     MockChildren& mockChildren);
 
-void connectSegment(OmSegment* parent, OmSegment* child, double threshold, 
+void connectSegment(OmSegment* parent, OmSegment* child, double threshold,
     MockSegmentsImpl& mockSegments, MockChildren& mockChildren);
+
+// manually set this edge weight
+bool setEdge(Vertex vertex1, Vertex vertex2, double newThreshold,
+    CapacityProperty& capacityProperty, Graph& graph);
 
 /*
  * Creates a very basic graph in a straight line i.e.
@@ -158,6 +163,30 @@ std::vector<std::unique_ptr<OmSegment>> getTrinaryTreeGraph(
     std::vector<om::segment::Data>& data, MockChildren& mockChildren,
     ChildrenList& childrenList);
 
-} //namespace segment
+/*
+ * This class helps holds the testing boost graph and testing data
+ */
+class BoostGraphTest {
+ public:
+  const static uint32_t DEFAULT_NUM_SEGMENTS;
+
+  BoostGraphTest(uint32_t numSegments = DEFAULT_NUM_SEGMENTS);
+  std::vector<std::unique_ptr<OmSegment>>& generateBasicLine();
+  std::vector<std::unique_ptr<OmSegment>>& generateTrinaryTree(
+      double defaultThreshold);
+  BoostGraph& GetBoostGraph();
+
+ private:
+  uint32_t numSegments_;
+  testing::NiceMock<MockChildren> mockChildren_;
+  std::vector<om::segment::Data> data_;
+  std::vector<std::set<OmSegment*>> childrenList_;
+  BoostGraph boostGraph_;
+  std::vector<std::unique_ptr<OmSegment>> segments_;
+
+  void tryCreatingSegments(std::function<std::vector<std::unique_ptr<OmSegment>>(void)>
+      createFunction);
+};
+} //namespace boostgraph
 } //namespace test
 

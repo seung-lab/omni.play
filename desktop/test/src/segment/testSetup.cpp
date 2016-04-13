@@ -11,7 +11,7 @@
 #include "segment/testSetup.hpp"
 
 namespace test {
-namespace segment {
+namespace boostgraph {
 
 typedef std::vector<std::set<OmSegment*>> ChildrenList;
 
@@ -52,8 +52,6 @@ void mockSegmentChildren(OmSegment* segment,
   ON_CALL(mockChildren, GetChildren(
         testing::TypedEq<const OmSegment*>(segment)))
     .WillByDefault(testing::ReturnRef(childrenList[segment->value() - 1]));
-  std::cout << "Segment id " << segment->value() << " has childlist " <<
-    &childrenList[segment->value() - 1] << std::endl;
 }
 
 /*
@@ -110,8 +108,6 @@ void establishRoot(const OmSegment* parent, OmSegment* child,
  * Make sure that the children list of the parent now includes this child.
  */
 void addToChildren(OmSegment* parent, OmSegment* child, double threshold) {
-  std::cout << "add to children parent:" << parent->value() <<
-    "child " << child->value() << " threshold " << threshold << std::endl;
   child->setParent(parent, threshold);
 }
 
@@ -123,7 +119,23 @@ void addToChildren(OmSegment* parent, OmSegment* child, double threshold,
   }
   const std::set<OmSegment*>& children = mockChildren.GetChildren(parent);
   const_cast<std::set<OmSegment*>&>(children).insert(child);
-  std::cout << "adding " << child->value() << " to " << parent->value()  << " addr is " << &children << std::endl;
+}
+
+bool setEdge(Vertex vertex1, Vertex vertex2, double newThreshold,
+     CapacityProperty& capacityProperty, Graph& graph) {
+  Edge edge, edgeReverse;
+  bool edgeIsFound, edgeReverseIsFound;
+  std::tie(edge, edgeIsFound) = boost::edge(vertex1, vertex2, graph);
+  std::tie(edgeReverse, edgeReverseIsFound) =
+    boost::edge(vertex2, vertex1, graph);
+
+  if (!edgeIsFound || !edgeReverseIsFound) {
+    return false;
+  }
+
+  capacityProperty[edge] = newThreshold;
+  capacityProperty[edgeReverse] = newThreshold;
+  return true;
 }
 
 std::vector<std::unique_ptr<OmSegment>> getBasicLineGraph(uint32_t numSegments,
@@ -145,21 +157,6 @@ std::vector<std::unique_ptr<OmSegment>> getBasicLineGraph(uint32_t numSegments,
   return segments;
 }
 
-/*
- * Creates Trinary tree i.e. (diagram using vertex index NOT segmentID)
- *                               0
- *                               ^
- *                              /|\
- *                             / | \
- *                            /  |  \
- *                           /   |   \
- *                          /    |    \
- *                         /     |     \
- *                        1      2      3
- *                       /|\    /|\    /|\
- *                      / | \  / | \  / | \
- *                      4 5 6 7  8 9 10 11 12
- */
 std::vector<std::unique_ptr<OmSegment>> getTrinaryTreeGraph(
     uint32_t numSegments, double defaultThreshold,
     std::vector<om::segment::Data>& data, MockChildren& mockChildren,
@@ -172,7 +169,6 @@ std::vector<std::unique_ptr<OmSegment>> getTrinaryTreeGraph(
     // since segid 0 does not exist, the segid is essentially 1 + index
     om::common::SegID segmentID = index + 1;
     segments.push_back(createSegment(segmentID, data, mockChildren, childrenList));
-    std::cout << "parent vidx " << (index - 1)/3 << "child idx " << index <<std::endl;
 
     addToChildren(segments[(index - 1) / 3].get(),
         segments[index].get(), defaultThreshold,
@@ -180,6 +176,49 @@ std::vector<std::unique_ptr<OmSegment>> getTrinaryTreeGraph(
   }
   return segments;
 }
-} //namespace segment
+
+const uint32_t BoostGraphTest::DEFAULT_NUM_SEGMENTS = 40;
+
+BoostGraphTest::BoostGraphTest(uint32_t numSegments)
+: numSegments_(numSegments), boostGraph_(mockChildren_) {
+  std::tie(data_, childrenList_) = prepareSegmentData(numSegments);
+}
+
+std::vector<std::unique_ptr<OmSegment>>&
+BoostGraphTest::generateBasicLine() {
+  tryCreatingSegments([=](){
+    return getBasicLineGraph(numSegments_, data_, mockChildren_,
+        childrenList_);
+  });
+  return segments_;
+}
+
+std::vector<std::unique_ptr<OmSegment>>& 
+BoostGraphTest::BoostGraphTest::generateTrinaryTree(
+    double defaultThreshold) {
+  tryCreatingSegments([=](){
+     return getTrinaryTreeGraph(numSegments_, defaultThreshold,
+        data_, mockChildren_, childrenList_);
+     });
+  return segments_;
+}
+
+BoostGraph& BoostGraphTest::GetBoostGraph() {
+  return boostGraph_;
+}
+
+void BoostGraphTest::tryCreatingSegments(
+    std::function<std::vector<std::unique_ptr<OmSegment>>(void)>
+    createFunction) {
+  if (segments_.size() == 0) {
+    segments_ = createFunction();
+    boostGraph_.BuildGraph(segments_[0].get());
+  } else {
+    std::cerr << "Data was already generated previously." <<
+     " Will not generate new data" << std::endl;
+  }
+}
+
+} //namespace boostgraph
 } //namespace test
 

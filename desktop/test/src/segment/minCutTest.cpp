@@ -14,10 +14,10 @@
 
 const std::string fnp("../../test_data/build_project/meshTest.omni");
 
-using namespace test::segment;
+using namespace test::boostgraph;
 
 namespace test {
-namespace minCut {
+namespace mincut {
 
 TEST(minCut, testEmpty) {
   // necessary setup for OmSegments
