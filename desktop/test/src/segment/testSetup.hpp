@@ -129,6 +129,35 @@ void addToChildren(OmSegment* parent, OmSegment* child, double threshold,
 void connectSegment(OmSegment* parent, OmSegment* child, double threshold, 
     MockSegmentsImpl& mockSegments, MockChildren& mockChildren);
 
+/*
+ * Creates a very basic graph in a straight line i.e.
+ * (diagram using vertex indexc NOT segmentID)
+ *             0 - 1 - 2 - 3 - 4 - 5
+ */
+std::vector<std::unique_ptr<OmSegment>> getBasicLineGraph(
+    uint32_t numSegments, std::vector<om::segment::Data>& data,
+    MockChildren& mockChildren, ChildrenList& childrenList);
+
+/*
+ * Creates Trinary tree i.e. (diagram using vertex index NOT segmentID)
+ *                               0
+ *                               ^
+ *                              /|\
+ *                             / | \
+ *                            /  |  \
+ *                           /   |   \
+ *                          /    |    \
+ *                         /     |     \
+ *                        1      2      3
+ *                       /|\    /|\    /|\
+ *                      / | \  / | \  / | \
+ *                      4 5 6 7  8 9 10 11 12
+ */
+std::vector<std::unique_ptr<OmSegment>> getTrinaryTreeGraph(
+    uint32_t numSegments, double defaultThreshold,
+    std::vector<om::segment::Data>& data, MockChildren& mockChildren,
+    ChildrenList& childrenList);
+
 } //namespace segment
 } //namespace test
 

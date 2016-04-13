@@ -5,188 +5,47 @@
 #include "segment/lowLevel/children.hpp"
 #include "segment/boostgraph/types.hpp"
 #include "segment/boostgraph/boostGraph.hpp"
+#include "segment/boostgraph/validationUtils.hpp"
 #include "segment/testSetup.hpp"
 #include <algorithm>
 #include <boost/graph/graphviz.hpp>
 
 using namespace test::segment;
+using namespace test::segment::boostgraph;
 
 namespace test {
 namespace boostGraph {
-
-/*
- * Makes sure that the given element exists and it's connect to the correct
- * parent with the correct weight
- */
-void validateSegmentBuilt(OmSegment* segment, Graph graph) {
-  OmSegment* parentSegment = segment->getParent();
-  SegmentIDProperty segmentIDProperty = boost::get(vertex_segmentID(), graph);
-  CapacityProperty capacityProperty = boost::get(boost::edge_capacity, graph);
-
-  bool segmentIsFound;
-  bool parentIsFound;
-  Vertex segmentVertex = 0;
-  Vertex parentVertex = 0;
-
-  boost::template graph_traits<Graph>::vertex_iterator u_iter, u_end;
-  for (boost::tie(u_iter, u_end) = boost::vertices(graph);
-      u_iter != u_end; ++u_iter) {
-    om::common::SegID vertexSegmentID = segmentIDProperty[*u_iter];
-    if (vertexSegmentID == segment->value()) {
-      segmentIsFound = true;
-      segmentVertex = *u_iter;
-    } else if (parentSegment && vertexSegmentID == parentSegment->value()) {
-        parentIsFound = true;
-        parentVertex = *u_iter;
-    }
-  }
-  ASSERT_TRUE(segmentIsFound);
-  if (parentSegment) {
-    ASSERT_TRUE(parentIsFound) << "Parent " << parentSegment->value() <<
-      " was not found for child " << segment->value();
-
-    Edge edge;
-    bool edgeIsFound;
-    std::tie(edge, edgeIsFound) =
-      boost::edge(parentVertex, segmentVertex, graph);
-    ASSERT_TRUE(edgeIsFound);
-    ASSERT_EQ(segment->getThreshold(), capacityProperty[edge]);
-  }
-}
-
-std::vector<std::unique_ptr<OmSegment>> getBasicLineGraph(uint32_t numSegments,
-    std::vector<om::segment::Data>& data, MockChildren& mockChildren,
-    ChildrenList& childrenList) {
-
-  std::vector<std::unique_ptr<OmSegment>> segments;
-  segments.push_back(createSegment(1, data, mockChildren, childrenList));
-
-  for (uint32_t index = 1; index < numSegments; ++index) {
-    // since segid 0 does not exist, the segid is essentially 1 + index
-    om::common::SegID segmentID = index + 1;
-    segments.push_back(createSegment(segmentID, data, mockChildren, childrenList));
-
-    addToChildren(segments[index - 1].get(),
-        segments[index].get(), segments[index - 1]->value()/10.0,
-        mockChildren);
-  }
-  return segments;
-}
-
-void verifySinkSource(Vertex newSourceVertex, Vertex newSinkVertex,
-    om::common::SegIDSet sources, om::common::SegIDSet sinks,
-    BoostGraph boostGraph) {
-  Graph graph = boostGraph.GetGraph();
-  SegmentIDProperty segmentIDProperty = boost::get(vertex_segmentID(), graph);
-  CapacityProperty capacityProperty = boost::get(boost::edge_capacity, graph);
-
-  Edge edge;
-  bool edgeIsFound;
-
-  EXPECT_EQ(sources.size(), boost::out_degree(newSourceVertex, graph));
-  for (auto id : sources) {
-    Vertex connectedSource = boostGraph.GetVertex(id);
-    std::tie(edge, edgeIsFound) =
-      boost::edge(newSourceVertex, connectedSource, graph);
-    EXPECT_TRUE(edgeIsFound);
-    if (edgeIsFound) {
-      EXPECT_EQ(BoostGraph::HARD_LINK_WEIGHT, capacityProperty[edge]);
-    }
-    // verify reverse edge exists but capacity is 0
-    std::tie(edge, edgeIsFound) =
-      boost::edge(connectedSource, newSourceVertex, graph);
-    EXPECT_TRUE(edgeIsFound);
-    if (edgeIsFound) {
-      EXPECT_EQ(0, capacityProperty[edge]);
-    }
-  }
-
-  // Because this is technically a directional graph (not bidirectional)
-  // boost does not provide in_degree
-  boost::template graph_traits<Graph>::vertex_iterator vIter, vIterEnd;
-  for (boost::tie(vIter, vIterEnd) = boost::vertices(graph);
-      vIter != vIterEnd; ++vIter) {
-    auto segmentID = segmentIDProperty[*vIter];
-
-    // since we're iterating through all the vertices we only need to test
-    // if the vertex is one of the sinks
-    bool isDesiredSink = sinks.find(segmentID) != sinks.end();
-    if (isDesiredSink) {
-      std::tie(edge, edgeIsFound) =
-        boost::edge(*vIter, newSinkVertex, graph);
-      EXPECT_TRUE(edgeIsFound);
-      if (edgeIsFound) {
-        EXPECT_EQ(BoostGraph::HARD_LINK_WEIGHT, capacityProperty[edge]);
-      }
-      // verify reverse edge has capcity of 0
-      std::tie(edge, edgeIsFound) =
-        boost::edge(newSinkVertex, *vIter, graph);
-      EXPECT_TRUE(edgeIsFound);
-      if (edgeIsFound) {
-        EXPECT_EQ(0, capacityProperty[edge]);
-      }
-    }
-  }
-}
-
-template <typename U_EXP, typename V_ACT>
-void validateCutEdges(std::vector<std::tuple<U_EXP, U_EXP>>& expectedEdges,
-    std::vector<V_ACT>& actualEdges, Graph& graph,
-    std::function<U_EXP(V_ACT)> edgeToSourceFunction,
-    std::function<U_EXP(V_ACT)> edgeToTargetFunction) {
-  expectedEdges.erase(std::remove_if(expectedEdges.begin(), expectedEdges.end(),
-        [&actualEdges, &graph, &edgeToSourceFunction, &edgeToTargetFunction]
-        (std::tuple<U_EXP, U_EXP> vertexTuple) {
-          return std::count_if(actualEdges.begin(), actualEdges.end(),
-            [&vertexTuple, &graph, &edgeToSourceFunction,
-            &edgeToTargetFunction](V_ACT actualEdge) {
-              U_EXP edgeSource, edgeTarget;
-              std::tie(edgeSource, edgeTarget) = vertexTuple;
-              U_EXP cutSource = edgeToSourceFunction(actualEdge);
-              U_EXP cutTarget = edgeToTargetFunction(actualEdge);
-              // in this case we're just cutting so order doesn't matter
-              return (edgeSource == cutSource && edgeTarget == cutTarget)
-                || (edgeSource == cutTarget && edgeTarget == cutSource);
-            }) > 0;
-        }), expectedEdges.end());
-  EXPECT_EQ(0, expectedEdges.size()) << " Cut edges returned did not include" <<
-    " all expected edges";
-  if (expectedEdges.size() > 0) {
-    std::cerr << "Expected edge that wasn't returned ";
-    for (auto edge : expectedEdges) {
-      std::cerr << "(" << std::get<0>(edge) << ", " << std::get<1>(edge) << "), ";
-    }
-    std::cerr << std::endl;
-  }
-}
-
-std::tuple<std::function<Vertex(Edge)>, std::function<Vertex(Edge)>>
-  getEdgeToVertexFunctions(Graph& graph) {
-  return std::make_tuple(
-      [&graph](Edge edge) { return boost::source(edge, graph); },
-      [&graph](Edge edge) { return boost::target(edge, graph); });
-}
-
-std::tuple<std::function<om::common::SegID(om::segment::UserEdge)>,
-  std::function<om::common::SegID(om::segment::UserEdge)>>
-  getUserEdgeToSegIDFunctions() {
-  std::function<om::common::SegID(om::segment::UserEdge)> sourceFunction =
-    [](om::segment::UserEdge userEdge) { return userEdge.parentID; };
-  std::function<om::common::SegID(om::segment::UserEdge)> targetFunction =
-    [](om::segment::UserEdge userEdge) { return userEdge.childID; };
-  return std::make_tuple(sourceFunction, targetFunction);
-}
 
 TEST(boostGraph, testBuildBasicGraph) {
   testing::NiceMock<MockChildren> mockChildren;
   BoostGraph boostGraph(mockChildren);
   std::vector<om::segment::Data> data;
   std::vector<std::set<OmSegment*>> childrenList;
-  uint32_t numSegments = 4;
+  uint32_t numSegments = 100;
   std::tie(data, childrenList) = prepareSegmentData(numSegments);
 
   std::vector<std::unique_ptr<OmSegment>> segments =
     getBasicLineGraph(numSegments, data, mockChildren, childrenList);
+
+  boostGraph.BuildGraph(segments[0].get());
+  Graph& graph = boostGraph.GetGraph();
+
+  EXPECT_EQ(numSegments, boost::num_vertices(graph));
+  for (auto& segment : segments) {
+    validateSegmentBuilt(segment.get(), graph);
+  }
+}
+
+TEST(boostGraph, testBuildComplexGraph) {
+  testing::NiceMock<MockChildren> mockChildren;
+  BoostGraph boostGraph(mockChildren);
+  std::vector<om::segment::Data> data;
+  std::vector<std::set<OmSegment*>> childrenList;
+  uint32_t numSegments = 100;
+  std::tie(data, childrenList) = prepareSegmentData(numSegments);
+
+  std::vector<std::unique_ptr<OmSegment>> segments =
+    getTrinaryTreeGraph(numSegments, .23, data, mockChildren, childrenList);
 
   boostGraph.BuildGraph(segments[0].get());
   Graph& graph = boostGraph.GetGraph();
@@ -504,15 +363,18 @@ TEST(boostGraph, testMinCutMultiSourceSink) {
   BoostGraph boostGraph(mockChildren);
   std::vector<om::segment::Data> data;
   std::vector<std::set<OmSegment*>> childrenList;
-  uint32_t numSegments = 8;
+  uint32_t numSegments = 13;
   std::tie(data, childrenList) = prepareSegmentData(numSegments);
 
-  std::vector<std::unique_ptr<OmSegment>> segments;
-  for (int index = 0; index < numSegments; ++index) {
-    // segment id = index + 1 since segment id 0 is not a valid id
-    segments.push_back(createSegment(index + 1, data, mockChildren,
-          childrenList));
-  }
+  std::vector<std::unique_ptr<OmSegment>> segments = getTrinaryTreeGraph(
+      numSegments, .5, data,mockChildren,childrenList);
+
+  //std::vector<std::unique_ptr<OmSegment>> segments;
+  //for (int index = 0; index < numSegments; ++index) {
+    //// segment id = index + 1 since segment id 0 is not a valid id
+    //segments.push_back(createSegment(index + 1, data, mockChildren,
+          //childrenList));
+  //}
   // try to perform this cut (vertex index which is segmentid-1)
   //           5 (source)
   //         < 6 (source)
@@ -528,48 +390,48 @@ TEST(boostGraph, testMinCutMultiSourceSink) {
   //     3 < 1 (sink)
   //         2 (sink)
   //
-  addToChildren(segments[3].get(), segments[4].get(), .8, mockChildren);
-  addToChildren(segments[4].get(), segments[5].get(), .8, mockChildren);
-  addToChildren(segments[4].get(), segments[6].get(), .8, mockChildren);
-  addToChildren(segments[4].get(), segments[7].get(), .8, mockChildren);
-  addToChildren(segments[3].get(), segments[2].get(), .8, mockChildren);
-  addToChildren(segments[2].get(), segments[0].get(), .8, mockChildren);
+  //addToChildren(segments[3].get(), segments[4].get(), .8, mockChildren);
+  //addToChildren(segments[4].get(), segments[5].get(), .8, mockChildren);
+  //addToChildren(segments[4].get(), segments[6].get(), .8, mockChildren);
+  //addToChildren(segments[4].get(), segments[7].get(), .8, mockChildren);
+  //addToChildren(segments[3].get(), segments[2].get(), .8, mockChildren);
+  //addToChildren(segments[2].get(), segments[0].get(), .8, mockChildren);
   //addToChildren(segments[2].get(), segments[1].get(), .8, mockChildren);
 
-  boostGraph.BuildGraph(segments[3].get());
+  boostGraph.BuildGraph(segments[0].get());
   Graph& graph = boostGraph.GetGraph();
 
   CapacityProperty capacityProperty = boost::get(boost::edge_capacity, graph);
-  Vertex segment2Vertex = boostGraph.GetVertex(segments[3]->value());
-  Vertex segment3Vertex = boostGraph.GetVertex(segments[2]->value());
-  SegmentIDProperty segmentIDProperty = boost::get(vertex_segmentID(), graph);
-  Edge edge;
-  bool edgeIsFound;
-  std::tie(edge, edgeIsFound) =
-    boost::edge(segment2Vertex, segment3Vertex, graph);
-  ASSERT_TRUE(edgeIsFound);
-  //capacityProperty[edge] = .001;
-  std::tie(edge, edgeIsFound) =
-    boost::edge(segment3Vertex, segment2Vertex, graph);
-  ASSERT_TRUE(edgeIsFound);
-  //capacityProperty[edge] = .001;
-
-  om::common::SegIDSet sources;
-  sources.insert(segments[0]->value());
-  om::common::SegIDSet sinks;
-  sinks.insert(segments[3]->value());
-
-  std::vector<om::segment::UserEdge> cutUserEdges = boostGraph.MinCut(
-      sources, sinks);
-
-  std::cout << "trying to cut ";
-  for (auto edge : cutUserEdges) {
-    std::cout << "(" << edge.parentID << "," << edge.childID << ")";
-  }
-  std::cout << std::endl;
-
   NameProperty nameProperty = boost::get(boost::vertex_name, graph);
   ColorProperty colorProperty = boost::get(boost::vertex_color, graph);
+  //Vertex segment2Vertex = boostGraph.GetVertex(segments[3]->value());
+  //Vertex segment3Vertex = boostGraph.GetVertex(segments[2]->value());
+  //SegmentIDProperty segmentIDProperty = boost::get(vertex_segmentID(), graph);
+  //Edge edge;
+  //bool edgeIsFound;
+  //std::tie(edge, edgeIsFound) =
+    //boost::edge(segment2Vertex, segment3Vertex, graph);
+  //ASSERT_TRUE(edgeIsFound);
+  ////capacityProperty[edge] = .001;
+  //std::tie(edge, edgeIsFound) =
+    //boost::edge(segment3Vertex, segment2Vertex, graph);
+  //ASSERT_TRUE(edgeIsFound);
+  ////capacityProperty[edge] = .001;
+
+  //om::common::SegIDSet sources;
+  //sources.insert(segments[0]->value());
+  //om::common::SegIDSet sinks;
+  //sinks.insert(segments[3]->value());
+
+  //std::vector<om::segment::UserEdge> cutUserEdges = boostGraph.MinCut(
+      //sources, sinks);
+
+  //std::cout << "trying to cut ";
+  //for (auto edge : cutUserEdges) {
+    //std::cout << "(" << edge.parentID << "," << edge.childID << ")";
+  //}
+  //std::cout << std::endl;
+
   write_graphviz(std::cout, graph, make_label_writer_2(nameProperty, colorProperty),
       make_label_writer(capacityProperty));
   // check to make sure the cut edge is between seg 2 and 3

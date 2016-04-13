@@ -12,6 +12,7 @@ using namespace om::segment::boostgraph;
 const double BoostGraph::HARD_LINK_WEIGHT = 100;
 const Color BoostGraph::COLOR_SOURCE = DefaultColors::black();
 const Color BoostGraph::COLOR_SINK = DefaultColors::white();
+const Color BoostGraph::COLOR_UNKNOWN= DefaultColors::gray();
 
 BoostGraph::BoostGraph(const om::segment::Children& children) 
   : children_(children) {}
@@ -82,6 +83,7 @@ std::vector<Edge> BoostGraph::GetMinCutEdges(Vertex sourceVertex) {
       // we found a source --> sink edge, add this to the list
       // also we only add to the list if it has a valid segmentID (non-zero)
       if (colorProperty_[targetVertex] == COLOR_SINK
+          || colorProperty_[targetVertex] == COLOR_UNKNOWN
           && segmentIDProperty_[sourceVertex]
           && segmentIDProperty_[targetVertex]) {
         minEdges.push_back(*eIter);

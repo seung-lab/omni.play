@@ -11,6 +11,7 @@ class BoostGraph {
   static const double HARD_LINK_WEIGHT;
   static const Color COLOR_SOURCE;
   static const Color COLOR_SINK;
+  static const Color COLOR_UNKNOWN;
 
   BoostGraph(const om::segment::Children& children);
   BoostGraph(const om::segment::Children& children, const OmSegment* rootSeg);

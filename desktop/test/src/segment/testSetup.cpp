@@ -126,12 +126,60 @@ void addToChildren(OmSegment* parent, OmSegment* child, double threshold,
   std::cout << "adding " << child->value() << " to " << parent->value()  << " addr is " << &children << std::endl;
 }
 
-void connectSegment(OmSegment* parent, OmSegment* child, double threshold, 
-    MockSegmentsImpl& mockSegments, MockChildren& mockChildren) {
-  establishRoot(parent, child, mockSegments);
-  addToChildren(parent, child, threshold, mockChildren);
+std::vector<std::unique_ptr<OmSegment>> getBasicLineGraph(uint32_t numSegments,
+    std::vector<om::segment::Data>& data, MockChildren& mockChildren,
+    ChildrenList& childrenList) {
+
+  std::vector<std::unique_ptr<OmSegment>> segments;
+  segments.push_back(createSegment(1, data, mockChildren, childrenList));
+
+  for (uint32_t index = 1; index < numSegments; ++index) {
+    // since segid 0 does not exist, the segid is essentially 1 + index
+    om::common::SegID segmentID = index + 1;
+    segments.push_back(createSegment(segmentID, data, mockChildren, childrenList));
+
+    addToChildren(segments[index - 1].get(),
+        segments[index].get(), segments[index - 1]->value()/10.0,
+        mockChildren);
+  }
+  return segments;
 }
 
+/*
+ * Creates Trinary tree i.e. (diagram using vertex index NOT segmentID)
+ *                               0
+ *                               ^
+ *                              /|\
+ *                             / | \
+ *                            /  |  \
+ *                           /   |   \
+ *                          /    |    \
+ *                         /     |     \
+ *                        1      2      3
+ *                       /|\    /|\    /|\
+ *                      / | \  / | \  / | \
+ *                      4 5 6 7  8 9 10 11 12
+ */
+std::vector<std::unique_ptr<OmSegment>> getTrinaryTreeGraph(
+    uint32_t numSegments, double defaultThreshold,
+    std::vector<om::segment::Data>& data, MockChildren& mockChildren,
+    ChildrenList& childrenList) {
+
+  std::vector<std::unique_ptr<OmSegment>> segments;
+  segments.push_back(createSegment(1, data, mockChildren, childrenList));
+
+  for (uint32_t index = 1; index < numSegments; ++index) {
+    // since segid 0 does not exist, the segid is essentially 1 + index
+    om::common::SegID segmentID = index + 1;
+    segments.push_back(createSegment(segmentID, data, mockChildren, childrenList));
+    std::cout << "parent vidx " << (index - 1)/3 << "child idx " << index <<std::endl;
+
+    addToChildren(segments[(index - 1) / 3].get(),
+        segments[index].get(), defaultThreshold,
+        mockChildren);
+  }
+  return segments;
+}
 } //namespace segment
 } //namespace test
 
