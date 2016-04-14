@@ -35,7 +35,7 @@ Vertex& BoostGraph::GetVertex(om::common::SegID segID) { return idToVertex_[segI
 std::vector<om::segment::UserEdge> BoostGraph::MinCut(
     const om::common::SegIDSet sources, const om::common::SegIDSet sinks) {
   std::stringstream cutInfoStream;
-  cutInfoStream << "Searching for cut between ";
+  cutInfoStream << "Searching for cut between (";
   for (auto id : sources) {
     cutInfoStream << id << ", ";
   }
@@ -43,8 +43,8 @@ std::vector<om::segment::UserEdge> BoostGraph::MinCut(
   for (auto id : sinks) {
     cutInfoStream << id << ", ";
   }
-  cutInfoStream << ")" << std::endl;
-  log_infos << cutInfoStream;
+  cutInfoStream << ")";
+  log_infos << cutInfoStream.str();
 
   // source and sink vertices
   Vertex vertexS, vertexT;
@@ -61,7 +61,7 @@ std::vector<om::segment::UserEdge> BoostGraph::MinCut(
   for (auto edge : userEdges) {
     returnCutEdgesStream << "(" << edge.parentID << "," << edge.childID << ")";
   }
-  log_infos << returnCutEdgesStream;
+  log_infos << returnCutEdgesStream.str();
   return userEdges;
 }
 
@@ -182,8 +182,7 @@ std::tuple<Edge, Edge, bool> BoostGraph::addEdge(Vertex& vertex1,
   if (!isForwardCreated || !isReverseCreated) {
     log_errors << "Unable to create edge correctly between " << vertex1 <<
               " and " << vertex2 << " created forward " << 
-              isForwardCreated << " created reverse " << isReverseCreated <<
-              std::endl;
+              isForwardCreated << " created reverse " << isReverseCreated;
     isSuccess = false;
   } else {
     capacityProperty_[edgeForward] = threshold;
@@ -213,12 +212,11 @@ Vertex BoostGraph::createCommonVertex(om::common::SegIDSet ids,
         capacityProperty_[isSource ? reverseEdge : forwardEdge] = 0;
       } else {
         log_errors << "Unable to create common vertex edge to " <<
-          id << std::endl;
+          id;
       }
     } else {
       log_errors << "Unable to find vertex with id " << id <<
-        " (Generated mincut graph does not match OmSegment structure!" <<
-        std::endl;
+        " (Generated mincut graph does not match OmSegment structure!";
     }
   }
   return commonVertex;

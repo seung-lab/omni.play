@@ -260,20 +260,8 @@ TEST(boostGraph, testMinCutTriangle) {
       targetFunction);
 }
 
-TEST(boostGraph, testMinCutMultiSourceSink) {
-  BoostGraphTest boostGraphTest;
-  std::vector<std::unique_ptr<OmSegment>>& segments =
-    boostGraphTest.generateTrinaryTree(.5);
-
-  BoostGraph& boostGraph = boostGraphTest.GetBoostGraph();
-  Graph& graph = boostGraph.GetGraph();
-
-  CapacityProperty capacityProperty = boost::get(boost::edge_capacity, graph);
-  NameProperty nameProperty = boost::get(boost::vertex_name, graph);
-  ColorProperty colorProperty = boost::get(boost::vertex_color, graph);
-
 /*
- * setup the following (all edges are .5 unless otherwise).
+ * Reference trinary tree diagram for the following tests
  * Labelled Using vertex INDEX NOT segID
  *                                         0
  *                                         ^
@@ -285,11 +273,19 @@ TEST(boostGraph, testMinCutMultiSourceSink) {
  *     ^        ^        ^        ^        ^        ^        ^        ^        ^
  *   / |  \   / |  \   / |  \   / |  \   / |  \   / |  \   / |  \   / |  \   / |  \
  *  13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39
- * Modified Edges:
- * (0,3) = .8
- * source : 16
- * sink   : 11
  */
+
+TEST(boostGraph, testMinCutMultiSourceSink) {
+  BoostGraphTest boostGraphTest;
+  std::vector<std::unique_ptr<OmSegment>>& segments =
+    boostGraphTest.generateTrinaryTree(.5);
+
+  BoostGraph& boostGraph = boostGraphTest.GetBoostGraph();
+  Graph& graph = boostGraph.GetGraph();
+
+  CapacityProperty capacityProperty = boost::get(boost::edge_capacity, graph);
+  NameProperty nameProperty = boost::get(boost::vertex_name, graph);
+  ColorProperty colorProperty = boost::get(boost::vertex_color, graph);
 
   // in this test case we force it to cut close to the source/sinks
   om::common::SegIDSet sources;
@@ -303,12 +299,6 @@ TEST(boostGraph, testMinCutMultiSourceSink) {
 
   std::vector<om::segment::UserEdge> cutUserEdges = boostGraph.MinCut(
       sources, sinks);
-
-  std::cout << "trying to cut ";
-  for (auto edge : cutUserEdges) {
-    std::cout << "(" << edge.parentID - 1 << "," << edge.childID - 1 << ")";
-  }
-  std::cout << std::endl;
 
   std::vector<std::tuple<om::common::SegID, om::common::SegID>> expectedEdges;
   expectedEdges.emplace_back(segments[0]->value(), segments[3]->value());
