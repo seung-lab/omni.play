@@ -275,7 +275,7 @@ TEST(boostGraph, testMinCutTriangle) {
  *  13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39
  */
 
-TEST(boostGraph, testMinCutMultiSourceSink) {
+TEST(boostGraph, testMinCutMultiSourceSinkForceManyCuts) {
   BoostGraphTest boostGraphTest;
   std::vector<std::unique_ptr<OmSegment>>& segments =
     boostGraphTest.generateTrinaryTree(.5);
@@ -314,5 +314,45 @@ TEST(boostGraph, testMinCutMultiSourceSink) {
       //make_label_writer(capacityProperty));
 }
 
+TEST(boostGraph, testMinCutMultiSourceSinkJump) {
+  BoostGraphTest boostGraphTest;
+  std::vector<std::unique_ptr<OmSegment>>& segments =
+    boostGraphTest.generateTrinaryTree(.5);
+
+  BoostGraph& boostGraph = boostGraphTest.GetBoostGraph();
+  Graph& graph = boostGraph.GetGraph();
+
+  CapacityProperty capacityProperty = boost::get(boost::edge_capacity, graph);
+  NameProperty nameProperty = boost::get(boost::vertex_name, graph);
+  ColorProperty colorProperty = boost::get(boost::vertex_color, graph);
+
+  ASSERT_TRUE(setEdge(boostGraph.GetVertex(segments[1]->value()),
+        boostGraph.GetVertex(segments[4]->value()),
+        .0001, capacityProperty, graph));
+  ASSERT_TRUE(setEdge(boostGraph.GetVertex(segments[3]->value()),
+        boostGraph.GetVertex(segments[12]->value()),
+        .0001, capacityProperty, graph));
+
+  // in this test case we force it to cut close to the source/sinks
+  om::common::SegIDSet sources;
+  sources.insert(segments[13]->value());
+  om::common::SegIDSet sinks;
+  sinks.insert(segments[39]->value());
+
+  std::vector<om::segment::UserEdge> cutUserEdges = boostGraph.MinCut(
+      sources, sinks);
+
+  std::vector<std::tuple<om::common::SegID, om::common::SegID>> expectedEdges;
+  expectedEdges.emplace_back(segments[1]->value(), segments[4]->value());
+
+  std::function<om::common::SegID(om::segment::UserEdge)>
+    sourceFunction, targetFunction;
+  std::tie(sourceFunction, targetFunction) = getUserEdgeToSegIDFunctions();
+  validateCutEdges(expectedEdges, cutUserEdges, graph, sourceFunction,
+      targetFunction);
+
+  //write_graphviz(std::cout, graph, make_label_writer_2(nameProperty, colorProperty),
+      //make_label_writer(capacityProperty));
+}
 } //namespace boostgraph
 } //namespace test
