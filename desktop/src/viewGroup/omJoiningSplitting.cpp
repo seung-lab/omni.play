@@ -96,6 +96,7 @@ void OmJoiningSplitting::goToFirstState() {
 
   switch(currentTool_) {
     case om::tool::mode::SPLIT:
+    case om::tool::mode::MULTISPLIT:
       SetShouldVolumeBeShownBroken(true);
       break;
     case om::tool::mode::JOIN:
@@ -120,7 +121,7 @@ bool OmJoiningSplitting::isToolSupported(om::tool::mode tool) {
 }
 
 const om::tool::mode JS_TOOLS[] = {
-  om::tool::mode::JOIN, om::tool::mode::SPLIT
+  om::tool::mode::JOIN, om::tool::mode::SPLIT, om::tool::mode::MULTISPLIT
 };
 const std::set<om::tool::mode> OmJoiningSplitting::JOIN_SPLIT_TOOLS(
     JS_TOOLS, JS_TOOLS + sizeof(JS_TOOLS)/sizeof(JS_TOOLS[0]));

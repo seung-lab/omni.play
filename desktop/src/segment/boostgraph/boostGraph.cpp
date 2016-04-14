@@ -44,7 +44,7 @@ std::vector<om::segment::UserEdge> BoostGraph::MinCut(
     cutInfoStream << id << ", ";
   }
   cutInfoStream << ")";
-  log_infos << cutInfoStream.str();
+  std::cout << cutInfoStream.str() << std::endl;;
 
   // source and sink vertices
   Vertex vertexS, vertexT;
@@ -61,7 +61,7 @@ std::vector<om::segment::UserEdge> BoostGraph::MinCut(
   for (auto edge : userEdges) {
     returnCutEdgesStream << "(" << edge.parentID << "," << edge.childID << ")";
   }
-  log_infos << returnCutEdgesStream.str();
+std::cout << returnCutEdgesStream.str() << std::endl;;
   return userEdges;
 }
 

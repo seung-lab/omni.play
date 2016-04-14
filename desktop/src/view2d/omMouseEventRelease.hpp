@@ -37,6 +37,7 @@ class OmMouseEventRelease {
         break;
       case om::tool::JOIN:
       case om::tool::SPLIT:
+      case om::tool::MULTISPLIT:
         om::JoinSplitRunner::GoToNextState(
             state_->getViewGroupState(), tool);
       default:

@@ -14,6 +14,7 @@ class OmStateManagerImpl {
     ResetTool();
     transientTools_.insert(om::tool::mode::JOIN);
     transientTools_.insert(om::tool::mode::SPLIT);
+    transientTools_.insert(om::tool::mode::MULTISPLIT);
     transientTools_.insert(om::tool::mode::SHATTER);
   }
 

@@ -165,6 +165,7 @@ void Ui::navigationModeMousePressed(QMouseEvent* event) {
         }
       case om::tool::mode::SPLIT:
       case om::tool::mode::JOIN:
+      case om::tool::MULTISPLIT:
         if (joinSplitModeSelectSegment(toolMode, event)) {
           return;
         }
@@ -247,6 +248,7 @@ void Ui::navigationModeMouseRelease(QMouseEvent* event) {
   switch (toolMode) {
     case om::tool::JOIN:
     case om::tool::SPLIT:
+    case om::tool::MULTISPLIT:
       joinSplitModeMouseReleased(toolMode, event);
       break;
   }
@@ -266,6 +268,7 @@ void Ui::navigationModeMouseMove(QMouseEvent* event) {
   switch(tool) {
     case om::tool::JOIN:
     case om::tool::SPLIT:
+    case om::tool::MULTISPLIT:
       joinSplitModeSelectSegment(tool, event);
       break;
   }

@@ -8,6 +8,7 @@
 #include "segment/actions/omSetSegmentValidRunner.hpp"
 #include "segment/omFindCommonEdge.hpp"
 #include "segment/omSegmentSelector.h"
+#include "segment/minCut.hpp"
 #include "system/omLocalPreferences.hpp"
 #include "threads/taskManager.hpp"
 #include "utility/dataWrappers.h"
@@ -167,6 +168,20 @@ void OmActionsImpl::FindAndSplitSegments(const SegmentationDataWrapper sdw,
 
   om::segment::UserEdge edge =
       OmFindCommonEdge::FindClosestCommonEdge(sdw.Segments(), seg1, seg2);
+
+  if (!edge.valid || sdw.Segments()->IsEdgeSplittable(edge)) {
+    log_infos << "edge was not splittable";
+    return;
+  }
+
+  (new OmSegmentSplitAction(sdw, edge))->Run();
+}
+
+void OmActionsImpl::FindAndSplitMultiSegments(const SegmentationDataWrapper sdw,
+                                   const om::common::SegIDSet segSet1,
+                                   const om::common::SegIDSet segSet2) {
+  MinCut minCut(*sdw.Segments());
+  om::segment::UserEdge edge = minCut.FindEdge(segSet1, segSet2);
 
   if (!edge.valid || sdw.Segments()->IsEdgeSplittable(edge)) {
     log_infos << "edge was not splittable";
