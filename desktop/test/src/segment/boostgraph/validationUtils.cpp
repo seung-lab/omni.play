@@ -133,11 +133,11 @@ void validateCutEdges(std::vector<std::tuple<U_EXP, U_EXP>>& expectedEdges,
   }
 }
 
-template void validateCutEdges<om::common::SegID, om::segment::UserEdge>(
+template void validateCutEdges<om::common::SegID, om::segment::Edge>(
     std::vector<std::tuple<om::common::SegID, om::common::SegID>>&,
-    std::vector<om::segment::UserEdge>&, Graph&,
-    std::function<om::common::SegID(om::segment::UserEdge)>,
-    std::function<om::common::SegID(om::segment::UserEdge)>);
+    std::vector<om::segment::Edge>&, Graph&,
+    std::function<om::common::SegID(om::segment::Edge)>,
+    std::function<om::common::SegID(om::segment::Edge)>);
 template void validateCutEdges<Vertex, Edge>(
   std::vector<std::tuple<Vertex, Vertex>>&, std::vector<Edge>&, Graph&,
   std::function<Vertex(Edge)>, std::function<Vertex(Edge)>);
@@ -150,13 +150,13 @@ std::tuple<std::function<Vertex(Edge)>, std::function<Vertex(Edge)>>
       [&graph](Edge edge) { return boost::target(edge, graph); });
 }
 
-std::tuple<std::function<om::common::SegID(om::segment::UserEdge)>,
-  std::function<om::common::SegID(om::segment::UserEdge)>>
-  getUserEdgeToSegIDFunctions() {
-  std::function<om::common::SegID(om::segment::UserEdge)> sourceFunction =
-    [](om::segment::UserEdge userEdge) { return userEdge.parentID; };
-  std::function<om::common::SegID(om::segment::UserEdge)> targetFunction =
-    [](om::segment::UserEdge userEdge) { return userEdge.childID; };
+std::tuple<std::function<om::common::SegID(om::segment::Edge)>,
+  std::function<om::common::SegID(om::segment::Edge)>>
+  getSegmentEdgeToSegIDFunctions() {
+  std::function<om::common::SegID(om::segment::Edge)> sourceFunction =
+    [](om::segment::Edge segmentEdge) { return segmentEdge.node1ID; };
+  std::function<om::common::SegID(om::segment::Edge)> targetFunction =
+    [](om::segment::Edge segmentEdge) { return segmentEdge.node2ID; };
   return std::make_tuple(sourceFunction, targetFunction);
 }
 

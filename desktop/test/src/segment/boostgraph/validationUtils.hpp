@@ -41,11 +41,11 @@ std::tuple<std::function<Vertex(Edge)>, std::function<Vertex(Edge)>>
   getEdgeToVertexFunctions(Graph& graph);
 
 /*
- * Convert from om::segment::UserEdge to source om::common::SegID
+ * Convert from om::segment::Edge to source om::common::SegID
  */
-std::tuple<std::function<om::common::SegID(om::segment::UserEdge)>,
-  std::function<om::common::SegID(om::segment::UserEdge)>>
-  getUserEdgeToSegIDFunctions();
+std::tuple<std::function<om::common::SegID(om::segment::Edge)>,
+  std::function<om::common::SegID(om::segment::Edge)>>
+  getSegmentEdgeToSegIDFunctions();
 
 } // namespace boostgraph
 } // namespace test

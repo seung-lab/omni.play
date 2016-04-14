@@ -31,5 +31,6 @@ class MinCut {
   const std::shared_ptr<BoostGraphFactory> boostGraphFactory_;
 
   bool hasRoot(const om::common::SegIDSet segIDSet, const OmSegment* desiredRoot) const;
+  om::segment::UserEdge toUserEdge(om::segment::Edge edge);
 };
 

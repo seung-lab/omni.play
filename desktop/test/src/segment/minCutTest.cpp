@@ -64,10 +64,10 @@ TEST(minCut, testNotSameRoot) {
   std::unique_ptr<OmSegment> segment2_4 = createSegment(4, data);
 
   // 2 root nodes
-  establishRoot(nullptr, segment1.get(), mockSegmentsImpl);
-  establishRoot(nullptr, segment2.get(), mockSegmentsImpl);
-  establishRoot(segment1.get(), segment1_3.get(), mockSegmentsImpl);
-  establishRoot(segment2.get(), segment2_4.get(), mockSegmentsImpl);
+  connect(nullptr, segment1.get(), 0, mockSegmentsImpl);
+  connect(nullptr, segment2.get(), 0, mockSegmentsImpl);
+  connect(segment1.get(), segment1_3.get(), .5, mockSegmentsImpl);
+  connect(segment2.get(), segment2_4.get(), .5, mockSegmentsImpl);
 
   // mockSegmentsImpl is no longer valid after move!
   OmSegments mockSegments(segmentation, std::move(mockSegmentsPtr));
@@ -114,9 +114,9 @@ TEST(minCut, testNoEdgeFound) {
   std::unique_ptr<OmSegment> segment1_3 = createSegment(3, data);
 
   // 1 root nodes
-  establishRoot(nullptr, segment1.get(), mockSegmentsImpl);
-  establishRoot(segment1.get(), segment1_2.get(), mockSegmentsImpl);
-  establishRoot(segment1.get(), segment1_3.get(), mockSegmentsImpl);
+  connect(nullptr, segment1.get(), 0, mockSegmentsImpl);
+  connect(segment1.get(), segment1_2.get(), .5, mockSegmentsImpl);
+  connect(segment1.get(), segment1_3.get(), .5, mockSegmentsImpl);
 
   // mockSegmentsImpl is no longer valid after move!
   OmSegments mockSegments(segmentation, std::move(mockSegmentsPtr));
@@ -140,7 +140,7 @@ TEST(minCut, testNoEdgeFound) {
   EXPECT_FALSE(returnEdge.valid);
 }
 
-TEST(minCut, testEdgeFoundSuccess) {
+TEST(minCut, testEdgesReturn) {
   // necessary setup for OmSegments
   OmProject::New(QString::fromStdString(fnp));
   OmSegmentation* segmentation = &SegmentationDataWrapper().Create();
@@ -165,23 +165,16 @@ TEST(minCut, testEdgeFoundSuccess) {
   std::unique_ptr<OmSegment> segment1_3 = createSegment(3, data);
 
   // 1 root nodes
-  establishRoot(nullptr, segment1.get(), mockSegmentsImpl);
-  establishRoot(segment1.get(), segment1_2.get(), mockSegmentsImpl);
-  establishRoot(segment1.get(), segment1_3.get(), mockSegmentsImpl);
+  connect(nullptr, segment1.get(), .0, mockSegmentsImpl);
+  connect(segment1.get(), segment1_2.get(), .5, mockSegmentsImpl);
+  connect(segment1.get(), segment1_3.get(), .5, mockSegmentsImpl);
 
   // mockSegmentsImpl is no longer valid after move!
   OmSegments mockSegments(segmentation, std::move(mockSegmentsPtr));
 
-  om::segment::UserEdge userEdge;
-  userEdge.valid = true;
-  std::vector<om::segment::UserEdge> validEdges;
-  validEdges.push_back(userEdge);
-
+  std::vector<om::segment::Edge> minCutEdges;
   std::shared_ptr<MockBoostGraph> mockBoostGraph(
       new testing::NiceMock<MockBoostGraph>());
-  EXPECT_CALL(*mockBoostGraph,
-      MinCut(testing::_, testing::_))
-    .WillRepeatedly(testing::Return(validEdges));
 
   MinCut minCut(mockSegments,
       std::make_shared<testing::NiceMock<MockBoostGraphFactory>>(
@@ -193,11 +186,82 @@ TEST(minCut, testEdgeFoundSuccess) {
   sources.insert(segment1_2->value());
   sinks.insert(segment1_3->value());
 
-  // test
-  om::segment::UserEdge returnEdge = minCut.FindEdge(sources, sinks);
+  om::segment::UserEdge userEdge;
 
-  // verify
-  EXPECT_TRUE(returnEdge.valid);
+  // Valid and parent child
+  minCutEdges.push_back({.number = 0, .node1ID = segment1->value(),
+      .node2ID = segment1_2->value()});
+  EXPECT_CALL(*mockBoostGraph,
+      MinCut(testing::_, testing::_))
+    .WillOnce(testing::Return(minCutEdges));
+  userEdge = minCut.FindEdge(sources, sinks);
+  EXPECT_EQ(segment1->value(), userEdge.parentID);
+  EXPECT_EQ(segment1_2->value(), userEdge.childID);
+  EXPECT_TRUE(userEdge.valid);
+
+  // valid but child and parent are reversed
+  minCutEdges.clear();
+  minCutEdges.push_back({.number = 0, .node1ID = segment1_2->value(),
+      .node2ID = segment1->value()});
+  EXPECT_CALL(*mockBoostGraph,
+      MinCut(testing::_, testing::_))
+    .WillOnce(testing::Return(minCutEdges));
+  userEdge = minCut.FindEdge(sources, sinks);
+  EXPECT_EQ(segment1->value(), userEdge.parentID);
+  EXPECT_EQ(segment1_2->value(), userEdge.childID);
+  EXPECT_TRUE(userEdge.valid);
+
+  // Multiple userEdges but returns only the first!
+  minCutEdges.clear();
+  minCutEdges.push_back({.number = 0, .node1ID = segment1->value(),
+      .node2ID = segment1_2->value()});
+  minCutEdges.push_back({.number = 0, .node1ID = segment1->value(),
+      .node2ID = segment1_3->value()});
+  EXPECT_CALL(*mockBoostGraph,
+      MinCut(testing::_, testing::_))
+    .WillOnce(testing::Return(minCutEdges));
+  userEdge = minCut.FindEdge(sources, sinks);
+  EXPECT_EQ(segment1->value(), userEdge.parentID);
+  EXPECT_EQ(segment1_2->value(), userEdge.childID);
+  EXPECT_TRUE(userEdge.valid);
+
+  // Multiple userEdges but only the second is valid
+  minCutEdges.clear();
+  minCutEdges.push_back({.number = 0, .node1ID = 0,
+      .node2ID = 0});
+  minCutEdges.push_back({.number = 0, .node1ID = segment1->value(),
+      .node2ID = segment1_3->value()});
+  EXPECT_CALL(*mockBoostGraph,
+      MinCut(testing::_, testing::_))
+    .WillOnce(testing::Return(minCutEdges));
+  userEdge = minCut.FindEdge(sources, sinks);
+  EXPECT_EQ(segment1->value(), userEdge.parentID);
+  EXPECT_EQ(segment1_3->value(), userEdge.childID);
+  EXPECT_TRUE(userEdge.valid);
+
+  // Test invalid node 1
+  minCutEdges.clear();
+  minCutEdges.push_back({.number = 0, .node1ID = 0, .node2ID = segment1_2->value()});
+  EXPECT_CALL(*mockBoostGraph,
+      MinCut(testing::_, testing::_))
+    .WillOnce(testing::Return(minCutEdges));
+  EXPECT_FALSE(minCut.FindEdge(sources, sinks).valid);
+
+  // Test invalid node 2
+  minCutEdges.clear();
+  minCutEdges.push_back({.number = 0, .node1ID = segment1->value(), .node2ID = 0});
+  EXPECT_CALL(*mockBoostGraph,
+      MinCut(testing::_, testing::_))
+    .WillOnce(testing::Return(minCutEdges));
+  EXPECT_FALSE(minCut.FindEdge(sources, sinks).valid);
+
+  // invalid node 1 and 2
+  minCutEdges.clear();
+  minCutEdges.push_back({.number = 0, .node1ID = 0, .node2ID = 0});
+  EXPECT_CALL(*mockBoostGraph,
+      MinCut(testing::_, testing::_))
+    .WillOnce(testing::Return(minCutEdges));
+  EXPECT_FALSE(minCut.FindEdge(sources, sinks).valid);
 }
 
 } //namespace mincut

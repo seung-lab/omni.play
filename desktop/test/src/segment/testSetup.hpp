@@ -49,6 +49,7 @@ class MockSegmentsImpl : public OmSegmentsImpl {
   MOCK_CONST_METHOD1(FindRoot, OmSegment*(const OmSegment*));
   MOCK_CONST_METHOD1(FindRootID, om::common::SegID(const om::common::SegID));
   MOCK_CONST_METHOD1(FindRootID, om::common::SegID(const OmSegment*));
+  MOCK_CONST_METHOD1(GetSegment, OmSegment*(const om::common::SegID));
 };
 
 class MockBoostGraph : public BoostGraph {
@@ -56,10 +57,10 @@ class MockBoostGraph : public BoostGraph {
   MockBoostGraph()
     : mockChildren_(om::segment::Children(0)), BoostGraph(mockChildren_) {
     ON_CALL(*this, MinCut(testing::_, testing::_))
-      .WillByDefault(testing::Return(std::vector<om::segment::UserEdge>()));
+      .WillByDefault(testing::Return(std::vector<om::segment::Edge>()));
   }
 
-  MOCK_METHOD2(MinCut, std::vector<om::segment::UserEdge>(
+  MOCK_METHOD2(MinCut, std::vector<om::segment::Edge>(
         const om::common::SegIDSet sources, const om::common::SegIDSet sinks));
  private:
    om::segment::Children mockChildren_;
@@ -111,24 +112,39 @@ std::unique_ptr<OmSegment> createSegment(om::common::SegID segID,
     ChildrenList& childrenList);
 
 /*
- * Establish the root in findRoot* functions for the given child.
- * Do this by trying to first getting the parent's root.
+ * Establish the root in findRoot* functions for the given child and also
+ * allow to return the OmSegment* using GetSegment of the child.
+ *
+ * Establishing root by trying to first getting the parent's root.
  * If the parent doesn't have a root (i.e. no parent),
- * then set the root to itself
+ * then set the root to itself.
+ * WARNING: This is highly dependent on the ORDER children were added!
  */
-void establishRoot(const OmSegment* parent, OmSegment* child,
+void addToMockSegmentsImpl(const OmSegment* parent, OmSegment* child,
     MockSegmentsImpl& mockSegmentsImpl);
 
 /*
- * Make sure that the children list of the parent now includes this child.
+ * Set up mock children to return this child in the children list for this parent
  */
-void addToChildren(OmSegment* parent, OmSegment* child, double threshold);
-
-void addToChildren(OmSegment* parent, OmSegment* child, double threshold,
+void addToMockChildren(OmSegment* parent, OmSegment* child, double threshold,
     MockChildren& mockChildren);
 
-void connectSegment(OmSegment* parent, OmSegment* child, double threshold,
-    MockSegmentsImpl& mockSegments, MockChildren& mockChildren);
+/*
+ * make sure that the child points to the correct parent
+ */
+void linkParentChild(OmSegment* parent, OmSegment* child, double threshold);
+
+/*
+ * Set up mock children and link the parent child relationship
+ */
+void connect(OmSegment* parent, OmSegment* child, double threshold,
+    MockChildren& mockChildren);
+
+/*
+ * Set up mock segmentsimpl and link the parent child relationship
+ */
+void connect(OmSegment* parent, OmSegment* child, double threshold,
+    MockSegmentsImpl& mockSegmentsImpl);
 
 // manually set this edge weight
 bool setEdge(Vertex vertex1, Vertex vertex2, double newThreshold,

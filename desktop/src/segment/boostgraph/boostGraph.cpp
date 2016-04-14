@@ -32,7 +32,7 @@ void BoostGraph::SetGraph(Graph graph) { graph_ = graph; setProperties(); }
 Graph& BoostGraph::GetGraph() { return graph_; }
 Vertex& BoostGraph::GetVertex(om::common::SegID segID) { return idToVertex_[segID]; }
 
-std::vector<om::segment::UserEdge> BoostGraph::MinCut(
+std::vector<om::segment::Edge> BoostGraph::MinCut(
     const om::common::SegIDSet sources, const om::common::SegIDSet sinks) {
   std::stringstream cutInfoStream;
   cutInfoStream << "Searching for cut between (";
@@ -53,16 +53,16 @@ std::vector<om::segment::UserEdge> BoostGraph::MinCut(
   boost::boykov_kolmogorov_max_flow(graph_, vertexS, vertexT);
 
   std::vector<Edge> edges = GetMinCutEdges(vertexS);
-  std::vector<om::segment::UserEdge> userEdges;
-  std::transform(edges.begin(), edges.end(), std::back_inserter(userEdges),
-      [this](Edge edge) { return ToSegmentUserEdge(edge); });
+  std::vector<om::segment::Edge> segmentEdges;
+  std::transform(edges.begin(), edges.end(), std::back_inserter(segmentEdges),
+      [this](Edge edge) { return ToSegmentEdge(edge); });
   std::stringstream returnCutEdgesStream;
   returnCutEdgesStream << "trying to cut ";
-  for (auto edge : userEdges) {
-    returnCutEdgesStream << "(" << edge.parentID << "," << edge.childID << ")";
+  for (auto edge : segmentEdges) {
+    returnCutEdgesStream << "(" << edge.node1ID << "," << edge.node2ID << ")";
   }
-std::cout << returnCutEdgesStream.str() << std::endl;;
-  return userEdges;
+  std::cout << returnCutEdgesStream.str() << std::endl;;
+  return segmentEdges;
 }
 
 std::tuple<Vertex, Vertex> BoostGraph::MakeSingleSourceSink(
@@ -112,11 +112,11 @@ std::vector<Edge> BoostGraph::GetMinCutEdges(Vertex sourceVertex) {
   return minEdges;
 }
 
-om::segment::UserEdge BoostGraph::ToSegmentUserEdge(const Edge edge) {
-  om::segment::UserEdge segmentEdge;
-  segmentEdge.parentID = segmentIDProperty_[boost::source(edge, graph_)];
-  segmentEdge.childID = segmentIDProperty_[boost::target(edge, graph_)];
-  segmentEdge.valid = true;
+om::segment::Edge BoostGraph::ToSegmentEdge(const Edge edge) {
+  om::segment::Edge segmentEdge;
+  segmentEdge.node1ID = segmentIDProperty_[boost::source(edge, graph_)];
+  segmentEdge.node2ID = segmentIDProperty_[boost::target(edge, graph_)];
+  segmentEdge.threshold = capacityProperty_[edge];
   return segmentEdge;
 }
 

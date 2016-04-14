@@ -91,7 +91,7 @@ class OmSegmentsImpl {
   virtual OmSegment* FindRoot(const OmSegment* segment) const;
 
   bool IsSegmentValid(om::common::SegID seg);
-  OmSegment* GetSegment(const om::common::SegID value) const;
+  virtual OmSegment* GetSegment(const om::common::SegID value) const;
 
   std::string GetName(om::common::SegID segID);
   void SetName(om::common::SegID segID, std::string name);

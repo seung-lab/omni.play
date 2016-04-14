@@ -11,6 +11,7 @@
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/boykov_kolmogorov_max_flow.hpp>
 #include <boost/graph/properties.hpp>
+#include <algorithm>
 
 using namespace om::segment::boostgraph;
 
@@ -43,14 +44,24 @@ om::segment::UserEdge MinCut::FindEdge(const om::common::SegIDSet sources,
   }
 
   std::shared_ptr<BoostGraph> boostGraph = boostGraphFactory_->Get(rootSegment);
-  std::vector<om::segment::UserEdge> edges = boostGraph->MinCut(sources, sinks);
+  std::vector<om::segment::Edge> edges = boostGraph->MinCut(sources, sinks);
 
-  if (edges.empty()) {
+  std::vector<om::segment::UserEdge> userEdges;
+  std::transform(edges.begin(), edges.end(), std::back_inserter(userEdges),
+      [this](om::segment::Edge edge) {
+      return toUserEdge(edge); });
+  userEdges.erase(std::remove_if(userEdges.begin(), userEdges.end(),
+      [](om::segment::UserEdge userEdge) {
+        return !userEdge.valid;
+      }), userEdges.end());
+
+  if (userEdges.empty()) {
     log_debugs << "Unable to find a min cut!" << rootSegment->value();
     return om::segment::UserEdge();
   }
 
-  return *edges.begin();
+  // only return the first for now
+  return *userEdges.begin();
 }
 
 bool MinCut::hasRoot(const om::common::SegIDSet segIDSet, const OmSegment* desiredRoot) const {
@@ -65,4 +76,33 @@ bool MinCut::hasRoot(const om::common::SegIDSet segIDSet, const OmSegment* desir
     }
   }
   return true;
+}
+
+om::segment::UserEdge MinCut::toUserEdge(om::segment::Edge edge) {
+  OmSegment* segment1 = segments_.GetSegment(edge.node1ID);
+  OmSegment* segment2 = segments_.GetSegment(edge.node2ID);
+  OmSegment* parent, *child;
+
+  om::segment::UserEdge userEdge;
+  userEdge.valid = false;
+
+  if (!segment1 || !segment2) {
+    return userEdge;
+  }
+
+
+  if (segment1->getParent() && segment1->getParent() == segment2) {
+    parent = segment2;
+    child = segment1;
+  } else if (segment2->getParent() && segment2->getParent() == segment1) {
+    parent = segment1;
+    child = segment2;
+  } else {
+    return userEdge;
+  }
+
+  userEdge.parentID = parent->value();
+  userEdge.childID = child->value();
+  userEdge.valid = true;
+  return userEdge;
 }

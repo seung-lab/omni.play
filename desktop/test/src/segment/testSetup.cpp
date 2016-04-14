@@ -18,9 +18,6 @@ typedef std::vector<std::set<OmSegment*>> ChildrenList;
 om::coords::VolumeSystem VOLUME_SYSTEM;
 om::common::SegListType SEG_LIST_TYPE = om::common::SegListType::WORKING;
 
-/*
- * create segment data and it's children set
- */
 std::tuple<std::vector<om::segment::Data>, ChildrenList>
     prepareSegmentData(int numSegments) {
   std::vector<om::segment::Data> data;
@@ -32,10 +29,6 @@ std::tuple<std::vector<om::segment::Data>, ChildrenList>
   return std::make_tuple(data,children);
 }
 
-/*
- * This void assertion function is only here because google test ONLY supports 
- * asserts within void functions!
- */
 void checkIndex(std::vector<om::segment::Data>& data, om::common::SegID segID) {
   ASSERT_TRUE((segID > 0 && segID < data.size() + 1))
     << " Created out of bounds segment " <<
@@ -54,9 +47,6 @@ void mockSegmentChildren(OmSegment* segment,
     .WillByDefault(testing::ReturnRef(childrenList[segment->value() - 1]));
 }
 
-/*
- * Create a segment with the corresponding data
- */
 std::unique_ptr<OmSegment> createSegment(om::common::SegID segID, 
     std::vector<om::segment::Data>& data) {
   checkIndex(data, segID);
@@ -76,14 +66,12 @@ std::unique_ptr<OmSegment> createSegment(om::common::SegID segID,
   return ptr;
 }
 
-/*
- * Establish the root in findRoot* functions for the given child.
- * Do this by trying to first getting the parent's root.
- * If the parent doesn't have a root (i.e. no parent),
- * then set the root to itself
- */
-void establishRoot(const OmSegment* parent, OmSegment* child,
+void addToMockSegmentsImpl(const OmSegment* parent, OmSegment* child,
     MockSegmentsImpl& mockSegmentsImpl) {
+  ON_CALL(mockSegmentsImpl, GetSegment(
+        testing::TypedEq<om::common::SegID>(child->value())))
+    .WillByDefault(testing::Return(child));
+
   OmSegment* rootSegment = mockSegmentsImpl.FindRoot(parent);
 
   if (!rootSegment) {
@@ -104,21 +92,32 @@ void establishRoot(const OmSegment* parent, OmSegment* child,
     .WillByDefault(testing::Return(rootSegment->value()));
 }
 
-/*
- * Make sure that the children list of the parent now includes this child.
- */
-void addToChildren(OmSegment* parent, OmSegment* child, double threshold) {
-  child->setParent(parent, threshold);
-}
-
-void addToChildren(OmSegment* parent, OmSegment* child, double threshold,
+void addToMockChildren(OmSegment* parent, OmSegment* child, double threshold,
     MockChildren& mockChildren) {
-  addToChildren(parent, child, threshold);
   if (!parent) {
     return;
   }
   const std::set<OmSegment*>& children = mockChildren.GetChildren(parent);
   const_cast<std::set<OmSegment*>&>(children).insert(child);
+}
+
+void linkParentChild(OmSegment* parent, OmSegment* child, double threshold) {
+  if (!parent || !threshold) {
+    return;
+  }
+  child->setParent(parent, threshold);
+}
+
+void connect(OmSegment* parent, OmSegment* child, double threshold,
+    MockChildren& mockChildren) {
+  linkParentChild(parent, child, threshold);
+  addToMockChildren(parent, child, threshold, mockChildren);
+}
+
+void connect(OmSegment* parent, OmSegment* child, double threshold,
+    MockSegmentsImpl& mockSegmentsImpl) {
+  linkParentChild(parent, child, threshold);
+  addToMockSegmentsImpl(parent, child, mockSegmentsImpl);
 }
 
 bool setEdge(Vertex vertex1, Vertex vertex2, double newThreshold,
@@ -150,7 +149,7 @@ std::vector<std::unique_ptr<OmSegment>> getBasicLineGraph(uint32_t numSegments,
     om::common::SegID segmentID = index + 1;
     segments.push_back(createSegment(segmentID, data, mockChildren, childrenList));
 
-    addToChildren(segments[index - 1].get(),
+    connect(segments[index - 1].get(),
         segments[index].get(), segments[index - 1]->value()/10.0,
         mockChildren);
   }
@@ -170,7 +169,7 @@ std::vector<std::unique_ptr<OmSegment>> getTrinaryTreeGraph(
     om::common::SegID segmentID = index + 1;
     segments.push_back(createSegment(segmentID, data, mockChildren, childrenList));
 
-    addToChildren(segments[(index - 1) / 3].get(),
+    connect(segments[(index - 1) / 3].get(),
         segments[index].get(), defaultThreshold,
         mockChildren);
   }

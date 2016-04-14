@@ -20,13 +20,13 @@ class BoostGraph {
   Graph& GetGraph();
   Vertex& GetVertex(om::common::SegID segID);
 
-  virtual std::vector<om::segment::UserEdge> MinCut(
+  virtual std::vector<om::segment::Edge> MinCut(
       const om::common::SegIDSet sources, const om::common::SegIDSet sinks);
 
   std::tuple<Vertex, Vertex> MakeSingleSourceSink(
       const om::common::SegIDSet sources, const om::common::SegIDSet sinks);
 
-  om::segment::UserEdge ToSegmentUserEdge(const Edge edge);
+  om::segment::Edge ToSegmentEdge(const Edge edge);
   std::vector<Edge> GetMinCutEdges(Vertex vertex);
 
   void BuildGraph(const OmSegment* rootSeg);
