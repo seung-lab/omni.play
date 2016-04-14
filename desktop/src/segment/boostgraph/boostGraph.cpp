@@ -8,6 +8,7 @@
 #include "common/logging.h"
 #include <algorithm>
 #include <sstream>
+#include <string>
 
 using namespace om::segment::boostgraph;
 const double BoostGraph::HARD_LINK_WEIGHT = 100;
@@ -34,17 +35,8 @@ Vertex& BoostGraph::GetVertex(om::common::SegID segID) { return idToVertex_[segI
 
 std::vector<om::segment::Edge> BoostGraph::MinCut(
     const om::common::SegIDSet sources, const om::common::SegIDSet sinks) {
-  std::stringstream cutInfoStream;
-  cutInfoStream << "Searching for cut between (";
-  for (auto id : sources) {
-    cutInfoStream << id << ", ";
-  }
-  cutInfoStream << ") to (";
-  for (auto id : sinks) {
-    cutInfoStream << id << ", ";
-  }
-  cutInfoStream << ")";
-  std::cout << cutInfoStream.str() << std::endl;;
+  log_infos << "Searching for cut between (" << idSetToStringStream(sources) <<
+    ") to (" << idSetToStringStream(sinks) << ")";
 
   // source and sink vertices
   Vertex vertexS, vertexT;
@@ -56,12 +48,8 @@ std::vector<om::segment::Edge> BoostGraph::MinCut(
   std::vector<om::segment::Edge> segmentEdges;
   std::transform(edges.begin(), edges.end(), std::back_inserter(segmentEdges),
       [this](Edge edge) { return ToSegmentEdge(edge); });
-  std::stringstream returnCutEdgesStream;
-  returnCutEdgesStream << "trying to cut ";
-  for (auto edge : segmentEdges) {
-    returnCutEdgesStream << "(" << edge.node1ID << "," << edge.node2ID << ")";
-  }
-  std::cout << returnCutEdgesStream.str() << std::endl;;
+
+  log_infos << "Trying to cut " << edgesToStringStream(segmentEdges);
   return segmentEdges;
 }
 
@@ -220,6 +208,22 @@ Vertex BoostGraph::createCommonVertex(om::common::SegIDSet ids,
     }
   }
   return commonVertex;
+}
+
+std::string BoostGraph::idSetToStringStream(om::common::SegIDSet segIDs) {
+  std::stringstream segIDsStringStream;
+  for (auto id : segIDs) {
+    segIDsStringStream << id << ", ";
+  }
+  return segIDsStringStream.str();
+}
+
+std::string BoostGraph::edgesToStringStream(std::vector<om::segment::Edge> edges) {
+  std::stringstream edgesStringStream;
+  for (auto edge : edges) {
+    edgesStringStream << "(" << edge.node1ID << ", " << edge.node2ID << ")";
+  }
+  return edgesStringStream.str();
 }
 
 BoostGraphFactory::BoostGraphFactory(const om::segment::Children& children) 

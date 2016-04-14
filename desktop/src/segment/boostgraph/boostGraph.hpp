@@ -3,6 +3,8 @@
 
 #include "segment/boostgraph/types.hpp"
 #include "segment/lowLevel/children.hpp"
+#include <sstream>
+#include <string>
 
 using namespace om::segment::boostgraph;
 
@@ -53,6 +55,10 @@ class BoostGraph {
   // attach all vertices with these ids to a common vertex
   // isSource = true, means we flow into selected segIds
   Vertex createCommonVertex(om::common::SegIDSet ids, bool isSource);
+
+  // helper functions to print out what we are cutting easier
+  std::string idSetToStringStream(om::common::SegIDSet segIDs);
+  std::string edgesToStringStream(std::vector<om::segment::Edge> edges);
 };
 
 class BoostGraphFactory {
