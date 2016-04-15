@@ -6,6 +6,7 @@
 #include "actions/details/omSegmentValidateAction.h"
 #include "actions/details/omSegmentValidateActionImpl.hpp"
 #include "actions/details/omSegmentSplitActionImpl.hpp"
+#include "actions/details/omSegmentMultiSplitActionImpl.hpp"
 #include "actions/details/omSegmentCutAction.h"
 #include "actions/details/omSegmentCutActionImpl.hpp"
 #include "actions/details/omSegmentUncertainAction.h"
@@ -67,6 +68,9 @@ void OmActionReplayer::dispatchAction(const QString& actionName,
       doReplayFile<OmSegmentSplitAction, OmSegmentSplitActionImpl>(in);
       break;
     case om::actions_::OmSegmentCutAction:
+      doReplayFile<OmSegmentMultiSplitAction, OmSegmentMultiSplitActionImpl>(in);
+      break;
+    case om::actions_::OmSegmentCutAction:
       doReplayFile<OmSegmentCutAction, OmSegmentCutActionImpl>(in);
       break;
     case om::actions_::OmSegmentJoinAction:
@@ -91,10 +95,7 @@ void OmActionReplayer::dispatchAction(const QString& actionName,
     default:
       // TODO: or skip it?
       throw om::ArgException("unknown action");
-  };
-}
-
-void OmActionReplayer::doReplay() {
+  }; } void OmActionReplayer::doReplay() {
   log_infos << "checking for replay...";
   QDir logdir = OmActionLogger::LogFolder();
 

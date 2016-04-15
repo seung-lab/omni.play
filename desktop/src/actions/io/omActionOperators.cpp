@@ -171,6 +171,40 @@ QDataStream& operator>>(QDataStream& in, OmSegmentShatterActionImpl& a) {
   return in;
 }
 
+QDataStream& operator<<(QDataStream& out, const OmSegmentMultiSplitActionImpl& a) {
+  int version = 1;
+  out << version;
+  out << a.edges_;
+  out << a.sources_;
+  out << a.sinks_;
+  out << a.segmentationID_;
+  out << a.desc_;
+
+  return out;
+}
+
+QDataStream& operator>>(QDataStream& in, OmSegmentMultiSplitActionImpl& a) {
+  int version;
+  in >> version;
+
+  in >> a.edges_;
+  in >> a.sources_;
+  in >> a.sinks_;
+  in >> a.segmentationID_;
+  in >> a.desc_;
+
+  return in;
+}
+
+QDataStream& operator<<(QDataStream& out, const OmSegmentShatterActionImpl& a) {
+  int version = 1;
+  out << version;
+
+  out << a.sdw_;
+  out << a.desc;
+
+  return out;
+}
 QDataStream& operator<<(QDataStream& out, const OmSegmentJoinActionImpl& a) {
   int version = 1;
   out << version;

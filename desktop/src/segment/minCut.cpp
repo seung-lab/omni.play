@@ -25,28 +25,40 @@ MinCut::MinCut(const OmSegments& segments, std::shared_ptr<BoostGraphFactory> bo
 
 om::segment::UserEdge MinCut::FindEdge(const om::common::SegIDSet sources,
     const om::common::SegIDSet sinks) const {
+  std::vector<om::segment::UserEdge> userEdges =
+    MinCut::FindEdges(sources, sinks);
+  if (userEdges.size() == 0) {
+    return om::segment::UserEdge();
+  } else {
+    return *userEdges.begin();
+  }
+}
+
+std::vector<om::segment::UserEdge> MinCut::FindEdges(const om::common::SegIDSet sources,
+    const om::common::SegIDSet sinks) const {
+  std::vector<om::segment::UserEdge> userEdges;
+
   if (sources.empty() || sinks.empty()) {
     log_debugs << "Source or sink empty";
-    return om::segment::UserEdge();
+    return userEdges;
   }
   OmSegment* rootSegment = segments_.FindRoot(*sources.begin());
 
   if (!rootSegment) {
     log_errors << "No root segment found for segID " << *sources.begin();
-    return om::segment::UserEdge();
+    return userEdges;
   }
 
   if (!hasRoot(sources, rootSegment)
         || !hasRoot(sinks, rootSegment)) {
     log_debugs << "Source and sink do not share the same root seg " <<
       rootSegment->value();
-    return om::segment::UserEdge();
+    return userEdges;
   }
 
   std::shared_ptr<BoostGraph> boostGraph = boostGraphFactory_->Get(rootSegment);
   std::vector<om::segment::Edge> edges = boostGraph->MinCut(sources, sinks);
 
-  std::vector<om::segment::UserEdge> userEdges;
   std::transform(edges.begin(), edges.end(), std::back_inserter(userEdges),
       [this](om::segment::Edge edge) {
       return toUserEdge(edge); });
@@ -57,11 +69,9 @@ om::segment::UserEdge MinCut::FindEdge(const om::common::SegIDSet sources,
 
   if (userEdges.empty()) {
     log_debugs << "Unable to find a min cut!" << rootSegment->value();
-    return om::segment::UserEdge();
   }
 
-  // only return the first for now
-  return *userEdges.begin();
+  return userEdges;
 }
 
 bool MinCut::hasRoot(const om::common::SegIDSet segIDSet, const OmSegment* desiredRoot) const {

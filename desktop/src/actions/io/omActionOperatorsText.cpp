@@ -58,6 +58,14 @@ QTextStream& operator<<(QTextStream& out, const OmSegmentSplitActionImpl& a) {
   return out;
 }
 
+QTextStream& operator<<(QTextStream& out, const OmSegmentMultiSplitActionImpl& a) {
+  out << a.edges_;
+  out << a.sources_;
+  out << a.sinks_;
+  return out;
+}
+
+
 QTextStream& operator<<(QTextStream& out, const OmSegmentCutActionImpl& a) {
   out << "segment " << a.sdw_ << ": ";
 

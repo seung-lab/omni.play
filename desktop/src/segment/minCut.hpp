@@ -26,6 +26,10 @@ class MinCut {
   om::segment::UserEdge FindEdge(const om::common::SegIDSet sources,
       const om::common::SegIDSet sinks) const;
 
+  // Find all the min cut edges for this source and sink
+  std::vector<om::segment::UserEdge> FindEdges(const om::common::SegIDSet sources,
+      const om::common::SegIDSet sinks) const;
+
  private:
   const OmSegments& segments_;
   const std::shared_ptr<BoostGraphFactory> boostGraphFactory_;

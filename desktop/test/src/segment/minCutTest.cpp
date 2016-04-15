@@ -140,6 +140,9 @@ TEST(minCut, testNoEdgeFound) {
   EXPECT_FALSE(returnEdge.valid);
 }
 
+/*
+ * Tests BOTH findEdge and findEdges to make sure the value is correct!
+ */
 TEST(minCut, testEdgesReturn) {
   // necessary setup for OmSegments
   OmProject::New(QString::fromStdString(fnp));
@@ -187,17 +190,28 @@ TEST(minCut, testEdgesReturn) {
   sinks.insert(segment1_3->value());
 
   om::segment::UserEdge userEdge;
+  std::vector<om::segment::UserEdge> userEdges;
 
   // Valid and parent child
   minCutEdges.push_back({.number = 0, .node1ID = segment1->value(),
       .node2ID = segment1_2->value()});
   EXPECT_CALL(*mockBoostGraph,
       MinCut(testing::_, testing::_))
+    .WillOnce(testing::Return(minCutEdges))
     .WillOnce(testing::Return(minCutEdges));
   userEdge = minCut.FindEdge(sources, sinks);
   EXPECT_EQ(segment1->value(), userEdge.parentID);
   EXPECT_EQ(segment1_2->value(), userEdge.childID);
   EXPECT_TRUE(userEdge.valid);
+
+  userEdges = minCut.FindEdges(sources, sinks);
+  EXPECT_EQ(1, userEdges.size());
+  if (userEdges.size() == 1) {
+    userEdge = userEdges[0];
+    EXPECT_EQ(segment1->value(), userEdge.parentID);
+    EXPECT_EQ(segment1_2->value(), userEdge.childID);
+    EXPECT_TRUE(userEdge.valid);
+  }
 
   // valid but child and parent are reversed
   minCutEdges.clear();
@@ -205,13 +219,23 @@ TEST(minCut, testEdgesReturn) {
       .node2ID = segment1->value()});
   EXPECT_CALL(*mockBoostGraph,
       MinCut(testing::_, testing::_))
+    .WillOnce(testing::Return(minCutEdges))
     .WillOnce(testing::Return(minCutEdges));
   userEdge = minCut.FindEdge(sources, sinks);
   EXPECT_EQ(segment1->value(), userEdge.parentID);
   EXPECT_EQ(segment1_2->value(), userEdge.childID);
   EXPECT_TRUE(userEdge.valid);
 
-  // Multiple userEdges but returns only the first!
+  userEdges = minCut.FindEdges(sources, sinks);
+  EXPECT_EQ(1, userEdges.size());
+  if (userEdges.size() == 1) {
+    userEdge = userEdges[0];
+    EXPECT_EQ(segment1->value(), userEdge.parentID);
+    EXPECT_EQ(segment1_2->value(), userEdge.childID);
+    EXPECT_TRUE(userEdge.valid);
+  }
+
+  // Multiple userEdges
   minCutEdges.clear();
   minCutEdges.push_back({.number = 0, .node1ID = segment1->value(),
       .node2ID = segment1_2->value()});
@@ -219,11 +243,26 @@ TEST(minCut, testEdgesReturn) {
       .node2ID = segment1_3->value()});
   EXPECT_CALL(*mockBoostGraph,
       MinCut(testing::_, testing::_))
+    .WillOnce(testing::Return(minCutEdges))
     .WillOnce(testing::Return(minCutEdges));
   userEdge = minCut.FindEdge(sources, sinks);
   EXPECT_EQ(segment1->value(), userEdge.parentID);
   EXPECT_EQ(segment1_2->value(), userEdge.childID);
   EXPECT_TRUE(userEdge.valid);
+
+  userEdges = minCut.FindEdges(sources, sinks);
+  EXPECT_EQ(2, userEdges.size());
+  if (userEdges.size() == 2) {
+    userEdge = userEdges[0];
+    EXPECT_EQ(segment1->value(), userEdge.parentID);
+    EXPECT_EQ(segment1_2->value(), userEdge.childID);
+    EXPECT_TRUE(userEdge.valid);
+
+    userEdge = userEdges[1];
+    EXPECT_EQ(segment1->value(), userEdge.parentID);
+    EXPECT_EQ(segment1_3->value(), userEdge.childID);
+    EXPECT_TRUE(userEdge.valid);
+  }
 
   // Multiple userEdges but only the second is valid
   minCutEdges.clear();
@@ -233,35 +272,57 @@ TEST(minCut, testEdgesReturn) {
       .node2ID = segment1_3->value()});
   EXPECT_CALL(*mockBoostGraph,
       MinCut(testing::_, testing::_))
+    .WillOnce(testing::Return(minCutEdges))
     .WillOnce(testing::Return(minCutEdges));
   userEdge = minCut.FindEdge(sources, sinks);
   EXPECT_EQ(segment1->value(), userEdge.parentID);
   EXPECT_EQ(segment1_3->value(), userEdge.childID);
   EXPECT_TRUE(userEdge.valid);
 
+  userEdges = minCut.FindEdges(sources, sinks);
+  EXPECT_EQ(1, userEdges.size());
+  if (userEdges.size() == 1) {
+    userEdge = userEdges[0];
+    EXPECT_EQ(segment1->value(), userEdge.parentID);
+    EXPECT_EQ(segment1_3->value(), userEdge.childID);
+    EXPECT_TRUE(userEdge.valid);
+  }
+
   // Test invalid node 1
   minCutEdges.clear();
   minCutEdges.push_back({.number = 0, .node1ID = 0, .node2ID = segment1_2->value()});
   EXPECT_CALL(*mockBoostGraph,
       MinCut(testing::_, testing::_))
+    .WillOnce(testing::Return(minCutEdges))
     .WillOnce(testing::Return(minCutEdges));
   EXPECT_FALSE(minCut.FindEdge(sources, sinks).valid);
+
+  userEdges = minCut.FindEdges(sources, sinks);
+  EXPECT_EQ(0, userEdges.size());
 
   // Test invalid node 2
   minCutEdges.clear();
   minCutEdges.push_back({.number = 0, .node1ID = segment1->value(), .node2ID = 0});
   EXPECT_CALL(*mockBoostGraph,
       MinCut(testing::_, testing::_))
+    .WillOnce(testing::Return(minCutEdges))
     .WillOnce(testing::Return(minCutEdges));
   EXPECT_FALSE(minCut.FindEdge(sources, sinks).valid);
+
+  userEdges = minCut.FindEdges(sources, sinks);
+  EXPECT_EQ(0, userEdges.size());
 
   // invalid node 1 and 2
   minCutEdges.clear();
   minCutEdges.push_back({.number = 0, .node1ID = 0, .node2ID = 0});
   EXPECT_CALL(*mockBoostGraph,
       MinCut(testing::_, testing::_))
+    .WillOnce(testing::Return(minCutEdges))
     .WillOnce(testing::Return(minCutEdges));
   EXPECT_FALSE(minCut.FindEdge(sources, sinks).valid);
+
+  userEdges = minCut.FindEdges(sources, sinks);
+  EXPECT_EQ(0, userEdges.size());
 }
 
 } //namespace mincut

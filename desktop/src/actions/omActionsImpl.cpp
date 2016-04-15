@@ -177,18 +177,13 @@ void OmActionsImpl::FindAndSplitSegments(const SegmentationDataWrapper sdw,
   (new OmSegmentSplitAction(sdw, edge))->Run();
 }
 
-void OmActionsImpl::FindAndSplitMultiSegments(const SegmentationDataWrapper sdw,
+void OmActionsImpl::FindAndMultiSplitSegments(const SegmentationDataWrapper sdw,
                                    const om::common::SegIDSet segSet1,
                                    const om::common::SegIDSet segSet2) {
   MinCut minCut(*sdw.Segments());
-  om::segment::UserEdge edge = minCut.FindEdge(segSet1, segSet2);
+  std::vector<om::segment::UserEdge> userEdges = minCut.FindEdges(segSet1, segSet2);
 
-  if (!edge.valid || sdw.Segments()->IsEdgeSplittable(edge)) {
-    log_infos << "edge was not splittable";
-    return;
-  }
-
-  (new OmSegmentSplitAction(sdw, edge))->Run();
+  (new OmSegmentMultiSplitAction(sdw, userEdges, segSet1, segSet2)->Run());
 }
 
 void OmActionsImpl::ShatterSegment(const SegmentationDataWrapper sdw,
