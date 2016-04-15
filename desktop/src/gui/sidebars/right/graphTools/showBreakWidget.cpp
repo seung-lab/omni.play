@@ -43,5 +43,6 @@ void ShowBreakWidget::updateShouldVolumeBeShownBroken(const bool shouldVolumeBeS
 }
 
 void ShowBreakWidget::ToolModeChangeEvent(om::tool::mode eventTool) {
-  showBreakButton_->setChecked(eventTool == om::tool::mode::SPLIT);
+  showBreakButton_->setChecked(eventTool == om::tool::mode::SPLIT ||
+      eventTool == om::tool::mode::MULTISPLIT);
 }
