@@ -42,6 +42,17 @@ bool OmJoiningSplitting::ShouldVolumeBeShownBroken() const {
 
 // filter events to only listen for SPLIT and JOIN. should do nothing otherwise 
 void OmJoiningSplitting::ToolModeChangeEvent(const om::tool::mode eventTool) {
+  switch(eventTool) {
+    case om::tool::mode::SPLIT:
+    case om::tool::mode::MULTISPLIT:
+      SetShouldVolumeBeShownBroken(true);
+      break;
+    case om::tool::mode::JOIN:
+    default:
+      SetShouldVolumeBeShownBroken(false);
+      break;
+  }
+
   activateTool(eventTool);
 }
 
@@ -93,17 +104,6 @@ void OmJoiningSplitting::goToFirstState() {
   firstBuffer_.clear();
   secondBuffer_.clear();
   bufferPointer_ = &firstBuffer_;
-
-  switch(currentTool_) {
-    case om::tool::mode::SPLIT:
-    case om::tool::mode::MULTISPLIT:
-      SetShouldVolumeBeShownBroken(true);
-      break;
-    case om::tool::mode::JOIN:
-    default:
-      SetShouldVolumeBeShownBroken(false);
-      break;
-  }
 }
 
 void OmJoiningSplitting::goToSecondState() {

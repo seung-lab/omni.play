@@ -249,103 +249,6 @@ TEST(omJoiningSplittingTest , testIsFinished) {
 }
 
 /*
- * when joining, we volume should never be shown broken
- */
-TEST(omJoiningSplittingTest , testJoinShowBroken) {
-  OmJoiningSplitting joiningSplitting;
-  // First state with JOIN should be false
-  joiningSplitting.SelectSegment(om::tool::mode::JOIN,
-      SegmentDataWrapper(TEST_SEGMENTATION_ID, TEST_SEGMENT_ID_A));
-  EXPECT_FALSE(joiningSplitting.ShouldVolumeBeShownBroken());
-
-  // Second state with JOIN should be false
-  joiningSplitting.GoToNextState();
-  joiningSplitting.SelectSegment(om::tool::mode::JOIN,
-      SegmentDataWrapper(TEST_SEGMENTATION_ID, TEST_SEGMENT_ID_B));
-  EXPECT_FALSE(joiningSplitting.ShouldVolumeBeShownBroken());
-}
-
-/*
- * when splitting, we volume should always be shown broken
- */
-TEST(omJoiningSplittingTest , testSplitShowBroken) {
-  OmJoiningSplitting joiningSplitting;
-  // First state with SPLIT should be true
-  joiningSplitting.SelectSegment(om::tool::mode::SPLIT,
-      SegmentDataWrapper(TEST_SEGMENTATION_ID, TEST_SEGMENT_ID_A));
-  EXPECT_TRUE(joiningSplitting.ShouldVolumeBeShownBroken());
-
-  // Second state with SPLIT should be true
-  joiningSplitting.GoToNextState();
-  joiningSplitting.SelectSegment(om::tool::mode::SPLIT,
-      SegmentDataWrapper(TEST_SEGMENTATION_ID, TEST_SEGMENT_ID_B));
-  EXPECT_TRUE(joiningSplitting.ShouldVolumeBeShownBroken());
-}
-
-
-/*
- * first state join to split should show broken
- */
-TEST(omJoiningSplittingTest , testJoinToSplitShowBrokenFirstState) {
-  OmJoiningSplitting joiningSplitting;
-  // First state with join
-  joiningSplitting.SelectSegment(om::tool::mode::JOIN,
-      SegmentDataWrapper(TEST_SEGMENTATION_ID, TEST_SEGMENT_ID_A));
-
-  // Reset state with split should now show broken = true
-  joiningSplitting.SelectSegment(om::tool::mode::SPLIT,
-      SegmentDataWrapper(TEST_SEGMENTATION_ID, TEST_SEGMENT_ID_B));
-  EXPECT_TRUE(joiningSplitting.ShouldVolumeBeShownBroken());
-}
-
-/*
- * first state split to join should show not broken
- */
-TEST(omJoiningSplittingTest , testSplitToJoinShowBrokenFirstState) {
-  OmJoiningSplitting joiningSplitting;
-  // First state with join
-  joiningSplitting.SelectSegment(om::tool::mode::SPLIT,
-      SegmentDataWrapper(TEST_SEGMENTATION_ID, TEST_SEGMENT_ID_A));
-
-  // Reset state with split should now show broken = false
-  joiningSplitting.SelectSegment(om::tool::mode::JOIN,
-      SegmentDataWrapper(TEST_SEGMENTATION_ID, TEST_SEGMENT_ID_B));
-  EXPECT_FALSE(joiningSplitting.ShouldVolumeBeShownBroken());
-}
-
-/*
- * second state split to join should show not broken
- */
-TEST(omJoiningSplittingTest , testJoinToSplitShowBrokenSecondState) {
-  OmJoiningSplitting joiningSplitting;
-  // Second state with join
-  joiningSplitting.SelectSegment(om::tool::mode::JOIN,
-      SegmentDataWrapper(TEST_SEGMENTATION_ID, TEST_SEGMENT_ID_A));
-  joiningSplitting.GoToNextState();
-
-  // Reset state with split should now show broken = true
-  joiningSplitting.SelectSegment(om::tool::mode::SPLIT,
-      SegmentDataWrapper(TEST_SEGMENTATION_ID, TEST_SEGMENT_ID_B));
-  EXPECT_TRUE(joiningSplitting.ShouldVolumeBeShownBroken());
-}
-
-/*
- * second state split to join should show not broken
- */
-TEST(omJoiningSplittingTest , testSplitToJoinShowBrokenSecondState) {
-  OmJoiningSplitting joiningSplitting;
-  // Second state with split
-  joiningSplitting.SelectSegment(om::tool::mode::SPLIT,
-      SegmentDataWrapper(TEST_SEGMENTATION_ID, TEST_SEGMENT_ID_A));
-  joiningSplitting.GoToNextState();
-
-  // Reset state with join should now show broken = false
-  joiningSplitting.SelectSegment(om::tool::mode::JOIN,
-      SegmentDataWrapper(TEST_SEGMENTATION_ID, TEST_SEGMENT_ID_B));
-  EXPECT_FALSE(joiningSplitting.ShouldVolumeBeShownBroken());
-}
-
-/*
  * Tool mode change event does not do anything if the tool is the same
  */
 TEST(omJoiningSplittingTest , toolChangeEventSame) {
@@ -441,6 +344,17 @@ TEST(omJoiningSplittingTest , toolChangeUnsupportedReturn) {
   EXPECT_TRUE(secondBuffer.empty());
 }
 
+/*
+ * Tool mode change event does not do anything if the tool is the same
+ * Only switching to split, we should set the showbroken = false
+ */
+TEST(omJoiningSplittingTest , toolChangeEventJoin) {
+  OmJoiningSplitting joiningSplitting;
+  joiningSplitting.ToolModeChangeEvent(om::tool::mode::JOIN);
+  EXPECT_FALSE(joiningSplitting.ShouldVolumeBeShownBroken());
+  joiningSplitting.ToolModeChangeEvent(om::tool::mode::SPLIT);
+  EXPECT_TRUE(joiningSplitting.ShouldVolumeBeShownBroken());
+}
 } // namespace joiningSplitting
 } // namespace test
 } // namespace om

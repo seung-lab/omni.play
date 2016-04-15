@@ -9,6 +9,7 @@
 #include "utility/segmentationDataWrapper.hpp"
 #include "common/enums.hpp"
 #include "system/omStateManager.h"
+#include "system/omLocalPreferences.hpp"
 
 // mouse release
 void om::JoinSplitRunner::GoToNextState(OmViewGroupState& vgs,
@@ -42,7 +43,11 @@ void om::JoinSplitRunner::GoToNextState(OmViewGroupState& vgs,
             vgs.Segmentation(), firstBuffer, secondBuffer);
         break;
     }
-    //OmStateManager::SetOldToolModeAndSendEvent();
+    const bool shouldReturnOldTool =
+      OmLocalPreferences::GetShouldReturnOldToolAfterJoinSplit();
+    if (shouldReturnOldTool) {
+      OmStateManager::SetOldToolModeAndSendEvent();
+    }
   }
 }
 
