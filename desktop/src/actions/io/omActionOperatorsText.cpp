@@ -3,6 +3,7 @@
 #include "actions/details/omSegmentJoinActionImpl.hpp"
 #include "actions/details/omSegmentSelectActionImpl.hpp"
 #include "actions/details/omSegmentSplitActionImpl.hpp"
+#include "actions/details/omSegmentMultiSplitActionImpl.hpp"
 #include "actions/details/omSegmentCutActionImpl.hpp"
 #include "actions/details/omSegmentValidateActionImpl.hpp"
 #include "actions/details/omSegmentUncertainActionImpl.hpp"
@@ -59,7 +60,10 @@ QTextStream& operator<<(QTextStream& out, const OmSegmentSplitActionImpl& a) {
 }
 
 QTextStream& operator<<(QTextStream& out, const OmSegmentMultiSplitActionImpl& a) {
-  out << a.edges_;
+  for (auto edge : a.edges_) {
+    out << edge;
+  }
+
   out << a.sources_;
   out << a.sinks_;
   return out;

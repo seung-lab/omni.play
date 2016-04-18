@@ -39,7 +39,7 @@ void om::JoinSplitRunner::GoToNextState(OmViewGroupState& vgs,
             vgs.Segmentation(), firstSegment, secondSegment);
         break;
       case om::tool::mode::MULTISPLIT:
-        OmActions::FindAndSplitMultiSegments(
+        OmActions::FindAndMultiSplitSegments(
             vgs.Segmentation(), firstBuffer, secondBuffer);
         break;
     }

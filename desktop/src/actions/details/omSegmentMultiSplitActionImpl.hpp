@@ -18,6 +18,28 @@ class OmSegmentMultiSplitActionImpl {
   om::common::ID segmentationID_;
   QString desc_;
 
+  /*
+   * Return only the seg ids that have different roots (means that they
+   * should be joined!)
+   */
+  om::common::SegIDSet getNeedsJoin(om::common::SegIDSet segIDs, 
+      const SegmentationDataWrapper& segmentationDataWrapper) {
+    om::common::SegIDSet newSegIDs;
+
+    if (segIDs.empty()) {
+      return newSegIDs;
+    }
+
+    om::common::SegID rootID =
+      segmentationDataWrapper.Segments()->FindRootID(*segIDs.begin());
+    for (auto segID : segIDs) {
+      if (segmentationDataWrapper.Segments()->FindRootID(segID) != rootID) {
+        newSegIDs.insert(segID);
+      }
+    }
+    return newSegIDs;
+  }
+
  public:
   OmSegmentMultiSplitActionImpl() {}
 
@@ -27,19 +49,25 @@ class OmSegmentMultiSplitActionImpl {
                            const om::common::SegIDSet& sinks)
       : edges_(edges), sources_(sources), sinks_(sinks),
         segmentationID_(sdw.GetSegmentationID()),
-        desc__("Splitting: ") {}
+        desc_("Splitting: ") {}
 
   void Execute() {
     SegmentationDataWrapper sdw(segmentationID_);
 
     for (auto edge : edges_) {
-      edge = sdw.Segments()->SplitEdge(edge);
+      std::cout << "Trying to cut " << edge.parentID << "-" << edge.childID << std::endl;
+      auto returnEdge = sdw.Segments()->SplitEdge(edge);
+      std::cout << "got back:" << returnEdge.parentID << "-" << returnEdge.childID << std::endl;
     }
 
-    OmJoinSegments joiner(sdw_, sources_);
-    joiner.Join();
-    OmJoinSegments joiner(sdw_, sinks_);
-    joiner.Join();
+    // update the source/sink list to join only those who are now different segments
+    sources_ = getNeedsJoin(sources_, sdw);
+    sinks_ = getNeedsJoin(sinks_, sdw);
+
+    OmJoinSegments sourceJoiner(sdw, sources_);
+    sourceJoiner.Join();
+    OmJoinSegments sinkJoiner(sdw, sinks_);
+    sinkJoiner.Join();
 
     sdw.SegmentLists()->RefreshGUIlists();
   }
@@ -47,27 +75,31 @@ class OmSegmentMultiSplitActionImpl {
   void Undo() {
     SegmentationDataWrapper sdw(segmentationID_);
 
-    OmJoinSegments joiner(sdw, sinks_);
-    joiner.UnJoin();
-    OmJoinSegments joiner(sdw, sources_);
-    joiner.UnJoin();
+    OmJoinSegments sourceJoiner(sdw, sinks_);
+    sourceJoiner.UnJoin();
+    OmJoinSegments sinkJoiner(sdw, sources_);
+    sinkJoiner.UnJoin();
 
-    std::pair<bool, om::segment::UserEdge> userEdge;
+    std::pair<bool, om::segment::UserEdge> returnEdgeTuple;
     for (auto edge : edges_) {
-      edge = sdw.Segments()->JoinEdge(edges);
-      if (!edge.childID || !edges.parentID) {
+      std::cout << "Trying to join " << edge.parentID << "-" << edge.childID << std::endl;
+      returnEdgeTuple = sdw.Segments()->JoinEdge(edge);
+      std::cout << "got back: " << returnEdgeTuple.first << " : " << returnEdgeTuple.second.parentID << "-" << returnEdgeTuple.second.childID << std::endl;
+      // todo fix this!
+      if (!edge.childID || !edge.parentID) {
         log_infos << "Can't undo a join that probably failed.";
       }
 
-      if (!edge.first) {
+      if (!returnEdgeTuple.first) {
         log_infos << "edge could not be rejoined...";
+        return;
       }
     }
 
     sdw.SegmentLists()->RefreshGUIlists();
   }
 
-  std::string desc_ription() const { return desc_.toStdString(); }
+  std::string Description() const { return desc_.toStdString(); }
 
   QString classNameForLogFile() const { return "OmSegmentSplitAction"; }
 

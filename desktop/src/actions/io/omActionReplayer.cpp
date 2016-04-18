@@ -67,7 +67,7 @@ void OmActionReplayer::dispatchAction(const QString& actionName,
     case om::actions_::OmSegmentSplitAction:
       doReplayFile<OmSegmentSplitAction, OmSegmentSplitActionImpl>(in);
       break;
-    case om::actions_::OmSegmentCutAction:
+    case om::actions_::OmSegmentMultiSplitAction:
       doReplayFile<OmSegmentMultiSplitAction, OmSegmentMultiSplitActionImpl>(in);
       break;
     case om::actions_::OmSegmentCutAction:

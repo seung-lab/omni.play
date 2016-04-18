@@ -45,6 +45,12 @@ std::vector<om::segment::Edge> BoostGraph::MinCut(
   boost::boykov_kolmogorov_max_flow(graph_, vertexS, vertexT);
 
   std::vector<Edge> edges = GetMinCutEdges(vertexS);
+  std::cout << "here trying to cut ";
+  for (auto edge : edges) {
+    std::cout << "(" << 
+      segmentIDProperty_[boost::target(edge, graph_)] << "," << segmentIDProperty_[boost::source(edge, graph_)] << ")";
+  }
+  std::cout << std::endl;
   std::vector<om::segment::Edge> segmentEdges;
   std::transform(edges.begin(), edges.end(), std::back_inserter(segmentEdges),
       [this](Edge edge) { return ToSegmentEdge(edge); });

@@ -183,7 +183,7 @@ void OmActionsImpl::FindAndMultiSplitSegments(const SegmentationDataWrapper sdw,
   MinCut minCut(*sdw.Segments());
   std::vector<om::segment::UserEdge> userEdges = minCut.FindEdges(segSet1, segSet2);
 
-  (new OmSegmentMultiSplitAction(sdw, userEdges, segSet1, segSet2)->Run());
+  (new OmSegmentMultiSplitAction(sdw, userEdges, segSet1, segSet2))->Run();
 }
 
 void OmActionsImpl::ShatterSegment(const SegmentationDataWrapper sdw,
