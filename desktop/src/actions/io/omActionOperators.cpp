@@ -180,7 +180,6 @@ QDataStream& operator<<(QDataStream& out, const OmSegmentMultiSplitActionImpl& a
   out << a.sources_;
   out << a.sinks_;
   out << a.segmentationID_;
-  out << a.desc_;
 
   return out;
 }
@@ -193,7 +192,6 @@ QDataStream& operator>>(QDataStream& in, OmSegmentMultiSplitActionImpl& a) {
   in >> a.sources_;
   in >> a.sinks_;
   in >> a.segmentationID_;
-  in >> a.desc_;
 
   return in;
 }

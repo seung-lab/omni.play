@@ -19,7 +19,6 @@ class OmSegmentMultiSplitActionImpl {
   om::common::SegIDSet sources_;
   om::common::SegIDSet sinks_;
   om::common::ID segmentationID_;
-  QString desc_;
 
   std::function<void(om::segment::UserEdge)> 
     copyReturnOperator(
@@ -66,8 +65,7 @@ class OmSegmentMultiSplitActionImpl {
                            const om::common::SegIDSet& sources,
                            const om::common::SegIDSet& sinks)
       : splitEdges_(splitEdges), sources_(sources), sinks_(sinks),
-        segmentationID_(sdw.GetSegmentationID()),
-        desc_("MultiSplit: " + segmentationID_) {}
+        segmentationID_(sdw.GetSegmentationID()) {}
 
   void Execute() {
     SegmentationDataWrapper sdw(segmentationID_);
@@ -108,7 +106,14 @@ class OmSegmentMultiSplitActionImpl {
     sdw.SegmentLists()->RefreshGUIlists();
   }
 
-  std::string Description() const { return desc_.toStdString(); }
+  std::string Description() const {
+    SegmentationDataWrapper sdw(segmentationID_);
+    QString description = QString("MultiSplit Roots: %1, %2")
+      .arg(sdw.Segments()->FindRootID(*sources_.begin()))
+      .arg(sdw.Segments()->FindRootID(*sinks_.begin()));
+    return description.toStdString();
+  }
+
 
   QString classNameForLogFile() const { return "OmSegmentMultiSplitAction"; }
 
