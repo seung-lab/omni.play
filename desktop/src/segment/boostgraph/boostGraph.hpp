@@ -44,7 +44,6 @@ class BoostGraph {
   ReverseProperty reverseProperty_;
   ColorProperty colorProperty_;
   SegmentIDProperty segmentIDProperty_;
-  //ResidualCapacityProperty residualCapacityProperty_;
 
   void setProperties();
   // Graph creation helper functions
