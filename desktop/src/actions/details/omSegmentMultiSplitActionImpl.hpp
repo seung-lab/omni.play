@@ -20,10 +20,24 @@ class OmSegmentMultiSplitActionImpl {
   om::common::SegIDSet sinks_;
   om::common::ID segmentationID_;
 
-  std::function<void(om::segment::UserEdge)> 
-    copyReturnOperator(
+  /*
+   * Yo Dawg! Heard you like functions, so we put your function inside this function
+   * so you can operate while you operate!
+   *
+   * (Used in for_each)
+   * 
+   * Parameters:
+   *  edgeOperator: A function that allows you to input an edge and operate on it
+   *    (i.e. splitting or merging) and returning another edge
+   * Returns:
+   *  a void function with parameter edge that retrieves a new edge from edgeOperator.
+   *  parameter edge is updated with the new edge returned by the operator
+   * 
+   */
+  std::function<void(om::segment::UserEdge&)> 
+    updateEdgeWithAction(
         std::function<om::segment::UserEdge(om::segment::UserEdge)> edgeOperator) {
-    return [edgeOperator] (om::segment::UserEdge userEdge) {
+    return [edgeOperator] (om::segment::UserEdge& userEdge) {
       auto returnEdge = edgeOperator(userEdge);
       if ((returnEdge.parentID != userEdge.parentID
           || returnEdge.childID != userEdge.childID) 
@@ -38,7 +52,12 @@ class OmSegmentMultiSplitActionImpl {
     };
   }
 
-  void updateRootsAndAddEdges(om::common::SegIDSet& segIDs) {
+  /*
+   * Modify input SegIDSet with only it's distinct roots.
+   * Generate a list of edges to join all these seg ids and append to member variable
+   * joinEdges_
+   */
+  void transformToRootsAndUpdateJoinEdges(om::common::SegIDSet& segIDs) {
     SegmentationDataWrapper sdw(segmentationID_);
     om::common::SegIDSet newRoots;
     std::transform(segIDs.begin(), segIDs.end(),
@@ -70,18 +89,19 @@ class OmSegmentMultiSplitActionImpl {
   void Execute() {
     SegmentationDataWrapper sdw(segmentationID_);
 
-    std::for_each(splitEdges_.begin(), splitEdges_.end(), copyReturnOperator(
+    // split all the input edges
+    std::for_each(splitEdges_.begin(), splitEdges_.end(), updateEdgeWithAction(
           [sdw](om::segment::UserEdge userEdge) {
             return sdw.Segments()->SplitEdge(userEdge);
           }));
 
     // update the source/sink list to join only those who are now different segments
     joinEdges_.clear();
-    updateRootsAndAddEdges(sources_);
-    updateRootsAndAddEdges(sinks_);
+    transformToRootsAndUpdateJoinEdges(sources_);
+    transformToRootsAndUpdateJoinEdges(sinks_);
 
     // perform the join
-    std::for_each(joinEdges_.begin(), joinEdges_.end(), copyReturnOperator(
+    std::for_each(joinEdges_.begin(), joinEdges_.end(), updateEdgeWithAction(
           [sdw](om::segment::UserEdge userEdge) {
             return sdw.Segments()->JoinEdge(userEdge).second;
           }));
@@ -93,13 +113,13 @@ class OmSegmentMultiSplitActionImpl {
     SegmentationDataWrapper sdw(segmentationID_);
 
     // Split all the joined edges first
-    std::for_each(joinEdges_.begin(), joinEdges_.end(), copyReturnOperator(
+    std::for_each(joinEdges_.begin(), joinEdges_.end(), updateEdgeWithAction(
           [sdw](om::segment::UserEdge userEdge) {
             return sdw.Segments()->SplitEdge(userEdge);
           }));
 
     // Join all the split edges
-    std::for_each(splitEdges_.begin(), splitEdges_.end(), copyReturnOperator(
+    std::for_each(splitEdges_.begin(), splitEdges_.end(), updateEdgeWithAction(
           [sdw](om::segment::UserEdge userEdge) {
             return sdw.Segments()->JoinEdge(userEdge).second;
           }));
