@@ -13,7 +13,7 @@
 
 ShowBreakWidget::ShowBreakWidget(QWidget* widget, OmViewGroupState& vgs)
   : ViewGroupStateWidget(widget, vgs),
-    showBreakButton_(new OmButton(this, "Break", "View broken segments", true)),
+    showBreakButton_(new OmButton(this, "Show Broken", "View broken segments", true)),
     breakSpinboxWidget_(new QGroupBox("Break Threshold", this)),
     breakThresholdSpinBox_(new BreakThresholdGroup(this, vgs)) {
 
