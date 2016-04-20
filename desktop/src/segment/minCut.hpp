@@ -36,5 +36,7 @@ class MinCut {
 
   bool hasRoot(const om::common::SegIDSet segIDSet, const OmSegment* desiredRoot) const;
   om::segment::UserEdge toUserEdge(om::segment::Edge edge);
+  static om::common::SegIDSet intersect(const om::common::SegIDSet set1,
+      const  om::common::SegIDSet set2);
 };
 

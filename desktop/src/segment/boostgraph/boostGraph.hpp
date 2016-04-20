@@ -33,6 +33,7 @@ class BoostGraph {
 
   void BuildGraph(const OmSegment* rootSeg);
 
+  void Print();
  private:
   const om::segment::Children& children_;
   Graph graph_;

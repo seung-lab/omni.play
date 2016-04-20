@@ -1,10 +1,12 @@
 #include "precomp.h"
 #include <boost/graph/adjacency_list.hpp>
+#include <boost/graph/graphviz.hpp>
 #include <boost/graph/boykov_kolmogorov_max_flow.hpp>
 #include <boost/graph/properties.hpp>
 #include "segment/lowLevel/children.hpp"
 #include "segment/boostgraph/types.hpp"
 #include "segment/boostgraph/boostGraph.hpp"
+#include "segment/boostgraph/graphvizLabelWriter.hpp"
 #include "common/logging.h"
 #include <algorithm>
 #include <sstream>
@@ -45,12 +47,6 @@ std::vector<om::segment::Edge> BoostGraph::MinCut(
   boost::boykov_kolmogorov_max_flow(graph_, vertexS, vertexT);
 
   std::vector<Edge> edges = GetMinCutEdges(vertexS);
-  std::cout << "here trying to cut ";
-  for (auto edge : edges) {
-    std::cout << "(" << 
-      segmentIDProperty_[boost::target(edge, graph_)] << "," << segmentIDProperty_[boost::source(edge, graph_)] << ")";
-  }
-  std::cout << std::endl;
   std::vector<om::segment::Edge> segmentEdges;
   std::transform(edges.begin(), edges.end(), std::back_inserter(segmentEdges),
       [this](Edge edge) { return ToSegmentEdge(edge); });
@@ -68,16 +64,16 @@ std::tuple<Vertex, Vertex> BoostGraph::MakeSingleSourceSink(
 }
 
 std::vector<Edge> BoostGraph::GetMinCutEdges(Vertex sourceVertex) {
-  std::queue<Vertex> queue;
+  std::deque<Vertex> queue;
   std::unordered_set<Vertex> visited;
 
   std::vector<Edge> minEdges;
 
-  queue.push(sourceVertex);
+  queue.push_back(sourceVertex);
 
   while(!queue.empty()) {
     Vertex sourceVertex = queue.front();
-    visited.insert(sourceVertex);
+    queue.pop_front();
 
     boost::template graph_traits<Graph>::out_edge_iterator eIter, eIterEnd;
     for(boost::tie(eIter, eIterEnd) = boost::out_edges(sourceVertex, graph_);
@@ -97,10 +93,10 @@ std::vector<Edge> BoostGraph::GetMinCutEdges(Vertex sourceVertex) {
       // only add the target vertex if it is a source and we haven't visited yet
       if (colorProperty_[targetVertex] == COLOR_SOURCE
          && visited.find(targetVertex) == visited.end()) {
-        queue.push(targetVertex);
+        visited.insert(targetVertex);
+        queue.push_back(targetVertex);
       }
     }
-    queue.pop();
   }
 
   return minEdges;
@@ -124,6 +120,11 @@ void BoostGraph::BuildGraph(const OmSegment* rootSegment) {
   setProperties();
   Vertex rootVertex = addVertex(rootSegment);
   buildGraphDfsVisit(rootVertex);
+}
+
+void BoostGraph::Print() {
+  write_graphviz(std::cout, graph_, make_label_writer_2(nameProperty_, colorProperty_),
+      make_label_writer(capacityProperty_));
 }
 
 void BoostGraph::setProperties() {

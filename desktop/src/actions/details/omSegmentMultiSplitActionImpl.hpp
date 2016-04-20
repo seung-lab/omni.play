@@ -9,65 +9,84 @@
 #include "system/cache/omCacheManager.h"
 #include "utility/dataWrappers.h"
 #include "viewGroup/omViewGroupState.h"
+#include "segment/boostgraph/boostGraph.hpp"
+#include <functional>
 
 class OmSegmentMultiSplitActionImpl {
  private:
-  std::vector<om::segment::UserEdge> edges_;
+  std::vector<om::segment::UserEdge> splitEdges_;
+  std::vector<om::segment::UserEdge> joinEdges_;
   om::common::SegIDSet sources_;
   om::common::SegIDSet sinks_;
   om::common::ID segmentationID_;
   QString desc_;
 
-  /*
-   * Return only the seg ids that have different roots (means that they
-   * should be joined!)
-   */
-  om::common::SegIDSet getNeedsJoin(om::common::SegIDSet segIDs, 
-      const SegmentationDataWrapper& segmentationDataWrapper) {
-    om::common::SegIDSet newSegIDs;
-
-    if (segIDs.empty()) {
-      return newSegIDs;
-    }
-
-    om::common::SegID rootID =
-      segmentationDataWrapper.Segments()->FindRootID(*segIDs.begin());
-    for (auto segID : segIDs) {
-      if (segmentationDataWrapper.Segments()->FindRootID(segID) != rootID) {
-        newSegIDs.insert(segID);
+  std::function<void(om::segment::UserEdge)> 
+    copyReturnOperator(
+        std::function<om::segment::UserEdge(om::segment::UserEdge)> edgeOperator) {
+    return [edgeOperator] (om::segment::UserEdge userEdge) {
+      auto returnEdge = edgeOperator(userEdge);
+      if ((returnEdge.parentID != userEdge.parentID
+          || returnEdge.childID != userEdge.childID) 
+          && returnEdge.parentID != 0 && returnEdge.childID != 0) {
+        log_errors << "Setting the desired edge to the actual edge " <<
+          " Desired: " << userEdge.parentID << ", " << userEdge.childID << ")" <<
+          " Actual: " << returnEdge.parentID << ", " << returnEdge.childID << ")" <<
+          std::endl;
+        userEdge.parentID = returnEdge.parentID;
+        userEdge.childID = returnEdge.childID;
       }
+    };
+  }
+
+  void updateRootsAndAddEdges(om::common::SegIDSet& segIDs) {
+    SegmentationDataWrapper sdw(segmentationID_);
+    om::common::SegIDSet newRoots;
+    std::transform(segIDs.begin(), segIDs.end(),
+        std::inserter(newRoots, newRoots.begin()), 
+        [sdw](om::common::SegID segID) {
+          return sdw.Segments()->FindRootID(segID);
+        });
+    if (newRoots.size() > 1) {
+      auto idIter = newRoots.begin();
+      om::common::SegID firstRootID = *idIter++;
+      std::transform(idIter, newRoots.end(), std::back_inserter(joinEdges_),
+          [firstRootID] (om::common::SegID segID) {
+            return om::segment::UserEdge{firstRootID, segID, 1, true};
+          });
     }
-    return newSegIDs;
+    std::swap(segIDs, newRoots);
   }
 
  public:
   OmSegmentMultiSplitActionImpl() {}
 
   OmSegmentMultiSplitActionImpl(const SegmentationDataWrapper& sdw,
-                           const std::vector<om::segment::UserEdge>& edges,
+                           const std::vector<om::segment::UserEdge>& splitEdges,
                            const om::common::SegIDSet& sources,
                            const om::common::SegIDSet& sinks)
-      : edges_(edges), sources_(sources), sinks_(sinks),
+      : splitEdges_(splitEdges), sources_(sources), sinks_(sinks),
         segmentationID_(sdw.GetSegmentationID()),
-        desc_("Splitting: ") {}
+        desc_("MultiSplit: " + segmentationID_) {}
 
   void Execute() {
     SegmentationDataWrapper sdw(segmentationID_);
 
-    for (auto edge : edges_) {
-      std::cout << "Trying to cut " << edge.parentID << "-" << edge.childID << std::endl;
-      auto returnEdge = sdw.Segments()->SplitEdge(edge);
-      std::cout << "got back:" << returnEdge.parentID << "-" << returnEdge.childID << std::endl;
-    }
+    std::for_each(splitEdges_.begin(), splitEdges_.end(), copyReturnOperator(
+          [sdw](om::segment::UserEdge userEdge) {
+            return sdw.Segments()->SplitEdge(userEdge);
+          }));
 
     // update the source/sink list to join only those who are now different segments
-    sources_ = getNeedsJoin(sources_, sdw);
-    sinks_ = getNeedsJoin(sinks_, sdw);
+    joinEdges_.clear();
+    updateRootsAndAddEdges(sources_);
+    updateRootsAndAddEdges(sinks_);
 
-    OmJoinSegments sourceJoiner(sdw, sources_);
-    sourceJoiner.Join();
-    OmJoinSegments sinkJoiner(sdw, sinks_);
-    sinkJoiner.Join();
+    // perform the join
+    std::for_each(joinEdges_.begin(), joinEdges_.end(), copyReturnOperator(
+          [sdw](om::segment::UserEdge userEdge) {
+            return sdw.Segments()->JoinEdge(userEdge).second;
+          }));
 
     sdw.SegmentLists()->RefreshGUIlists();
   }
@@ -75,33 +94,23 @@ class OmSegmentMultiSplitActionImpl {
   void Undo() {
     SegmentationDataWrapper sdw(segmentationID_);
 
-    OmJoinSegments sourceJoiner(sdw, sinks_);
-    sourceJoiner.UnJoin();
-    OmJoinSegments sinkJoiner(sdw, sources_);
-    sinkJoiner.UnJoin();
+    // Split all the joined edges first
+    std::for_each(joinEdges_.begin(), joinEdges_.end(), copyReturnOperator(
+          [sdw](om::segment::UserEdge userEdge) {
+            return sdw.Segments()->SplitEdge(userEdge);
+          }));
 
-    std::pair<bool, om::segment::UserEdge> returnEdgeTuple;
-    for (auto edge : edges_) {
-      std::cout << "Trying to join " << edge.parentID << "-" << edge.childID << std::endl;
-      returnEdgeTuple = sdw.Segments()->JoinEdge(edge);
-      std::cout << "got back: " << returnEdgeTuple.first << " : " << returnEdgeTuple.second.parentID << "-" << returnEdgeTuple.second.childID << std::endl;
-      // todo fix this!
-      if (!edge.childID || !edge.parentID) {
-        log_infos << "Can't undo a join that probably failed.";
-      }
-
-      if (!returnEdgeTuple.first) {
-        log_infos << "edge could not be rejoined...";
-        return;
-      }
-    }
-
+    // Join all the split edges
+    std::for_each(splitEdges_.begin(), splitEdges_.end(), copyReturnOperator(
+          [sdw](om::segment::UserEdge userEdge) {
+            return sdw.Segments()->JoinEdge(userEdge).second;
+          }));
     sdw.SegmentLists()->RefreshGUIlists();
   }
 
   std::string Description() const { return desc_.toStdString(); }
 
-  QString classNameForLogFile() const { return "OmSegmentSplitAction"; }
+  QString classNameForLogFile() const { return "OmSegmentMultiSplitAction"; }
 
  private:
   template <typename T>

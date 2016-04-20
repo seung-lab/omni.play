@@ -60,10 +60,12 @@ QTextStream& operator<<(QTextStream& out, const OmSegmentSplitActionImpl& a) {
 }
 
 QTextStream& operator<<(QTextStream& out, const OmSegmentMultiSplitActionImpl& a) {
-  for (auto edge : a.edges_) {
+  for (auto edge : a.splitEdges_) {
     out << edge;
   }
-
+  for (auto edge : a.joinEdges_) {
+    out << edge;
+  }
   out << a.sources_;
   out << a.sinks_;
   return out;

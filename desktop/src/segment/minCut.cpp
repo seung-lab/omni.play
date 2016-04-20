@@ -39,22 +39,30 @@ std::vector<om::segment::UserEdge> MinCut::FindEdges(const om::common::SegIDSet 
   std::vector<om::segment::UserEdge> userEdges;
 
   if (sources.empty() || sinks.empty()) {
-    log_debugs << "Source or sink empty";
+    log_infos << "Source or sink empty";
     return userEdges;
   }
+
+  om::common::SegIDSet intersectSet = intersect(sources, sinks);
+  if (!intersectSet.empty()) {
+      log_infos << "Sources and sinks have common segment";
+      return userEdges;
+  }
+
   OmSegment* rootSegment = segments_.FindRoot(*sources.begin());
 
   if (!rootSegment) {
-    log_errors << "No root segment found for segID " << *sources.begin();
+    log_infos << "No root segment found for segID " << *sources.begin();
     return userEdges;
   }
 
   if (!hasRoot(sources, rootSegment)
         || !hasRoot(sinks, rootSegment)) {
-    log_debugs << "Source and sink do not share the same root seg " <<
+    log_infos << "Source and sink do not share the same root seg " <<
       rootSegment->value();
     return userEdges;
   }
+
 
   std::shared_ptr<BoostGraph> boostGraph = boostGraphFactory_->Get(rootSegment);
   std::vector<om::segment::Edge> edges = boostGraph->MinCut(sources, sinks);
@@ -68,7 +76,7 @@ std::vector<om::segment::UserEdge> MinCut::FindEdges(const om::common::SegIDSet 
       }), userEdges.end());
 
   if (userEdges.empty()) {
-    log_debugs << "Unable to find a min cut!" << rootSegment->value();
+    log_infos << "Unable to find a min cut!" << rootSegment->value();
   }
 
   return userEdges;
@@ -115,4 +123,15 @@ om::segment::UserEdge MinCut::toUserEdge(om::segment::Edge edge) {
   userEdge.childID = child->value();
   userEdge.valid = true;
   return userEdge;
+}
+
+om::common::SegIDSet MinCut::intersect(const om::common::SegIDSet set1,
+    const om::common::SegIDSet set2) {
+  om::common::SegIDSet intersect;
+  for (auto id : set1) {
+    if (set2.find(id) != set2.end()) {
+      intersect.insert(id);
+    }
+  }
+  return intersect;
 }

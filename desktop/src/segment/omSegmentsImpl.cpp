@@ -178,7 +178,7 @@ om::segment::UserEdge OmSegmentsImpl::splitChildFromParentNoTest(
     if (childEdge != userEdges_.cend()) {
       userEdges_.erase(childEdge);
     } else {
-      log_errors << "Unable to remove " << child->value()
+      log_debugs << "Unable to remove " << child->value()
                  << " Custom Merge Edge";
     }
     child->setCustomMergeEdge(om::segment::UserEdge());
@@ -197,6 +197,7 @@ om::segment::UserEdge OmSegmentsImpl::splitChildFromParentNoTest(
 std::pair<bool, om::segment::UserEdge> OmSegmentsImpl::JoinFromUserAction(
     const om::segment::UserEdge& e) {
   if (!e.valid) {
+    log_errors << "trying to join an invalid edge";
     return std::make_pair(false, om::segment::UserEdge());
   }
 
@@ -215,13 +216,13 @@ std::pair<bool, om::segment::UserEdge> OmSegmentsImpl::JoinEdgeFromUser(
   OmSegment* parentRoot = FindRoot(parent);
 
   if (childRoot == parentRoot) {
-    log_debug("cycle found in user manual edge; skipping edge %d, %d, %f",
+    log_error("cycle found in user manual edge; skipping edge %d, %d, %f",
               e.childID, e.parentID, e.threshold);
     return std::make_pair(false, om::segment::UserEdge());
   }
 
   if (childRoot->IsValidListType() != parent->IsValidListType()) {
-    log_debug(
+    log_error(
         "not joining child %d to parent %d: child "
         "immutability is %d, but parent's is %d",
         childRoot->value(), parent->value(), childRoot->IsValidListType(),

@@ -175,7 +175,8 @@ QDataStream& operator>>(QDataStream& in, OmSegmentShatterActionImpl& a) {
 QDataStream& operator<<(QDataStream& out, const OmSegmentMultiSplitActionImpl& a) {
   int version = 1;
   out << version;
-  out << a.edges_;
+  out << a.joinEdges_;
+  out << a.splitEdges_;
   out << a.sources_;
   out << a.sinks_;
   out << a.segmentationID_;
@@ -187,8 +188,8 @@ QDataStream& operator<<(QDataStream& out, const OmSegmentMultiSplitActionImpl& a
 QDataStream& operator>>(QDataStream& in, OmSegmentMultiSplitActionImpl& a) {
   int version;
   in >> version;
-
-  in >> a.edges_;
+  in >> a.joinEdges_;
+  in >> a.splitEdges_;
   in >> a.sources_;
   in >> a.sinks_;
   in >> a.segmentationID_;
