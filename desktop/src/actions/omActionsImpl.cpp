@@ -8,6 +8,7 @@
 #include "segment/actions/omSetSegmentValidRunner.hpp"
 #include "segment/omFindCommonEdge.hpp"
 #include "segment/omSegmentSelector.h"
+#include "segment/minCut.hpp"
 #include "system/omLocalPreferences.hpp"
 #include "threads/taskManager.hpp"
 #include "utility/dataWrappers.h"
@@ -174,6 +175,20 @@ void OmActionsImpl::FindAndSplitSegments(const SegmentationDataWrapper sdw,
   }
 
   (new OmSegmentSplitAction(sdw, edge))->Run();
+}
+
+void OmActionsImpl::FindAndMultiSplitSegments(const SegmentationDataWrapper sdw,
+                                   const om::common::SegIDSet segSet1,
+                                   const om::common::SegIDSet segSet2) {
+  MinCut minCut(*sdw.Segments());
+  std::vector<om::segment::UserEdge> userEdges = minCut.FindEdges(segSet1, segSet2);
+
+  if (userEdges.empty()) {
+    log_infos << "No edges found for multi split";
+    return;
+  }
+
+  (new OmSegmentMultiSplitAction(sdw, userEdges, segSet1, segSet2))->Run();
 }
 
 void OmActionsImpl::ShatterSegment(const SegmentationDataWrapper sdw,

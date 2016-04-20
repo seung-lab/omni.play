@@ -3,7 +3,6 @@
 
 #include "events/listeners.h"
 #include "gui/brushToolbox/brushToolboxImpl.h"
-#include "system/omStateManager.h"
 #include "gui/tools.hpp"
 
 class BrushToolbox : public om::event::ToolModeEventListener,
@@ -26,12 +25,12 @@ class BrushToolbox : public om::event::ToolModeEventListener,
   void SegmentGUIlistEvent(om::event::SegmentEvent*) {}
   void SegmentSelectedEvent(om::event::SegmentEvent*) { showForFirstTime(); }
 
-  void ToolModeChangeEvent() {
+  void ToolModeChangeEvent(om::tool::mode eventTool) override {
     if (alreadyPoppedMenu_) {
       return;
     }
 
-    switch (OmStateManager::GetToolMode()) {
+    switch (eventTool) {
       case om::tool::ERASE:
       case om::tool::FILL:
       case om::tool::PAINT:

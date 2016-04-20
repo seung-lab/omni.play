@@ -2,6 +2,7 @@
 #include "precomp.h"
 
 #include "common/common.h"
+#include "gui/tools.hpp"
 
 class OmSelectSegmentsParams;
 class SegmentDataWrapper;
@@ -10,7 +11,7 @@ class SegmentationDataWrapper;
 namespace om {
 namespace event {
 
-void ToolChange();
+void ToolChange(om::tool::mode tool);
 void Redraw2d();
 void Redraw2dBlocking();
 void Redraw3d();

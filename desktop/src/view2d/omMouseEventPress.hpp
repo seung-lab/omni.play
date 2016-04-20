@@ -8,7 +8,6 @@
 #include "gui/widgets/omSegmentContextMenu.h"
 #include "gui/widgets/omTellInfo.hpp"
 #include "landmarks/omLandmarks.hpp"
-#include "segment/actions/omJoinSplitRunner.hpp"
 #include "view2d/brush/omBrushSelect.hpp"
 #include "view2d/omFillTool.hpp"
 #include "view2d/omMouseEventUtils.hpp"
@@ -52,7 +51,9 @@ class OmMouseEventPress {
       switch (tool_) {
         case om::tool::JOIN:
         case om::tool::SPLIT:
-          doJoinSplitSegment(tool_);
+        case om::tool::MULTISPLIT:
+          om::mouse::event::doJoinSplitSegment(*state_, dataClickPoint_,
+              tool_);
           return;
         case om::tool::VALIDATE:
           om::common::SetValid setValid;
@@ -106,19 +107,9 @@ class OmMouseEventPress {
     dataClickPoint_ = clicked.ToGlobal();
   }
 
-  void doJoinSplitSegment(om::tool::mode tool) {
-    boost::optional<SegmentDataWrapper> sdw = getSelectedSegment();
-
-    if (!sdw) {
-      return;
-    }
-
-    om::JoinSplitRunner::FindAndPerformOnSegments(
-        *sdw, state_->getViewGroupState(), dataClickPoint_, tool);
-  }
-
   void doFindAndShatterSegment() {
-    boost::optional<SegmentDataWrapper> sdw = getSelectedSegment();
+    boost::optional<SegmentDataWrapper> sdw =
+      om::mouse::event::getSelectedSegment(*state_, dataClickPoint_);
 
     if (!sdw) {
       return;
@@ -130,7 +121,8 @@ class OmMouseEventPress {
   }
 
   void doFindandSetSegmentValid(const om::common::SetValid setValid) {
-    boost::optional<SegmentDataWrapper> sdw = getSelectedSegment();
+    boost::optional<SegmentDataWrapper> sdw =
+      om::mouse::event::getSelectedSegment(*state_, dataClickPoint_);
 
     // return if we couldn't find the segment, or if the segment is invalid
     // or if the segment clicked is not in our current selection
@@ -143,7 +135,8 @@ class OmMouseEventPress {
   }
 
   void doFindAndCutSegment() {
-    boost::optional<SegmentDataWrapper> sdw = getSelectedSegment();
+    boost::optional<SegmentDataWrapper> sdw =
+      om::mouse::event::getSelectedSegment(*state_, dataClickPoint_);
 
     if (!sdw) {
       return;
@@ -192,7 +185,8 @@ class OmMouseEventPress {
         fill();
         break;
       case om::tool::LANDMARK:
-        state_->getViewGroupState().Landmarks().Add(getSelectedSegment(),
+        state_->getViewGroupState().Landmarks().Add(
+            om::mouse::event::getSelectedSegment(*state_, dataClickPoint_),
                                                     dataClickPoint_);
         break;
       case om::tool::CUT:
@@ -237,7 +231,8 @@ class OmMouseEventPress {
   }
 
   void mouseSelectSegment() {
-    boost::optional<SegmentDataWrapper> sdw = getSelectedSegment();
+    boost::optional<SegmentDataWrapper> sdw =
+      om::mouse::event::getSelectedSegment(*state_, dataClickPoint_);
     if (!sdw) {
       return;
     }
@@ -269,7 +264,8 @@ class OmMouseEventPress {
   }
 
   void mouseShowSegmentContextMenu() {
-    boost::optional<SegmentDataWrapper> sdw = getSelectedSegment();
+    boost::optional<SegmentDataWrapper> sdw =
+      om::mouse::event::getSelectedSegment(*state_, dataClickPoint_);
 
     if (sdw) {
       segmentContextMenu_.Refresh(*sdw, state_->getViewGroupState(),
@@ -278,46 +274,6 @@ class OmMouseEventPress {
     }
   }
 
-  boost::optional<SegmentDataWrapper> getSelectedSegment() {
-    OmMipVolume* vol = &state_->getVol();
-
-    if (om::common::SEGMENTATION == vol->getVolumeType()) {
-      OmSegmentation* seg = reinterpret_cast<OmSegmentation*>(vol);
-      return getSelectedSegmentSegmentation(seg);
-    }
-
-    boost::optional<SegmentDataWrapper> ret;
-
-    OmChannel* chan = reinterpret_cast<OmChannel*>(vol);
-    const std::vector<OmFilter2d*> filters = chan->GetFilters();
-
-    FOR_EACH(iter, filters) {
-      OmFilter2d* filter = *iter;
-
-      if (om::OVERLAY_SEGMENTATION == filter->FilterType()) {
-        ret = getSelectedSegmentSegmentation(filter->GetSegmentation());
-
-        if (ret) {
-          break;
-        }
-      }
-    }
-
-    return ret;
-  }
-
-  boost::optional<SegmentDataWrapper> getSelectedSegmentSegmentation(
-      OmSegmentation* segmentation) {
-    const om::common::SegID segmentID =
-        segmentation->GetVoxelValue(dataClickPoint_);
-
-    if (!segmentID) {
-      return boost::optional<SegmentDataWrapper>();
-    }
-
-    SegmentDataWrapper ret(segmentation, segmentID);
-    return boost::optional<SegmentDataWrapper>(ret);
-  }
 
   void fill() {
     SegmentDataWrapper sdwUnknownDepth =
@@ -362,7 +318,8 @@ class OmMouseEventPress {
   }
 
   void advancedTools() {
-    boost::optional<SegmentDataWrapper> sdw = getSelectedSegment();
+    boost::optional<SegmentDataWrapper> sdw =
+      om::mouse::event::getSelectedSegment(*state_, dataClickPoint_);
     if(!sdw){
       return;
     }

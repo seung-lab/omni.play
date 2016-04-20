@@ -93,6 +93,18 @@ class OmLocalPreferences : private om::SingletonBase<OmLocalPreferences> {
                                      val);
   }
 
+  // return to old tool after join split
+  static bool GetShouldReturnOldToolAfterJoinSplit() {
+    const bool defaultVal = true;
+    return LocalPrefFiles::readSettingBool(
+        "shouldReturnOldToolAfterJoinSplit", defaultVal);
+  }
+
+  static void SetShouldReturnOldToolAfterJoinSplit(const bool val) {
+    LocalPrefFiles::writeSettingBool("shouldReturnOldToolAfterJoinSplit",
+                                     val);
+  }
+
   // Login endpoint
   static QString getEndpoint() {
     QString defaultEndpoint = "https://eyewire.org";

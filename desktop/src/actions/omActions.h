@@ -69,6 +69,10 @@ class OmActions : om::singletonBase<OmActions> {
 
   static void FindAndSplitSegments(const SegmentationDataWrapper sdw,
                                    OmSegment* seg1, OmSegment* seg2);
+  static void FindAndMultiSplitSegments(const SegmentationDataWrapper sdw,
+                                   const om::common::SegIDSet segSet1,
+                                   const om::common::SegIDSet segSet2);
+
   static void ShatterSegment(const SegmentationDataWrapper sdw, OmSegment* seg);
 
   static void CutSegment(const SegmentDataWrapper& sdw);

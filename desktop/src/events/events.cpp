@@ -17,8 +17,8 @@
 namespace om {
 namespace event {
 
-void ToolChange() {
-  Manager::Post(new ToolModeEvent(ToolModeEvent::TOOL_MODE_CHANGE));
+void ToolChange(om::tool::mode tool) {
+  Manager::Post(new ToolModeEvent(ToolModeEvent::TOOL_MODE_CHANGE, tool));
 }
 
 void Redraw2d() { Manager::Post(new View2dEvent(View2dEvent::REDRAW)); }

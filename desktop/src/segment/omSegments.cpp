@@ -15,6 +15,9 @@ OmSegments::OmSegments(OmSegmentation* vol)
                                vol->ValidGroupNum(),
                                SegmentationDataWrapper(vol))) {}
 
+OmSegments::OmSegments(OmSegmentation* vol, std::unique_ptr<OmSegmentsImpl> impl)
+    : meta_(vol->Metadata()), impl_(std::move(impl)) {}
+
 OmSegments::~OmSegments() {}
 
 void OmSegments::refreshTree() {
@@ -89,25 +92,25 @@ std::string OmSegments::GetNote(common::SegID segID) {
   return impl_->GetNote(segID);
 }
 
-OmSegment* OmSegments::FindRoot(OmSegment* segment) {
+OmSegment* OmSegments::FindRoot(OmSegment* segment) const {
   // FIXME: double check store locking
   zi::guard g(mutex_);
   return impl_->FindRoot(segment->value());
 }
 
-OmSegment* OmSegments::FindRoot(const common::SegID segID) {
+OmSegment* OmSegments::FindRoot(const common::SegID segID) const {
   // FIXME: no longer locked internally
   zi::guard g(mutex_);
   return impl_->FindRoot(segID);
 }
 
-common::SegID OmSegments::FindRootID(const common::SegID segID) {
+common::SegID OmSegments::FindRootID(const common::SegID segID) const {
   // FIXME: no longer locked internally
   zi::guard g(mutex_);
   return impl_->FindRootID(segID);
 }
 
-common::SegID OmSegments::FindRootID(OmSegment* segment) {
+common::SegID OmSegments::FindRootID(OmSegment* segment) const {
   // FIXME: no longer locked internally
   zi::guard g(mutex_);
   return impl_->FindRootID(segment->value());

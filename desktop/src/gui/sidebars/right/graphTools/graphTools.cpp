@@ -18,6 +18,8 @@ GraphTools::GraphTools(om::sidebars::rightImpl* d, OmViewGroupState& vgs)
             this, "Join", "Join Objects", om::tool::mode::JOIN)),
       splitButton(new ToolButton(
             this, "Split", "Split Objects", om::tool::mode::SPLIT)),
+      multiSplitButton(new ToolButton(
+            this, "MultiSplit", "Multi Split Objects", om::tool::mode::MULTISPLIT)),
       shatterButton(new ToolButton(
             this, "Shatter", "Shatter Objects", om::tool::mode::SHATTER)),
       joinAllButton(new JoinAllButton(this, vgs)),
@@ -30,14 +32,15 @@ GraphTools::GraphTools(om::sidebars::rightImpl* d, OmViewGroupState& vgs)
   wbox->setLayout(box2);
   box->addWidget(wbox);
 
-  box2->addWidget(joinButton, 0, 0, 1, 1);
-  box2->addWidget(joinAllButton, 0, 1, 1, 1);
-  box2->addWidget(splitButton, 1, 0, 1, 1);
-  box2->addWidget(shatterButton, 1, 1, 1, 1);
+  box2->addWidget(joinButton,       0, 0, 1, 1);
+  box2->addWidget(joinAllButton,    0, 1, 1, 1);
+  box2->addWidget(splitButton,      1, 0, 1, 1);
+  box2->addWidget(multiSplitButton, 1, 1, 1, 1);
+  box2->addWidget(shatterButton,    2, 0, 1, 2);
 
   // removing padding around the showbreakwidget so it looks connected
   showBreakWidget->layout()->setContentsMargins( 0, 0, 0, 0);
-  box2->addWidget(showBreakWidget, 2, 0, 1, 2);
+  box2->addWidget(showBreakWidget, 3, 0, 1, 2);
 
 }
 

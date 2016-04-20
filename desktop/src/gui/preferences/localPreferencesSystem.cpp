@@ -15,6 +15,9 @@ LocalPreferencesSystem::LocalPreferencesSystem(QWidget* parent)
   om::connect(shouldJumpCheckBox, SIGNAL(stateChanged(int)), this,
               SLOT(on_shouldJumpCheckBox_stateChanged()));
 
+  om::connect(shouldReturnOldToolCheckBox, SIGNAL(stateChanged(int)), this,
+              SLOT(on_shouldReturnOldToolCheckBox_stateChanged()));
+
   om::connect(meshSlider, SIGNAL(valueChanged(int)), this,
               SLOT(on_meshSlider_valueChanged()));
   om::connect(tileSlider, SIGNAL(valueChanged(int)), this,
@@ -36,6 +39,12 @@ QGroupBox* LocalPreferencesSystem::makeActionPropBox() {
   bool shouldJump = OmLocalPreferences::GetShouldJumpToNextSegmentAfterValidate();
   shouldJumpCheckBox->setChecked(shouldJump);
   actionLayout->addWidget(shouldJumpCheckBox, 0, 0, 1, 1);
+
+  shouldReturnOldToolCheckBox = new QCheckBox(actionGroupBox);
+  shouldReturnOldToolCheckBox->setText("Should Return to Previous Tool After Join/Split");
+  bool shouldReturnOldTool = OmLocalPreferences::GetShouldReturnOldToolAfterJoinSplit();
+  shouldReturnOldToolCheckBox->setChecked(shouldReturnOldTool);
+  actionLayout->addWidget(shouldReturnOldToolCheckBox, 1, 0, 1, 1);
   
   return actionGroupBox;
 }
@@ -118,4 +127,9 @@ void LocalPreferencesSystem::on_tileSlider_sliderReleased() {
 void LocalPreferencesSystem::on_shouldJumpCheckBox_stateChanged() {
   const bool val = GuiUtils::getBoolState(shouldJumpCheckBox->checkState());
   OmLocalPreferences::SetShouldJumpToNextSegmentAfterValidate(val);
+}
+
+void LocalPreferencesSystem::on_shouldReturnOldToolCheckBox_stateChanged() {
+  const bool val = GuiUtils::getBoolState(shouldReturnOldToolCheckBox->checkState());
+  OmLocalPreferences::SetShouldReturnOldToolAfterJoinSplit(val);
 }

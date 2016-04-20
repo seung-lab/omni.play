@@ -7,6 +7,7 @@ class OmSegmentGroupActionImpl;
 class OmSegmentJoinActionImpl;
 class OmSegmentSelectActionImpl;
 class OmSegmentSplitActionImpl;
+class OmSegmentMultiSplitActionImpl;
 class OmSegmentShatterActionImpl;
 class OmSegmentCutActionImpl;
 class OmSegmentUncertainActionImpl;
@@ -16,6 +17,9 @@ class OmVoxelSetValueActionImpl;
 
 QDataStream& operator<<(QDataStream& out, const OmSegmentSplitActionImpl&);
 QDataStream& operator>>(QDataStream& in, OmSegmentSplitActionImpl&);
+
+QDataStream& operator<<(QDataStream& out, const OmSegmentMultiSplitActionImpl&);
+QDataStream& operator>>(QDataStream& in, OmSegmentMultiSplitActionImpl&);
 
 QDataStream& operator<<(QDataStream& out, const OmSegmentShatterActionImpl&);
 QDataStream& operator>>(QDataStream& in, OmSegmentShatterActionImpl&);

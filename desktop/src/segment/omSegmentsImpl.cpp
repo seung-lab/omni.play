@@ -3,6 +3,7 @@
 #include "segment/lowLevel/children.hpp"
 #include "segment/lowLevel/graphThresholder.hpp"
 #include "segment/lowLevel/store.h"
+#include "volume/omSegmentation.h"
 #include "segment/omSegmentsImpl.h"
 #include "segment/selection.hpp"
 #include "segment/userEdgeVector.hpp"
@@ -14,6 +15,9 @@
 using namespace om::segment;
 
 // entry into this class via OmSegments hopefully guarantees proper locking...
+OmSegmentsImpl::OmSegmentsImpl(OmSegmentation* segmentation)
+    : mst_(segmentation->MST()), userEdges_(segmentation->UserEdges()),
+      valid_(segmentation->ValidGroupNum()), meta_(segmentation->Metadata()) {}
 
 OmSegmentsImpl::OmSegmentsImpl(SegDataVector& data, SegListDataVector& listData,
                                EdgeVector& mst, UserEdgeVector& userEdges,
@@ -174,7 +178,7 @@ om::segment::UserEdge OmSegmentsImpl::splitChildFromParentNoTest(
     if (childEdge != userEdges_.cend()) {
       userEdges_.erase(childEdge);
     } else {
-      log_errors << "Unable to remove " << child->value()
+      log_debugs << "Unable to remove " << child->value()
                  << " Custom Merge Edge";
     }
     child->setCustomMergeEdge(om::segment::UserEdge());
@@ -193,6 +197,7 @@ om::segment::UserEdge OmSegmentsImpl::splitChildFromParentNoTest(
 std::pair<bool, om::segment::UserEdge> OmSegmentsImpl::JoinFromUserAction(
     const om::segment::UserEdge& e) {
   if (!e.valid) {
+    log_errors << "trying to join an invalid edge";
     return std::make_pair(false, om::segment::UserEdge());
   }
 
@@ -211,13 +216,13 @@ std::pair<bool, om::segment::UserEdge> OmSegmentsImpl::JoinEdgeFromUser(
   OmSegment* parentRoot = FindRoot(parent);
 
   if (childRoot == parentRoot) {
-    log_debug("cycle found in user manual edge; skipping edge %d, %d, %f",
+    log_error("cycle found in user manual edge; skipping edge %d, %d, %f",
               e.childID, e.parentID, e.threshold);
     return std::make_pair(false, om::segment::UserEdge());
   }
 
   if (childRoot->IsValidListType() != parent->IsValidListType()) {
-    log_debug(
+    log_error(
         "not joining child %d to parent %d: child "
         "immutability is %d, but parent's is %d",
         childRoot->value(), parent->value(), childRoot->IsValidListType(),
@@ -493,7 +498,7 @@ void OmSegmentsImpl::SetNote(om::common::SegID segID, std::string note) {
   segmentNotes_[segID] = note;
 }
 
-OmSegment* OmSegmentsImpl::FindRoot(const om::common::SegID segID) {
+OmSegment* OmSegmentsImpl::FindRoot(const om::common::SegID segID) const {
   auto root = FindRootID(segID);
   if (root) {
     return store_->GetSegment(root);
@@ -502,7 +507,7 @@ OmSegment* OmSegmentsImpl::FindRoot(const om::common::SegID segID) {
   }
 }
 
-OmSegment* OmSegmentsImpl::FindRoot(OmSegment* segment) {
+OmSegment* OmSegmentsImpl::FindRoot(const OmSegment* segment) const {
   auto root = FindRootID(segment);
   if (root) {
     return store_->GetSegment(root);

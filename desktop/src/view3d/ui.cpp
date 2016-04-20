@@ -35,7 +35,6 @@ void Ui::MouseRelease(QMouseEvent* event) { navigationModeMouseRelease(event); }
 void Ui::MouseMove(QMouseEvent* event) {
   // ignore movement without buttons
   if (!event->buttons()) return;
-
   navigationModeMouseMove(event);
 }
 
@@ -62,16 +61,19 @@ void Ui::KeyPress(QKeyEvent* event) {
   }
 }
 
-bool Ui::joinSplitModeMouseReleased(om::tool::mode tool, QMouseEvent* event) {
+bool Ui::joinSplitModeSelectSegment(om::tool::mode tool, QMouseEvent* event) {
   auto pickPoint = pickVoxelMouseCrosshair(event);
 
   if (!pickPoint.sdw.IsSegmentValid()) {
     return false;
   }
 
-  om::JoinSplitRunner::FindAndPerformOnSegments(pickPoint.sdw, vgs_,
-                                   pickPoint.coord, tool);
+  om::JoinSplitRunner::SelectSegment(vgs_, tool, pickPoint.sdw);
   return true;
+}
+
+void Ui::joinSplitModeMouseReleased(om::tool::mode tool, QMouseEvent* event) {
+  om::JoinSplitRunner::GoToNextState(vgs_, tool);
 }
 
 bool Ui::validateModeMouseReleased(om::common::SetValid setValid, QMouseEvent* event) {
@@ -163,7 +165,8 @@ void Ui::navigationModeMousePressed(QMouseEvent* event) {
         }
       case om::tool::mode::SPLIT:
       case om::tool::mode::JOIN:
-        if (joinSplitModeMouseReleased(toolMode, event)) {
+      case om::tool::MULTISPLIT:
+        if (joinSplitModeSelectSegment(toolMode, event)) {
           return;
         }
         break;
@@ -241,11 +244,34 @@ void Ui::doSelectSegment(const SegmentDataWrapper& sdw,
 }
 
 void Ui::navigationModeMouseRelease(QMouseEvent* event) {
+  const auto toolMode = OmStateManager::GetToolMode();
+  switch (toolMode) {
+    case om::tool::JOIN:
+    case om::tool::SPLIT:
+    case om::tool::MULTISPLIT:
+      joinSplitModeMouseReleased(toolMode, event);
+      break;
+  }
   cameraMovementMouseEnd(event);
 }
 
 void Ui::navigationModeMouseMove(QMouseEvent* event) {
-  cameraMovementMouseUpdate(event);
+  const auto modifiers = event->modifiers();
+  const bool controlModifier = modifiers & Qt::ControlModifier; 
+  const auto tool = OmStateManager::GetToolMode();
+
+  if (cameraIsMoving()) {
+    cameraMovementMouseUpdate(event);
+    return;
+  }
+
+  switch(tool) {
+    case om::tool::JOIN:
+    case om::tool::SPLIT:
+    case om::tool::MULTISPLIT:
+      joinSplitModeSelectSegment(tool, event);
+      break;
+  }
 }
 
 void Ui::navigationModeMouseDoubleClick(QMouseEvent* event) {
@@ -291,6 +317,10 @@ void Ui::cameraMovementMouseUpdate(QMouseEvent* event) {
   Vector2f point = Vector2f(event->x(), event->y());
   view3d_.GetCamera().MovementUpdate(point);
   view3d_.updateGL();
+}
+
+bool Ui::cameraIsMoving() {
+  return view3d_.GetCamera().IsMoving();
 }
 
 void Ui::cameraMovementMouseWheel(QWheelEvent* event) {

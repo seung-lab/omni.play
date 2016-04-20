@@ -7,6 +7,7 @@
 #include "actions/details/omSegmentValidateAction.h"
 #include "actions/details/omSegmentValidateActionImpl.hpp"
 #include "actions/details/omSegmentSplitActionImpl.hpp"
+#include "actions/details/omSegmentMultiSplitActionImpl.hpp"
 #include "actions/details/omSegmentCutAction.h"
 #include "actions/details/omSegmentCutActionImpl.hpp"
 #include "actions/details/omSegmentUncertainAction.h"
@@ -73,6 +74,9 @@ void OmActionDumper::dispatchAction(const QString& actionName, QDataStream& in,
       break;
     case om::actions_::OmSegmentSplitAction:
       doDumpFile<OmSegmentSplitAction, OmSegmentSplitActionImpl>(in, fnp);
+      break;
+    case om::actions_::OmSegmentMultiSplitAction:
+      doDumpFile<OmSegmentMultiSplitAction, OmSegmentMultiSplitActionImpl>(in, fnp);
       break;
     case om::actions_::OmSegmentCutAction:
       doDumpFile<OmSegmentCutAction, OmSegmentCutActionImpl>(in, fnp);

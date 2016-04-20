@@ -9,6 +9,7 @@
 #include "actions/details/omSegmentJoinActionImpl.hpp"
 #include "actions/details/omSegmentSelectActionImpl.hpp"
 #include "actions/details/omSegmentSplitActionImpl.hpp"
+#include "actions/details/omSegmentMultiSplitActionImpl.hpp"
 #include "actions/details/omSegmentShatterActionImpl.hpp"
 #include "actions/details/omSegmentCutActionImpl.hpp"
 #include "actions/details/omSegmentValidateActionImpl.hpp"
@@ -167,6 +168,30 @@ QDataStream& operator>>(QDataStream& in, OmSegmentShatterActionImpl& a) {
 
   in >> a.sdw_;
   in >> a.desc;
+
+  return in;
+}
+
+QDataStream& operator<<(QDataStream& out, const OmSegmentMultiSplitActionImpl& a) {
+  int version = 1;
+  out << version;
+  out << a.joinEdges_;
+  out << a.splitEdges_;
+  out << a.sources_;
+  out << a.sinks_;
+  out << a.segmentationID_;
+
+  return out;
+}
+
+QDataStream& operator>>(QDataStream& in, OmSegmentMultiSplitActionImpl& a) {
+  int version;
+  in >> version;
+  in >> a.joinEdges_;
+  in >> a.splitEdges_;
+  in >> a.sources_;
+  in >> a.sinks_;
+  in >> a.segmentationID_;
 
   return in;
 }

@@ -118,3 +118,19 @@ class OmSegmentSplitAction : public OmActionBase<OmSegmentSplitActionImpl> {
     SetUndoable(true);
   }
 };
+
+#include "actions/details/omSegmentMultiSplitActionImpl.hpp"
+class OmSegmentMultiSplitAction : public OmActionBase<OmSegmentMultiSplitActionImpl> {
+ public:
+  OmSegmentMultiSplitAction(std::shared_ptr<OmSegmentMultiSplitActionImpl> impl) {
+    impl_ = impl;
+  }
+
+  OmSegmentMultiSplitAction(const SegmentationDataWrapper& sdw,
+                      const std::vector<om::segment::UserEdge>& edges,
+                      const om::common::SegIDSet sources,
+                      const om::common::SegIDSet sinks) {
+    impl_ = std::make_shared<OmSegmentMultiSplitActionImpl>(sdw, edges, sources, sinks);
+    SetUndoable(true);
+  }
+};

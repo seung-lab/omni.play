@@ -13,9 +13,8 @@ namespace coords {
 }
 
 namespace JoinSplitRunner {
-  void FindAndPerformOnSegments(const SegmentDataWrapper curSDW,
-                                   OmViewGroupState& vgs,
-                                   const om::coords::Global curClickPt,
-                                   om::tool::mode tool);
+  void GoToNextState(OmViewGroupState& vgs,om::tool::mode tool);
+  void SelectSegment(OmViewGroupState& vgs, const om::tool::mode tool,
+    const SegmentDataWrapper segmentDataWrapper);
 }
 }

@@ -7,6 +7,7 @@ namespace actions_ {
 enum ActionTypes {
   OmSegmentValidateAction,
   OmSegmentSplitAction,
+  OmSegmentMultiSplitAction,
   OmSegmentCutAction,
   OmSegmentJoinAction,
   OmSegmentSelectAction,

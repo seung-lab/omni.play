@@ -10,6 +10,7 @@ class LocalPreferencesSystem : public QWidget {
  private
 Q_SLOTS:
   void on_shouldJumpCheckBox_stateChanged();
+  void on_shouldReturnOldToolCheckBox_stateChanged();
 
   void on_meshSlider_valueChanged();
   void on_tileSlider_valueChanged();
@@ -19,6 +20,7 @@ Q_SLOTS:
 
  private:
   QCheckBox* shouldJumpCheckBox;
+  QCheckBox* shouldReturnOldToolCheckBox;
   QLabel* sizeLabel;
   QLabel* meshSizeLabel;
   QLabel* vramLabel;

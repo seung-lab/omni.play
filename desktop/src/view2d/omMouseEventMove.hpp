@@ -65,6 +65,11 @@ class OmMouseEventMove {
           }
           state_->SetLastDataPoint(dataClickPoint_);
           break;
+        case om::tool::JOIN:
+        case om::tool::SPLIT:
+        case om::tool::MULTISPLIT:
+          om::mouse::event::doJoinSplitSegment(*state_, dataClickPoint_,
+              tool_);
         default:
           break;
       }

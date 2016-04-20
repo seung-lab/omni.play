@@ -41,6 +41,7 @@ class GraphTools : public OmWidget {
 
   ToolButton* joinButton;
   ToolButton* splitButton;
+  ToolButton* multiSplitButton;
   ToolButton* shatterButton;
   JoinAllButton* joinAllButton;
   ShowBreakWidget* showBreakWidget;

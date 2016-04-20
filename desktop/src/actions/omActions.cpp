@@ -101,6 +101,14 @@ void OmActions::FindAndSplitSegments(const SegmentationDataWrapper sdw,
       zi::bind(&OmActionsImpl::FindAndSplitSegments, impl(), sdw, seg1, seg2)));
 }
 
+void OmActions::FindAndMultiSplitSegments(const SegmentationDataWrapper sdw,
+                                   const om::common::SegIDSet segSet1,
+                                   const om::common::SegIDSet segSet2) {
+  pool().push_back(zi::run_fn(
+      zi::bind(&OmActionsImpl::FindAndMultiSplitSegments, impl(), sdw, segSet1,
+        segSet2)));
+}
+
 void OmActions::ShatterSegment(const SegmentationDataWrapper sdw,
                                OmSegment* seg) {
   pool().push_back(

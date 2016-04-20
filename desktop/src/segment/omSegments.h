@@ -27,6 +27,8 @@ class MetadataManager;
 class OmSegments {
  public:
   explicit OmSegments(OmSegmentation*);
+  // set impl i.e. for testing
+  OmSegments(OmSegmentation*, std::unique_ptr<OmSegmentsImpl>);
   ~OmSegments();
 
   void Flush();
@@ -58,10 +60,10 @@ class OmSegments {
   boost::optional<std::string> IsSegmentSplittable(OmSegment* child);
   boost::optional<std::string> IsSegmentCuttable(OmSegment* seg);
 
-  OmSegment* FindRoot(OmSegment* segment);
-  OmSegment* FindRoot(const om::common::SegID segID);
-  om::common::SegID FindRootID(const om::common::SegID segID);
-  om::common::SegID FindRootID(OmSegment* segment);
+  OmSegment* FindRoot(OmSegment* segment) const;
+  OmSegment* FindRoot(const om::common::SegID segID) const;
+  om::common::SegID FindRootID(const om::common::SegID segID) const;
+  om::common::SegID FindRootID(OmSegment* segment) const;
 
   std::pair<bool, om::segment::UserEdge> JoinEdge(
       const om::segment::UserEdge& e);

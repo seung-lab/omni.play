@@ -52,7 +52,9 @@ class OmView2dEvents : public om::event::SegmentEventListener,
     v2d_->RedrawBlocking();
   }
 
-  void ToolModeChangeEvent() { OmCursors::setToolCursor(v2d_); }
+  void ToolModeChangeEvent(om::tool::mode eventTool) override {
+    OmCursors::setToolCursor(v2d_, eventTool);
+  }
 
   void CoordSystemChangeEvent() {}
 };
