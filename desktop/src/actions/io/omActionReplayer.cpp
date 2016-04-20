@@ -95,7 +95,10 @@ void OmActionReplayer::dispatchAction(const QString& actionName,
     default:
       // TODO: or skip it?
       throw om::ArgException("unknown action");
-  }; } void OmActionReplayer::doReplay() {
+  };
+}
+
+void OmActionReplayer::doReplay() {
   log_infos << "checking for replay...";
   QDir logdir = OmActionLogger::LogFolder();
 
