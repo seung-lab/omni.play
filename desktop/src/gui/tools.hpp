@@ -16,7 +16,7 @@ enum mode {
   CUT,
   LANDMARK,
   ANNOTATE,
-  ADVANCED,
+  GROW,
   VALIDATE,
   SHATTER
 };

@@ -101,6 +101,26 @@ bool Ui::shatterModeMouseReleased(QMouseEvent* event) {
   return true;
 }
 
+bool Ui::grow(bool isTrim, QMouseEvent* event) {
+  auto pickPoint = pickVoxelMouseCrosshair(event);
+
+  if (!pickPoint.sdw.IsSegmentValid()) {
+    return false;
+  }
+
+  SegmentationDataWrapper segmentationDataWrapper =
+    pickPoint.sdw.MakeSegmentationDataWrapper();
+
+  OmSegmentSelector selector(segmentationDataWrapper, this, "3d Grow" );
+
+  if (isTrim) {
+    segmentationDataWrapper.Segments()->Trim(&selector, pickPoint.sdw.GetSegmentID());
+  } else {
+    segmentationDataWrapper.Segments()->
+      AddSegments_BreadthFirstSearch(&selector, pickPoint.sdw.GetSegmentID());
+  }
+}
+
 bool Ui::cutSegment(QMouseEvent* event) {
   const SegmentDataWrapper sdw = pickSegmentMouse(event, false);
 
@@ -193,6 +213,11 @@ void Ui::navigationModeMousePressed(QMouseEvent* event) {
         break;
       case om::tool::mode::ANNOTATE:
         if (annotate(event)) {
+          return;
+        }
+        break;
+      case om::tool::mode::GROW:
+        if (grow(shiftModifier, event)) {
           return;
         }
         break;

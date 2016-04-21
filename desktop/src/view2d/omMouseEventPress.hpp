@@ -195,8 +195,8 @@ class OmMouseEventPress {
       case om::tool::ANNOTATE:
         addAnnotation();
         break;
-      case om::tool::ADVANCED:
-        advancedTools();
+      case om::tool::GROW:
+        grow();
         break;
       default:
         return;
@@ -317,7 +317,7 @@ class OmMouseEventPress {
                 vgs.getAnnotationColor(), vgs.getAnnotationSize());
   }
 
-  void advancedTools() {
+  void grow() {
     boost::optional<SegmentDataWrapper> sdw =
       om::mouse::event::getSelectedSegment(*state_, dataClickPoint_);
     if(!sdw){
