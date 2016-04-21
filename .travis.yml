@@ -31,6 +31,8 @@ install:
 script:
   - echo "#define BUILD $TRAVIS_BUILD_NUMBER" > build_number.h
   - make desktop OPT=release CC=$CC CXX=$CXX
+  - ./bin/release/omni.desktop.test
+
 before_deploy:
   #
   # add a tag
