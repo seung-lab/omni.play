@@ -335,15 +335,9 @@ class OmMouseEventPress {
     OmSegmentSelector sel(segmentation, this, "view2dEvent" );
 
     if (shiftKey_) {
-      if (controlKey_) {
-        Segments->Trim(&sel, seg.GetSegmentID());
-      }
+      Segments->Trim(&sel, seg.GetSegmentID());
     } else {
-      if (controlKey_ && altKey_) {
-        Segments->AddSegments_BFS_DynamicThreshold(&sel, seg.GetSegmentID());
-      } else {
-        Segments->AddSegments_BreadthFirstSearch(&sel, seg.GetSegmentID());
-      }
+      Segments->AddSegments_BreadthFirstSearch(&sel, seg.GetSegmentID());
     }
   }
 };

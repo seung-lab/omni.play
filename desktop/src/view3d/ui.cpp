@@ -217,8 +217,11 @@ void Ui::navigationModeMousePressed(QMouseEvent* event) {
         }
         break;
       case om::tool::mode::GROW:
-        if (grow(shiftModifier, event)) {
-          return;
+        // only call grow if no modifiers or if shift is called
+        if (noModifiers || shiftModifier) {
+          if (grow(shiftModifier, event)) {
+            return;
+          }
         }
         break;
     }
