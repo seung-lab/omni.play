@@ -54,7 +54,7 @@ private:
             return;
         }
 
-        OmActions::ChangeASthreshold(mParent->GetSDW(), newThreshold);
+        mParent->GetSDW().GetSegmentation()->SetASThreshold(newThreshold);
     }
 
     boost::optional<double> getCurVolThreshold() {

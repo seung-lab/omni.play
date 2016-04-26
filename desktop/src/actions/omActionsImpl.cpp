@@ -37,12 +37,6 @@ void OmActionsImpl::ChangeSizethreshold(const SegmentationDataWrapper sdw,
   (new OmSegmentationSizeThresholdChangeAction(sdw, threshold))->Run();
 }
 
-void OmActionsImpl::ChangeASthreshold(const SegmentationDataWrapper sdw,
-                                       const double threshold)
-{
-    (new OmAutomaticSpreadingThresholdChangeAction(sdw, threshold))->Run();
-}
-
 // painting-related
 void OmActionsImpl::SetVoxels(const om::common::ID segmentationID,
                               const std::set<om::coords::Data> voxels,

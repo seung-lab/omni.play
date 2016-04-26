@@ -15,7 +15,6 @@
 #include "actions/details/omSegmentValidateActionImpl.hpp"
 #include "actions/details/omSegmentUncertainActionImpl.hpp"
 #include "actions/details/omSegmentationThresholdChangeActionImpl.hpp"
-#include "actions/details/omAutomaticSpreadingThresholdChangeActionImpl.hpp"
 #include "actions/details/omSegmentationSizeThresholdChangeActionImpl.hpp"
 #include "actions/details/omVoxelSetValueActionImpl.hpp"
 #include "actions/details/omProjectCloseActionImpl.hpp"
@@ -350,37 +349,6 @@ QDataStream& operator>>(QDataStream& in,
   a.sdw_ = SegmentationDataWrapper(id);
 
     return in;
-}
-
-QDataStream& operator<<(QDataStream& out, const OmAutomaticSpreadingThresholdChangeActionImpl& a)
-{
-    int version = 2;
-    out << version;
-    out << a.threshold_;
-    out << a.oldThreshold_;
-    out << a.sdw_;
-
-    return out;
-}
-
-QDataStream& operator>>(QDataStream& in, OmAutomaticSpreadingThresholdChangeActionImpl& a)
-{
-    int version;
-    in >> version;
-    in >> a.threshold_;
-    in >> a.oldThreshold_;
-
-    om::common::ID id = 1;
-
-    if(version > 1){
-        in >> id;
-    } else {
-        printf("WARNGING: guessing segmentation ID...\n");
-    }
-
-    a.sdw_ = SegmentationDataWrapper(id);
-
-  return in;
 }
 
 QDataStream& operator<<(QDataStream& out, const OmVoxelSetValueActionImpl& a) {

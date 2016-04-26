@@ -49,21 +49,6 @@ class OmSegmentationSizeThresholdChangeAction
   }
 };
 
-#include "actions/details/omAutomaticSpreadingThresholdChangeActionImpl.hpp"
-class OmAutomaticSpreadingThresholdChangeAction
-    : public OmActionBase<OmAutomaticSpreadingThresholdChangeActionImpl>{
- public:
-  OmAutomaticSpreadingThresholdChangeAction(std::shared_ptr<OmAutomaticSpreadingThresholdChangeActionImpl> impl) {
-      impl_ = impl;
-  }
-
-  OmAutomaticSpreadingThresholdChangeAction(const SegmentationDataWrapper sdw,
-                                        const double threshold) {
-    impl_ = std::make_shared<OmAutomaticSpreadingThresholdChangeActionImpl>(sdw, threshold);
-    SetUndoable(true);
-  }
-};
-
 #include "actions/details/omSegmentSelectActionImpl.hpp"
 class OmSegmentSelectAction : public OmActionBase<OmSegmentSelectActionImpl> {
  public:
