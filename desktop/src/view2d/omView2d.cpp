@@ -69,6 +69,12 @@ void OmView2d::keyPressEvent(QKeyEvent* event) {
   }
 }
 
+void OmView2d::keyReleaseEvent(QKeyEvent* event) {
+  if (!keyEvents_->Release(event)) {
+    QWidget::keyReleaseEvent(event);
+  }
+}
+
 void OmView2d::ResetWidget() {
   state_->ResetWindowState();
   om::event::ViewCenterChanged();

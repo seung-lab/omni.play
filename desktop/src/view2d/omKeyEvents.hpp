@@ -19,7 +19,9 @@ class OmKeyEvents {
   OmTimer blockingKeyDown_;
 
  public:
-  OmKeyEvents(OmView2d* v2d, OmView2dState* state) : v2d_(v2d), state_(state) {}
+  OmKeyEvents(OmView2d* v2d, OmView2dState* state) : v2d_(v2d), state_(state) {
+
+  }
 
   inline bool IsBlockingKeyDown() { return blockingKeyDown_.ms_elapsed() < 20; }
 
@@ -85,5 +87,15 @@ class OmKeyEvents {
     }
 
     return true;  // we handled event
+  }
+
+  bool Release(QKeyEvent* event) {
+    switch (OmStateManager::GetToolMode()) {
+      case om::tool::GROW:
+        if (toolHandleRelease(event->key())) {
+          return;
+        }
+      default:
+    }
   }
 };
