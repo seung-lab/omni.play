@@ -334,10 +334,13 @@ class OmMouseEventPress {
 
     OmSegmentSelector sel(segmentation, this, "view2dEvent" );
 
+    // only call grow when shift key is pressed
     if (shiftKey_) {
-      Segments->Trim(&sel, seg.GetSegmentID());
-    } else {
-      Segments->AddSegments_BreadthFirstSearch(&sel, seg.GetSegmentID());
+      if (altKey_) {
+        Segments->Trim(&sel, seg.GetSegmentID());
+      } else {
+        Segments->AddSegments_BreadthFirstSearch(&sel, seg.GetSegmentID());
+      }
     }
   }
 };
