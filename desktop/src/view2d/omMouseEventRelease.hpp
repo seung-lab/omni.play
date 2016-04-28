@@ -24,6 +24,21 @@ class OmMouseEventRelease {
     om::tool::mode tool = OmStateManager::GetToolMode();
 
     switch (tool) {
+      case om::tool::JOIN:
+      case om::tool::SPLIT:
+      case om::tool::MULTISPLIT:
+        context = unique_ptr<ControlContext> {
+          make_unique<JoiningSplittingControls>(state_, nullptr, tool) };
+      default:
+        // fallthrough
+    }
+
+    if (!context.mouseEventRelease(event)) {
+      //default camera control context
+    }
+
+
+    switch (tool) {
       case om::tool::PAINT:
       case om::tool::ERASE:
       case om::tool::LANDMARK:
@@ -35,11 +50,6 @@ class OmMouseEventRelease {
         }
         state_->OverrideToolModeForPan(false);
         break;
-      case om::tool::JOIN:
-      case om::tool::SPLIT:
-      case om::tool::MULTISPLIT:
-        om::JoinSplitRunner::GoToNextState(
-            state_->getViewGroupState(), tool);
       default:
         break;
     }

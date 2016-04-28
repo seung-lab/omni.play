@@ -47,14 +47,26 @@ class OmMouseEventPress {
     state_->SetMousePanStartingPt(
         om::coords::Screen(event->x(), event->y(), state_->Coords()));
 
+    switch (tool_) {
+      case om::tool::JOIN:
+      case om::tool::SPLIT:
+      case om::tool::MULTISPLIT:
+        context = unique_ptr<ControlContext> {
+          make_unique<JoiningSplittingControls>(
+              state_, om::mouse::event::getSelectedSegment(
+                state_, dataClickPoint).get_ptr(),
+              tool) };
+        break;
+      default:
+        // fallthrough
+    }
+
+    if (!context.mouseEventPress(event)) {
+      //default camera control context
+    }
+
     if (leftMouseButton_) {
       switch (tool_) {
-        case om::tool::JOIN:
-        case om::tool::SPLIT:
-        case om::tool::MULTISPLIT:
-          om::mouse::event::doJoinSplitSegment(*state_, dataClickPoint_,
-              tool_);
-          return;
         case om::tool::VALIDATE:
           om::common::SetValid setValid;
           if (controlKey_) {

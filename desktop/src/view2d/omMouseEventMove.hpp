@@ -35,6 +35,24 @@ class OmMouseEventMove {
     setState(event);
 
     state_->SetMousePoint(event);
+    std::unique_ptr<ControlContext> context;
+    switch (tool_) {
+      case om::tool::JOIN:
+      case om::tool::SPLIT:
+      case om::tool::MULTISPLIT:
+        context = unique_ptr<ControlContext> {
+          make_unique<JoiningSplittingControls>(
+              state_, om::mouse::event::getSelectedSegment(
+                state_, dataClickPoint).get_ptr(),
+              tool) };
+        break;
+      default:
+        // default camera context controls
+    }
+    if (!context.mouseMoveEvent(event)) {
+      //default camera control context
+    }
+
 
     if (leftMouseButton_) {
       if (shouldPan()) {

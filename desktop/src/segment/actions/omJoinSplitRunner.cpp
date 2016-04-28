@@ -12,9 +12,13 @@
 #include "system/omLocalPreferences.hpp"
 
 // mouse release
-void om::JoinSplitRunner::GoToNextState(OmViewGroupState& vgs,
-    om::tool::mode tool) {
-  OmJoiningSplitting& joiningSplitting = vgs.JoiningSplitting();
+bool om::JoinSplitRunner::GoToNextState(OmViewGroupState* vgs,
+    const om::tool::mode tool) {
+  if (!vgs) {
+    return false;
+  }
+
+  OmJoiningSplitting& joiningSplitting = vgs->JoiningSplitting();
 
   joiningSplitting.GoToNextState();
 
@@ -24,23 +28,23 @@ void om::JoinSplitRunner::GoToNextState(OmViewGroupState& vgs,
   if (joiningSplitting.IsFinished() && !firstBuffer.empty()
       && !secondBuffer.empty()) {
 
-    OmSegment* firstSegment = SegmentDataWrapper(vgs.Segmentation(),
+    OmSegment* firstSegment = SegmentDataWrapper(vgs->Segmentation(),
         *joiningSplitting.FirstBuffer().begin()).GetSegment();
-    OmSegment* secondSegment = SegmentDataWrapper(vgs.Segmentation(),
+    OmSegment* secondSegment = SegmentDataWrapper(vgs->Segmentation(),
         *joiningSplitting.SecondBuffer().begin()).GetSegment();
 
     switch (tool) {
       case om::tool::mode::JOIN:
         OmActions::JoinSegments(
-            vgs.Segmentation(), firstSegment, secondSegment);
+            vgs->Segmentation(), firstSegment, secondSegment);
         break;
       case om::tool::mode::SPLIT:
         OmActions::FindAndSplitSegments(
-            vgs.Segmentation(), firstSegment, secondSegment);
+            vgs->Segmentation(), firstSegment, secondSegment);
         break;
       case om::tool::mode::MULTISPLIT:
         OmActions::FindAndMultiSplitSegments(
-            vgs.Segmentation(), firstBuffer, secondBuffer);
+            vgs->Segmentation(), firstBuffer, secondBuffer);
         break;
     }
     const bool shouldReturnOldTool =
@@ -49,14 +53,16 @@ void om::JoinSplitRunner::GoToNextState(OmViewGroupState& vgs,
       OmStateManager::SetOldToolModeAndSendEvent();
     }
   }
+  return true;
 }
 
 //mouse click
-void om::JoinSplitRunner::SelectSegment(OmViewGroupState& vgs,
+bool om::JoinSplitRunner::SelectSegment(OmViewGroupState* vgs,
     const om::tool::mode tool,
-    const SegmentDataWrapper segmentDataWrapper) {
-  if (!segmentDataWrapper.IsSegmentValid()) {
-    return;
+    const SegmentDataWrapper* segmentDataWrapper) {
+  if (!segmentDataWrapper || !segmentDataWrapper.IsSegmentValid() || !vgs) {
+    return false;
   }
-  vgs.JoiningSplitting().SelectSegment(tool, segmentDataWrapper);
+  vgs->JoiningSplitting().SelectSegment(tool, segmentDataWrapper);
+  return true;
 }
