@@ -50,6 +50,7 @@ class Ui {
 
   bool validateModeMouseReleased(om::common::SetValid, QMouseEvent* event);
   bool shatterModeMouseReleased(QMouseEvent* event);
+  bool grow(bool isTrim, QMouseEvent* event);
 
   void cameraMovementMouseStart(QMouseEvent* event);
   void cameraMovementMouseEnd(QMouseEvent* event);

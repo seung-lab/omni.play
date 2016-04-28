@@ -158,7 +158,6 @@ class GraphThresholder {
         log_debugs << "BFS for (" << currSegment << ") looking at: " << nextSegment <<
                       " (" << currEdge->threshold << ") <? (" << threshold << ")";
 
-        // TODO::reorderLog move before log
         if (currEdge->threshold < threshold) {
           continue;
         }
@@ -167,6 +166,11 @@ class GraphThresholder {
           continue;
         }
         if (setToAdd.find(nextSegment) != setToAdd.end()) {
+          continue;
+        }
+
+        // don't traverse previously selected edges
+        if (sel->GetOrderOfAdding(nextSegment)) {
           continue;
         }
 
@@ -228,7 +232,6 @@ class GraphThresholder {
                       " (" << sel->GetOrderOfAdding(nextSegment) << ") <=? mini (" <<
                         mini << ")";
 
-          // TODO::reorderLog move before log
           if (sel->GetOrderOfAdding(nextSegment) <= mini) {
             continue;
           }
@@ -292,7 +295,6 @@ class GraphThresholder {
                       " (" << adjacencyMap_[currSegment][0]->threshold <<
                       ") <-.05> (" << adjacencyMap_[currSegment][i]->threshold << ")";
 
-        // TODO::reorderLog move before log
         if (adjacencyMap_[currSegment][0]->threshold - adjacencyMap_[currSegment][i]->threshold > 0.05) {
           break;
         }

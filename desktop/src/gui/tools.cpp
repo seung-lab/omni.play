@@ -23,8 +23,8 @@ std::string om::tool::ToolToString(om::tool::mode tool) {
       return "LANDMARK";
     case ANNOTATE:
       return "ANNOTATE";
-    case ADVANCED:
-      return "ADVANCED";
+    case GROW:
+      return "GROW";
     case SHATTER:
       return "SHATTER";
     case VALIDATE:

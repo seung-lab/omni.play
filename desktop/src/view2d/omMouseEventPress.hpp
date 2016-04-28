@@ -195,8 +195,8 @@ class OmMouseEventPress {
       case om::tool::ANNOTATE:
         addAnnotation();
         break;
-      case om::tool::ADVANCED:
-        advancedTools();
+      case om::tool::GROW:
+        grow();
         break;
       default:
         return;
@@ -317,7 +317,7 @@ class OmMouseEventPress {
                 vgs.getAnnotationColor(), vgs.getAnnotationSize());
   }
 
-  void advancedTools() {
+  void grow() {
     boost::optional<SegmentDataWrapper> sdw =
       om::mouse::event::getSelectedSegment(*state_, dataClickPoint_);
     if(!sdw){
@@ -335,15 +335,9 @@ class OmMouseEventPress {
     OmSegmentSelector sel(segmentation, this, "view2dEvent" );
 
     if (shiftKey_) {
-      if (controlKey_) {
-        Segments->Trim(&sel, seg.GetSegmentID());
-      }
+      Segments->Trim(&sel, seg.GetSegmentID());
     } else {
-      if (controlKey_ && altKey_) {
-        Segments->AddSegments_BFS_DynamicThreshold(&sel, seg.GetSegmentID());
-      } else {
-        Segments->AddSegments_BreadthFirstSearch(&sel, seg.GetSegmentID());
-      }
+      Segments->AddSegments_BreadthFirstSearch(&sel, seg.GetSegmentID());
     }
   }
 };

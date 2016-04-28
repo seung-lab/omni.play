@@ -43,8 +43,8 @@ NavAndEditButtonGroup::NavAndEditButtonGroup(QWidget* parent)
                      ":/toolbars/mainToolbar/icons/thumb-up-8x.png"));
 
   addButton(
-      new ToolButton(parent, "Advanced",
-                     "Advanced Tools", om::tool::ADVANCED,
+      new ToolButton(parent, "Grow",
+                     "Grow Tools", om::tool::GROW,
                      ":/toolbars/mainToolbar/icons/growing.png"));
 }
 
