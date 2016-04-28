@@ -6,8 +6,7 @@
 #include "segment/omSegmentUtils.hpp"
 #include "system/cache/omCacheManager.h"
 #include "utility/omTimer.hpp"
-#include "view2d/omView2d.h"
-#include "view2d/omView2dState.hpp"
+#include "view2d/omView2d.h" #include "view2d/omView2dState.hpp"
 #include "view2d/omView2dZoom.hpp"
 #include "viewGroup/omBrushSize.hpp"
 
@@ -92,10 +91,11 @@ class OmKeyEvents {
   bool Release(QKeyEvent* event) {
     switch (OmStateManager::GetToolMode()) {
       case om::tool::GROW:
-        if (toolHandleRelease(event->key())) {
-          return;
-        }
+        //if (toolHandleRelease(event->key())) {
+          //return;
+        //}
       default:
+        std::cout <<  "key released" << std::hex << event->key() << std::endl;
     }
   }
 };

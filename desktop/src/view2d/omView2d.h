@@ -39,6 +39,7 @@ class OmView2d : public OmView2dCore {
 
  protected:
   void keyPressEvent(QKeyEvent *event);
+  void keyReleaseEvent(QKeyEvent *event);
 
   // mouse events
   void mouseMoveEvent(QMouseEvent *event);
