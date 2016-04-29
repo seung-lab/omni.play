@@ -60,7 +60,7 @@ bool om::JoinSplitRunner::GoToNextState(OmViewGroupState* vgs,
 bool om::JoinSplitRunner::SelectSegment(OmViewGroupState* vgs,
     const om::tool::mode tool,
     const SegmentDataWrapper* segmentDataWrapper) {
-  if (!segmentDataWrapper || !segmentDataWrapper.IsSegmentValid() || !vgs) {
+  if (!segmentDataWrapper || !segmentDataWrapper->IsSegmentValid() || !vgs) {
     return false;
   }
   vgs->JoiningSplitting().SelectSegment(tool, segmentDataWrapper);

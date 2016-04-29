@@ -75,7 +75,7 @@ namespace event {
       return;
     }
 
-    om::JoinSplitRunner::SelectSegment(state.getViewGroupState(), tool, *sdw);
+    om::JoinSplitRunner::SelectSegment(&state.getViewGroupState(), tool, sdw.get_ptr());
   }
 } //namespace event
 } //namespace mouse

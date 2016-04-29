@@ -7,7 +7,7 @@
 class ControlContext {
  public:
   // allow implementation cleanup
-  virtual ~ControlContext();
+  virtual ~ControlContext() = default;
 
   // prevent copying
   ControlContext(ControlContext const &) = delete;
@@ -28,5 +28,5 @@ class ControlContext {
 
  protected:
   // disallow base class construction
-  ToolControlContext() {}
-}
+  ControlContext() {}
+};

@@ -1,11 +1,13 @@
 #pragma once
 #include "precomp.h"
-#include "gui/controls/ToolControlContext.hpp"
+#include "gui/controls/segmentControlContext.hpp"
+#include "viewGroup/omViewGroupState.h"
+#include "utility/dataWrappers.h"
 
-class JoiningSplittingControls : public SegmentControlContext {
+class JoiningSplittingControls : public SegmentControlContext, public ControlContext {
  public:
   JoiningSplittingControls(OmViewGroupState* viewGroupState,
-      SegmentDataWrapper* SegmentDataWrapper, om::tool::mode tool)
+      SegmentDataWrapper* segmentDataWrapper, om::tool::mode tool)
     : SegmentControlContext(viewGroupState, segmentDataWrapper),
       tool_(tool) {
     }
@@ -13,10 +15,10 @@ class JoiningSplittingControls : public SegmentControlContext {
   virtual bool mouseMoveEvent(QMouseEvent* mouseEvent) override {
     Qt::KeyboardModifiers modifiers = mouseEvent->modifiers();
     Qt::MouseButton button = mouseEvent->button();
-    switch (button | modifiers) {
-      case Qt::LeftButton | Qt::ShiftModifier:
+    switch ((int)button | (int)modifiers) {
+      case (int)Qt::LeftButton | (int)Qt::ShiftModifier:
         return om::JoinSplitRunner::SelectSegment(
-            *viewGroupState_, tool_, segmentDataWrapper_);
+            viewGroupState_, tool_, segmentDataWrapper_);
       default:
         return false;
     }
@@ -25,13 +27,12 @@ class JoiningSplittingControls : public SegmentControlContext {
   virtual bool mousePressEvent(QMouseEvent* mouseEvent) override {
     Qt::KeyboardModifiers modifiers = mouseEvent->modifiers();
     Qt::MouseButton button = mouseEvent->button();
-    switch (button | modifiers) {
+    switch ((int)button | (int)modifiers) {
       case Qt::LeftButton:
-      case Qt::LeftButton | Qt::ShiftModifier:
-        om::JoinSplitRunner::SelectSegment(
-            viewGroupState_, tool, segmentDataWrapper_);
-        return true;
-      case default:
+      case (int)Qt::LeftButton | (int)Qt::ShiftModifier:
+        return om::JoinSplitRunner::SelectSegment(
+            viewGroupState_, tool_, segmentDataWrapper_);
+      default:
         return false;
     }
   }
@@ -39,15 +40,15 @@ class JoiningSplittingControls : public SegmentControlContext {
   virtual bool mousePressRelease(QMouseEvent* mouseEvent) {
     Qt::KeyboardModifiers modifiers = mouseEvent->modifiers();
     Qt::MouseButton button = mouseEvent->button();
-    switch (button | modifiers) {
+    switch ((int)button | (int)modifiers) {
       case Qt::LeftButton:
-      case Qt::LeftButton | Qt::ShiftModifier:
-        om::JoinSplitRunner::GoToNextState(
-            viewGroupState_, tool_);
+      case (int)Qt::LeftButton | (int)Qt::ShiftModifier:
+        return om::JoinSplitRunner::GoToNextState(viewGroupState_, tool_);
+      default:
+        return false;
     }
   }
 
  private:
   om::tool::mode tool_;
-  std::map<int, ToolCommand> mousePressMapping;
-}
+};

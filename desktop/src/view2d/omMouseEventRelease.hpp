@@ -5,6 +5,8 @@
 #include "view2d/omView2d.h"
 #include "view2d/omView2dState.hpp"
 #include "segment/actions/omJoinSplitRunner.hpp"
+#include "gui/controls/controlContext.hpp"
+#include "gui/controls/joiningSplittingControls.hpp"
 
 class OmMouseEventRelease {
  private:
@@ -23,18 +25,28 @@ class OmMouseEventRelease {
     state_->SetLastDataPoint(dataClickPoint_);
     om::tool::mode tool = OmStateManager::GetToolMode();
 
+    std::unique_ptr<ControlContext> context;
     switch (tool) {
       case om::tool::JOIN:
       case om::tool::SPLIT:
       case om::tool::MULTISPLIT:
-        context = unique_ptr<ControlContext> {
-          make_unique<JoiningSplittingControls>(state_, nullptr, tool) };
+        context = std::unique_ptr<ControlContext> {
+          std::make_unique<JoiningSplittingControls>(
+              &state_->getViewGroupState(),
+              om::mouse::event::getSelectedSegment(
+                *state_, dataClickPoint_).get_ptr(),
+              tool) };
+        //context = std::unique_ptr<ControlContext> {
+          //std::make_unique<JoiningSplittingControls>(state_,
+              //static_cast<SegmentDataWrapper*>(nullptr), tool) };
       default:
+        break;
         // fallthrough
     }
 
-    if (!context.mouseEventRelease(event)) {
+    if (context->mouseReleaseEvent(event)) {
       //default camera control context
+      return;
     }
 
 
