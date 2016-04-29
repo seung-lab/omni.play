@@ -8,7 +8,6 @@ class ControlContext {
  public:
   // allow implementation cleanup
   virtual ~ControlContext() = default;
-
   // prevent copying (Rule of 5)
   ControlContext(ControlContext const &) = delete;
   ControlContext(ControlContext &&) = delete;
@@ -24,6 +23,7 @@ class ControlContext {
   virtual bool mouseMoveEvent(QMouseEvent *mouseEvent) { return false; }
   virtual bool mousePressEvent(QMouseEvent *mouseEvent) { return false; }
   virtual bool mouseReleaseEvent(QMouseEvent *mouseEvent) { return false; }
+  virtual bool mouseDoubleClickEvent(QMouseEvent *mouseEvent) { return false; }
   virtual bool mouseWheelEvent(QWheelEvent *wheelEvent) { return false; }
   virtual bool keyPressEvent(QKeyEvent *keyEvent) { return false; }
   virtual bool keyReleaseEvent(QKeyEvent *keyEvent) { return false; }

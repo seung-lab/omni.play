@@ -455,6 +455,7 @@ om::landmarks::sdwAndPt Ui::pickVoxelMouseCrosshair(QMouseEvent* event) {
 
   om::landmarks::sdwAndPt ret = {sdw, point3d};
 
+  std::cout << "3d coords" << ret.coord << std::endl;
   return ret;
 }
 
