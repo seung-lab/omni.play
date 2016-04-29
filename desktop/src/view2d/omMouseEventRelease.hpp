@@ -44,7 +44,7 @@ class OmMouseEventRelease {
         // fallthrough
     }
 
-    if (context->mouseReleaseEvent(event)) {
+    if (context && context->mouseReleaseEvent(event)) {
       //default camera control context
       return;
     }

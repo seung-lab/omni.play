@@ -66,7 +66,7 @@ class OmMouseEventPress {
         // fallthrough
     }
 
-    if (context->mousePressEvent(event)) {
+    if (context && context->mousePressEvent(event)) {
       return;
       //default camera control context
     }

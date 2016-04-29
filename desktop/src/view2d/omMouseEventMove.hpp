@@ -37,6 +37,7 @@ class OmMouseEventMove {
     setState(event);
 
     state_->SetMousePoint(event);
+
     std::unique_ptr<ControlContext> context;
     switch (tool_) {
       case om::tool::JOIN:
@@ -53,7 +54,7 @@ class OmMouseEventMove {
         break;
         // default camera context controls
     }
-    if (context->mouseMoveEvent(event)) {
+    if (context && context->mouseMoveEvent(event)) {
       return;
     }
 

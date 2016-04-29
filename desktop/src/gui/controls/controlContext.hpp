@@ -9,9 +9,11 @@ class ControlContext {
   // allow implementation cleanup
   virtual ~ControlContext() = default;
 
-  // prevent copying
+  // prevent copying (Rule of 5)
   ControlContext(ControlContext const &) = delete;
+  ControlContext(ControlContext &&) = delete;
   ControlContext& operator=(ControlContext const &) = delete;
+  ControlContext& operator=(ControlContext &&) = delete;
 
   /*
    * Virtual functions to handle every type of input.
