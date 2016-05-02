@@ -12,11 +12,11 @@ class JoiningSplittingInputContext
   public ViewStateInputContext,
   public FindSegment {
  public:
-  JoiningSplittingInputContext(OmViewGroupState* viewGroupState,
+  JoiningSplittingInputContext(OmViewGroupState& viewGroupState,
       om::tool::mode tool,
-      std::function<std::shared_ptr<SegmentDataWrapper>(int, int)>
+      std::function<boost::optional<SegmentDataWrapper>(int, int)>
         findSegmentFunction)
-    : ViewStateInputContext(viewGroupState, segmentDataWrapper), tool_(tool),
+    : ViewStateInputContext(viewGroupState), tool_(tool),
       FindSegment(findSegmentFunction) {
     }
 

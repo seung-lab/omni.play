@@ -48,11 +48,9 @@ TEST(omJoiningSplittingTest , testFirstBuffer) {
 
   // selecting to first buffer
   joiningSplitting.SelectSegment(om::tool::mode::JOIN,
-      std::make_unique<SegmentDataWrapper>(TEST_SEGMENTATION_ID,
-        TEST_SEGMENT_ID_A).get());
+      SegmentDataWrapper(TEST_SEGMENTATION_ID, TEST_SEGMENT_ID_A));
   joiningSplitting.SelectSegment(om::tool::mode::JOIN,
-      std::make_unique<SegmentDataWrapper>(TEST_SEGMENTATION_ID,
-        TEST_SEGMENT_ID_B).get());
+      SegmentDataWrapper(TEST_SEGMENTATION_ID, TEST_SEGMENT_ID_B));
 
   // test A and B were selected to the first buffer
   const om::common::SegIDSet& firstBuffer = joiningSplitting.FirstBuffer();
@@ -70,16 +68,13 @@ TEST(omJoiningSplittingTest , testSecondBuffer) {
 
   // selecting to first buffer
   joiningSplitting.SelectSegment(om::tool::mode::JOIN,
-      std::make_unique<SegmentDataWrapper>(TEST_SEGMENTATION_ID,
-        TEST_SEGMENT_ID_A).get());
+      SegmentDataWrapper(TEST_SEGMENTATION_ID, TEST_SEGMENT_ID_A));
 
   joiningSplitting.GoToNextState();
   joiningSplitting.SelectSegment(om::tool::mode::JOIN,
-      std::make_unique<SegmentDataWrapper>(TEST_SEGMENTATION_ID,
-        TEST_SEGMENT_ID_C).get());
+      SegmentDataWrapper(TEST_SEGMENTATION_ID, TEST_SEGMENT_ID_C));
   joiningSplitting.SelectSegment(om::tool::mode::JOIN,
-      std::make_unique<SegmentDataWrapper>(TEST_SEGMENTATION_ID,
-        TEST_SEGMENT_ID_D).get());
+      SegmentDataWrapper(TEST_SEGMENTATION_ID, TEST_SEGMENT_ID_D));
 
   // test C and D only found in first buffer
   const om::common::SegIDSet& firstBuffer = joiningSplitting.FirstBuffer();
@@ -99,22 +94,18 @@ TEST(omJoiningSplittingTest , testFinished) {
   OmJoiningSplitting joiningSplitting;
   // select to first buffer
   joiningSplitting.SelectSegment(om::tool::mode::JOIN,
-      std::make_unique<SegmentDataWrapper>(TEST_SEGMENTATION_ID,
-        TEST_SEGMENT_ID_A).get());
+      SegmentDataWrapper(TEST_SEGMENTATION_ID, TEST_SEGMENT_ID_A));
   joiningSplitting.SelectSegment(om::tool::mode::JOIN,
-      std::make_unique<SegmentDataWrapper>(TEST_SEGMENTATION_ID,
-        TEST_SEGMENT_ID_B).get());
+      SegmentDataWrapper(TEST_SEGMENTATION_ID, TEST_SEGMENT_ID_B));
 
   // advance to second buffer
   joiningSplitting.GoToNextState();
 
   // select to second buffer
   joiningSplitting.SelectSegment(om::tool::mode::JOIN,
-      std::make_unique<SegmentDataWrapper>(TEST_SEGMENTATION_ID,
-        TEST_SEGMENT_ID_C).get());
+      SegmentDataWrapper(TEST_SEGMENTATION_ID, TEST_SEGMENT_ID_C));
   joiningSplitting.SelectSegment(om::tool::mode::JOIN,
-      std::make_unique<SegmentDataWrapper>(TEST_SEGMENTATION_ID,
-        TEST_SEGMENT_ID_D).get());
+      SegmentDataWrapper(TEST_SEGMENTATION_ID, TEST_SEGMENT_ID_D));
   
   // this should set the data to be ready for consumption
   joiningSplitting.GoToNextState();
@@ -139,22 +130,18 @@ TEST(omJoiningSplittingTest , testFinishedRestart) {
   OmJoiningSplitting joiningSplitting;
   // select to first buffer
   joiningSplitting.SelectSegment(om::tool::mode::JOIN,
-      std::make_unique<SegmentDataWrapper>(TEST_SEGMENTATION_ID,
-        TEST_SEGMENT_ID_A).get());
+      SegmentDataWrapper(TEST_SEGMENTATION_ID, TEST_SEGMENT_ID_A));
   joiningSplitting.SelectSegment(om::tool::mode::JOIN,
-      std::make_unique<SegmentDataWrapper>(TEST_SEGMENTATION_ID,
-        TEST_SEGMENT_ID_B).get());
+      SegmentDataWrapper(TEST_SEGMENTATION_ID, TEST_SEGMENT_ID_B));
 
   // advance to second buffer
   joiningSplitting.GoToNextState();
 
   // select to second buffer
   joiningSplitting.SelectSegment(om::tool::mode::JOIN,
-      std::make_unique<SegmentDataWrapper>(TEST_SEGMENTATION_ID,
-        TEST_SEGMENT_ID_C).get());
+      SegmentDataWrapper(TEST_SEGMENTATION_ID, TEST_SEGMENT_ID_C));
   joiningSplitting.SelectSegment(om::tool::mode::JOIN,
-      std::make_unique<SegmentDataWrapper>(TEST_SEGMENTATION_ID,
-        TEST_SEGMENT_ID_D).get());
+      SegmentDataWrapper(TEST_SEGMENTATION_ID, TEST_SEGMENT_ID_D));
   
   // this should set the data to be ready for consumption
   joiningSplitting.GoToNextState();
@@ -176,27 +163,23 @@ TEST(omJoiningSplittingTest , testFinishedSelectAgain) {
   OmJoiningSplitting joiningSplitting;
   // select to first buffer
   joiningSplitting.SelectSegment(om::tool::mode::JOIN,
-      std::make_unique<SegmentDataWrapper>(TEST_SEGMENTATION_ID,
-        TEST_SEGMENT_ID_A).get());
+      SegmentDataWrapper(TEST_SEGMENTATION_ID, TEST_SEGMENT_ID_A));
 
   // advance to second buffer
   joiningSplitting.GoToNextState();
 
   // select to second buffer
   joiningSplitting.SelectSegment(om::tool::mode::JOIN,
-      std::make_unique<SegmentDataWrapper>(TEST_SEGMENTATION_ID,
-        TEST_SEGMENT_ID_B).get());
+      SegmentDataWrapper(TEST_SEGMENTATION_ID, TEST_SEGMENT_ID_B));
   
   // this should set the data to be ready for consumption
   joiningSplitting.GoToNextState();
 
   // this should reset the buffers as we are back into the first state
   joiningSplitting.SelectSegment(om::tool::mode::JOIN,
-      std::make_unique<SegmentDataWrapper>(TEST_SEGMENTATION_ID,
-        TEST_SEGMENT_ID_C).get());
+      SegmentDataWrapper(TEST_SEGMENTATION_ID, TEST_SEGMENT_ID_C));
   joiningSplitting.SelectSegment(om::tool::mode::JOIN,
-      std::make_unique<SegmentDataWrapper>(TEST_SEGMENTATION_ID,
-        TEST_SEGMENT_ID_D).get());
+      SegmentDataWrapper(TEST_SEGMENTATION_ID, TEST_SEGMENT_ID_D));
 
   // test C and D are added into the first buffer
   const om::common::SegIDSet firstBuffer = joiningSplitting.FirstBuffer();
@@ -217,19 +200,15 @@ TEST(omJoiningSplittingTest , testSwitchTools) {
 
   // select to first buffer for joining
   joiningSplitting.SelectSegment(om::tool::mode::JOIN,
-      std::make_unique<SegmentDataWrapper>(TEST_SEGMENTATION_ID,
-        TEST_SEGMENT_ID_A).get());
+      SegmentDataWrapper(TEST_SEGMENTATION_ID, TEST_SEGMENT_ID_A));
   joiningSplitting.SelectSegment(om::tool::mode::JOIN,
-      std::make_unique<SegmentDataWrapper>(TEST_SEGMENTATION_ID,
-        TEST_SEGMENT_ID_B).get());
+      SegmentDataWrapper(TEST_SEGMENTATION_ID, TEST_SEGMENT_ID_B));
 
   // reset buffer when tool switched to splitting
   joiningSplitting.SelectSegment(om::tool::mode::SPLIT,
-      std::make_unique<SegmentDataWrapper>(TEST_SEGMENTATION_ID,
-        TEST_SEGMENT_ID_C).get());
+      SegmentDataWrapper(TEST_SEGMENTATION_ID, TEST_SEGMENT_ID_C));
   joiningSplitting.SelectSegment(om::tool::mode::SPLIT,
-      std::make_unique<SegmentDataWrapper>(TEST_SEGMENTATION_ID,
-        TEST_SEGMENT_ID_D).get());
+      SegmentDataWrapper(TEST_SEGMENTATION_ID, TEST_SEGMENT_ID_D));
 
   // test to make sure buffers reflect only split segments
   const om::common::SegIDSet firstBuffer = joiningSplitting.FirstBuffer();
@@ -250,15 +229,13 @@ TEST(omJoiningSplittingTest , testIsFinished) {
 
   // first state is not finished
   joiningSplitting.SelectSegment(om::tool::mode::JOIN,
-      std::make_unique<SegmentDataWrapper>(TEST_SEGMENTATION_ID,
-        TEST_SEGMENT_ID_A).get());
+      SegmentDataWrapper(TEST_SEGMENTATION_ID, TEST_SEGMENT_ID_A));
   EXPECT_FALSE(joiningSplitting.IsFinished());
   
   // second state is not finished
   joiningSplitting.GoToNextState();
   joiningSplitting.SelectSegment(om::tool::mode::JOIN,
-      std::make_unique<SegmentDataWrapper>(TEST_SEGMENTATION_ID,
-        TEST_SEGMENT_ID_B).get());
+      SegmentDataWrapper(TEST_SEGMENTATION_ID, TEST_SEGMENT_ID_B));
   EXPECT_FALSE(joiningSplitting.IsFinished());
 
   // finished state is finished
@@ -267,8 +244,7 @@ TEST(omJoiningSplittingTest , testIsFinished) {
 
   // selecting automatically jumps first state which is not finished
   joiningSplitting.SelectSegment(om::tool::mode::JOIN,
-      std::make_unique<SegmentDataWrapper>(TEST_SEGMENTATION_ID,
-        TEST_SEGMENT_ID_B).get());
+      SegmentDataWrapper(TEST_SEGMENTATION_ID, TEST_SEGMENT_ID_B));
   EXPECT_FALSE(joiningSplitting.IsFinished());
 }
 
@@ -279,16 +255,14 @@ TEST(omJoiningSplittingTest , toolChangeEventSame) {
   OmJoiningSplitting joiningSplitting;
   // first state with split
   joiningSplitting.SelectSegment(om::tool::mode::SPLIT,
-      std::make_unique<SegmentDataWrapper>(TEST_SEGMENTATION_ID,
-        TEST_SEGMENT_ID_A).get());
+      SegmentDataWrapper(TEST_SEGMENTATION_ID, TEST_SEGMENT_ID_A));
 
   // this should have no affect
   joiningSplitting.ToolModeChangeEvent(om::tool::mode::SPLIT);
 
   // first state select some more
   joiningSplitting.SelectSegment(om::tool::mode::SPLIT,
-      std::make_unique<SegmentDataWrapper>(TEST_SEGMENTATION_ID,
-        TEST_SEGMENT_ID_B).get());
+      SegmentDataWrapper(TEST_SEGMENTATION_ID, TEST_SEGMENT_ID_B));
 
   // test A and B were selected to the first buffer
   const om::common::SegIDSet& firstBuffer = joiningSplitting.FirstBuffer();
@@ -305,15 +279,13 @@ TEST(omJoiningSplittingTest , toolChangeEventDifferent) {
   OmJoiningSplitting joiningSplitting;
   // first state with split
   joiningSplitting.SelectSegment(om::tool::mode::SPLIT,
-      std::make_unique<SegmentDataWrapper>(TEST_SEGMENTATION_ID,
-        TEST_SEGMENT_ID_A).get());
+      SegmentDataWrapper(TEST_SEGMENTATION_ID, TEST_SEGMENT_ID_A));
 
   // this should reset
   joiningSplitting.ToolModeChangeEvent(om::tool::mode::JOIN);
 
   joiningSplitting.SelectSegment(om::tool::mode::JOIN,
-      std::make_unique<SegmentDataWrapper>(TEST_SEGMENTATION_ID,
-        TEST_SEGMENT_ID_B).get());
+      SegmentDataWrapper(TEST_SEGMENTATION_ID, TEST_SEGMENT_ID_B));
 
   // test only B was selected to the first buffer
   const om::common::SegIDSet& firstBuffer = joiningSplitting.FirstBuffer();
@@ -331,15 +303,13 @@ TEST(omJoiningSplittingTest , toolChangeEventDifferentButOriginalTool) {
   OmJoiningSplitting joiningSplitting;
   // first state with split
   joiningSplitting.SelectSegment(om::tool::mode::SPLIT,
-      std::make_unique<SegmentDataWrapper>(TEST_SEGMENTATION_ID,
-        TEST_SEGMENT_ID_A).get());
+      SegmentDataWrapper(TEST_SEGMENTATION_ID, TEST_SEGMENT_ID_A));
 
   // this should reset
   joiningSplitting.ToolModeChangeEvent(om::tool::mode::JOIN);
 
   joiningSplitting.SelectSegment(om::tool::mode::SPLIT,
-      std::make_unique<SegmentDataWrapper>(TEST_SEGMENTATION_ID,
-        TEST_SEGMENT_ID_B).get());
+      SegmentDataWrapper(TEST_SEGMENTATION_ID, TEST_SEGMENT_ID_B));
 
   // test only B was selected to the first buffer
   const om::common::SegIDSet& firstBuffer = joiningSplitting.FirstBuffer();
@@ -357,16 +327,14 @@ TEST(omJoiningSplittingTest , toolChangeUnsupportedReturn) {
   OmJoiningSplitting joiningSplitting;
   // first state with join
   joiningSplitting.SelectSegment(om::tool::mode::JOIN,
-      std::make_unique<SegmentDataWrapper>(TEST_SEGMENTATION_ID,
-        TEST_SEGMENT_ID_A).get());
+      SegmentDataWrapper(TEST_SEGMENTATION_ID, TEST_SEGMENT_ID_A));
 
   // buffers no longer valid
   joiningSplitting.ToolModeChangeEvent(om::tool::mode::PAN);
 
   // first state again but now with split
   joiningSplitting.SelectSegment(om::tool::mode::JOIN,
-      std::make_unique<SegmentDataWrapper>(TEST_SEGMENTATION_ID,
-        TEST_SEGMENT_ID_B).get());
+      SegmentDataWrapper(TEST_SEGMENTATION_ID, TEST_SEGMENT_ID_B));
 
   // test to make sure only segments to split (B) are included
   const om::common::SegIDSet& firstBuffer = joiningSplitting.FirstBuffer();

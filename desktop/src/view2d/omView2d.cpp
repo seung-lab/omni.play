@@ -5,6 +5,9 @@
 #include "view2d/omView2dEvents.hpp"
 #include "view2d/omView2dZoom.hpp"
 #include "system/omStateManager.h"
+#include "gui/controls/inputContext.hpp"
+#include "gui/controls/joiningSplittingInputContext.hpp"
+#include "view2d/omMouseEventUtils.hpp"
 
 OmView2d::OmView2d(const om::common::ViewType viewtype, QWidget* parent,
                    OmViewGroupState& vgs, OmMipVolume& vol,
@@ -75,7 +78,7 @@ void OmView2d::keyReleaseEvent(QKeyEvent* event) {
   }
 }
 
-std::unique_ptr<InputContext> getToolInputContext() {
+std::unique_ptr<InputContext> OmView2d::getToolInputContext() {
   std::unique_ptr<InputContext> inputContext;
   om::tool::mode tool = OmStateManager::GetToolMode();
   switch (tool) {
@@ -83,21 +86,25 @@ std::unique_ptr<InputContext> getToolInputContext() {
     case om::tool::SPLIT:
     case om::tool::MULTISPLIT:
       return std::make_unique<JoiningSplittingInputContext>(
-          state_->GetViewGroupState(), tool,
+          state_->getViewGroupState(), tool,
           [=] (int x, int y) { return getSelectedSegment(x, y); });
     default:
       return inputContext;
   }
 }
 
-om::coords::Global getGlobalCoords(int x, int y) {
-  om::coords::Screen clicked(event->x(), event->y(), state_->Coords());
+boost::optional<om::coords::Global> OmView2d::getGlobalCoords(int x, int y) {
+  om::coords::Screen clicked(x, y, state_->Coords());
   return clicked.ToGlobal();
 }
 
-std::shared_ptr<SegmentDataWrapper> getSelectedSegment(int x, int y) {
-  return std::make_shared<SegmentDataWrapper>(
-    new om::mouse::utils::getSelectedSegment(*state_, getGlobalCoords(x, y)));
+boost::optional<SegmentDataWrapper> OmView2d::getSelectedSegment(int x, int y) {
+  boost::optional<SegmentDataWrapper> segmentDataWrapper;
+  boost::optional<om::coords::Global> global = getGlobalCoords(x, y);
+  if (global) {
+    segmentDataWrapper = om::mouse::event::getSelectedSegment(*state_, *global);
+  }
+  return segmentDataWrapper;
 }
 
 void OmView2d::ResetWidget() {

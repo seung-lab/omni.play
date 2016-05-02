@@ -10,7 +10,7 @@
 class FindGlobalCoordinates {
  public:
   FindGlobalCoordinates() {}
-  FindGlobalCoordinates(std::function<om::coords::Global(int, int)>
+  FindGlobalCoordinates(std::function<boost::optional<om::coords::Global>(int, int)>
       findGlobalCoordinatesFunction)
     : findGlobalCoordinatesFunction_(findGlobalCoordinatesFunction) {}
 
@@ -22,11 +22,11 @@ class FindGlobalCoordinates {
   FindGlobalCoordinates& operator=(FindGlobalCoordinates const &) = delete;
   FindGlobalCoordinates& operator=(FindGlobalCoordinates &&) = delete;
 
-  om::coords::Global findGlobalCoordinates(int x, int y) {
+  boost::optional<om::coords::Global> findGlobalCoordinates(int x, int y) {
     return findGlobalCoordinatesFunction_(x, y);
   }
 
  protected:
-  std::function<om::coords::Global(int, int)> 
+  std::function<boost::optional<om::coords::Global>(int, int)> 
     findGlobalCoordinatesFunction_;
 };

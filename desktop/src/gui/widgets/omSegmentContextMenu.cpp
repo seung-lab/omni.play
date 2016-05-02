@@ -145,16 +145,16 @@ void OmSegmentContextMenu::joinAllSelectedSegments() {
 }
 
 void OmSegmentContextMenu::joinThisSegment() {
-  om::JoinSplitRunner::SelectSegment(vgs_, om::tool::JOIN, &sdw_);
-  om::JoinSplitRunner::GoToNextState(vgs_, om::tool::JOIN);
+  om::JoinSplitRunner::SelectSegment(*vgs_, om::tool::JOIN, sdw_);
+  om::JoinSplitRunner::GoToNextState(*vgs_, om::tool::JOIN);
   // we send the event after so we don't run into a race condition with 
   // selecting a segment then resetting it immediately after
   OmStateManager::SetToolModeAndSendEvent(om::tool::JOIN);
 }
 
 void OmSegmentContextMenu::splitSegments() {
-  om::JoinSplitRunner::SelectSegment(vgs_, om::tool::SPLIT, &sdw_);
-  om::JoinSplitRunner::GoToNextState(vgs_, om::tool::SPLIT);
+  om::JoinSplitRunner::SelectSegment(*vgs_, om::tool::SPLIT, sdw_);
+  om::JoinSplitRunner::GoToNextState(*vgs_, om::tool::SPLIT);
   // we send the event after so we don't run into a race condition with 
   // selecting a segment then resetting it immediately after
   OmStateManager::SetToolModeAndSendEvent(om::tool::SPLIT);

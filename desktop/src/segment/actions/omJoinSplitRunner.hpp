@@ -13,8 +13,8 @@ namespace coords {
 }
 
 namespace JoinSplitRunner {
-  bool GoToNextState(OmViewGroupState* vgs, const om::tool::mode tool);
-  bool SelectSegment(OmViewGroupState* vgs, const om::tool::mode tool,
-    const SegmentDataWrapper* segmentDataWrapper);
+  bool GoToNextState(OmViewGroupState& vgs, const om::tool::mode tool);
+  bool SelectSegment(OmViewGroupState& vgs, const om::tool::mode tool,
+    boost::optional<SegmentDataWrapper> segmentDataWrapper);
 }
 }

@@ -4,9 +4,10 @@
 #include "view2d/omView2dState.hpp"
 #include "view2d/omView2dCore.h"
 #include "system/omStateManager.h"
+#include "gui/controls/inputContext.hpp"
+#include "coordinates/coordinates.h"
 
-class OmKeyEvents;
-class OmMouseEvents;
+class OmKeyEvents; class OmMouseEvents;
 class OmView2dEvents;
 class OmView2dZoom;
 class SegmentDataWrapper;
@@ -47,7 +48,8 @@ class OmView2d : public OmView2dCore {
   void wheelEvent(QWheelEvent *event);
   void enterEvent(QEvent *);
 
-  InputContext getToolInputContext();
+  // Get the tool input context ( if any applicable)
+  std::unique_ptr<InputContext> getToolInputContext();
 
   QSize sizeHint() const;
 #ifndef ZI_OS_MACOS
@@ -64,6 +66,16 @@ class OmView2d : public OmView2dCore {
   std::unique_ptr<OmView2dZoom> zoom_;
 
   void unlinkComplimentaryDock();
-  SegmentDataWrapper getSelectedSegment(int x, int y);
-  om::coords:Global getGlobalCoords(int x, int y);
+  /*
+   * Input: x, y coordinates of the screen
+   * Returns: optional containing the clicked segment wrapped in
+   *   a segmentDataWrapper if found
+   */
+  boost::optional<SegmentDataWrapper> getSelectedSegment(int x, int y);
+  /*
+   * Input: x, y coordinates of the screen
+   * Returns: optional containing the coordinates in global space
+   *   if found
+   */
+  boost::optional<om::coords::Global> getGlobalCoords(int x, int y);
 };

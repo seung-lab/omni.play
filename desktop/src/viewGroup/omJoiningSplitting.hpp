@@ -24,7 +24,7 @@ class OmJoiningSplitting : public om::event::ToolModeEventListener {
   // Activate the tool (if not activated already) and 
   // Select segment to the current segment buffer.
   void SelectSegment(const om::tool::mode tool,
-      const SegmentDataWrapper* segmentDataWrapper);
+      const SegmentDataWrapper segmentDataWrapper);
 
   /*
    * Get the next buffer ready to accept segments.

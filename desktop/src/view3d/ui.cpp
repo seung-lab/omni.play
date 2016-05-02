@@ -68,12 +68,12 @@ bool Ui::joinSplitModeSelectSegment(om::tool::mode tool, QMouseEvent* event) {
     return false;
   }
 
-  om::JoinSplitRunner::SelectSegment(&vgs_, tool, &pickPoint.sdw);
+  om::JoinSplitRunner::SelectSegment(vgs_, tool, pickPoint.sdw);
   return true;
 }
 
 void Ui::joinSplitModeMouseReleased(om::tool::mode tool, QMouseEvent* event) {
-  om::JoinSplitRunner::GoToNextState(&vgs_, tool);
+  om::JoinSplitRunner::GoToNextState(vgs_, tool);
 }
 
 bool Ui::validateModeMouseReleased(om::common::SetValid setValid, QMouseEvent* event) {

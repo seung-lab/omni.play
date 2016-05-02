@@ -58,9 +58,9 @@ void OmJoiningSplitting::ToolModeChangeEvent(const om::tool::mode eventTool) {
 
 // Activate this tool and notify listeners (buttons)
 void OmJoiningSplitting::SelectSegment(const om::tool::mode tool,
-    const SegmentDataWrapper* segmentDataWrapper) {
+    const SegmentDataWrapper segmentDataWrapper) {
   activateTool(tool);
-  bufferPointer_->insert(segmentDataWrapper->GetID());
+  bufferPointer_->insert(segmentDataWrapper.GetID());
 }
 
 void OmJoiningSplitting::GoToNextState() {

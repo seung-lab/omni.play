@@ -8,8 +8,7 @@
  */
 class ViewStateInputContext {
  public:
-  ViewStateInputContext(OmViewGroupState* viewGroupState,
-      SegmentDataWrapper* segmentDataWrapper)
+  ViewStateInputContext(OmViewGroupState& viewGroupState)
     : viewGroupState_(viewGroupState) {}
 
   // allow implementation cleanup
@@ -21,5 +20,5 @@ class ViewStateInputContext {
   ViewStateInputContext& operator=(ViewStateInputContext &&) = delete;
 
  protected:
-  OmViewGroupState* const viewGroupState_;
+  OmViewGroupState& viewGroupState_;
 };

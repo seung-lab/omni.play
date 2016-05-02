@@ -10,7 +10,7 @@ class FindSegment {
  public:
   FindSegment() {}
   FindSegment(std::function<
-      std::shared_ptr<SegmentDataWrapper>(int, int)> findSegmentFunction)
+      boost::optional<SegmentDataWrapper>(int, int)> findSegmentFunction)
     : findSegmentFunction_(findSegmentFunction) {}
 
   // allow implementation cleanup
@@ -21,10 +21,10 @@ class FindSegment {
   FindSegment& operator=(FindSegment const &) = delete;
   FindSegment& operator=(FindSegment &&) = delete;
 
-  std::shared_ptr<SegmentDataWrapper> findSegmentDataWrapper(int x, int y) {
+  boost::optional<SegmentDataWrapper> findSegmentDataWrapper(int x, int y) {
     return findSegmentFunction_(x, y);
   }
 
  protected:
-  std::function<std::shared_ptr<SegmentDataWrapper>(int, int)> findSegmentFunction_;
+  std::function<boost::optional<SegmentDataWrapper>(int, int)> findSegmentFunction_;
 };
