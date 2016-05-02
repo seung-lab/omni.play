@@ -3,9 +3,9 @@
 //#include "gui/controls/ToolControlContext.hpp"
 
 /*
- *class GrowControls : public ToolControlContext {
+ *class GrowControl : public ToolControlContext {
  * public:
- *  GrowControls(OmViewGroupState viewGroupState,
+ *  GrowControl(OmViewGroupState viewGroupState,
  *      SegmentDataWrapper SegmentDataWrapper)
  *    : ToolControlContext(viewGroupState, segmentDataWrapper,
  *        om::tool::mode::GROW) {

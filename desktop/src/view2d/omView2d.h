@@ -17,8 +17,7 @@ class OmView2d : public OmView2dCore {
  public:
   OmView2d(const om::common::ViewType, QWidget *, OmViewGroupState &,
            OmMipVolume &, const std::string &name);
-  ~OmView2d();
-
+  ~OmView2d(); 
   void SetComplimentaryDockWidget(QDockWidget *dock) {
     complimentaryDock_ = dock;
   }
@@ -48,6 +47,8 @@ class OmView2d : public OmView2dCore {
   void wheelEvent(QWheelEvent *event);
   void enterEvent(QEvent *);
 
+  InputContext getToolInputContext();
+
   QSize sizeHint() const;
 #ifndef ZI_OS_MACOS
   virtual void paintGL();
@@ -63,4 +64,6 @@ class OmView2d : public OmView2dCore {
   std::unique_ptr<OmView2dZoom> zoom_;
 
   void unlinkComplimentaryDock();
+  SegmentDataWrapper getSelectedSegment(int x, int y);
+  om::coords:Global getGlobalCoords(int x, int y);
 };

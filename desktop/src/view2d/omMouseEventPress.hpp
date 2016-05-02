@@ -7,8 +7,8 @@
 #include "gui/widgets/omAskYesNoQuestion.hpp"
 #include "gui/widgets/omSegmentContextMenu.h"
 #include "gui/widgets/omTellInfo.hpp"
-#include "gui/controls/controlContext.hpp"
-#include "gui/controls/joiningSplittingControls.hpp"
+#include "gui/controls/inputContext.hpp"
+#include "gui/controls/joiningSplittingInputContext.hpp"
 #include "landmarks/omLandmarks.hpp"
 #include "view2d/brush/omBrushSelect.hpp"
 #include "view2d/omFillTool.hpp"
@@ -49,13 +49,13 @@ class OmMouseEventPress {
     state_->SetMousePanStartingPt(
         om::coords::Screen(event->x(), event->y(), state_->Coords()));
 
-    std::unique_ptr<ControlContext> context;
+    std::unique_ptr<InputContext> inputContext;
     switch (tool_) {
       case om::tool::JOIN:
       case om::tool::SPLIT:
       case om::tool::MULTISPLIT:
-        context = std::unique_ptr<ControlContext> {
-          std::make_unique<JoiningSplittingControls>(
+        inputContext = std::unique_ptr<InputContext> {
+          std::make_unique<JoiningSplittingInputContext>(
               &state_->getViewGroupState(), 
               om::mouse::event::getSelectedSegment(
                 *state_, dataClickPoint_).get_ptr(),
@@ -66,7 +66,7 @@ class OmMouseEventPress {
         // fallthrough
     }
 
-    if (context && context->mousePressEvent(event)) {
+    if (inputContext && inputContext->mousePressEvent(event)) {
       return;
       //default camera control context
     }

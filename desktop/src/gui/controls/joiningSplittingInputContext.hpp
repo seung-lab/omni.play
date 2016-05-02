@@ -1,17 +1,23 @@
 #pragma once
 #include "precomp.h"
-#include "gui/controls/controlContext.hpp"
-#include "gui/controls/viewStateControl.hpp"
-#include "gui/controls/findSegmentControl.hpp"
+#include "gui/controls/inputContext.hpp"
+#include "gui/controls/viewStateInputContext.hpp"
+#include "gui/controls/findSegment.hpp"
+#include "gui/controls/findGlobalCoordinates.hpp"
 #include "viewGroup/omViewGroupState.h"
 #include "utility/dataWrappers.h"
 
-class JoiningSplittingControls : public ControlContext,
-  public ViewStateControl, public FindSegmentControl {
+class JoiningSplittingInputContext
+: public InputContext,
+  public ViewStateInputContext,
+  public FindSegment {
  public:
-  JoiningSplittingControls(OmViewGroupState* viewGroupState,
-      SegmentDataWrapper* segmentDataWrapper, om::tool::mode tool)
-    : ViewStateControl(viewGroupState, segmentDataWrapper), tool_(tool) {
+  JoiningSplittingInputContext(OmViewGroupState* viewGroupState,
+      om::tool::mode tool,
+      std::function<std::shared_ptr<SegmentDataWrapper>(int, int)>
+        findSegmentFunction)
+    : ViewStateInputContext(viewGroupState, segmentDataWrapper), tool_(tool),
+      FindSegment(findSegmentFunction) {
     }
 
 /*

@@ -9,8 +9,8 @@
 #include "view2d/omMouseEventUtils.hpp"
 #include "view2d/omView2d.h"
 #include "view2d/omView2dState.hpp"
-#include "gui/controls/controlContext.hpp"
-#include "gui/controls/joiningSplittingControls.hpp"
+#include "gui/controls/inputContext.hpp"
+#include "gui/controls/joiningSplittingInputContext.hpp"
 
 class OmMouseEventMove {
  private:
@@ -38,13 +38,13 @@ class OmMouseEventMove {
 
     state_->SetMousePoint(event);
 
-    std::unique_ptr<ControlContext> context;
+    std::unique_ptr<InputContext> inputContext;
     switch (tool_) {
       case om::tool::JOIN:
       case om::tool::SPLIT:
       case om::tool::MULTISPLIT:
-        context = std::unique_ptr<ControlContext> {
-          std::make_unique<JoiningSplittingControls>(
+        inputContext = std::unique_ptr<InputContext> {
+          std::make_unique<JoiningSplittingInputContext>(
               &state_->getViewGroupState(),
               om::mouse::event::getSelectedSegment(
                 *state_, dataClickPoint_).get_ptr(),
@@ -52,9 +52,9 @@ class OmMouseEventMove {
         break;
       default:
         break;
-        // default camera context controls
+        // default camera inputContext controls
     }
-    if (context && context->mouseMoveEvent(event)) {
+    if (inputContext && inputContext->mouseMoveEvent(event)) {
       return;
     }
 

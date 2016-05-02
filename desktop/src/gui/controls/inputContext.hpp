@@ -4,15 +4,15 @@
 /*
  * The tool mode is the input context for control.
  */
-class ControlContext {
+class InputContext {
  public:
   // allow implementation cleanup
-  virtual ~ControlContext() = default;
+  virtual ~InputContext() = default;
   // prevent copying (Rule of 5)
-  ControlContext(ControlContext const &) = delete;
-  ControlContext(ControlContext &&) = delete;
-  ControlContext& operator=(ControlContext const &) = delete;
-  ControlContext& operator=(ControlContext &&) = delete;
+  InputContext(InputContext const &) = delete;
+  InputContext(InputContext &&) = delete;
+  InputContext& operator=(InputContext const &) = delete;
+  InputContext& operator=(InputContext &&) = delete;
 
   /*
    * Virtual functions to handle every type of input.
@@ -30,5 +30,5 @@ class ControlContext {
 
  protected:
   // disallow base class construction
-  ControlContext() {}
+  InputContext() {}
 };

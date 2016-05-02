@@ -6,22 +6,22 @@
 /*
  * Decorator to allow finding segmentDataWrapper for input x,y
  */
-class FindSegmentControl {
+class FindSegment {
  public:
-  FindSegmentControl() {}
-  FindSegmentControl(std::function<
+  FindSegment() {}
+  FindSegment(std::function<
       std::shared_ptr<SegmentDataWrapper>(int, int)> findSegmentFunction)
     : findSegmentFunction_(findSegmentFunction) {}
 
   // allow implementation cleanup
-  virtual ~FindSegmentControl() = default;
+  virtual ~FindSegment() = default;
   // prevent copying (Rule of 5)
-  FindSegmentControl(FindSegmentControl const &) = delete;
-  FindSegmentControl(FindSegmentControl &&) = delete;
-  FindSegmentControl& operator=(FindSegmentControl const &) = delete;
-  FindSegmentControl& operator=(FindSegmentControl &&) = delete;
+  FindSegment(FindSegment const &) = delete;
+  FindSegment(FindSegment &&) = delete;
+  FindSegment& operator=(FindSegment const &) = delete;
+  FindSegment& operator=(FindSegment &&) = delete;
 
-  std::shared_ptr<SegmentDataWrapper> getSegmentDataWrapper(int x, int y) {
+  std::shared_ptr<SegmentDataWrapper> findSegmentDataWrapper(int x, int y) {
     return findSegmentFunction_(x, y);
   }
 

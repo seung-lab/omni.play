@@ -75,6 +75,31 @@ void OmView2d::keyReleaseEvent(QKeyEvent* event) {
   }
 }
 
+std::unique_ptr<InputContext> getToolInputContext() {
+  std::unique_ptr<InputContext> inputContext;
+  om::tool::mode tool = OmStateManager::GetToolMode();
+  switch (tool) {
+    case om::tool::JOIN:
+    case om::tool::SPLIT:
+    case om::tool::MULTISPLIT:
+      return std::make_unique<JoiningSplittingInputContext>(
+          state_->GetViewGroupState(), tool,
+          [=] (int x, int y) { return getSelectedSegment(x, y); });
+    default:
+      return inputContext;
+  }
+}
+
+om::coords::Global getGlobalCoords(int x, int y) {
+  om::coords::Screen clicked(event->x(), event->y(), state_->Coords());
+  return clicked.ToGlobal();
+}
+
+std::shared_ptr<SegmentDataWrapper> getSelectedSegment(int x, int y) {
+  return std::make_shared<SegmentDataWrapper>(
+    new om::mouse::utils::getSelectedSegment(*state_, getGlobalCoords(x, y)));
+}
+
 void OmView2d::ResetWidget() {
   state_->ResetWindowState();
   om::event::ViewCenterChanged();
