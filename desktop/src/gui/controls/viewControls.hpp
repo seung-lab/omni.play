@@ -1,22 +1,52 @@
 #pragma once
 
 #include "viewGroup/omViewGroupState.h"
+#include "gui/controls/inputContext.hpp"
 #include "gui/viewGroup/viewInputConversion.hpp"
 #include "gui/controls/joiningSplittingInputContext.hpp"
 
 class ViewControls {
  public:
   ViewControls(ViewInputConversion* viewInputConversion,
-      OmViewGroupState& viewGroupState)
+      OmViewGroupState* viewGroupState)
     : viewInputConversion_(viewInputConversion),
       viewGroupState_(viewGroupState) {}
 
-  void keyPressEvent(QKeyEvent* keyEvent);
-  void keyReleaseEvent(QKeyEvent* keyEvent);
-  void mouseMoveEvent(QMouseEvent* mouseEvent);
-  void mousePressEvent(QMouseEvent* mouseEvent);
-  void mouseReleaseEvent(QMouseEvent* mouseEvent);
-  void wheelEvent(QWheelEvent* mouseEvent);
+  bool keyPressEvent(QKeyEvent* keyEvent) {
+    return runEventAction([&keyEvent] (InputContext& inputContext) {
+          return inputContext.keyPressEvent(keyEvent);
+        });
+  }
+
+  bool keyReleaseEvent(QKeyEvent* keyEvent) {
+    return runEventAction([&keyEvent] (InputContext& inputContext) {
+          return inputContext.keyReleaseEvent(keyEvent);
+        });
+  }
+
+  bool mouseMoveEvent(QMouseEvent* mouseEvent) {
+    return runEventAction([&mouseEvent] (InputContext& inputContext) {
+          return inputContext.mouseMoveEvent(mouseEvent);
+        });
+  }
+
+  bool mousePressEvent(QMouseEvent* mouseEvent) {
+    return runEventAction([&mouseEvent] (InputContext& inputContext) {
+          return inputContext.mousePressEvent(mouseEvent);
+        });
+  }
+
+  bool mouseReleaseEvent(QMouseEvent* mouseEvent) {
+    return runEventAction([&mouseEvent] (InputContext& inputContext) {
+          return inputContext.mouseReleaseEvent(mouseEvent);
+        });
+  }
+
+  bool wheelEvent(QWheelEvent* wheelEvent) {
+    return runEventAction([&wheelEvent] (InputContext& inputContext) {
+          inputContext.wheelEvent(wheelEvent);
+        });
+  }
 
  private:
   std::unique_ptr<InputContext> getToolInputContext() {
@@ -36,6 +66,14 @@ class ViewControls {
     }
   }
 
+  bool runEventAction(std::function<bool(InputContext&)> eventAction) {
+    std::unique_ptr<InputContext> inputContext = getToolInputContext();
+    if (inputContext) {
+      return eventAction(*inputContext);
+    }
+    return false;
+  }
+
   ViewInputConversion* viewInputConversion_;
-  OmViewGroupState& viewGroupState_;
+  OmViewGroupState* viewGroupState_;
 };

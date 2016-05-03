@@ -19,7 +19,7 @@ OmView2d::OmView2d(const om::common::ViewType viewtype, QWidget* parent,
       keyEvents_(new OmKeyEvents(this, state_)),
       events_(new OmView2dEvents(this, state_)),
       zoom_(new OmView2dZoom(*state_)),
-      viewControls(new ViewControls(this, state_->getViewGroupState())) {
+      viewControls_(new ViewControls(this, &state_->getViewGroupState())) {
   setFocusPolicy(Qt::ClickFocus);  // necessary for receiving keyboard events
   setMouseTracking(true);          // necessary for mouse-centered zooming
   setAutoFillBackground(false);  // necessary for proper QPainter functionality
@@ -56,26 +56,48 @@ void OmView2d::RedrawBlocking() {
 QSize OmView2d::sizeHint() const { return OmAppState::GetViewBoxSizeHint(); }
 
 void OmView2d::mousePressEvent(QMouseEvent* event) {
-  mouseEvents_->Press(event);
+  if (!viewControls_->mousePressEvent(event)) {
+    mouseEvents_->Press(event);
+    //event->ignore();
+  }
 }
 
-void OmView2d::wheelEvent(QWheelEvent* event) { mouseEvents_->Wheel(event); }
+void OmView2d::wheelEvent(QWheelEvent* event) {
+  if (!viewControls_->wheelEvent(event)) {
+    mouseEvents_->Wheel(event);
+    //event->ignore();
+  }
+}
 
-void OmView2d::mouseMoveEvent(QMouseEvent* event) { mouseEvents_->Move(event); }
+void OmView2d::mouseMoveEvent(QMouseEvent* event) {
+  if (!viewControls_->mouseMoveEvent(event)) {
+    mouseEvents_->Move(event);
+    //event->ignore();
+  }
 
 void OmView2d::mouseReleaseEvent(QMouseEvent* event) {
-  mouseEvents_->Release(event);
+  if (!viewControls_->mouseReleaseEvent(event)) {
+    mouseEvents_->Release(event);
+    //event->ignore();
+  }
 }
 
 void OmView2d::keyPressEvent(QKeyEvent* event) {
-  if (!keyEvents_->Press(event)) {
-    QWidget::keyPressEvent(event);
+  if (!viewControls_->keyPressEvent(event)) {
+    keyEvents_->Press(event);
+    if (!keyEvents_->Press(event)) {
+      QWidget::keyPressEvent(event);
+    }
+    //event->ignore();
   }
 }
 
 void OmView2d::keyReleaseEvent(QKeyEvent* event) {
-  if (!keyEvents_->Release(event)) {
-    QWidget::keyReleaseEvent(event);
+  if (!viewControls_->keyReleaseEvent(event)) {
+    if (!keyEvents_->Release(event)) {
+      QWidget::keyReleaseEvent(event);
+    }
+    //event->ignore();
   }
 }
 

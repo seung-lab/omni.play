@@ -8,7 +8,7 @@
  */
 class ViewStateInputContext {
  public:
-  ViewStateInputContext(OmViewGroupState& viewGroupState)
+  ViewStateInputContext(OmViewGroupState* viewGroupState)
     : viewGroupState_(viewGroupState) {}
 
   // allow implementation cleanup
@@ -20,5 +20,5 @@ class ViewStateInputContext {
   ViewStateInputContext& operator=(ViewStateInputContext &&) = delete;
 
  protected:
-  OmViewGroupState& viewGroupState_;
+  OmViewGroupState* viewGroupState_;
 };
