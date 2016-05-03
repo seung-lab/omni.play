@@ -18,7 +18,8 @@ OmView2d::OmView2d(const om::common::ViewType viewtype, QWidget* parent,
       mouseEvents_(new OmMouseEvents(this, state_)),
       keyEvents_(new OmKeyEvents(this, state_)),
       events_(new OmView2dEvents(this, state_)),
-      zoom_(new OmView2dZoom(*state_)) {
+      zoom_(new OmView2dZoom(this, *state_)),
+      viewControls(new ViewControls(state_->getViewGroupState())) {
   setFocusPolicy(Qt::ClickFocus);  // necessary for receiving keyboard events
   setMouseTracking(true);          // necessary for mouse-centered zooming
   setAutoFillBackground(false);  // necessary for proper QPainter functionality
@@ -78,20 +79,6 @@ void OmView2d::keyReleaseEvent(QKeyEvent* event) {
   }
 }
 
-std::unique_ptr<InputContext> OmView2d::getToolInputContext() {
-  std::unique_ptr<InputContext> inputContext;
-  om::tool::mode tool = OmStateManager::GetToolMode();
-  switch (tool) {
-    case om::tool::JOIN:
-    case om::tool::SPLIT:
-    case om::tool::MULTISPLIT:
-      return std::make_unique<JoiningSplittingInputContext>(
-          state_->getViewGroupState(), tool,
-          [=] (int x, int y) { return getSelectedSegment(x, y); });
-    default:
-      return inputContext;
-  }
-}
 
 boost::optional<om::coords::Global> OmView2d::getGlobalCoords(int x, int y) {
   om::coords::Screen clicked(x, y, state_->Coords());

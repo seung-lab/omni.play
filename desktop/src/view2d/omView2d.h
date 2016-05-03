@@ -64,6 +64,7 @@ class OmView2d : public OmView2dCore {
   std::unique_ptr<OmKeyEvents> keyEvents_;
   std::unique_ptr<OmView2dEvents> events_;
   std::unique_ptr<OmView2dZoom> zoom_;
+  ViewControls *viewControls;
 
   void unlinkComplimentaryDock();
   /*
