@@ -6,13 +6,15 @@
 #include "system/omStateManager.h"
 #include "gui/controls/inputContext.hpp"
 #include "coordinates/coordinates.h"
+#include "gui/viewGroup/viewInputConversion.hpp"
+#include "gui/controls/viewControls.hpp"
 
 class OmKeyEvents; class OmMouseEvents;
 class OmView2dEvents;
 class OmView2dZoom;
 class SegmentDataWrapper;
 
-class OmView2d : public OmView2dCore {
+class OmView2d : public OmView2dCore, public ViewInputConversion {
   Q_OBJECT;
 
  public:
@@ -36,6 +38,11 @@ class OmView2d : public OmView2dCore {
 
   void Redraw();
   void RedrawBlocking();
+
+  virtual boost::optional<SegmentDataWrapper>
+    GetSelectedSegment(int x, int y) override;
+  virtual boost::optional<om::coords::Global>
+    GetGlobalCoords(int x, int y) override;
 
  protected:
   void keyPressEvent(QKeyEvent *event);
@@ -67,16 +74,4 @@ class OmView2d : public OmView2dCore {
   ViewControls *viewControls;
 
   void unlinkComplimentaryDock();
-  /*
-   * Input: x, y coordinates of the screen
-   * Returns: optional containing the clicked segment wrapped in
-   *   a segmentDataWrapper if found
-   */
-  boost::optional<SegmentDataWrapper> getSelectedSegment(int x, int y);
-  /*
-   * Input: x, y coordinates of the screen
-   * Returns: optional containing the coordinates in global space
-   *   if found
-   */
-  boost::optional<om::coords::Global> getGlobalCoords(int x, int y);
 };

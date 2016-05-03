@@ -18,8 +18,8 @@ OmView2d::OmView2d(const om::common::ViewType viewtype, QWidget* parent,
       mouseEvents_(new OmMouseEvents(this, state_)),
       keyEvents_(new OmKeyEvents(this, state_)),
       events_(new OmView2dEvents(this, state_)),
-      zoom_(new OmView2dZoom(this, *state_)),
-      viewControls(new ViewControls(state_->getViewGroupState())) {
+      zoom_(new OmView2dZoom(*state_)),
+      viewControls(new ViewControls(this, state_->getViewGroupState())) {
   setFocusPolicy(Qt::ClickFocus);  // necessary for receiving keyboard events
   setMouseTracking(true);          // necessary for mouse-centered zooming
   setAutoFillBackground(false);  // necessary for proper QPainter functionality
@@ -80,14 +80,14 @@ void OmView2d::keyReleaseEvent(QKeyEvent* event) {
 }
 
 
-boost::optional<om::coords::Global> OmView2d::getGlobalCoords(int x, int y) {
+boost::optional<om::coords::Global> OmView2d::GetGlobalCoords(int x, int y) {
   om::coords::Screen clicked(x, y, state_->Coords());
   return clicked.ToGlobal();
 }
 
-boost::optional<SegmentDataWrapper> OmView2d::getSelectedSegment(int x, int y) {
+boost::optional<SegmentDataWrapper> OmView2d::GetSelectedSegment(int x, int y) {
   boost::optional<SegmentDataWrapper> segmentDataWrapper;
-  boost::optional<om::coords::Global> global = getGlobalCoords(x, y);
+  boost::optional<om::coords::Global> global = GetGlobalCoords(x, y);
   if (global) {
     segmentDataWrapper = om::mouse::event::getSelectedSegment(*state_, *global);
   }
