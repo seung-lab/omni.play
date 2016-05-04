@@ -5,9 +5,8 @@
 #include "view2d/omView2dEvents.hpp"
 #include "view2d/omView2dZoom.hpp"
 #include "system/omStateManager.h"
-#include "gui/controls/inputContext.hpp"
-#include "gui/controls/joiningSplittingInputContext.hpp"
 #include "view2d/omMouseEventUtils.hpp"
+#include "gui/controls/viewControls.hpp"
 
 OmView2d::OmView2d(const om::common::ViewType viewtype, QWidget* parent,
                    OmViewGroupState& vgs, OmMipVolume& vol,
@@ -19,7 +18,7 @@ OmView2d::OmView2d(const om::common::ViewType viewtype, QWidget* parent,
       keyEvents_(new OmKeyEvents(this, state_)),
       events_(new OmView2dEvents(this, state_)),
       zoom_(new OmView2dZoom(*state_)),
-      viewControls_(new ViewControls(this, &state_->getViewGroupState())) {
+      viewControls_(new ViewControls(this, &vgs)) {
   setFocusPolicy(Qt::ClickFocus);  // necessary for receiving keyboard events
   setMouseTracking(true);          // necessary for mouse-centered zooming
   setAutoFillBackground(false);  // necessary for proper QPainter functionality
