@@ -4,6 +4,8 @@
 #include "gui/controls/inputContext.hpp"
 #include "gui/viewGroup/viewInputConversion.hpp"
 #include "gui/controls/joiningSplittingInputContext.hpp"
+#include "system/omStateManager.h"
+#include "gui/controls/viewControls.hpp"
 
 class ViewControls {
  public:
@@ -39,6 +41,12 @@ class ViewControls {
   bool mouseReleaseEvent(QMouseEvent* mouseEvent) {
     return runEventAction([&mouseEvent] (InputContext& inputContext) {
           return inputContext.mouseReleaseEvent(mouseEvent);
+        });
+  }
+
+  bool mouseDoubleClickEvent(QMouseEvent* mouseEvent) {
+    return runEventAction([&mouseEvent] (InputContext& inputContext) {
+          return inputContext.mouseDoubleClickEvent(mouseEvent);
         });
   }
 

@@ -1,5 +1,11 @@
 #pragma once
 
+class SegmentDataWrapper;
+namespace om {
+  namespace coords {
+    class Global;
+  }
+}
 class ViewInputConversion {
  public:
   virtual ~ViewInputConversion() = default;

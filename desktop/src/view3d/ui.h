@@ -10,6 +10,7 @@ class sdwAndPt;
 }
 }
 class OmViewGroupState;
+class ViewControls;
 
 namespace om {
 namespace v3d {
@@ -36,6 +37,7 @@ class Ui {
   View3d& view3d_;
   OmViewGroupState& vgs_;
   std::unique_ptr<MacOSXGestures> macGestures_;
+  std::unique_ptr<ViewControls> viewControls_;
   OmSegmentContextMenu segmentContextMenu_;
   SegmentDataWrapper prevSDW_;
 

@@ -2,6 +2,8 @@
 #include "precomp.h"
 
 #include "common/common.h"
+#include "gui/viewGroup/viewInputConversion.hpp"
+#include "gui/controls/viewControls.hpp"
 
 class SegmentDataWrapper;
 class OmSegmentation;
@@ -21,7 +23,7 @@ class OmniEventListener;
 class Ui;
 class Widgets;
 
-class View3d : public QGLWidget {
+class View3d : public QGLWidget, public ViewInputConversion {
   Q_OBJECT;
 
  public:
@@ -36,8 +38,10 @@ class View3d : public QGLWidget {
   const std::vector<OmSegmentation*>& Segmentations() { return segmentations_; }
 
   // gl actions
-  SegmentDataWrapper PickPoint(const Vector2i&);
-  bool UnprojectPoint(Vector2i, Vector3f&);
+  virtual boost::optional<SegmentDataWrapper>
+    GetSelectedSegment(int x, int y) override;
+  virtual boost::optional<om::coords::Global>
+    GetGlobalCoords(int x, int y) override;
 
   void DoZoom(const int direction);
   void DrawChunkBoundaries();
@@ -60,7 +64,6 @@ class View3d : public QGLWidget {
   void mouseReleaseEvent(QMouseEvent*);
   void mouseMoveEvent(QMouseEvent*);
   void mouseDoubleClickEvent(QMouseEvent*);
-  void mouseWheelEvent(QWheelEvent*);
   void wheelEvent(QWheelEvent*);
   void keyPressEvent(QKeyEvent*);
   bool event(QEvent*);
@@ -79,6 +82,7 @@ class View3d : public QGLWidget {
   std::unique_ptr<DrawStatus> drawStatus_;
   std::unique_ptr<Camera> camera_;
   std::unique_ptr<OmniEventListener> omniEventListener_;
+  std::unique_ptr<ViewControls> viewControls_;
   const std::vector<OmSegmentation*> segmentations_;
   OmViewGroupState& vgs_;
   std::unique_ptr<Drawer> drawer_;

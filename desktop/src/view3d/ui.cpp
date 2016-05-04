@@ -122,15 +122,16 @@ bool Ui::grow(bool isTrim, QMouseEvent* event) {
 }
 
 bool Ui::cutSegment(QMouseEvent* event) {
-  const SegmentDataWrapper sdw = pickSegmentMouse(event, false);
+  boost::optional<SegmentDataWrapper> segmentDataWrapper =
+    view3d_.GetSelectedSegment(event->x(), event->y());
 
   view3d_.updateGL();
 
-  if (!sdw.IsSegmentValid()) {
+  if (!segmentDataWrapper || !segmentDataWrapper->IsSegmentValid()) {
     return false;
   }
 
-  OmActions::CutSegment(sdw);
+  OmActions::CutSegment(*segmentDataWrapper);
   return true;
 }
 
@@ -183,13 +184,13 @@ void Ui::navigationModeMousePressed(QMouseEvent* event) {
           vgs_.Landmarks().Add(pickPoint.sdw, pickPoint.coord);
           return;
         }
-      case om::tool::mode::SPLIT:
-      case om::tool::mode::JOIN:
-      case om::tool::MULTISPLIT:
-        if (joinSplitModeSelectSegment(toolMode, event)) {
-          return;
-        }
-        break;
+      //case om::tool::mode::SPLIT:
+      //case om::tool::mode::JOIN:
+      //case om::tool::MULTISPLIT:
+        //if (joinSplitModeSelectSegment(toolMode, event)) {
+          //return;
+        //}
+        //break;
       case om::tool::mode::VALIDATE:
         om::common::SetValid setValid;
         if (controlModifier) {
@@ -273,13 +274,13 @@ void Ui::doSelectSegment(const SegmentDataWrapper& sdw,
 
 void Ui::navigationModeMouseRelease(QMouseEvent* event) {
   const auto toolMode = OmStateManager::GetToolMode();
-  switch (toolMode) {
-    case om::tool::JOIN:
-    case om::tool::SPLIT:
-    case om::tool::MULTISPLIT:
-      joinSplitModeMouseReleased(toolMode, event);
-      break;
-  }
+  //switch (toolMode) {
+    //case om::tool::JOIN:
+    //case om::tool::SPLIT:
+    //case om::tool::MULTISPLIT:
+      //joinSplitModeMouseReleased(toolMode, event);
+      //break;
+  //}
   cameraMovementMouseEnd(event);
 }
 
@@ -293,13 +294,13 @@ void Ui::navigationModeMouseMove(QMouseEvent* event) {
     return;
   }
 
-  switch(tool) {
-    case om::tool::JOIN:
-    case om::tool::SPLIT:
-    case om::tool::MULTISPLIT:
-      joinSplitModeSelectSegment(tool, event);
-      break;
-  }
+  //switch(tool) {
+    //case om::tool::JOIN:
+    //case om::tool::SPLIT:
+    //case om::tool::MULTISPLIT:
+      //joinSplitModeSelectSegment(tool, event);
+      //break;
+  //}
 }
 
 void Ui::navigationModeMouseDoubleClick(QMouseEvent* event) {
@@ -371,28 +372,6 @@ void Ui::cameraMovementMouseWheel(QWheelEvent* event) {
 }
 
 /////////////////////////////////
-///////          Segment Picking
-
-SegmentDataWrapper Ui::pickSegmentMouse(QMouseEvent* event, const bool drag) {
-  // extract event properties
-  Vector2i Vector2i(event->x(), event->y());
-
-  const SegmentDataWrapper sdw = view3d_.PickPoint(Vector2i);
-  if (!sdw.IsSegmentValid()) {
-    return SegmentDataWrapper();
-  }
-
-  // check if dragging
-  if (drag && sdw == prevSDW_) {
-    return SegmentDataWrapper();
-  } else {
-    prevSDW_ = sdw;
-  }
-
-  return sdw;
-}
-
-/////////////////////////////////
 ///////           Segment Context Menu
 
 void Ui::showSegmentContextMenu(QMouseEvent* event) {
@@ -438,25 +417,25 @@ void Ui::crosshair(QMouseEvent* event) {
 }
 
 om::landmarks::sdwAndPt Ui::pickVoxelMouseCrosshair(QMouseEvent* event) {
-  // extract event properties
-  const Vector2i vec(event->x(), event->y());
-
   view3d_.updateGL();
 
-  const SegmentDataWrapper sdw = view3d_.PickPoint(vec);
-  if (!sdw.IsSegmentValid()) {
-    return om::landmarks::sdwAndPt();
+  om::landmarks::sdwAndPt sdwAndPt;
+
+  boost::optional<SegmentDataWrapper> segmentDataWrapper =
+    view3d_.GetSelectedSegment(event->x(), event->y());
+  if (!segmentDataWrapper || !segmentDataWrapper->IsSegmentValid()) {
+    return sdwAndPt;
   }
 
-  Vector3f point3d;
-  if (!view3d_.UnprojectPoint(vec, point3d)) {
-    return om::landmarks::sdwAndPt();
+  boost::optional<om::coords::Global> globalCoords;
+  globalCoords = view3d_.GetGlobalCoords(event->x(), event->y());
+  if (!globalCoords) {
+    return sdwAndPt;
   }
 
-  om::landmarks::sdwAndPt ret = {sdw, point3d};
+  sdwAndPt = {*segmentDataWrapper, *globalCoords};
 
-  std::cout << "3d coords" << ret.coord << std::endl;
-  return ret;
+  return sdwAndPt;
 }
 
 void Ui::resetWindow() {

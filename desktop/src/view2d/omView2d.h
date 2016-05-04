@@ -20,7 +20,7 @@ class OmView2d : public OmView2dCore, public ViewInputConversion {
  public:
   OmView2d(const om::common::ViewType, QWidget *, OmViewGroupState &,
            OmMipVolume &, const std::string &name);
-  ~OmView2d(); 
+  ~OmView2d();
   void SetComplimentaryDockWidget(QDockWidget *dock) {
     complimentaryDock_ = dock;
   }

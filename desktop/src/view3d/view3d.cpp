@@ -15,6 +15,7 @@
 #include "viewGroup/omViewGroupState.h"
 #include "volume/omSegmentation.h"
 #include "widgets/widgets.hpp"
+#include "gui/controls/viewControls.hpp"
 
 DECLARE_ZiARG_bool(noView3dThrottle);
 
@@ -39,7 +40,7 @@ View3d::View3d(QWidget* parent, OmViewGroupState& vgs)
       camera_(new Camera()),
       omniEventListener_(new OmniEventListener(*this, vgs)),
       segmentations_(SegmentationDataWrapper::GetPtrVec()),
-      vgs_(vgs) {
+      vgs_(vgs), viewControls_(new ViewControls(this, &vgs)) {
 
   const auto& primary_coords = vgs.Segmentation().GetSegmentation()->Coords();
 
@@ -161,25 +162,48 @@ void View3d::TimedUpdate() {
 
 void View3d::mousePressEvent(QMouseEvent* event) {
   try {
+    if (viewControls_->mousePressEvent(event)) {
+      return;
+    }
     ui_->MousePressed(event);
   }
   catch (...) {
   }
 }
 
-void View3d::mouseReleaseEvent(QMouseEvent* event) { ui_->MouseRelease(event); }
+void View3d::mouseReleaseEvent(QMouseEvent* event) {
+  if (viewControls_->mouseReleaseEvent(event)) {
+    return;
+  }
+  ui_->MouseRelease(event); }
 
-void View3d::mouseMoveEvent(QMouseEvent* event) { ui_->MouseMove(event); }
+void View3d::mouseMoveEvent(QMouseEvent* event) {
+  if (viewControls_->mouseMoveEvent(event)) {
+    return;
+  }
+  ui_->MouseMove(event);
+}
 
 void View3d::mouseDoubleClickEvent(QMouseEvent* event) {
+  if (viewControls_->mouseDoubleClickEvent(event)) {
+    return;
+  }
   ui_->MouseDoubleClick(event);
 }
 
-void View3d::mouseWheelEvent(QWheelEvent* event) { ui_->MouseWheel(event); }
+void View3d::keyPressEvent(QKeyEvent* event) {
+  if (viewControls_->keyPressEvent(event)) {
+    return;
+  }
+  ui_->KeyPress(event);
+}
 
-void View3d::keyPressEvent(QKeyEvent* event) { ui_->KeyPress(event); }
-
-void View3d::wheelEvent(QWheelEvent* event) { ui_->MouseWheel(event); }
+void View3d::wheelEvent(QWheelEvent* event) {
+  if (viewControls_->wheelEvent(event)) {
+    return;
+  }
+  ui_->MouseWheel(event);
+}
 
 /////////////////////////////////
 ///////          Gl Actions
@@ -231,21 +255,27 @@ bool View3d::pickPoint(const Vector2i& vec, std::vector<uint32_t>& rNamesVec) {
   return true;
 }
 
-SegmentDataWrapper View3d::PickPoint(const Vector2i& vec) {
+boost::optional<SegmentDataWrapper> View3d::GetSelectedSegment(int x, int y) {
+  const Vector2i vec(x, y);
+
   std::vector<uint32_t> result;
+
   const bool valid_pick = pickPoint(vec, result);
+
+  boost::optional<SegmentDataWrapper> segmentDataWrapper;
 
   // if valid and return count
   if (!valid_pick || (result.size() < 2)) {
-    return SegmentDataWrapper();
+    std::cout << "invalid pikc point ! " << std::endl;
+    return segmentDataWrapper;
   }
 
   // ensure valid segmentID
-  SegmentDataWrapper sdw(result[0], result[1]);
-  if (!sdw.IsSegmentValid()) {
-    return SegmentDataWrapper();
-  }
-  return sdw;
+  segmentDataWrapper = SegmentDataWrapper(result[0], result[1]);
+  std::cout << "segmentDataWrapper is valid? " << segmentDataWrapper->IsSegmentValid() 
+    << x << ", " << y << std::endl;
+
+  return segmentDataWrapper;
 }
 
 /*
@@ -253,18 +283,22 @@ SegmentDataWrapper View3d::PickPoint(const Vector2i& vec) {
  *  Returns if unproject is valid (not valid if no depth value at pixel).
  */
 
-bool View3d::UnprojectPoint(Vector2i Vector2i, Vector3f& point3d) {
+boost::optional<om::coords::Global> View3d::GetGlobalCoords(int x, int y) {
+  const Vector2i vec(x, y);
+
+  boost::optional<om::coords::Global> globalCoords;
+
   // apply camera modelview matrix
   camera_->ApplyModelview();
 
   // unproject Vector2i
   double point3dv[3];
-  if (om::gl::unprojectPixel(Vector2i.x, Vector2i.y, point3dv) < 0)
-    return false;
+  if (om::gl::unprojectPixel(x, y, point3dv) < 0)
+    return globalCoords;
 
   // return point3d
-  point3d = Vector3f(point3dv[0], point3dv[1], point3dv[2]);
-  return true;
+  globalCoords = om::coords::Global{point3dv[0], point3dv[1], point3dv[2]};
+  return globalCoords;
 }
 
 /////////////////////////////////
