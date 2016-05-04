@@ -57,47 +57,36 @@ QSize OmView2d::sizeHint() const { return OmAppState::GetViewBoxSizeHint(); }
 void OmView2d::mousePressEvent(QMouseEvent* event) {
   if (!viewControls_->mousePressEvent(event)) {
     mouseEvents_->Press(event);
-    //event->ignore();
   }
 }
 
 void OmView2d::wheelEvent(QWheelEvent* event) {
   if (!viewControls_->wheelEvent(event)) {
     mouseEvents_->Wheel(event);
-    //event->ignore();
   }
 }
 
 void OmView2d::mouseMoveEvent(QMouseEvent* event) {
   if (!viewControls_->mouseMoveEvent(event)) {
     mouseEvents_->Move(event);
-    //event->ignore();
   }
 }
 
 void OmView2d::mouseReleaseEvent(QMouseEvent* event) {
   if (!viewControls_->mouseReleaseEvent(event)) {
     mouseEvents_->Release(event);
-    //event->ignore();
   }
 }
 
 void OmView2d::keyPressEvent(QKeyEvent* event) {
   if (!viewControls_->keyPressEvent(event)) {
     keyEvents_->Press(event);
-    if (!keyEvents_->Press(event)) {
-      QWidget::keyPressEvent(event);
-    }
-    //event->ignore();
   }
 }
 
 void OmView2d::keyReleaseEvent(QKeyEvent* event) {
   if (!viewControls_->keyReleaseEvent(event)) {
-    if (!keyEvents_->Release(event)) {
-      QWidget::keyReleaseEvent(event);
-    }
-    //event->ignore();
+    keyEvents_->Release(event);
   }
 }
 
