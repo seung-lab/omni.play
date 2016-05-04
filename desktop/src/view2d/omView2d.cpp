@@ -91,12 +91,14 @@ void OmView2d::keyReleaseEvent(QKeyEvent* event) {
 }
 
 
-boost::optional<om::coords::Global> OmView2d::GetGlobalCoords(int x, int y) {
+boost::optional<om::coords::Global>
+  OmView2d::GetGlobalCoords(int x, int y) {
   om::coords::Screen clicked(x, y, state_->Coords());
   return clicked.ToGlobal();
 }
 
-boost::optional<SegmentDataWrapper> OmView2d::GetSelectedSegment(int x, int y) {
+boost::optional<SegmentDataWrapper>
+  OmView2d::GetSelectedSegment(int x, int y) {
   boost::optional<SegmentDataWrapper> segmentDataWrapper;
   boost::optional<om::coords::Global> global = GetGlobalCoords(x, y);
   if (global) {
