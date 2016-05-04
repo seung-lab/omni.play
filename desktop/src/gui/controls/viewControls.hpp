@@ -44,7 +44,7 @@ class ViewControls {
 
   bool wheelEvent(QWheelEvent* wheelEvent) {
     return runEventAction([&wheelEvent] (InputContext& inputContext) {
-          inputContext.wheelEvent(wheelEvent);
+          return inputContext.wheelEvent(wheelEvent);
         });
   }
 

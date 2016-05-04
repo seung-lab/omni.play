@@ -74,6 +74,7 @@ void OmView2d::mouseMoveEvent(QMouseEvent* event) {
     mouseEvents_->Move(event);
     //event->ignore();
   }
+}
 
 void OmView2d::mouseReleaseEvent(QMouseEvent* event) {
   if (!viewControls_->mouseReleaseEvent(event)) {
