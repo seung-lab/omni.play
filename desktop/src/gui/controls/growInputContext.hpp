@@ -1,91 +1,102 @@
 #pragma once
-#include "precomp.h"
-//#include "gui/controls/ToolControlContext.hpp"
 
-/*
- *class GrowControl : public ToolControlContext {
- * public:
- *  GrowControl(OmViewGroupState viewGroupState,
- *      SegmentDataWrapper SegmentDataWrapper)
- *    : ToolControlContext(viewGroupState, segmentDataWrapper,
- *        om::tool::mode::GROW) {
- *    }
- *
- *  void mousePressEvent(QMouseEvent *mouseEvent) {
- *    Qt::KeyboardModifiers modifiers = mouseEvent->modifiers();
- *    Qt::MouseButton button = mouseEvent->button();
- *    switch (button | modifiers) {
- *      case Qt::LeftButton | Qt::ControlModifier:
- *        trim();
- *        break;
- *      case Qt::LeftButton | Qt::ShiftModifier:
- *        growAndHold();
- *        break;
- *      case Qt::LeftButton:
- *        grow();
- *        break;
- *      case default:
- *        return;
- *    }
- *  }
- *
- *  void mouseWheelEvent(QWheelEvent *wheelEvent) {
- *    Qt::KeyboardModifiers modifiers = wheelEvent->modifiers();
- *    int numDegrees = wheelEvent ->delta() / 8;
- *    int numSteps = numDegrees / 15;
- *    if (modifiers & Qt::ShiftModifier) {
- *      if (numSteps > 0) {
- *        growUpOne();
- *      } else {
- *        trimDownOne();
- *      }
- *    }
- *  }
- *
- *  void keyReleaseEvent(QKeyEvent *keyEvent) {
- *    Qt::KeyboardModifiers modifiers = keyEvent->modifiers();
- *    Qt::Key key = event->key();
- *    switch (key) {
- *      case Qt::Key_Shift:
- *        commitGrow();
- *        break;
- *      default:
- *        return;
- *    }
- *  }
- *
- *  void trim() {
- *    SegmentationDataWrapper segmentationDataWrapper =
- *      segmentDataWrapper.MakeSegmentationDataWrapper();
- *    OmSegmentSelector selector(segmentationDataWrapper, this, "Trim" );
- *    segmentationDataWrapper.Segments()->Trim(&selector, pickPoint.sdw.GetSegmentID());
- *  }
- *
- *  void TrimDown() {
- *  }
- *
- *  void GrowUp() {
- *  }
- *
- *  void ActivateGrow() {
- *  }
- *
- *  void DeactivateGrow() {
- *  }
- *
- *  void GrowToThreshold() {
- *    SegmentationDataWrapper segmentationDataWrapper =
- *      segmentDataWrapper.MakeSegmentationDataWrapper();
- *    OmSegmentSelector selector(segmentationDataWrapper, this, "Trim" );
- *    segmentationDataWrapper.Segments()->
- *      AddSegments_BreadthFirstSearch(&selector, pickPoint.sdw.GetSegmentID());
- *  }
- *
- *  void Commit() {
- *  }
- *
- * private:
- *  std::map<int, ToolCommand> mousePressMapping;
- *
- *}
- */
+#include "precomp.h"
+#include "gui/controls/inputContext.hpp"
+#include "gui/controls/viewStateInputContext.hpp"
+#include "gui/controls/findSegment.hpp"
+#include "gui/controls/findGlobalCoordinates.hpp"
+#include "viewGroup/omViewGroupState.h"
+#include "utility/dataWrappers.h"
+#include "segment/actions/omJoinSplitRunner.hpp"
+#include "segment/omSegments.h"
+
+class GrowInputContext
+: public InputContext,
+  public ViewStateInputContext,
+  public FindSegment {
+ public:
+  GrowInputContext(OmViewGroupState* viewGroupState,
+      om::tool::mode tool,
+      std::function<boost::optional<SegmentDataWrapper>(int, int)>
+        findSegmentFunction)
+    : ViewStateInputContext(viewGroupState), tool_(tool),
+      FindSegment(findSegmentFunction) {
+    }
+
+  virtual bool mousePressEvent(QMouseEvent* mouseEvent) override {
+    Qt::KeyboardModifiers modifiers = mouseEvent->modifiers();
+    Qt::MouseButton button = mouseEvent->button();
+    std::cout << "button is " << std::hex << button << " modifiers " << std::hex << modifiers << std::endl;
+    std::cout << " left button is " << std::hex << Qt::LeftButton << " shift is " << std::hex << Qt::ShiftModifier << std::endl;
+    switch ((int)button | (int)modifiers) {
+      case (int)Qt::LeftButton:
+      case (int)Qt::LeftButton | (int)Qt::ShiftModifier:
+        return growToThreshold(mouseEvent->x(), mouseEvent->y());
+      case (int)Qt::LeftButton | (int)Qt::ControlModifier:
+        return trim(mouseEvent->x(), mouseEvent->y());
+      default:
+        return false;
+    }
+  }
+
+  virtual bool mouseMoveEvent(QMouseEvent* mouseEvent) override {
+    Qt::KeyboardModifiers modifiers = mouseEvent->modifiers();
+    Qt::MouseButtons buttons = mouseEvent->buttons();
+    switch ((int)buttons | (int)modifiers) {
+      case (int)Qt::LeftButton:
+      default:
+        return false;
+    }
+  }
+
+
+  virtual bool mouseReleaseEvent(QMouseEvent* mouseEvent) override {
+    Qt::KeyboardModifiers modifiers = mouseEvent->modifiers();
+    Qt::MouseButton button = mouseEvent->button();
+    switch ((int)button | (int)modifiers) {
+      case (int)Qt::LeftButton:
+      case (int)Qt::LeftButton | (int)Qt::ShiftModifier:
+        viewGroupState_->EndSelector();
+      default:
+        return false;
+    }
+  }
+
+ private:
+  om::tool::mode tool_;
+
+  bool growToThreshold(int x, int y) {
+    boost::optional<SegmentDataWrapper> segmentDataWrapper = 
+      findSegmentFunction_(x, y);
+
+    if (!segmentDataWrapper || !segmentDataWrapper->IsSegmentValid()) {
+      return false;
+    }
+
+    std::shared_ptr<OmSegmentSelector> selector =
+      viewGroupState_->GetOrCreateSelector(
+          segmentDataWrapper->GetSegmentationID(), "Grow Selector");
+
+    segmentDataWrapper->MakeSegmentationDataWrapper()
+      .Segments()->AddSegments_BreadthFirstSearch(
+            selector.get(), segmentDataWrapper->GetSegmentID());
+    return true;
+  }
+
+  bool trim(int x, int y) {
+    boost::optional<SegmentDataWrapper> segmentDataWrapper = 
+      findSegmentFunction_(x, y);
+
+    if (!segmentDataWrapper || !segmentDataWrapper->IsSegmentValid()) {
+      return false;
+    }
+
+    std::shared_ptr<OmSegmentSelector> selector =
+      viewGroupState_->GetOrCreateSelector(
+          segmentDataWrapper->GetSegmentationID(), "Grow Selector");
+
+    segmentDataWrapper->MakeSegmentationDataWrapper().Segments()->Trim(
+        selector.get(), segmentDataWrapper->GetSegmentID());
+    return true;
+  }
+};

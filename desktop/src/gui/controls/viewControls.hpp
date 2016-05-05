@@ -4,6 +4,7 @@
 #include "gui/controls/inputContext.hpp"
 #include "gui/viewGroup/viewInputConversion.hpp"
 #include "gui/controls/joiningSplittingInputContext.hpp"
+#include "gui/controls/growInputContext.hpp"
 #include "system/omStateManager.h"
 #include "gui/controls/viewControls.hpp"
 
@@ -66,9 +67,15 @@ class ViewControls {
       case om::tool::MULTISPLIT:
         return std::make_unique<JoiningSplittingInputContext>(
             viewGroupState_, tool,
-            [=] (int x, int y) {
-              return viewInputConversion_->GetSelectedSegment(x, y);
-            });
+            std::bind(&ViewInputConversion::GetSelectedSegment,
+              viewInputConversion_, std::placeholders::_1, std::placeholders::_2)
+            );
+      //case om::tool::GROW:
+        //return std::make_unique<GrowInputContext>(
+            //viewGroupState_, tool,
+            //[=] (int x, int y) {
+              //return viewInputConversion_->GetSelectedSegment(x, y);
+            //});
       default:
         return inputContext;
     }

@@ -252,32 +252,32 @@ TEST(omJoiningSplittingTest , testIsFinished) {
  * Each state is only ready to go to the next one if there is something
  * in the buffer
  */
-TEST(omJoiningSplittingTest , testIsReadyForNextState) {
+TEST(omJoiningSplittingTest , testIsElementSelected) {
   OmJoiningSplitting joiningSplitting;
 
-  EXPECT_FALSE(joiningSplitting.IsReadyForNextState());
+  EXPECT_FALSE(joiningSplitting.IsElementSelected());
 
   // first state is not finished
   joiningSplitting.SelectSegment(om::tool::mode::JOIN,
       SegmentDataWrapper(TEST_SEGMENTATION_ID, TEST_SEGMENT_ID_A));
-  EXPECT_TRUE(joiningSplitting.IsReadyForNextState());
+  EXPECT_TRUE(joiningSplitting.IsElementSelected());
   
   // second state is not finished
   joiningSplitting.GoToNextState();
-  EXPECT_FALSE(joiningSplitting.IsReadyForNextState());
+  EXPECT_FALSE(joiningSplitting.IsElementSelected());
 
   joiningSplitting.SelectSegment(om::tool::mode::JOIN,
       SegmentDataWrapper(TEST_SEGMENTATION_ID, TEST_SEGMENT_ID_B));
-  EXPECT_TRUE(joiningSplitting.IsReadyForNextState());
+  EXPECT_TRUE(joiningSplitting.IsElementSelected());
 
   // finished state is finished
   joiningSplitting.GoToNextState();
-  EXPECT_TRUE(joiningSplitting.IsReadyForNextState());
+  EXPECT_TRUE(joiningSplitting.IsElementSelected());
 
   // selecting automatically jumps first state which is not finished
   joiningSplitting.SelectSegment(om::tool::mode::JOIN,
       SegmentDataWrapper(TEST_SEGMENTATION_ID, TEST_SEGMENT_ID_B));
-  EXPECT_TRUE(joiningSplitting.IsReadyForNextState());
+  EXPECT_TRUE(joiningSplitting.IsElementSelected());
 }
 
 /*

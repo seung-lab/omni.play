@@ -38,11 +38,11 @@ class OmJoiningSplitting : public om::event::ToolModeEventListener {
   void GoToNextState();
 
   // are we ready to move to the next state?
-  bool IsReadyForNextState();
+  bool IsElementSelected();
 
   // is the data ready to be read (i.e. first and second states completed)
   bool IsFinished();
-  
+
   static std::string StateToString(const State state) {
     switch(state) {
       case State::FINISHED_STATE:

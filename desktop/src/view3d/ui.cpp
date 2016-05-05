@@ -238,6 +238,7 @@ void Ui::navigationModeMousePressed(QMouseEvent* event) {
       return;
     }
   }
+  std::cout << "calling start camera" << std::endl;
   cameraMovementMouseStart(event);
 }
 
@@ -281,6 +282,7 @@ void Ui::navigationModeMouseRelease(QMouseEvent* event) {
       //joinSplitModeMouseReleased(toolMode, event);
       //break;
   //}
+  std::cout << "calling end camera" << std::endl;
   cameraMovementMouseEnd(event);
 }
 

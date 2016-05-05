@@ -201,9 +201,12 @@ void View3d::mouseMoveEvent(QMouseEvent* event) {
    * }
    */
   if (!GetCamera().IsMoving()) {
+    std::cout << "is not moving" << std::endl;
     if (viewControls_->mouseMoveEvent(event)) {
       return;
     }
+  } else {
+    std::cout << "si moving " << std::endl;
   }
   ui_->MouseMove(event);
 }

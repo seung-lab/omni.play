@@ -21,11 +21,11 @@ class JoiningSplittingInputContext
       FindSegment(findSegmentFunction) {
     }
 
-  virtual bool mouseMoveEvent(QMouseEvent* mouseEvent) override {
+  virtual bool mousePressEvent(QMouseEvent* mouseEvent) override {
     Qt::KeyboardModifiers modifiers = mouseEvent->modifiers();
-    Qt::MouseButtons buttons = mouseEvent->buttons();
-    switch ((int)buttons | (int)modifiers) {
-      case (int)Qt::LeftButton:
+    Qt::MouseButton button = mouseEvent->button();
+    switch ((int)button | (int)modifiers) {
+      case Qt::LeftButton:
       case (int)Qt::LeftButton | (int)Qt::ShiftModifier:
         return om::JoinSplitRunner::SelectSegment(
             *viewGroupState_, tool_,
@@ -35,11 +35,11 @@ class JoiningSplittingInputContext
     }
   }
 
-  virtual bool mousePressEvent(QMouseEvent* mouseEvent) override {
+  virtual bool mouseMoveEvent(QMouseEvent* mouseEvent) override {
     Qt::KeyboardModifiers modifiers = mouseEvent->modifiers();
-    Qt::MouseButton button = mouseEvent->button();
-    switch ((int)button | (int)modifiers) {
-      case Qt::LeftButton:
+    Qt::MouseButtons buttons = mouseEvent->buttons();
+    switch ((int)buttons | (int)modifiers) {
+      case (int)Qt::LeftButton:
       case (int)Qt::LeftButton | (int)Qt::ShiftModifier:
         return om::JoinSplitRunner::SelectSegment(
             *viewGroupState_, tool_,

@@ -4,7 +4,7 @@
 #include "utility/dataWrappers.h"
 
 /*
- * Control context for modifying the viewgroupstate
+ * Control context decorator for modifying the viewgroupstate
  */
 class ViewStateInputContext {
  public:

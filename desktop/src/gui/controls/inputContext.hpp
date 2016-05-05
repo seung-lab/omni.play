@@ -20,8 +20,8 @@ class InputContext {
    *  true - mapped to a valid command
    *  false - no command found
    */
-  virtual bool mouseMoveEvent(QMouseEvent *mouseEvent) { return false; }
   virtual bool mousePressEvent(QMouseEvent *mouseEvent) { return false; }
+  virtual bool mouseMoveEvent(QMouseEvent *mouseEvent) { return false; }
   virtual bool mouseReleaseEvent(QMouseEvent *mouseEvent) { return false; }
   virtual bool mouseDoubleClickEvent(QMouseEvent *mouseEvent) { return false; }
   virtual bool wheelEvent(QWheelEvent *wheelEvent) { return false; }

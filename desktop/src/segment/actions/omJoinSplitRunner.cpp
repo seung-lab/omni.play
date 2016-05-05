@@ -16,7 +16,8 @@ bool om::JoinSplitRunner::GoToNextState(OmViewGroupState& vgs,
     const om::tool::mode tool) {
   OmJoiningSplitting& joiningSplitting = vgs.JoiningSplitting();
 
-  if (!joiningSplitting.IsReadyForNextState()) {
+  if (!joiningSplitting.isElementSelected()) {
+    std::cout << "not ready for next state! " << std::endl;
     return false;
   }
 
