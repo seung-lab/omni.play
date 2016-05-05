@@ -16,6 +16,10 @@ bool om::JoinSplitRunner::GoToNextState(OmViewGroupState& vgs,
     const om::tool::mode tool) {
   OmJoiningSplitting& joiningSplitting = vgs.JoiningSplitting();
 
+  if (!joiningSplitting.IsReadyForNextState()) {
+    return false;
+  }
+
   joiningSplitting.GoToNextState();
 
   const om::common::SegIDSet firstBuffer = joiningSplitting.FirstBuffer();
@@ -57,10 +61,8 @@ bool om::JoinSplitRunner::SelectSegment(OmViewGroupState& vgs,
     const om::tool::mode tool,
     boost::optional<SegmentDataWrapper> segmentDataWrapper) {
   if (!segmentDataWrapper || !segmentDataWrapper->IsSegmentValid()) {
-    std::cout << "split runner select segment returning false" << std::endl;
     return false;
   }
-    std::cout << "returning true" << std::endl;
   vgs.JoiningSplitting().SelectSegment(tool, *segmentDataWrapper);
   return true;
 }

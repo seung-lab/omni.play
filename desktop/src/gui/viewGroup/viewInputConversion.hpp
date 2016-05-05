@@ -1,5 +1,9 @@
 #pragma once
 
+/*
+ * Interface for views to provide methods to assist with
+ * input
+ */
 class SegmentDataWrapper;
 namespace om {
   namespace coords {

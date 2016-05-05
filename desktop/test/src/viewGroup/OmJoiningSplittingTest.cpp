@@ -249,6 +249,38 @@ TEST(omJoiningSplittingTest , testIsFinished) {
 }
 
 /*
+ * Each state is only ready to go to the next one if there is something
+ * in the buffer
+ */
+TEST(omJoiningSplittingTest , testIsReadyForNextState) {
+  OmJoiningSplitting joiningSplitting;
+
+  EXPECT_FALSE(joiningSplitting.IsReadyForNextState());
+
+  // first state is not finished
+  joiningSplitting.SelectSegment(om::tool::mode::JOIN,
+      SegmentDataWrapper(TEST_SEGMENTATION_ID, TEST_SEGMENT_ID_A));
+  EXPECT_TRUE(joiningSplitting.IsReadyForNextState());
+  
+  // second state is not finished
+  joiningSplitting.GoToNextState();
+  EXPECT_FALSE(joiningSplitting.IsReadyForNextState());
+
+  joiningSplitting.SelectSegment(om::tool::mode::JOIN,
+      SegmentDataWrapper(TEST_SEGMENTATION_ID, TEST_SEGMENT_ID_B));
+  EXPECT_TRUE(joiningSplitting.IsReadyForNextState());
+
+  // finished state is finished
+  joiningSplitting.GoToNextState();
+  EXPECT_TRUE(joiningSplitting.IsReadyForNextState());
+
+  // selecting automatically jumps first state which is not finished
+  joiningSplitting.SelectSegment(om::tool::mode::JOIN,
+      SegmentDataWrapper(TEST_SEGMENTATION_ID, TEST_SEGMENT_ID_B));
+  EXPECT_TRUE(joiningSplitting.IsReadyForNextState());
+}
+
+/*
  * Tool mode change event does not do anything if the tool is the same
  */
 TEST(omJoiningSplittingTest , toolChangeEventSame) {

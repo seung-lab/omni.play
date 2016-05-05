@@ -77,6 +77,10 @@ void OmJoiningSplitting::GoToNextState() {
   }
 }
 
+bool OmJoiningSplitting::IsReadyForNextState() {
+  return IsFinished() || bufferPointer_->size() > 0;
+}
+
 bool OmJoiningSplitting::IsFinished() {
   return currentState_ == State::FINISHED_STATE;
 }

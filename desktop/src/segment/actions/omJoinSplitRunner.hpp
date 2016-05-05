@@ -13,6 +13,10 @@ namespace coords {
 }
 
 namespace JoinSplitRunner {
+  /* 
+   * Tell joinningSplitting to go to the next state. don't go to the next state
+   * if there is nothing selected.
+   */
   bool GoToNextState(OmViewGroupState& vgs, const om::tool::mode tool);
   bool SelectSegment(OmViewGroupState& vgs, const om::tool::mode tool,
     boost::optional<SegmentDataWrapper> segmentDataWrapper);

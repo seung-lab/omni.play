@@ -175,11 +175,35 @@ void View3d::mouseReleaseEvent(QMouseEvent* event) {
   if (viewControls_->mouseReleaseEvent(event)) {
     return;
   }
-  ui_->MouseRelease(event); }
+  ui_->MouseRelease(event);
+}
+
 
 void View3d::mouseMoveEvent(QMouseEvent* event) {
-  if (viewControls_->mouseMoveEvent(event)) {
-    return;
+  /*
+   * TODO fix: SUPER HACK camera should NOT be condition for calling an
+   * inputcontext. The input context should always be called first and
+   * fail to generate an action. Because we fail to generate the action,
+   * we should fall back to the camera move action.
+   *
+   * Instead, we should keep track of whether or not we are currently
+   * multiselecting somehow, maybe modifying OmSegmentSelector.
+   * Thus, this will be an interim selection state where we can select
+   * segments before we commit our selection to memory (i.e. pushing an 
+   * action into the log). This will be beneficial for BrushSelect,
+   * JoiningSplitting, Grow and other actions.
+   *
+   * Example of how this might look like in the inputContext implementation
+   * if (selector.buffer().size() > 0) {
+   *   return callMouseMoveEvent();
+   * } else {
+   *   return false;
+   * }
+   */
+  if (!GetCamera().IsMoving()) {
+    if (viewControls_->mouseMoveEvent(event)) {
+      return;
+    }
   }
   ui_->MouseMove(event);
 }

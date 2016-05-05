@@ -37,6 +37,9 @@ class OmJoiningSplitting : public om::event::ToolModeEventListener {
    */
   void GoToNextState();
 
+  // are we ready to move to the next state?
+  bool IsReadyForNextState();
+
   // is the data ready to be read (i.e. first and second states completed)
   bool IsFinished();
   
