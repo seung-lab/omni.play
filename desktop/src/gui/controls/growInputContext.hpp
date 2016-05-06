@@ -9,6 +9,7 @@
 #include "utility/dataWrappers.h"
 #include "segment/actions/omJoinSplitRunner.hpp"
 #include "segment/omSegments.h"
+#include "segment/omSegmentSelector.h"
 
 class GrowInputContext
 : public InputContext,
@@ -32,6 +33,7 @@ class GrowInputContext
       case (int)Qt::LeftButton:
       case (int)Qt::LeftButton | (int)Qt::ShiftModifier:
         return growToThreshold(mouseEvent->x(), mouseEvent->y());
+      case (int)Qt::RightButton | (int)Qt::ShiftModifier:
       case (int)Qt::LeftButton | (int)Qt::ControlModifier:
         return trim(mouseEvent->x(), mouseEvent->y());
       default:
@@ -39,23 +41,22 @@ class GrowInputContext
     }
   }
 
-  virtual bool mouseMoveEvent(QMouseEvent* mouseEvent) override {
-    Qt::KeyboardModifiers modifiers = mouseEvent->modifiers();
-    Qt::MouseButtons buttons = mouseEvent->buttons();
-    switch ((int)buttons | (int)modifiers) {
-      case (int)Qt::LeftButton:
-      default:
-        return false;
-    }
-  }
-
-
   virtual bool mouseReleaseEvent(QMouseEvent* mouseEvent) override {
     Qt::KeyboardModifiers modifiers = mouseEvent->modifiers();
     Qt::MouseButton button = mouseEvent->button();
     switch ((int)button | (int)modifiers) {
       case (int)Qt::LeftButton:
-      case (int)Qt::LeftButton | (int)Qt::ShiftModifier:
+        viewGroupState_->EndSelector();
+      default:
+        return false;
+    }
+  }
+
+  virtual bool keyReleaseEvent(QKeyEvent *keyEvent) override {
+    Qt::KeyboardModifiers modifiers = keyEvent->modifiers();
+    int key = keyEvent->key();
+    switch (key | (int) modifiers) {
+      case Qt::Key_Shift:
         viewGroupState_->EndSelector();
       default:
         return false;
@@ -80,6 +81,7 @@ class GrowInputContext
     segmentDataWrapper->MakeSegmentationDataWrapper()
       .Segments()->AddSegments_BreadthFirstSearch(
             selector.get(), segmentDataWrapper->GetSegmentID());
+    selector->UpdateSelectionNow();
     return true;
   }
 

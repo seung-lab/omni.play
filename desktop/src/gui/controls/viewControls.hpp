@@ -13,7 +13,9 @@ class ViewControls {
   ViewControls(ViewInputConversion* viewInputConversion,
       OmViewGroupState* viewGroupState)
     : viewInputConversion_(viewInputConversion),
-      viewGroupState_(viewGroupState) {}
+      viewGroupState_(viewGroupState),
+      getSegmentFunction_(std::bind(&ViewInputConversion::GetSelectedSegment,
+        viewInputConversion_, std::placeholders::_1, std::placeholders::_2)) {}
 
   bool keyPressEvent(QKeyEvent* keyEvent) {
     return runEventAction([&keyEvent] (InputContext& inputContext) {
@@ -66,10 +68,10 @@ class ViewControls {
       case om::tool::SPLIT:
       case om::tool::MULTISPLIT:
         return std::make_unique<JoiningSplittingInputContext>(
-            viewGroupState_, tool,
-            std::bind(&ViewInputConversion::GetSelectedSegment,
-              viewInputConversion_, std::placeholders::_1, std::placeholders::_2)
-            );
+            viewGroupState_, tool, getSegmentFunction_);
+      case om::tool::GROW:
+        return std::make_unique<GrowInputContext>(
+            viewGroupState_, tool, getSegmentFunction_);
       default:
         return inputContext;
     }
@@ -85,4 +87,6 @@ class ViewControls {
 
   ViewInputConversion* viewInputConversion_;
   OmViewGroupState* viewGroupState_;
+  std::function<boost::optional<SegmentDataWrapper>(int, int)>
+    getSegmentFunction_;
 };
