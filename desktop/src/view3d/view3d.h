@@ -66,6 +66,7 @@ class View3d : public QGLWidget, public ViewInputConversion {
   void mouseDoubleClickEvent(QMouseEvent*);
   void wheelEvent(QWheelEvent*);
   void keyPressEvent(QKeyEvent*);
+  void keyReleaseEvent(QKeyEvent*);
   bool event(QEvent*);
   void pinchTriggered(QPinchGesture*);
 

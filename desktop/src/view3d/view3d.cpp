@@ -201,12 +201,9 @@ void View3d::mouseMoveEvent(QMouseEvent* event) {
    * }
    */
   if (!GetCamera().IsMoving()) {
-    std::cout << "is not moving" << std::endl;
     if (viewControls_->mouseMoveEvent(event)) {
       return;
     }
-  } else {
-    std::cout << "si moving " << std::endl;
   }
   ui_->MouseMove(event);
 }
@@ -223,6 +220,13 @@ void View3d::keyPressEvent(QKeyEvent* event) {
     return;
   }
   ui_->KeyPress(event);
+}
+
+void View3d::keyReleaseEvent(QKeyEvent* event) {
+  if (viewControls_->keyReleaseEvent(event)) {
+    return;
+  }
+  ui_->KeyRelease(event);
 }
 
 void View3d::wheelEvent(QWheelEvent* event) {
@@ -293,14 +297,11 @@ boost::optional<SegmentDataWrapper> View3d::GetSelectedSegment(int x, int y) {
 
   // if valid and return count
   if (!valid_pick || (result.size() < 2)) {
-    std::cout << "invalid pikc point ! " << std::endl;
     return segmentDataWrapper;
   }
 
   // ensure valid segmentID
   segmentDataWrapper = SegmentDataWrapper(result[0], result[1]);
-  std::cout << "segmentDataWrapper is valid? " << segmentDataWrapper->IsSegmentValid() 
-    << x << ", " << y << std::endl;
 
   return segmentDataWrapper;
 }

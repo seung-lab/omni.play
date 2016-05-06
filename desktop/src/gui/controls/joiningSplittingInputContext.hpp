@@ -54,8 +54,18 @@ class JoiningSplittingInputContext
     Qt::MouseButton button = mouseEvent->button();
     switch ((int)button | (int)modifiers) {
       case Qt::LeftButton:
-      case (int)Qt::LeftButton | (int)Qt::ShiftModifier:
-        return om::JoinSplitRunner::GoToNextState(*viewGroupState_, tool_);
+        return om::JoinSplitRunner::FinishSelectingSegments(*viewGroupState_, tool_);
+      default:
+        return false;
+    }
+  }
+
+  virtual bool keyReleaseEvent(QKeyEvent *keyEvent) override {
+    Qt::KeyboardModifiers modifiers = keyEvent->modifiers();
+    int key = keyEvent->key();
+    switch (key | (int) modifiers) {
+      case Qt::Key_Shift:
+        return om::JoinSplitRunner::FinishSelectingSegments(*viewGroupState_, tool_);
       default:
         return false;
     }

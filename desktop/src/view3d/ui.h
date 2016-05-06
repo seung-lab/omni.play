@@ -32,6 +32,7 @@ class Ui {
   void MouseDoubleClick(QMouseEvent* event);
   void MouseWheel(QWheelEvent* event);
   void KeyPress(QKeyEvent* event);
+  void KeyRelease(QKeyEvent* event);
 
  private:
   View3d& view3d_;

@@ -12,12 +12,13 @@
 #include "system/omLocalPreferences.hpp"
 
 // mouse release
-bool om::JoinSplitRunner::GoToNextState(OmViewGroupState& vgs,
+bool om::JoinSplitRunner::FinishSelectingSegments(OmViewGroupState& vgs,
     const om::tool::mode tool) {
   OmJoiningSplitting& joiningSplitting = vgs.JoiningSplitting();
 
-  if (!joiningSplitting.isElementSelected()) {
-    std::cout << "not ready for next state! " << std::endl;
+  // Finished state does not have any segments to select thus, an invalid cmd
+  if (joiningSplitting.IsFinished()
+      || joiningSplitting.RequiresElementSelection()) {
     return false;
   }
 
@@ -28,6 +29,7 @@ bool om::JoinSplitRunner::GoToNextState(OmViewGroupState& vgs,
 
   if (joiningSplitting.IsFinished() && !firstBuffer.empty()
       && !secondBuffer.empty()) {
+  std::cout << "is finished and performing thing" << joiningSplitting.IsFinished() << std::endl;
 
     OmSegment* firstSegment = SegmentDataWrapper(vgs.Segmentation(),
         *joiningSplitting.FirstBuffer().begin()).GetSegment();

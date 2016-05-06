@@ -77,8 +77,8 @@ void OmJoiningSplitting::GoToNextState() {
   }
 }
 
-bool OmJoiningSplitting::IsElementSelected() {
-  return !IsFinished() && bufferPointer_->size() > 0;
+bool OmJoiningSplitting::RequiresElementSelection() {
+  return bufferPointer_->empty();
 }
 
 bool OmJoiningSplitting::IsFinished() {

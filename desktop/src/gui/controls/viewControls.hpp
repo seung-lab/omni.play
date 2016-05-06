@@ -70,12 +70,6 @@ class ViewControls {
             std::bind(&ViewInputConversion::GetSelectedSegment,
               viewInputConversion_, std::placeholders::_1, std::placeholders::_2)
             );
-      //case om::tool::GROW:
-        //return std::make_unique<GrowInputContext>(
-            //viewGroupState_, tool,
-            //[=] (int x, int y) {
-              //return viewInputConversion_->GetSelectedSegment(x, y);
-            //});
       default:
         return inputContext;
     }

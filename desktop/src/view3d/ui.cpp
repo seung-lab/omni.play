@@ -4,7 +4,6 @@
 #include "gui/tools.hpp"
 #include "landmarks/omLandmarks.hpp"
 #include "landmarks/omLandmarksTypes.h"
-#include "segment/actions/omJoinSplitRunner.hpp"
 #include "segment/omSegmentCenter.hpp"
 #include "segment/omSegmentSelected.hpp"
 #include "segment/omSegmentSelector.h"
@@ -61,19 +60,7 @@ void Ui::KeyPress(QKeyEvent* event) {
   }
 }
 
-bool Ui::joinSplitModeSelectSegment(om::tool::mode tool, QMouseEvent* event) {
-  auto pickPoint = pickVoxelMouseCrosshair(event);
-
-  if (!pickPoint.sdw.IsSegmentValid()) {
-    return false;
-  }
-
-  om::JoinSplitRunner::SelectSegment(vgs_, tool, pickPoint.sdw);
-  return true;
-}
-
-void Ui::joinSplitModeMouseReleased(om::tool::mode tool, QMouseEvent* event) {
-  om::JoinSplitRunner::GoToNextState(vgs_, tool);
+void Ui::KeyRelease(QKeyEvent* event) {
 }
 
 bool Ui::validateModeMouseReleased(om::common::SetValid setValid, QMouseEvent* event) {
@@ -184,13 +171,6 @@ void Ui::navigationModeMousePressed(QMouseEvent* event) {
           vgs_.Landmarks().Add(pickPoint.sdw, pickPoint.coord);
           return;
         }
-      //case om::tool::mode::SPLIT:
-      //case om::tool::mode::JOIN:
-      //case om::tool::MULTISPLIT:
-        //if (joinSplitModeSelectSegment(toolMode, event)) {
-          //return;
-        //}
-        //break;
       case om::tool::mode::VALIDATE:
         om::common::SetValid setValid;
         if (controlModifier) {
@@ -238,7 +218,6 @@ void Ui::navigationModeMousePressed(QMouseEvent* event) {
       return;
     }
   }
-  std::cout << "calling start camera" << std::endl;
   cameraMovementMouseStart(event);
 }
 
@@ -275,14 +254,6 @@ void Ui::doSelectSegment(const SegmentDataWrapper& sdw,
 
 void Ui::navigationModeMouseRelease(QMouseEvent* event) {
   const auto toolMode = OmStateManager::GetToolMode();
-  //switch (toolMode) {
-    //case om::tool::JOIN:
-    //case om::tool::SPLIT:
-    //case om::tool::MULTISPLIT:
-      //joinSplitModeMouseReleased(toolMode, event);
-      //break;
-  //}
-  std::cout << "calling end camera" << std::endl;
   cameraMovementMouseEnd(event);
 }
 
@@ -295,14 +266,6 @@ void Ui::navigationModeMouseMove(QMouseEvent* event) {
     cameraMovementMouseUpdate(event);
     return;
   }
-
-  //switch(tool) {
-    //case om::tool::JOIN:
-    //case om::tool::SPLIT:
-    //case om::tool::MULTISPLIT:
-      //joinSplitModeSelectSegment(tool, event);
-      //break;
-  //}
 }
 
 void Ui::navigationModeMouseDoubleClick(QMouseEvent* event) {
