@@ -21,6 +21,7 @@ OmSegmentSelector::OmSegmentSelector(const SegmentationDataWrapper& sdw,
 
   segments_ = sdw.Segments();
   selection_ = &sdw.Segments()->Selection();
+  nextOrder_ = selection_->GetNextOrder();
 
   params_->sdw = SegmentDataWrapper(sdw, 0);
   params_->sender = sender;
@@ -143,6 +144,8 @@ bool OmSegmentSelector::UpdateSelectionNow() {
   if (selectionIsChanged) {
     // note the orders may be modified after update selection
     params_->newSelectedIDs = selection_->GetSelectedSegmentIDsWithOrder();
+    nextOrder_ = selection_->GetNextOrder();
+
     OmCacheManager::TouchFreshness();
     om::event::SegmentModified(params_);
   }
@@ -176,8 +179,7 @@ void OmSegmentSelector::AutoCenter(const bool autoCenter) {
 }
 
 void OmSegmentSelector::addSegmentToSelectionParameters(om::common::SegID segID) {
-  uint32_t newOrder =  params_->newSelectedIDs.size() + 1;
-  params_->newSelectedIDs.insert(std::pair<om::common::SegID, uint32_t>(segID, newOrder));
+  params_->newSelectedIDs.insert(std::pair<om::common::SegID, uint32_t>(segID, nextOrder_++));
   setSelectedSegment(segID);
 }
 

@@ -16,7 +16,7 @@ namespace segment {
 class Selection {
  public:
   Selection(Graph& graph, Store& store, OmSegmentLists& lists)
-      : graph_(graph), store_(store), lists_(lists) {}
+      : graph_(graph), store_(store), lists_(lists), nextOrder_(1) {}
 
   inline bool AreSegmentsSelected() const {
     zi::guard g(mutex_);
@@ -74,7 +74,7 @@ class Selection {
   void UpdateSegmentSelection(const common::SegIDSet& ids,
                               const bool addToRecentList) {
     zi::guard g(mutex_);
-    selectedIDsToOrders_.clear();
+    Clear();
 
     for (auto id : ids) {
       setSegmentSelectedBatch(id, true, addToRecentList);
@@ -111,10 +111,10 @@ class Selection {
   }
 
   uint32_t GetNextOrder() {
-      return selectedIDsToOrders_.size() + 1;
+    return nextOrder_;
   }
 
-  inline void Clear() { selectedIDsToOrders_.clear(); }
+  inline void Clear() { selectedIDsToOrders_.clear(); nextOrder_ = 0;}
 
   uint32_t GetOrderOfAdding(const common::SegID segID) {
     common::SegIDMap::const_iterator iter = selectedIDsToOrders_.find(segID);
@@ -143,6 +143,7 @@ class Selection {
   Graph& graph_;
   Store& store_;
   OmSegmentLists& lists_;
+  uint32_t nextOrder_;
 
   // SegId to insertion order
   common::SegIDMap selectedIDsToOrders_;
@@ -179,8 +180,7 @@ class Selection {
   }
 
   inline void addSegmentNextOrder(const common::SegID segID) {
-    uint32_t newOrder = GetNextOrder();
-    addSegmentWithOrder(segID, newOrder);
+    addSegmentWithOrder(segID, nextOrder_++);
   }
 
   inline void addSegmentWithOrder(const common::SegID segID, uint32_t newOrder) {
@@ -190,7 +190,7 @@ class Selection {
 
   void updateSelection(const common::SegIDMap newSelectedIDsToOrders,
                        const bool shouldAddToRecent) {
-    selectedIDsToOrders_.clear();
+    Clear();
     // invert the map to get correct iteration order
     for (auto orderToSegID : getOrderToSegIDs(newSelectedIDsToOrders)) {
       // reinsert and get's rid of missing holes in ids

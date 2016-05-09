@@ -161,4 +161,18 @@ class Growing {
 
     selector.RemoveTheseSegments(setToRemove);
   }
+
+  bool GrowIncremental(OmSegmentSelector& selector, bool isGrowing) {
+    double threshold = OmProject::Globals().Users().UserSettings().getASThreshold();
+    double newThreshold;
+    if (isGrowing) {
+      newThreshold = threshold + .1;
+    } else {
+      newThreshold = threshold -.1;
+    }
+
+    OmProject::Globals().Users().UserSettings().setASThreshold(newThreshold);
+
+    return false;
+  }
 };

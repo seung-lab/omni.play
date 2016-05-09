@@ -66,4 +66,5 @@ class OmSegmentSelector {
   std::shared_ptr<OmSelectSegmentsParams> params_;
   void setSelectedSegment(const om::common::SegID segID);
   uint32_t numberOfAddedSegment;
+  uint32_t nextOrder_;
 };
