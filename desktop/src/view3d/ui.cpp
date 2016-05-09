@@ -257,19 +257,19 @@ void Ui::cameraMovementMouseStart(QMouseEvent* event) {
   bool shift_modifier = event->modifiers() & Qt::ShiftModifier;
 
   // left w/o shift moves rotate
-  if (event->buttons() & Qt::LeftButton && !shift_modifier) {
+  if (event->buttons() & Qt::LeftButton) {
     view3d_.GetCamera().MovementStart(CameraMovementType::ORBIT_ROTATE, point);
-
-    // left + shift moves lookat
-  } else if (event->buttons() & Qt::LeftButton && shift_modifier) {
-    view3d_.GetCamera().MovementStart(CameraMovementType::LOOKAT_ROTATE, point);
 
     // mid button pans
   } else if (event->buttons() & Qt::MidButton) {
     view3d_.GetCamera().MovementStart(CameraMovementType::PAN, point);
 
+    // right + shift moves lookat
+  } else if (event->buttons() & Qt::RightButton && shift_modifier) {
+    view3d_.GetCamera().MovementStart(CameraMovementType::LOOKAT_ROTATE, point);
+
     // right button zooms
-  } else if (event->buttons() & Qt::RightButton) {
+  } else if (event->buttons() & Qt::RightButton && !shift_modifier) {
     view3d_.GetCamera().MovementStart(CameraMovementType::ZOOM, point);
   }
 }
