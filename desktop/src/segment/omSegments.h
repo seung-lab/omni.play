@@ -4,6 +4,7 @@
 #include "common/common.h"
 #include "common/core.hpp"
 #include "datalayer/archive/segmentation.h"
+#include "segment/types.hpp"
 
 class OmSegment;
 class OmSegmentsImpl;
@@ -60,6 +61,9 @@ class OmSegments {
   boost::optional<std::string> IsSegmentSplittable(OmSegment* child);
   boost::optional<std::string> IsSegmentCuttable(OmSegment* seg);
 
+  const std::unordered_map<om::common::SegID,
+            std::vector <om::segment::Edge*>>& GetAdjacencyMap() const;
+
   OmSegment* FindRoot(OmSegment* segment) const;
   OmSegment* FindRoot(const om::common::SegID segID) const;
   om::common::SegID FindRootID(const om::common::SegID segID) const;
@@ -76,10 +80,6 @@ class OmSegments {
   std::vector<om::segment::UserEdge> CutSegment(OmSegment* seg);
   bool JoinEdges(const std::vector<om::segment::UserEdge>& edges);
   std::vector<om::segment::UserEdge> Shatter(OmSegment* seg);
-
-  void AddSegments_BreadthFirstSearch(OmSegmentSelector* sel, om::common::SegID segID);
-  void AddSegments_BFS_DynamicThreshold(OmSegmentSelector* sel, om::common::SegID segID);
-  void Trim(OmSegmentSelector* sel, om::common::SegID segID);
 
   uint32_t getPageSize();
 

@@ -89,13 +89,6 @@ class OmKeyEvents {
   }
 
   bool Release(QKeyEvent* event) {
-    switch (OmStateManager::GetToolMode()) {
-      case om::tool::GROW:
-        //if (toolHandleRelease(event->key())) {
-          //return;
-        //}
-      default:
-        std::cout <<  "key released" << std::hex << event->key() << std::endl;
-    }
+    return false;
   }
 };

@@ -25,30 +25,6 @@ class OmMouseEventRelease {
     state_->SetLastDataPoint(dataClickPoint_);
     om::tool::mode tool = OmStateManager::GetToolMode();
 
-/*
- *    std::unique_ptr<InputContext> inputContext;
- *    switch (tool) {
- *      case om::tool::JOIN:
- *      case om::tool::SPLIT:
- *      case om::tool::MULTISPLIT:
- *        inputContext = std::unique_ptr<InputContext> {
- *          std::make_unique<JoiningSplittingInputContext>(
- *              &state_->getViewGroupState(),
- *              om::mouse::event::getSelectedSegment(
- *                *state_, dataClickPoint_).get_ptr(),
- *              tool) };
- *      default:
- *        break;
- *        // fallthrough
- *    }
- *
- *    if (inputContext && inputContext->mouseReleaseEvent(event)) {
- *      //default camera control context
- *      return;
- *    }
- *
- */
-
     switch (tool) {
       case om::tool::PAINT:
       case om::tool::ERASE:

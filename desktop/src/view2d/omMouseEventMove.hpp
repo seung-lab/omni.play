@@ -38,29 +38,6 @@ class OmMouseEventMove {
 
     state_->SetMousePoint(event);
 
-/*
- *    std::unique_ptr<InputContext> inputContext;
- *    switch (tool_) {
- *      case om::tool::JOIN:
- *      case om::tool::SPLIT:
- *      case om::tool::MULTISPLIT:
- *        inputContext = std::unique_ptr<InputContext> {
- *          std::make_unique<JoiningSplittingInputContext>(
- *              &state_->getViewGroupState(),
- *              om::mouse::event::getSelectedSegment(
- *                *state_, dataClickPoint_).get_ptr(),
- *              tool_) };
- *        break;
- *      default:
- *        break;
- *        // default camera inputContext controls
- *    }
- *    if (inputContext && inputContext->mouseMoveEvent(event)) {
- *      return;
- *    }
- *
- */
-
     if (leftMouseButton_) {
       if (shouldPan()) {
         doPan();
@@ -90,11 +67,6 @@ class OmMouseEventMove {
           }
           state_->SetLastDataPoint(dataClickPoint_);
           break;
-        case om::tool::JOIN:
-        case om::tool::SPLIT:
-        case om::tool::MULTISPLIT:
-          om::mouse::event::doJoinSplitSegment(*state_, dataClickPoint_,
-              tool_);
         default:
           break;
       }

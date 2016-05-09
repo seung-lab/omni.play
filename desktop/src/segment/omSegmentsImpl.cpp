@@ -33,8 +33,9 @@ OmSegmentsImpl::OmSegmentsImpl(SegDataVector& data, SegListDataVector& listData,
       segmentLists_(new OmSegmentLists(meta_, *store_, sdw)),
       selection_(new om::segment::Selection(*graph_, *store_, *segmentLists_)),
       thresholder_(new om::segment::GraphThresholder(
-          *graph_, valid, *segmentLists_, *store_, mst_, adjacencyMap_) ) {
+          *graph_, valid, *segmentLists_, *store_, mst_) ) {
   setGlobalThreshold();
+  populateAdjacencyMap();
 }
 
 OmSegmentsImpl::~OmSegmentsImpl() {}
@@ -498,6 +499,11 @@ void OmSegmentsImpl::SetNote(om::common::SegID segID, std::string note) {
   segmentNotes_[segID] = note;
 }
 
+const std::unordered_map<om::common::SegID,
+  std::vector <om::segment::Edge*>>& OmSegmentsImpl::GetAdjacencyMap() const {
+  return adjacencyMap_;
+}
+
 OmSegment* OmSegmentsImpl::FindRoot(const om::common::SegID segID) const {
   auto root = FindRootID(segID);
   if (root) {
@@ -524,20 +530,18 @@ OmSegment* OmSegmentsImpl::GetSegment(const om::common::SegID value) const {
   return store_->GetSegment(value);
 }
 
-void OmSegmentsImpl::AddSegments_BreadthFirstSearch(OmSegmentSelector* sel, om::common::SegID SegmentID) {
-  thresholder_->AddSegments_BreadthFirstSearch(sel, SegmentID);
-}
-
-void OmSegmentsImpl::Trim(OmSegmentSelector* sel, om::common::SegID SegmentID) {
-  thresholder_->Trim(sel, SegmentID);
-}
-
-void OmSegmentsImpl::AddSegments_BFS_DynamicThreshold(OmSegmentSelector* sel, om::common::SegID SegmentID) {
-  thresholder_->AddSegments_BFS_DynamicThreshold(sel, SegmentID);
-}
-
 void OmSegmentsImpl::SortAdjacencyMap() {
   for(auto keyValue : adjacencyMap_) {
       sort(keyValue.second.begin(), keyValue.second.end());
+  }
+}
+
+/*
+ * TODO add userEdges
+ */
+void OmSegmentsImpl::populateAdjacencyMap() {
+  for (int i = 0; i < mst_.size(); ++i) {
+    adjacencyMap_[mst_[i].node1ID].push_back(&mst_[i]);
+    adjacencyMap_[mst_[i].node2ID].push_back(&mst_[i]);
   }
 }

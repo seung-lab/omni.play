@@ -14,7 +14,7 @@
 // mouse release
 bool om::JoinSplitRunner::FinishSelectingSegments(OmViewGroupState& vgs,
     const om::tool::mode tool) {
-  OmJoiningSplitting& joiningSplitting = vgs.JoiningSplitting();
+  OmJoiningSplitting& joiningSplitting = *vgs.GetJoiningSplitting();
 
   // Finished state does not have any segments to select thus, an invalid cmd
   if (joiningSplitting.IsFinished()
@@ -29,7 +29,6 @@ bool om::JoinSplitRunner::FinishSelectingSegments(OmViewGroupState& vgs,
 
   if (joiningSplitting.IsFinished() && !firstBuffer.empty()
       && !secondBuffer.empty()) {
-  std::cout << "is finished and performing thing" << joiningSplitting.IsFinished() << std::endl;
 
     OmSegment* firstSegment = SegmentDataWrapper(vgs.Segmentation(),
         *joiningSplitting.FirstBuffer().begin()).GetSegment();
@@ -66,6 +65,6 @@ bool om::JoinSplitRunner::SelectSegment(OmViewGroupState& vgs,
   if (!segmentDataWrapper || !segmentDataWrapper->IsSegmentValid()) {
     return false;
   }
-  vgs.JoiningSplitting().SelectSegment(tool, *segmentDataWrapper);
+  vgs.GetJoiningSplitting()->SelectSegment(tool, *segmentDataWrapper);
   return true;
 }

@@ -8,7 +8,6 @@
 #include "gui/widgets/omSegmentContextMenu.h"
 #include "gui/widgets/omTellInfo.hpp"
 #include "gui/controls/inputContext.hpp"
-#include "gui/controls/joiningSplittingInputContext.hpp"
 #include "landmarks/omLandmarks.hpp"
 #include "view2d/brush/omBrushSelect.hpp"
 #include "view2d/omFillTool.hpp"
@@ -48,30 +47,6 @@ class OmMouseEventPress {
 
     state_->SetMousePanStartingPt(
         om::coords::Screen(event->x(), event->y(), state_->Coords()));
-
-/*
- *    std::unique_ptr<InputContext> inputContext;
- *    switch (tool_) {
- *      case om::tool::JOIN:
- *      case om::tool::SPLIT:
- *      case om::tool::MULTISPLIT:
- *        inputContext = std::unique_ptr<InputContext> {
- *          std::make_unique<JoiningSplittingInputContext>(
- *              &state_->getViewGroupState(), 
- *              om::mouse::event::getSelectedSegment(
- *                *state_, dataClickPoint_).get_ptr(),
- *              tool_) };
- *        break;
- *      default:
- *        break;
- *        // fallthrough
- *    }
- *
- *    if (inputContext && inputContext->mousePressEvent(event)) {
- *      return;
- *      //default camera control context
- *    }
- */
 
     if (leftMouseButton_) {
       switch (tool_) {
@@ -215,9 +190,6 @@ class OmMouseEventPress {
       case om::tool::ANNOTATE:
         addAnnotation();
         break;
-      case om::tool::GROW:
-        grow();
-        break;
       default:
         return;
     }
@@ -335,32 +307,5 @@ class OmMouseEventPress {
 
     manager.Add(dataClickPoint_, vgs.getAnnotationString(),
                 vgs.getAnnotationColor(), vgs.getAnnotationSize());
-  }
-
-  void grow() {
-    boost::optional<SegmentDataWrapper> sdw =
-      om::mouse::event::getSelectedSegment(*state_, dataClickPoint_);
-    if(!sdw){
-      return;
-    }
-    SegmentDataWrapper& seg = *sdw;
-
-    if(!seg.IsSegmentValid()) {
-      return;
-    }
-    SegmentationDataWrapper segmentation = seg.MakeSegmentationDataWrapper();
-
-    OmSegments *Segments = segmentation.Segments();
-
-    OmSegmentSelector sel(segmentation, this, "view2dEvent" );
-
-    // only call grow when shift key is pressed
-    if (shiftKey_) {
-      if (altKey_) {
-        Segments->Trim(&sel, seg.GetSegmentID());
-      } else {
-        Segments->AddSegments_BreadthFirstSearch(&sel, seg.GetSegmentID());
-      }
-    }
   }
 };

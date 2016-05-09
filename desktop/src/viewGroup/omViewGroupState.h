@@ -14,6 +14,7 @@ class OmColorizers;
 class OmLandmarks;
 class OmSegmentColorizer;
 class OmJoiningSplitting;
+class Growing;
 class OmSegmentSelector;
 class OmTileCoord;
 class OmViewGroupView2dState;
@@ -50,7 +51,8 @@ class OmViewGroupState : public OmManageableObject {
   void SetShowValidMode(bool mode, bool incolor);
   bool shouldVolumeBeShownBroken();
 
-  OmJoiningSplitting& JoiningSplitting() { return *joiningSplitting_; }
+  OmJoiningSplitting* GetJoiningSplitting() { return joiningSplitting_.get(); }
+  Growing* GetGrowing() { return growing_.get(); }
 
   std::shared_ptr<OmSegmentSelector> GetOrCreateSelector(om::common::ID segmentationID,
       const std::string& comment);
@@ -106,6 +108,7 @@ class OmViewGroupState : public OmManageableObject {
   std::unique_ptr<OmColorizers> colorizers_;
   std::unique_ptr<OmZoomLevel> zoomLevel_;
   std::unique_ptr<OmJoiningSplitting> joiningSplitting_;
+  std::unique_ptr<Growing> growing_;
   std::unique_ptr<OmLandmarks> landmarks_;
   std::shared_ptr<OmSegmentSelector> selector_;
 
