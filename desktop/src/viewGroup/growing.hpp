@@ -80,7 +80,7 @@ class Growing {
     om::segment::Edge *currEdge;
     om::common::SegID currSegment, nextSegment;
 
-    uint32_t mini = -1;
+    uint32_t minOrderOfAdding = -1;
 
     if (!selector.GetOrderOfAdding(segmentID)) {
       auto mapIter = adjacencyMap.find(currSegment);
@@ -94,15 +94,19 @@ class Growing {
             nextSegment = currEdge->node2ID;
           }
 
-          if (selector.GetOrderOfAdding(nextSegment) &&
-              (mini == -1 || selector.GetOrderOfAdding(nextSegment) < mini)) {
-            mini = selector.GetOrderOfAdding(nextSegment);
+          if (selector.GetOrderOfAdding(nextSegment)
+              && (minOrderOfAdding == -1
+                || selector.GetOrderOfAdding(nextSegment) < minOrderOfAdding)) {
+            minOrderOfAdding = selector.GetOrderOfAdding(nextSegment);
           }
         }
       }
     } else {
-      mini = selector.GetOrderOfAdding(segmentID);
+      minOrderOfAdding = selector.GetOrderOfAdding(segmentID);
     }
+
+    log_debugs << "Trying to trim " << segmentID << " minOrderOfAdding is " <<
+      minOrderOfAdding;
 
     std::queue <om::common::SegID> q;
     q.push(segmentID);
@@ -129,22 +133,27 @@ class Growing {
         }
 
         log_debugs << "TRIM for (" << nextSegment << ") looking at: " <<
-                    currEdge->node1ID << " - " << currEdge->node2ID <<
-                    " (" << selector.GetOrderOfAdding(nextSegment) << ") <=? mini (" <<
-                      mini << ")";
+                    currSegment << " - " << nextSegment <<
+                    " (" << selector.GetOrderOfAdding(nextSegment) <<
+                    ") vs minOrderOfAdding (" << minOrderOfAdding << ")";
 
-        if (selector.GetOrderOfAdding(nextSegment) <= mini) {
+        if (selector.GetOrderOfAdding(nextSegment) <= minOrderOfAdding) {
+          log_debugs << "order of segment is before selected segment";
           continue;
         }
 
-        if (! selector.IsSegmentSelected(nextSegment)) {
+        if (!selector.IsSegmentSelected(nextSegment)) {
+          log_debugs << "Segment is not selected";
           continue;
         }
+
         if (setToRemove.find(nextSegment) != setToRemove.end() ) {
+          log_debugs << "Segment already included for removal";
           continue;
         }
 
         q.push(nextSegment);
+        log_debugs << "Removing segment" << nextSegment;
 
         setToRemove.insert(nextSegment);
       }

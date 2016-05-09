@@ -136,16 +136,13 @@ bool OmSegmentSelector::IsSegmentSelected(const om::common::SegID segID) {
 }
 
 bool OmSegmentSelector::UpdateSelectionNow() {
-  if (params_->oldSelectedIDs == params_->newSelectedIDs) {
-    // no change in selected set
-    return false;
-  }
-
   // add any newly selected ids to the master selection list
   bool selectionIsChanged = 
     selection_->UpdateSegmentSelection(params_->newSelectedIDs, params_->addToRecentList);
 
   if (selectionIsChanged) {
+    // note the orders may be modified after update selection
+    params_->newSelectedIDs = selection_->GetSelectedSegmentIDsWithOrder();
     OmCacheManager::TouchFreshness();
     om::event::SegmentModified(params_);
   }
@@ -193,6 +190,12 @@ void OmSegmentSelector::removeSegmentFromSelectionParameters(om::common::SegID s
 }
 
 uint32_t OmSegmentSelector::GetOrderOfAdding(const om::common::SegID segID) {
-  return selection_->GetOrderOfAdding(segID);
+  auto iter = params_->newSelectedIDs.find(segID);
+
+  if (iter != params_->newSelectedIDs.end()) {
+    return iter->second;
+  } else {
+    return 0;
+  }
 }
 

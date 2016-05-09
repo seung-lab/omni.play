@@ -34,6 +34,8 @@ class GrowInputContext
         return growToThreshold(mouseEvent->x(), mouseEvent->y());
       case (int)Qt::RightButton | (int)Qt::ShiftModifier:
       case (int)Qt::LeftButton | (int)Qt::ControlModifier:
+      case (int)Qt::LeftButton | (int)Qt::ControlModifier
+        | (int)Qt::ShiftModifier:
         return trim(mouseEvent->x(), mouseEvent->y());
       default:
         return false;
@@ -85,6 +87,7 @@ class GrowInputContext
       findSegmentFunction_(x, y);
 
     if (!segmentDataWrapper || !segmentDataWrapper->IsSegmentValid()) {
+      log_infos << "No segment selected" << std::endl;
       return false;
     }
 
@@ -106,6 +109,7 @@ class GrowInputContext
       findSegmentFunction_(x, y);
 
     if (!segmentDataWrapper || !segmentDataWrapper->IsSegmentValid()) {
+      log_infos << "No segment selected";
       return false;
     }
 
@@ -118,6 +122,7 @@ class GrowInputContext
         segmentDataWrapper->MakeSegmentationDataWrapper()
           .Segments()->GetAdjacencyMap());
 
+    selector->UpdateSelectionNow();
     return true;
   }
 };
