@@ -13,10 +13,10 @@ class userSettings {
   const double defaultThreshold_;
   const double defaultSizeThreshold_;
   const bool defaultShowAnnotations_;
-  const double defaultASThreshold_;
+  const double defaultGrowThreshold_;
   double threshold_;
   double sizeThreshold_;
-  double automaticSpreadingThreshold_;
+  double growThreshold_;
   int sizeThreshold_direction_;
   bool showAnnotations_;
 
@@ -26,10 +26,10 @@ class userSettings {
         defaultThreshold_(0.999),
         defaultSizeThreshold_(250),
         defaultShowAnnotations_(false),
-        defaultASThreshold_(0.999),
+        defaultGrowThreshold_(0.999),
         threshold_(defaultThreshold_),
         sizeThreshold_(defaultSizeThreshold_),
-        automaticSpreadingThreshold_(defaultASThreshold_),
+        growThreshold_(defaultGrowThreshold_),
         sizeThreshold_direction_(0),
         showAnnotations_(defaultShowAnnotations_) {
     log_infos << "New User Settings";
@@ -57,9 +57,9 @@ class userSettings {
 
   inline void setAnnotationVisible(float val) { showAnnotations_ = val; }
 
-  inline float getASThreshold() { return automaticSpreadingThreshold_; }
+  inline float getGrowThreshold() { return growThreshold_; }
 
-  inline void setASThreshold(float val) { automaticSpreadingThreshold_ = val; }
+  inline void setGrowThreshold(float val) { growThreshold_ = val; }
 };
 
 }  // namespace om

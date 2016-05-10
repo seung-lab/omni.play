@@ -1,7 +1,7 @@
 #include "events/events.h"
 #include "gui/sidebars/right/rightImpl.h"
 #include "gui/sidebars/right/graphTools/mstThresholdSpinBox.hpp"
-#include "gui/sidebars/right/graphTools/automaticSpreadingThresholdSpinBox.hpp"
+#include "gui/sidebars/right/graphTools/growThresholdSpinBox.hpp"
 #include "gui/sidebars/right/graphTools/graphTools.h"
 #include "gui/widgets/toolButton.hpp"
 #include "gui/sidebars/right/graphTools/showBreakWidget.hpp"
@@ -49,14 +49,14 @@ QWidget* GraphTools::thresholdBox() {
 
   QLabel *mstThresholdLabel = new QLabel(tr("Global Threshold"));
   threshold_ = new MSTThresholdSpinBox(this);
-  QLabel *automaticSpreadThresholdLabel = new QLabel(tr("Auto Spread"));
-  asthreshold_ = new AutomaticSpreadingThresholdSpinBox(this);
+  QLabel *growThresholdLabel = new QLabel(tr("Grow Threshold"));
+  growThreshold_ = new GrowThresholdSpinBox(this);
 
   QVBoxLayout* layout = new QVBoxLayout(widget);
   layout->addWidget(mstThresholdLabel);
   layout->addWidget(threshold_);
-  layout->addWidget(automaticSpreadThresholdLabel);
-  layout->addWidget(asthreshold_);
+  layout->addWidget(growThresholdLabel);
+  layout->addWidget(growThreshold_);
 
   return widget;
 }

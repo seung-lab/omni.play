@@ -8,12 +8,12 @@
 #include "utility/dataWrappers.h"
 #include "volume/omSegmentation.h"
 
-class AutomaticSpreadingThresholdSpinBox
+class GrowThresholdSpinBox
     : public OmDoubleSpinBox,
       public om::event::MSTEventListener {
 Q_OBJECT
 public:
-    AutomaticSpreadingThresholdSpinBox(GraphTools* d)
+    GrowThresholdSpinBox(GraphTools* d)
         : OmDoubleSpinBox(d, false)
         , mParent(d)
     {
@@ -54,7 +54,7 @@ private:
             return;
         }
 
-        mParent->GetSDW().GetSegmentation()->SetASThreshold(newThreshold);
+        mParent->GetSDW().GetSegmentation()->SetGrowThreshold(newThreshold);
     }
 
     boost::optional<double> getCurVolThreshold() {
@@ -65,6 +65,6 @@ private:
        }
 
        OmSegmentation* seg = sdw.GetSegmentation();
-       return boost::optional<double>(seg->GetASThreshold());
+       return boost::optional<double>(seg->GetGrowThreshold());
     }
 };

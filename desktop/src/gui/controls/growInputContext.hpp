@@ -107,7 +107,7 @@ class GrowInputContext
           segmentDataWrapper->GetSegmentationID(), "Grow Selector");
     selector->SetFocusSegment(segmentDataWrapper->GetSegmentID());
     double threshold = OmProject::Globals().Users().UserSettings()
-      .getASThreshold();
+      .getGrowThreshold();
 
     viewGroupState_->GetGrowing()->GrowBreadthFirstSearch(*selector, threshold,
         viewGroupState_->Segmentation().Segments()->GetAdjacencyMap());
