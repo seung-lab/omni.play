@@ -11,6 +11,7 @@ class AnnotationEvent;
 class NonFatalEvent;
 class PreferenceEvent;
 class MSTEvent;
+class UserSettingsUpdatedEvent;
 class SegmentEvent;
 class UIEvent;
 class ExecuteOnMainEvent;
@@ -33,6 +34,11 @@ struct PreferenceEventListener : public Listener {
 struct MSTEventListener : public Listener {
   MSTEventListener() : Listener(Klass::mst) {}
   virtual void RefreshMSTEvent(MSTEvent*) = 0;
+};
+
+struct UserSettingsUpdatedEventListener : public Listener {
+  UserSettingsUpdatedEventListener() : Listener(Klass::userSettings) {}
+  virtual void UserSettingsUpdatedEvent(UserSettingsUpdatedEvent*) = 0;
 };
 
 struct SegmentEventListener : public Listener {

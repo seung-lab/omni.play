@@ -1,0 +1,24 @@
+#pragma once
+#include "precomp.h"
+
+#include "events/details/event.h"
+
+namespace om {
+namespace event {
+
+class UserSettingsUpdatedEvent : public Event {
+ public:
+  static const QEvent::Type USER_SETTINGS_UPDATED;
+
+  UserSettingsUpdatedEvent() : Event(Klass::userSettings, USER_SETTINGS_UPDATED) {}
+
+  void Dispatch(Listener* base) {
+    auto* list = dynamic_cast<UserSettingsUpdatedEventListener*>(base);
+    assert(list);
+
+    if (type_ == USER_SETTINGS_UPDATED) return list->UserSettingsUpdatedEvent(this);
+    throw om::ArgException("unknown event type");
+  }
+};
+}
+}  // om::event::

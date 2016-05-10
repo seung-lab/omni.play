@@ -36,6 +36,8 @@ void UpdateSegmentPropBox(QWidget* widget, const QString& title);
 
 // used to update GUI spin box value from do/undo action
 void RefreshMSTthreshold();
+// notify update with user setttings i.e. grow threshold
+void UserSettingsUpdated();
 
 void NonFatalEventOccured(const QString err);
 

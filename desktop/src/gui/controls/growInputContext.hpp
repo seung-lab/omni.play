@@ -11,6 +11,7 @@
 #include "segment/actions/omJoinSplitRunner.hpp"
 #include "segment/omSegments.h"
 #include "segment/omSegmentSelector.h"
+#include "events/events.h"
 
 class GrowInputContext
 : public InputContext,
@@ -90,6 +91,7 @@ class GrowInputContext
         viewGroupState_->Segmentation().Segments()->GetAdjacencyMap());
     selector->UpdateSelectionNow();
 
+    om::events::UserSettingsUpdatedEvent();
     return true;
   }
 

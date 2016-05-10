@@ -10,7 +10,7 @@
 
 class GrowThresholdSpinBox
     : public OmDoubleSpinBox,
-      public om::event::MSTEventListener {
+      public om::event::UserSettingsUpdatedEventListener {
 Q_OBJECT
 public:
     GrowThresholdSpinBox(GraphTools* d)
@@ -26,8 +26,9 @@ public:
 private:
     GraphTools *const mParent;
 
-    virtual void RefreshMSTEvent(om::event::MSTEvent*) {
-        boost::optional<double> threshold = getCurVolThreshold();
+    virtual void UserSettingsUpdatedEvent(
+        om::event::UserSettingsUpdatedEvent*) override {
+        boost::optional<double> threshold = getGrowThreshold();
         if (threshold) {
             setGUIvalue(*threshold);
         }
@@ -36,7 +37,7 @@ private:
     void setInitialGUIThresholdValue() {
         double t = 0.95;
 
-        boost::optional<double> threshold = getCurVolThreshold();
+        boost::optional<double> threshold = getGrowThreshold();
         if (threshold) {
             t = *threshold;
         }
@@ -45,7 +46,7 @@ private:
     }
 
     void actUponValueChange(const double newThreshold) {
-        boost::optional<double> threshold = getCurVolThreshold();
+        boost::optional<double> threshold = getGrowThreshold();
         if (!threshold) {
             return;
         }
@@ -57,7 +58,7 @@ private:
         mParent->GetSDW().GetSegmentation()->SetGrowThreshold(newThreshold);
     }
 
-    boost::optional<double> getCurVolThreshold() {
+    boost::optional<double> getGrowThreshold() {
        SegmentationDataWrapper sdw = mParent->GetSDW();
 
        if (!sdw.IsSegmentationValid()) {
