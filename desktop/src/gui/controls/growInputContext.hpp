@@ -49,6 +49,7 @@ class GrowInputContext
       case (int)Qt::LeftButton:
       case (int)Qt::LeftButton | (int)Qt::ControlModifier:
         viewGroupState_->EndSelector();
+        return true;
       default:
         return false;
     }
@@ -58,10 +59,12 @@ class GrowInputContext
     Qt::KeyboardModifiers modifiers = wheelEvent->modifiers();
     const int numDegrees = wheelEvent->delta() / 8;
     const int numSteps = numDegrees / 15;
-    if (modifiers & Qt::ShiftModifier) {
-      return growIncremental(wheelEvent->x(), wheelEvent->y(), numSteps >= 0);
+    switch ((int)modifiers) {
+      case (int)Qt::ShiftModifier:
+        return growIncremental(numSteps >= 0);
+      default:
+        return false;
     }
-    return false;
   }
 
   virtual bool keyReleaseEvent(QKeyEvent *keyEvent) override {
@@ -78,8 +81,16 @@ class GrowInputContext
  private:
   om::tool::mode tool_;
 
-  bool growIncremental(int x, int y, bool isGrowing) {
-    return false;
+  bool growIncremental(bool isGrowing) {
+    std::shared_ptr<OmSegmentSelector> selector =
+      viewGroupState_->GetOrCreateSelector(
+          viewGroupState_->Segmentation().id(), "Grow Selector");
+
+    viewGroupState_->GetGrowing()->GrowIncremental(*selector, isGrowing,
+        viewGroupState_->Segmentation().Segments()->GetAdjacencyMap());
+    selector->UpdateSelectionNow();
+
+    return true;
   }
 
   bool growToThreshold(int x, int y) {
@@ -94,12 +105,15 @@ class GrowInputContext
     std::shared_ptr<OmSegmentSelector> selector =
       viewGroupState_->GetOrCreateSelector(
           segmentDataWrapper->GetSegmentationID(), "Grow Selector");
+    selector->SetFocusSegment(segmentDataWrapper->GetSegmentID());
+    double threshold = OmProject::Globals().Users().UserSettings()
+      .getASThreshold();
 
-    viewGroupState_->GetGrowing()->GrowBreadthFirstSearch(*selector,
-        segmentDataWrapper->GetSegmentID(),
-        segmentDataWrapper->MakeSegmentationDataWrapper()
-          .Segments()->GetAdjacencyMap());
+    viewGroupState_->GetGrowing()->GrowBreadthFirstSearch(*selector, threshold,
+        viewGroupState_->Segmentation().Segments()->GetAdjacencyMap());
 
+    // reset the focus element to the first element that was clicked on
+    selector->SetFocusSegment(segmentDataWrapper->GetSegmentID());
     selector->UpdateSelectionNow();
     return true;
   }
@@ -119,8 +133,7 @@ class GrowInputContext
 
     viewGroupState_->GetGrowing()->Trim(*selector,
         segmentDataWrapper->GetSegmentID(),
-        segmentDataWrapper->MakeSegmentationDataWrapper()
-          .Segments()->GetAdjacencyMap());
+        viewGroupState_->Segmentation().Segments()->GetAdjacencyMap());
 
     selector->UpdateSelectionNow();
     return true;

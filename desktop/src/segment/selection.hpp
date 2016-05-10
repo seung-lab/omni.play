@@ -114,7 +114,7 @@ class Selection {
     return nextOrder_;
   }
 
-  inline void Clear() { selectedIDsToOrders_.clear(); nextOrder_ = 0;}
+  inline void Clear() { selectedIDsToOrders_.clear(); nextOrder_ = 1;}
 
   uint32_t GetOrderOfAdding(const common::SegID segID) {
     common::SegIDMap::const_iterator iter = selectedIDsToOrders_.find(segID);

@@ -7,20 +7,25 @@
 
 class Growing {
  public:
-  void GrowBreadthFirstSearch(OmSegmentSelector& selector, om::common::SegID segmentID,
-    const std::unordered_map<om::common::SegID,
-     std::vector <om::segment::Edge*>>& adjacencyMap) {
+  void GrowBreadthFirstSearch(OmSegmentSelector& selector, double threshold,
+      const std::unordered_map<om::common::SegID,
+      std::vector <om::segment::Edge*>>& adjacencyMap) {
     std::queue <om::common::SegID> q;
     om::segment::Edge *currEdge;
     om::common::SegID currSegment, nextSegment;
-    double threshold = OmProject::Globals().Users().UserSettings().getASThreshold();
 
-    q.push(segmentID);
+    // set the current selection so we can increment/decrement
+    currentThreshold = threshold;
+    om::common::SegID selectedSegmentID = selector.GetFocusSegment();
+    log_infos << "Grow BFS : " << selectedSegmentID << " with threshold " <<
+      currentThreshold;
+
+    q.push(selectedSegmentID);
 
     om::common::SegIDList vecToAdd;
     om::common::SegIDSet setToAdd;
-    setToAdd.insert(segmentID);
-    vecToAdd.push_back(segmentID);
+    setToAdd.insert(selectedSegmentID);
+    vecToAdd.push_back(selectedSegmentID);
 
     int br=0;
     while (!q.empty()) {
@@ -38,6 +43,8 @@ class Growing {
         continue;
       }
 
+      uint32_t currOrderOfAdding = selector.GetOrderOfAdding(currSegment);
+
       for ( int i = 0; i < mapIter->second.size(); i++ ) {
         currEdge = mapIter->second[i];
 
@@ -47,22 +54,24 @@ class Growing {
           nextSegment = currEdge->node2ID;
         }
 
-        log_debugs << "BFS for (" << currSegment << ") looking at: " << nextSegment <<
-                      " (" << currEdge->threshold << ") <? (" << threshold << ")";
+        log_debugs << "BFS for (" << currSegment << ") looking at: " <<
+          nextSegment << " (" << currEdge->threshold << ") <? (" <<
+          threshold << ")";
 
         if (currEdge->threshold < threshold) {
+          log_debugs << "threshold is too small";
           continue;
         }
 
-        if (selector.IsSegmentSelected(nextSegment)) {
-          continue;
-        }
         if (setToAdd.find(nextSegment) != setToAdd.end()) {
+          log_debugs << "segment already added";
           continue;
         }
 
         // don't traverse previously selected edges
-        if (selector.GetOrderOfAdding(nextSegment)) {
+        uint32_t nextOrderOfAdding = selector.GetOrderOfAdding(nextSegment);
+        if (nextOrderOfAdding && currOrderOfAdding > nextOrderOfAdding) {
+          log_debugs << "segment previously added already";
           continue;
         }
 
@@ -82,30 +91,11 @@ class Growing {
 
     uint32_t minOrderOfAdding = -1;
 
-    if (!selector.GetOrderOfAdding(segmentID)) {
-      auto mapIter = adjacencyMap.find(currSegment);
-      if (mapIter != adjacencyMap.end()) {
-        for (int i = 0; i < mapIter->second.size(); i++) {
-          currEdge = mapIter->second[i];
-
-          if (segmentID == currEdge->node2ID) {
-            nextSegment = currEdge->node1ID;
-          } else {
-            nextSegment = currEdge->node2ID;
-          }
-
-          if (selector.GetOrderOfAdding(nextSegment)
-              && (minOrderOfAdding == -1
-                || selector.GetOrderOfAdding(nextSegment) < minOrderOfAdding)) {
-            minOrderOfAdding = selector.GetOrderOfAdding(nextSegment);
-          }
-        }
-      }
-    } else {
+    if (selector.GetOrderOfAdding(segmentID)) {
       minOrderOfAdding = selector.GetOrderOfAdding(segmentID);
     }
 
-    log_debugs << "Trying to trim " << segmentID << " minOrderOfAdding is " <<
+    log_infos << "Trying to trim " << segmentID << " minOrderOfAdding is " <<
       minOrderOfAdding;
 
     std::queue <om::common::SegID> q;
@@ -132,17 +122,19 @@ class Growing {
           nextSegment = currEdge->node2ID;
         }
 
+        uint32_t nextOrderOfAdding = selector.GetOrderOfAdding(nextSegment);
+
         log_debugs << "TRIM for (" << nextSegment << ") looking at: " <<
                     currSegment << " - " << nextSegment <<
-                    " (" << selector.GetOrderOfAdding(nextSegment) <<
+                    " (" << nextOrderOfAdding <<
                     ") vs minOrderOfAdding (" << minOrderOfAdding << ")";
 
-        if (selector.GetOrderOfAdding(nextSegment) <= minOrderOfAdding) {
+        if (nextOrderOfAdding <= minOrderOfAdding) {
           log_debugs << "order of segment is before selected segment";
           continue;
         }
 
-        if (!selector.IsSegmentSelected(nextSegment)) {
+        if (!nextOrderOfAdding) {
           log_debugs << "Segment is not selected";
           continue;
         }
@@ -162,17 +154,33 @@ class Growing {
     selector.RemoveTheseSegments(setToRemove);
   }
 
-  bool GrowIncremental(OmSegmentSelector& selector, bool isGrowing) {
-    double threshold = OmProject::Globals().Users().UserSettings().getASThreshold();
-    double newThreshold;
+  void GrowIncremental(OmSegmentSelector& selector,
+      bool isGrowing, const std::unordered_map<om::common::SegID,
+      std::vector <om::segment::Edge*>>& adjacencyMap) {
     if (isGrowing) {
-      newThreshold = threshold + .1;
+      currentThreshold += .001;
     } else {
-      newThreshold = threshold -.1;
+      currentThreshold -= .001;
     }
 
-    OmProject::Globals().Users().UserSettings().setASThreshold(newThreshold);
+    // enforce limits to the threshold
+    if (currentThreshold > 1) {
+      currentThreshold = 1;
+    }
 
-    return false;
+    if (currentThreshold < 0) {
+      currentThreshold = 0;
+    }
+
+    om::common::SegID selectedSegmentID = selector.GetFocusSegment();
+    if (selectedSegmentID) {
+      selector.selectJustThisSegment(selectedSegmentID, true);
+      GrowBreadthFirstSearch(selector, currentThreshold, adjacencyMap);
+      selector.SetFocusSegment(selectedSegmentID);
+    }
   }
+
+ private:
+
+  double currentThreshold;
 };

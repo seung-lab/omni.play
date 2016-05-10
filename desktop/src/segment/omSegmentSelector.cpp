@@ -64,9 +64,13 @@ void OmSegmentSelector::selectJustThisSegment(
 
 // this indicates what segment we selected, also used to tell the segment
 // list box to scroll to the selected row for this segment
-void OmSegmentSelector::setSelectedSegment(const om::common::SegID segID) {
+void OmSegmentSelector::SetFocusSegment(const om::common::SegID segID) {
   params_->sdw.SetSegmentID(segID);
   OmSegmentSelected::Set(params_->sdw);
+}
+
+om::common::SegID OmSegmentSelector::GetFocusSegment() {
+  return params_->sdw.GetSegmentID();
 }
 
 void OmSegmentSelector::InsertSegments(const om::common::SegIDSet& segIDs) {
@@ -180,14 +184,14 @@ void OmSegmentSelector::AutoCenter(const bool autoCenter) {
 
 void OmSegmentSelector::addSegmentToSelectionParameters(om::common::SegID segID) {
   params_->newSelectedIDs.insert(std::pair<om::common::SegID, uint32_t>(segID, nextOrder_++));
-  setSelectedSegment(segID);
+  SetFocusSegment(segID);
 }
 
 void OmSegmentSelector::removeSegmentFromSelectionParameters(om::common::SegID segID) {
   params_->newSelectedIDs.erase(segID);
   // only update the selected segment if any was selected
   if (params_->newSelectedIDs.begin() != params_->newSelectedIDs.end()) {
-    setSelectedSegment(params_->newSelectedIDs.begin()->first);
+    SetFocusSegment(params_->newSelectedIDs.begin()->first);
   }
 }
 

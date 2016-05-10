@@ -51,6 +51,9 @@ class OmSegmentSelector {
   void AutoCenter(const bool autoCenter);
   uint32_t GetOrderOfAdding(const om::common::SegID segID);
 
+  void SetFocusSegment(const om::common::SegID segID);
+  om::common::SegID GetFocusSegment();
+
  private:
   void addSegmentToSelectionParameters(const om::common::SegID segID);
   void removeSegmentFromSelectionParameters(const om::common::SegID segID);
@@ -64,7 +67,6 @@ class OmSegmentSelector {
   OmSegments* segments_;
   om::segment::Selection* selection_;
   std::shared_ptr<OmSelectSegmentsParams> params_;
-  void setSelectedSegment(const om::common::SegID segID);
   uint32_t numberOfAddedSegment;
   uint32_t nextOrder_;
 };
