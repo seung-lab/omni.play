@@ -79,19 +79,45 @@ class GrowInputContext
     }
   }
 
+  const double THRESHOLD_STEP = .001;
+
  private:
   om::tool::mode tool_;
+
+  double getUpdatedThreshold(bool isGrowing) {
+    double threshold = OmProject::Globals().Users().UserSettings()
+      .getGrowThreshold();
+
+    if (isGrowing) {
+      threshold += THRESHOLD_STEP;
+    } else {
+      threshold -= THRESHOLD_STEP;
+    }
+
+    // enforce limits to the threshold
+    if (threshold > 1) {
+      threshold = 1;
+    }
+
+    if (threshold < 0) {
+      threshold = 0;
+    }
+
+    OmProject::Globals().Users().UserSettings().setGrowThreshold(threshold);
+    om::event::UserSettingsUpdated();
+    return threshold;
+  }
 
   bool growIncremental(bool isGrowing) {
     std::shared_ptr<OmSegmentSelector> selector =
       viewGroupState_->GetOrCreateSelector(
           viewGroupState_->Segmentation().id(), "Grow Selector");
 
-    viewGroupState_->GetGrowing()->GrowIncremental(*selector, isGrowing,
+    viewGroupState_->GetGrowing()->GrowIncremental(*selector,
+        isGrowing, getUpdatedThreshold(isGrowing),
         viewGroupState_->Segmentation().Segments()->GetAdjacencyMap());
     selector->UpdateSelectionNow();
 
-    om::event::UserSettingsUpdated();
     return true;
   }
 
@@ -134,7 +160,7 @@ class GrowInputContext
           segmentDataWrapper->GetSegmentationID(), "Grow Selector");
 
     viewGroupState_->GetGrowing()->Trim(*selector,
-        segmentDataWrapper->GetSegmentID(),
+        segmentDataWrapper->GetSegmentID(), 0,
         viewGroupState_->Segmentation().Segments()->GetAdjacencyMap());
 
     selector->UpdateSelectionNow();

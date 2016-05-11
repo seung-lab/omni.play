@@ -3,10 +3,10 @@
 #include "precomp.h"
 #include "segment/types.hpp"
 #include "segment/omSegmentSelector.h"
-#include "users/omUsers.h"
 
 class Growing {
  public:
+
   void GrowBreadthFirstSearch(OmSegmentSelector& selector, double threshold,
       const std::unordered_map<om::common::SegID,
       std::vector <om::segment::Edge*>>& adjacencyMap) {
@@ -15,10 +15,9 @@ class Growing {
     om::common::SegID currSegment, nextSegment;
 
     // set the current selection so we can increment/decrement
-    currentThreshold = threshold;
     om::common::SegID selectedSegmentID = selector.GetFocusSegment();
     log_infos << "Grow BFS : " << selectedSegmentID << " with threshold " <<
-      currentThreshold;
+      threshold;
 
     q.push(selectedSegmentID);
 
@@ -47,6 +46,8 @@ class Growing {
 
       for ( int i = 0; i < mapIter->second.size(); i++ ) {
         currEdge = mapIter->second[i];
+
+        nextSegment = getOtherSegID(currSegment, currEdge);
 
         if (currSegment == currEdge->node2ID) {
           nextSegment = currEdge->node1ID;
@@ -84,7 +85,7 @@ class Growing {
   }
 
   void Trim(OmSegmentSelector& selector, om::common::SegID segmentID,
-      const std::unordered_map<om::common::SegID,
+      double threshold, const std::unordered_map<om::common::SegID,
         std::vector <om::segment::Edge*>>& adjacencyMap) {
     om::segment::Edge *currEdge;
     om::common::SegID currSegment, nextSegment;
@@ -116,11 +117,7 @@ class Growing {
       for (int i = 0; i < mapIter->second.size(); i++) {
         currEdge = mapIter->second[i];
 
-        if (currSegment == currEdge->node2ID) {
-          nextSegment = currEdge->node1ID;
-        } else {
-          nextSegment = currEdge->node2ID;
-        }
+        nextSegment = getOtherSegID(currSegment, currEdge);
 
         uint32_t nextOrderOfAdding = selector.GetOrderOfAdding(nextSegment);
 
@@ -129,7 +126,7 @@ class Growing {
                     " (" << nextOrderOfAdding <<
                     ") vs minOrderOfAdding (" << minOrderOfAdding << ")";
 
-        if (nextOrderOfAdding <= minOrderOfAdding) {
+        if (!selector.IsSegmentSelected(currSegment)) {
           log_debugs << "order of segment is before selected segment";
           continue;
         }
@@ -139,8 +136,13 @@ class Growing {
           continue;
         }
 
-        if (setToRemove.find(nextSegment) != setToRemove.end() ) {
+        if (setToRemove.find(nextSegment) != setToRemove.end()) {
           log_debugs << "Segment already included for removal";
+          continue;
+        }
+
+        if (setToRemove.find(nextSegment) != setToRemove.end()) {
+          log_debugs << "Already removed";
           continue;
         }
 
@@ -155,32 +157,24 @@ class Growing {
   }
 
   void GrowIncremental(OmSegmentSelector& selector,
-      bool isGrowing, const std::unordered_map<om::common::SegID,
+      bool isGrowing, double threshold, const std::unordered_map<om::common::SegID,
       std::vector <om::segment::Edge*>>& adjacencyMap) {
-    if (isGrowing) {
-      currentThreshold += .001;
-    } else {
-      currentThreshold -= .001;
-    }
-
-    // enforce limits to the threshold
-    if (currentThreshold > 1) {
-      currentThreshold = 1;
-    }
-
-    if (currentThreshold < 0) {
-      currentThreshold = 0;
-    }
-
     om::common::SegID selectedSegmentID = selector.GetFocusSegment();
     if (selectedSegmentID) {
       selector.selectJustThisSegment(selectedSegmentID, true);
-      GrowBreadthFirstSearch(selector, currentThreshold, adjacencyMap);
+      GrowBreadthFirstSearch(selector, threshold, adjacencyMap);
       selector.SetFocusSegment(selectedSegmentID);
     }
   }
-
  private:
-
-  double currentThreshold;
+  om::common::SegID getOtherSegID(om::common::SegID segID,
+      om::segment::Edge* edge) {
+    om::common::SegID otherSegID;
+    if (segID == edge->node2ID) {
+      otherSegID = edge->node1ID;
+    } else {
+      otherSegID = edge->node2ID;
+    }
+    return otherSegID;
+  }
 };
