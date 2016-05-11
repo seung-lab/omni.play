@@ -6,81 +6,17 @@
 
 class Growing {
  public:
-
   void GrowBreadthFirstSearch(OmSegmentSelector& selector, double threshold,
       const std::unordered_map<om::common::SegID,
-      std::vector <om::segment::Edge*>>& adjacencyMap) {
-    std::queue <om::common::SegID> q;
-    om::segment::Edge *currEdge;
-    om::common::SegID currSegment, nextSegment;
-
-    // set the current selection so we can increment/decrement
-    om::common::SegID selectedSegmentID = selector.GetFocusSegment();
-    log_infos << "Grow BFS : " << selectedSegmentID << " with threshold " <<
-      threshold;
-
-    q.push(selectedSegmentID);
-
-    om::common::SegIDList vecToAdd;
-    om::common::SegIDSet setToAdd;
-    setToAdd.insert(selectedSegmentID);
-    vecToAdd.push_back(selectedSegmentID);
-
-    int br=0;
-    while (!q.empty()) {
-      br++;
-      currSegment = q.front();
-
-      if (br == 1000) {
-          break;
-      }
-
-      q.pop();
-
-      auto mapIter = adjacencyMap.find(currSegment);
-      if (mapIter == adjacencyMap.end()) {
-        continue;
-      }
-
-      uint32_t currOrderOfAdding = selector.GetOrderOfAdding(currSegment);
-
-      for ( int i = 0; i < mapIter->second.size(); i++ ) {
-        currEdge = mapIter->second[i];
-
-        nextSegment = getOtherSegID(currSegment, currEdge);
-
-        if (currSegment == currEdge->node2ID) {
-          nextSegment = currEdge->node1ID;
-        } else {
-          nextSegment = currEdge->node2ID;
-        }
-
-        log_debugs << "BFS for (" << currSegment << ") looking at: " <<
-          nextSegment << " (" << currEdge->threshold << ") <? (" <<
-          threshold << ")";
-
-        if (currEdge->threshold < threshold) {
-          log_debugs << "threshold is too small";
-          continue;
-        }
-
-        if (setToAdd.find(nextSegment) != setToAdd.end()) {
-          log_debugs << "segment already added";
-          continue;
-        }
-
-        // don't traverse previously selected edges
-        uint32_t nextOrderOfAdding = selector.GetOrderOfAdding(nextSegment);
-        if (nextOrderOfAdding && currOrderOfAdding > nextOrderOfAdding) {
-          log_debugs << "segment previously added already";
-          continue;
-        }
-
-        q.push(nextSegment);
-        setToAdd.insert(nextSegment);
-        vecToAdd.push_back(nextSegment);
-      }
+      std::vector <om::segment::Edge*>>& adjacencyMap)  {
+    om::common::SegID startID = selector.GetFocusSegment();
+    if (!startID) {
+      return;
     }
+
+    om::common::SegIDList vecToAdd =
+      thresholdBreadthFirstSearch(startID, threshold, adjacencyMap);
+
     selector.InsertSegments(vecToAdd);
   }
 
@@ -177,4 +113,73 @@ class Growing {
     }
     return otherSegID;
   }
+
+  std::vector<om::common::SegID> thresholdBreadthFirstSearch(om::common::SegID startID,
+      double threshold, const std::unordered_map<om::common::SegID,
+      std::vector <om::segment::Edge*>>& adjacencyMap) {
+    std::queue <om::common::SegID> q;
+    om::segment::Edge *currEdge;
+    om::common::SegID currSegment, nextSegment;
+
+    log_infos << "Grow BFS : " << selectedSegmentID << " with threshold " <<
+      threshold;
+
+    q.push(startID);
+
+    om::common::SegIDList vecToAdd;
+    om::common::SegIDSet setToAdd;
+    setToAdd.insert(startID);
+    vecToAdd.push_back(startID);
+
+    int br=0;
+    while (!q.empty()) {
+      br++;
+      if (br >= BFS_STEP_LIMIT) {
+          break;
+      }
+
+      currSegment = q.front();
+      q.pop();
+
+      uint32_t currOrderOfAdding = selector.GetOrderOfAdding(currSegment);
+
+      auto mapIter = adjacencyMap.find(currSegment);
+      if (mapIter == adjacencyMap.end()) {
+        continue;
+      }
+
+      for ( int i = 0; i < mapIter->second.size(); i++ ) {
+        currEdge = mapIter->second[i];
+        nextSegment = getOtherSegID(currSegment, currEdge);
+
+        log_debugs << "BFS for (" << currSegment << ") looking at: " <<
+          nextSegment << " (" << currEdge->threshold << ") <? (" <<
+          threshold << ")";
+
+        if (currEdge->threshold < threshold) {
+          log_debugs << "threshold is too small";
+          continue;
+        }
+
+        if (setToAdd.find(nextSegment) != setToAdd.end()) {
+          log_debugs << "segment already added";
+          continue;
+        }
+
+        // don't traverse previously selected edges
+        uint32_t nextOrderOfAdding = selector.GetOrderOfAdding(nextSegment);
+        if (nextOrderOfAdding && currOrderOfAdding > nextOrderOfAdding) {
+          log_debugs << "segment previously added already";
+          continue;
+        }
+
+        q.push(nextSegment);
+        setToAdd.insert(nextSegment);
+        vecToAdd.push_back(nextSegment);
+      }
+    }
+    return vecToAdd;
+  }
+
+  const uint32_t BFS_STEP_LIMIT = 1000;
 };
