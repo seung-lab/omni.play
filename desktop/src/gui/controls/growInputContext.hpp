@@ -91,7 +91,7 @@ class GrowInputContext
         viewGroupState_->Segmentation().Segments()->GetAdjacencyMap());
     selector->UpdateSelectionNow();
 
-    om::events::UserSettingsUpdatedEvent();
+    om::event::UserSettingsUpdated();
     return true;
   }
 
