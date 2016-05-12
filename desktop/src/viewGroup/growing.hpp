@@ -14,7 +14,8 @@ class Growing {
       return;
     }
 
-    om::common::SegIDList vecToAdd =
+    om::common::SegIDList vecToAdd, vecToRemove;
+    std::tie(vecToAdd, vecToRemove) =
       thresholdBreadthFirstSearch(startID, threshold, adjacencyMap, selector);
     /*
      *std::cout << "Trying to add: ";
@@ -121,7 +122,8 @@ class Growing {
     return otherSegID;
   }
 
-  om::common::SegIDList thresholdBreadthFirstSearch(om::common::SegID startID,
+  std::tuple<om::common::SegIDList, om::common::SegIDList>
+    thresholdBreadthFirstSearch(om::common::SegID startID,
       double threshold, const std::unordered_map<om::common::SegID,
       std::vector <om::segment::Edge*>>& adjacencyMap,
       OmSegmentSelector& selector) {
@@ -134,8 +136,8 @@ class Growing {
     q.push(startID);
 
     om::common::SegIDList vecToAdd;
+    om::common::SegIDList vecToRemove;
     om::common::SegIDSet setToAdd;
-    om::common::SegIDList setToRemove;
     setToAdd.insert(startID);
     vecToAdd.push_back(startID);
 
@@ -178,19 +180,73 @@ class Growing {
         if (currEdge->threshold < threshold) {
           log_debugs << "threshold is too small";
           // this asssumes that we already checked that it is valid ordering
-          if (selector.IsSegmentSelected(nextSegment) {
-            setToRemove.push(nextSegment);
+          if (selector.IsSegmentSelected(nextSegment)) {
+            vecToRemove.insert(nextSegment);
           }
           continue;
         }
-
 
         q.push(nextSegment);
         setToAdd.insert(nextSegment);
         vecToAdd.push_back(nextSegment);
       }
     }
-    return vecToAdd;
+    return std::make_tuple(vecToAdd, vecToRemove);
+  }
+
+  om::common::SegIDList removeBreadthFirstSearch(om::common::SegIDList remove,
+      const std::unordered_map<om::common::SegID,
+      std::vector <om::segment::Edge*>>& adjacencyMap,
+      OmSegmentSelector& selector) {
+    std::queue <om::common::SegID> q;
+    om::segment::Edge *currEdge;
+    om::common::SegID currSegment, nextSegment;
+
+    log_infos << "Remove BFS ";
+
+
+    om::common::SegIDList vecToAdd;
+    om::common::SegIDList vecToRemove;
+    om::common::SegIDSet setToAdd;
+    setToAdd.insert(startID);
+    vecToAdd.push_back(startID);
+
+    int br=0;
+    while (!q.empty()) {
+      br++;
+      if (br >= BFS_STEP_LIMIT) {
+          break;
+      }
+
+      currSegment = q.front();
+      q.pop();
+
+      uint32_t currOrderOfAdding = selector.GetOrderOfAdding(currSegment);
+
+      auto mapIter = adjacencyMap.find(currSegment);
+      if (mapIter == adjacencyMap.end()) {
+        continue;
+      }
+
+      for ( int i = 0; i < mapIter->second.size(); i++ ) {
+        currEdge = mapIter->second[i];
+        nextSegment = getOtherSegID(currSegment, currEdge);
+
+        log_debugs << "BFS for (" << currSegment << ") looking at: " <<
+          nextSegment << " (" << currEdge->threshold << ") <? (" <<
+          threshold << ")";
+
+        if (setToAdd.find(nextSegment) != setToAdd.end()) {
+          log_debugs << "segment already being added";
+          continue;
+        }
+
+        uint32_t nextOrderOfAdding = selector.GetOrderOfAdding(nextSegment);
+        if (nextOrderOfAdding && currOrderOfAdding > nextOrderOfAdding) {
+          log_debugs << "segment already added before grow";
+          continue;
+        }
+
   }
 
   const uint32_t BFS_STEP_LIMIT = 1000;
