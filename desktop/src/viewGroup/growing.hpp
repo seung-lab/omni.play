@@ -135,6 +135,7 @@ class Growing {
 
     om::common::SegIDList vecToAdd;
     om::common::SegIDSet setToAdd;
+    om::common::SegIDList setToRemove;
     setToAdd.insert(startID);
     vecToAdd.push_back(startID);
 
@@ -163,22 +164,26 @@ class Growing {
           nextSegment << " (" << currEdge->threshold << ") <? (" <<
           threshold << ")";
 
-        if (currEdge->threshold < threshold) {
-          log_debugs << "threshold is too small";
-          continue;
-        }
-
         if (setToAdd.find(nextSegment) != setToAdd.end()) {
-          log_debugs << "segment already added";
+          log_debugs << "segment already being added";
           continue;
         }
 
-        // don't traverse previously selected edges
         uint32_t nextOrderOfAdding = selector.GetOrderOfAdding(nextSegment);
         if (nextOrderOfAdding && currOrderOfAdding > nextOrderOfAdding) {
-          log_debugs << "segment previously added already";
+          log_debugs << "segment already added before grow";
           continue;
         }
+
+        if (currEdge->threshold < threshold) {
+          log_debugs << "threshold is too small";
+          // this asssumes that we already checked that it is valid ordering
+          if (selector.IsSegmentSelected(nextSegment) {
+            setToRemove.push(nextSegment);
+          }
+          continue;
+        }
+
 
         q.push(nextSegment);
         setToAdd.insert(nextSegment);
