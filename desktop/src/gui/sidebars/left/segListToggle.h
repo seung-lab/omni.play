@@ -9,6 +9,7 @@
 #include "segment/omSegments.h"
 #include "segment/selection.hpp"
 #include "common/string.hpp"
+#include "segment/omSegmentSelector.h"
 
 namespace om {
 namespace gui {
@@ -27,23 +28,20 @@ class SegListToggleButton : public OmButton {
     if (!sdw.IsValidWrapper()) {
       return;
     }
-    common::SegIDSet IDs(segIDs_);
     auto maxID = sdw.Segments()->maxValue();
+    OmSegmentSelector selector(sdw, this, text().toStdString());
     for (const auto& id : segIDs_) {
       if (id <= 0 || id > maxID) {
         log_errors << "Invalid segment id " << id << " in group \""
                    << text().toStdString() << '"';
-        IDs.erase(id);
+      } else {
+        selector.augmentSelectedSet_toggle(id);
       }
+
     }
-
-    sdw.Segments()->Selection().ToggleSegmentSelection(IDs);
-
-    om::event::Redraw2d();
-    om::event::Redraw3d();
   }
 
-  void onRightClick() { OmTellInfo tell(om::string::join(segIDs_)); }
+  void onRightClick() override { OmTellInfo tell(om::string::join(segIDs_)); }
 };
 
 }  // namespace gui
