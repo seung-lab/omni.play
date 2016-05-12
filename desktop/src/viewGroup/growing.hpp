@@ -15,7 +15,14 @@ class Growing {
     }
 
     om::common::SegIDList vecToAdd =
-      thresholdBreadthFirstSearch(startID, threshold, adjacencyMap);
+      thresholdBreadthFirstSearch(startID, threshold, adjacencyMap, selector);
+    /*
+     *std::cout << "Trying to add: ";
+     *for (auto a : vecToAdd) {
+     *  std::cout<< a << ", ";
+     *}
+     *std::cout << std::endl;
+     */
 
     selector.InsertSegments(vecToAdd);
   }
@@ -114,15 +121,15 @@ class Growing {
     return otherSegID;
   }
 
-  std::vector<om::common::SegID> thresholdBreadthFirstSearch(om::common::SegID startID,
+  om::common::SegIDList thresholdBreadthFirstSearch(om::common::SegID startID,
       double threshold, const std::unordered_map<om::common::SegID,
-      std::vector <om::segment::Edge*>>& adjacencyMap) {
+      std::vector <om::segment::Edge*>>& adjacencyMap,
+      OmSegmentSelector& selector) {
     std::queue <om::common::SegID> q;
     om::segment::Edge *currEdge;
     om::common::SegID currSegment, nextSegment;
 
-    log_infos << "Grow BFS : " << selectedSegmentID << " with threshold " <<
-      threshold;
+    log_infos << "Grow BFS : " << startID << " with threshold " << threshold;
 
     q.push(startID);
 

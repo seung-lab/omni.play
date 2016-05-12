@@ -12,6 +12,7 @@
 #include "segment/omSegments.h"
 #include "segment/omSegmentSelector.h"
 #include "events/events.h"
+#include "users/omUsers.h"
 
 class GrowInputContext
 : public InputContext,
