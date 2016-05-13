@@ -62,6 +62,14 @@ void OmSegmentSelector::selectJustThisSegment(
   }
 }
 
+void OmSegmentSelector::BlacklistSegment(const om::common::SegID segID) {
+  blacklist_.insert(segID);
+}
+
+bool OmSegmentSelector::IsBlacklistSegment(const om::common::SegID segID) {
+  return blacklist_.find(segID) != blacklist_.end();
+}
+
 // this indicates what segment we selected, also used to tell the segment
 // list box to scroll to the selected row for this segment
 void OmSegmentSelector::SetFocusSegment(const om::common::SegID segID) {

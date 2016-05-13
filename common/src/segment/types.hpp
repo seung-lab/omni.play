@@ -43,6 +43,14 @@ struct Edge {
       }
       return false;
   }
+
+  uint32_t otherNodeID(uint32_t nodeID) {
+    if (node1ID == nodeID) {
+      return node2ID;
+    } else {
+      return node1ID;
+    }
+  }
 };
 
 struct UserEdge {

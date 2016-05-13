@@ -8,38 +8,30 @@ class Growing {
  public:
   const uint32_t BFS_STEP_LIMIT = 1000;
 
-  bool GrowBreadthFirstSearch(OmSegmentSelector& selector, double threshold,
+  std::tuple<om::common::SegIDList, om::common::SegIDList>
+    PruneBreadthFirstSearch(OmSegmentSelector& selector, double threshold,
       const std::unordered_map<om::common::SegID,
-      std::vector <om::segment::Edge*>>& adjacencyMap)  {
+      std::vector <om::segment::Edge*>>& adjacencyMap) {
+    std::tuple<om::common::SegIDList, om::common::SegIDList> addRemoveTuple;
     om::common::SegID startID = selector.GetFocusSegment();
     if (!startID) {
-      return false;
+      return addRemoveTuple;
     }
 
-    om::common::SegIDList vecToAdd, vecToRemove;
-    std::tie(vecToAdd, vecToRemove) =
-      thresholdBreadthFirstSearch(startID, threshold, adjacencyMap, selector);
-    vecToRemove = removeBreadthFirstSearch(vecToRemove, adjacencyMap, selector);
+    addRemoveTuple = pruneBreadthFirstSearch(startID, threshold, adjacencyMap, selector);
+    om::common::SegIDList vecToRemove =
+      removeBreadthFirstSearch(std::get<1>(addRemoveTuple), adjacencyMap, selector);
 
-    selector.InsertSegments(vecToAdd);
-    selector.RemoveSegments(vecToRemove);
-    return true;
+    return std::make_tuple(std::move(std::get<0>(addRemoveTuple)), vecToRemove);
   }
 
  private:
-  om::common::SegID getOtherSegID(om::common::SegID segID,
-      om::segment::Edge* edge) {
-    om::common::SegID otherSegID;
-    if (segID == edge->node2ID) {
-      otherSegID = edge->node1ID;
-    } else {
-      otherSegID = edge->node2ID;
-    }
-    return otherSegID;
-  }
-
+  /*
+   * BFS over startID as seed and returns a tuple with the segmentsIDs
+   * that are within the threshold and the seeds that are above the threshold
+   */
   std::tuple<om::common::SegIDList, om::common::SegIDList>
-    thresholdBreadthFirstSearch(om::common::SegID startID,
+    pruneBreadthFirstSearch(om::common::SegID startID,
       double threshold, const std::unordered_map<om::common::SegID,
       std::vector <om::segment::Edge*>>& adjacencyMap,
       OmSegmentSelector& selector) {
@@ -76,11 +68,16 @@ class Growing {
 
       for ( int i = 0; i < mapIter->second.size(); i++ ) {
         currEdge = mapIter->second[i];
-        nextSegment = getOtherSegID(currSegment, currEdge);
+        nextSegment = currEdge.otherNodeID(currSegment);
 
         log_debugs << "BFS for (" << currSegment << ") looking at: " <<
           nextSegment << " (" << currEdge->threshold << ") <? (" <<
           threshold << ")";
+
+        if (selector.IsBlacklistSegment(nextSegment)) {
+          log_debugs << "segment is blacklisted";
+          continue;
+        }
 
         if (setToAdd.find(nextSegment) != setToAdd.end()) {
           log_debugs << "segment already being added";
@@ -110,7 +107,7 @@ class Growing {
     return std::make_tuple(vecToAdd, vecToRemove);
   }
 
-  om::common::SegIDList removeBreadthFirstSearch(om::common::SegIDList vecToRemove,
+  om::common::SegIDList removeBreadthFirstSearch(om::common::SegIDList seedsToRemove,
       const std::unordered_map<om::common::SegID,
       std::vector <om::segment::Edge*>>& adjacencyMap,
       OmSegmentSelector& selector) {
@@ -120,11 +117,16 @@ class Growing {
 
     log_infos << "Remove BFS ";
 
-    om::common::SegIDSet setToRemove;
-    for (auto removeID : vecToRemove) {
+    for (auto removeID : seedsToRemove) {
       q.push(removeID);
     }
-    setToRemove.insert(vecToRemove.begin(), vecToRemove.end());
+
+    om::common::SegIDSet setToRemove;
+    om::common::SegIDList vecToRemove;
+
+    setToRemove.insert(seedsToRemove.begin(), seedsToRemove.end());
+    vecToRemove.insert(vecToRemove.begin(), seedsToRemove.begin(),
+        seedsToRemove.end());
 
     int br=0;
     while (!q.empty()) {
@@ -145,7 +147,7 @@ class Growing {
 
       for ( int i = 0; i < mapIter->second.size(); i++ ) {
         currEdge = mapIter->second[i];
-        nextSegment = getOtherSegID(currSegment, currEdge);
+        nextSegment = currEdge.otherNodeID(currSegment);
         uint32_t nextOrderOfAdding = selector.GetOrderOfAdding(nextSegment);
 
         log_debugs << "BFS Trim (" << currSegment << ") looking at: " <<
