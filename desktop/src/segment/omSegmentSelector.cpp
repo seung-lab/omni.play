@@ -89,10 +89,16 @@ void OmSegmentSelector::InsertSegments(const om::common::SegIDList& segIDs) {
   }
 }
 
-/* this function actually removes the input segments*/
-void OmSegmentSelector::RemoveTheseSegments(const om::common::SegIDSet& segIDs) {
+void OmSegmentSelector::RemoveSegments(const om::common::SegIDList& segIDs) {
   om::common::SegID rootID;
+  for (auto id : segIDs) {
+    rootID = segments_->FindRootID(id);
+    removeSegmentFromSelectionParameters(rootID);
+  }
+}
 
+void OmSegmentSelector::RemoveSegments(const om::common::SegIDSet& segIDs) {
+  om::common::SegID rootID;
   for (auto id : segIDs) {
     rootID = segments_->FindRootID(id);
     removeSegmentFromSelectionParameters(rootID);

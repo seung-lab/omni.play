@@ -13,6 +13,7 @@
 #include "segment/omSegmentSelector.h"
 #include "events/events.h"
 #include "users/omUsers.h"
+#include <limits>
 
 class GrowInputContext
 : public InputContext,
@@ -33,12 +34,12 @@ class GrowInputContext
     switch ((int)button | (int)modifiers) {
       case (int)Qt::LeftButton:
       case (int)Qt::LeftButton | (int)Qt::ShiftModifier:
-        return growToThreshold(mouseEvent->x(), mouseEvent->y());
+        return growCoordinates(mouseEvent->x(), mouseEvent->y());
       case (int)Qt::RightButton | (int)Qt::ShiftModifier:
       case (int)Qt::LeftButton | (int)Qt::ControlModifier:
       case (int)Qt::LeftButton | (int)Qt::ControlModifier
         | (int)Qt::ShiftModifier:
-        return trim(mouseEvent->x(), mouseEvent->y());
+        return trimCoordinates(mouseEvent->x(), mouseEvent->y());
       default:
         return false;
     }
@@ -81,6 +82,8 @@ class GrowInputContext
   }
 
   const double THRESHOLD_STEP = .001;
+  const double MAX_THRESHOLD = 1;
+  const double MIN_THRESHOLD = 0;
 
  private:
   om::tool::mode tool_;
@@ -96,12 +99,12 @@ class GrowInputContext
     }
 
     // enforce limits to the threshold
-    if (threshold > 1) {
-      threshold = 1;
+    if (threshold > MAX_THRESHOLD) {
+      threshold = MAX_THRESHOLD;
     }
 
-    if (threshold < 0) {
-      threshold = 0;
+    if (threshold < MIN_THRESHOLD) {
+      threshold = MIN_THRESHOLD;
     }
 
     OmProject::Globals().Users().UserSettings().setGrowThreshold(threshold);
@@ -109,45 +112,21 @@ class GrowInputContext
     return threshold;
   }
 
+  bool growCoordinates(int x, int y) {
+    return growCoordinatesToThreshold(x, y, OmProject::Globals().Users()
+        .UserSettings().getGrowThreshold());
+  }
+
+  bool trimCoordinates(int x, int y) {
+    return growCoordinatesToThreshold(x, y, MAX_THRESHOLD);
+  }
+
   bool growIncremental(bool isGrowing) {
-    std::shared_ptr<OmSegmentSelector> selector =
-      viewGroupState_->GetOrCreateSelector(
-          viewGroupState_->Segmentation().id(), "Grow Selector");
-
-    viewGroupState_->GetGrowing()->GrowIncremental(*selector,
-        isGrowing, getUpdatedThreshold(isGrowing),
-        viewGroupState_->Segmentation().Segments()->GetAdjacencyMap());
-    selector->UpdateSelectionNow();
-
-    return true;
+    return growToThreshold(getUpdatedThreshold(isGrowing),
+        boost::optional<om::common::SegID>());
   }
 
-  bool growToThreshold(int x, int y) {
-    boost::optional<SegmentDataWrapper> segmentDataWrapper = 
-      findSegmentFunction_(x, y);
-
-    if (!segmentDataWrapper || !segmentDataWrapper->IsSegmentValid()) {
-      log_infos << "No segment selected" << std::endl;
-      return false;
-    }
-
-    std::shared_ptr<OmSegmentSelector> selector =
-      viewGroupState_->GetOrCreateSelector(
-          segmentDataWrapper->GetSegmentationID(), "Grow Selector");
-    selector->SetFocusSegment(segmentDataWrapper->GetSegmentID());
-    double threshold = OmProject::Globals().Users().UserSettings()
-      .getGrowThreshold();
-
-    viewGroupState_->GetGrowing()->GrowBreadthFirstSearch(*selector, threshold,
-        viewGroupState_->Segmentation().Segments()->GetAdjacencyMap());
-
-    // reset the focus element to the first element that was clicked on
-    selector->SetFocusSegment(segmentDataWrapper->GetSegmentID());
-    selector->UpdateSelectionNow();
-    return true;
-  }
-
-  bool trim(int x, int y) {
+  bool growCoordinatesToThreshold(int x, int y, double threshold) {
     boost::optional<SegmentDataWrapper> segmentDataWrapper = 
       findSegmentFunction_(x, y);
 
@@ -156,15 +135,33 @@ class GrowInputContext
       return false;
     }
 
+    return growToThreshold(threshold, boost::optional<om::common::SegID>(
+          segmentDataWrapper->GetSegmentID()));
+  }
+
+  bool growToThreshold(double threshold,
+      boost::optional<om::common::SegID> segID) {
     std::shared_ptr<OmSegmentSelector> selector =
       viewGroupState_->GetOrCreateSelector(
-          segmentDataWrapper->GetSegmentationID(), "Grow Selector");
+          viewGroupState_->Segmentation().GetSegmentationID(), "Grow Selector");
+    if (segID) {
+      selector->SetFocusSegment(*segID);
+    }
+    return growToThreshold(*selector, threshold);
+  }
 
-    viewGroupState_->GetGrowing()->Trim(*selector,
-        segmentDataWrapper->GetSegmentID(), 0,
+  bool growToThreshold(OmSegmentSelector& selector, double threshold) {
+    om::common::SegID focusSegment = selector.GetFocusSegment();
+
+    bool success = viewGroupState_->GetGrowing()->GrowBreadthFirstSearch(
+        selector, threshold,
         viewGroupState_->Segmentation().Segments()->GetAdjacencyMap());
 
-    selector->UpdateSelectionNow();
-    return true;
+    // reset the focus element to the first element that was clicked on
+    selector.SetFocusSegment(focusSegment);
+    selector.UpdateSelectionNow();
+    return success;
   }
+
+
 };

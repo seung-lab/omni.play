@@ -34,7 +34,7 @@ namespace OmBrushSelectUtils {
     if (om::common::AddOrSubtract::ADD == addOrSubtract) {
       selector.InsertSegments(segIDs);
     } else {
-      selector.RemoveTheseSegments(segIDs);
+      selector.RemoveSegments(segIDs);
     }
     selector.UpdateSelectionNow();
   }

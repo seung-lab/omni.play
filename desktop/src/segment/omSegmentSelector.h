@@ -32,7 +32,7 @@ class OmSegmentSelector {
   void InsertSegments(const om::common::SegIDSet& segIDs);
   void InsertSegments(const om::common::SegIDList& segIDs);
   void RemoveSegments(const om::common::SegIDSet& segIDs);
-  void RemoveTheseSegments(const om::common::SegIDSet& segIDs);
+  void RemoveSegments(const om::common::SegIDList& segIDs);
 
   void selectJustThisSegment_toggle(const om::common::SegID segID);
   void augmentSelectedSet_toggle(const om::common::SegID segID); 
