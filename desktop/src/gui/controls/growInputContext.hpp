@@ -13,7 +13,7 @@
 #include "segment/omSegmentSelector.h"
 #include "events/events.h"
 #include "users/omUsers.h"
-#include <limits>
+#include "segment/types.hpp"
 
 class GrowInputContext
 : public InputContext,
@@ -37,12 +37,12 @@ class GrowInputContext
         return growCoordinates(mouseEvent->x(), mouseEvent->y());
       case (int)Qt::RightButton | (int)Qt::ShiftModifier:
         // trim at segment but keep segment and blacklist around it
-        return pruneAndBlacklistAdjacentCoordinates(mouseEvent->x(),
+        return trimAndBlacklistAdjacentCoordinates(mouseEvent->x(),
             mouseEvent->y());
       case (int)Qt::RightButton | (int)Qt::ShiftModifier
         | (int)Qt::ControlModifier:
         // trim at segment but keep segment
-        return pruneAdjacentCoordinates(mouseEvent->x(), mouseEvent->y());
+        return trimAdjacentCoordinates(mouseEvent->x(), mouseEvent->y());
       default:
         return false;
     }
@@ -67,11 +67,11 @@ class GrowInputContext
     switch ((int)button | (int)modifiers) {
       case (int)Qt::RightButton | (int)Qt::ShiftModifier:
         // trim and remove segment completely and blacklist segment
-        return pruneAndBlacklistCoordinates(mouseEvent->x(), mouseEvent->y());
+        return trimAndBlacklistCoordinates(mouseEvent->x(), mouseEvent->y());
       case (int)Qt::RightButton | (int)Qt::ShiftModifier
         | (int)Qt::ControlModifier:
         // trim and remove segment completely
-        return pruneAndRemoveCoordinates(mouseEvent->x(), mouseEvent->y());
+        return trimAndRemoveCoordinates(mouseEvent->x(), mouseEvent->y());
       default:
         return false;
     }
@@ -82,7 +82,7 @@ class GrowInputContext
     const int numDegrees = wheelEvent->delta() / 8;
     const int numSteps = numDegrees / 15;
     switch ((int)modifiers) {
-      case (int)Qt::ShiftModifier & (int)Qt::ControlModifier:
+      case (int)Qt::ShiftModifier | (int)Qt::ControlModifier:
         return growIncremental(numSteps >= 0);
       default:
         return false;
@@ -93,7 +93,8 @@ class GrowInputContext
     Qt::KeyboardModifiers modifiers = keyEvent->modifiers();
     int key = keyEvent->key();
     switch (key | (int) modifiers) {
-      case Qt::Key_Shift:
+      case (int)Qt::Key_Shift:
+      case (int)Qt::Key_Shift | (int)Qt::ControlModifier:
         viewGroupState_->EndSelector();
       default:
         return false;
@@ -132,37 +133,8 @@ class GrowInputContext
   }
 
   bool growCoordinates(int x, int y) {
-    return pruneCoordinatesToThreshold(x, y, OmProject::Globals().Users()
-        .UserSettings().getGrowThreshold(), false, false, false);
-  }
+    std::cout << "Grow coordinates"<<std::endl;
 
-  bool pruneAdjacentCoordinates(int x, int y) {
-    return pruneCoordinatesToThreshold(x, y, MAX_THRESHOLD, true, false, false);
-  }
-
-  bool pruneAndRemoveCoordinates(int x, int y) {
-    return pruneCoordinatesToThreshold(x, y, MAX_THRESHOLD, true, true, false);
-  }
-
-  bool pruneAndBlacklistAdjacentCoordinates(int x, int y) {
-    return pruneCoordinatesToThreshold(x, y, MAX_THRESHOLD, true, false, true);
-  }
-
-  bool pruneAndBlacklistCoordinates(int x, int y) {
-    return pruneCoordinatesToThreshold(x, y, MAX_THRESHOLD, true, true, true);
-  }
-
-  bool growIncremental(bool isGrowing) {
-    return pruneToThreshold(getUpdatedThreshold(isGrowing),
-        boost::optional<om::common::SegID>(), true, false, false);
-  }
-
-  /*
-   * Takes coordinates and transforms to segmentid if necessary
-   */
-  bool pruneCoordinatesToThreshold(int x, int y, double threshold,
-      bool shouldPruneToThreshold, bool shouldRemoveSelectedSegment,
-      bool shouldAddToBlacklist) {
     boost::optional<SegmentDataWrapper> segmentDataWrapper = 
       findSegmentFunction_(x, y);
 
@@ -171,68 +143,189 @@ class GrowInputContext
       return false;
     }
 
-    return pruneToThreshold(threshold, boost::optional<om::common::SegID>(
-          segmentDataWrapper->GetSegmentID()), shouldPruneToThreshold,
-        shouldRemoveSelectedSegment, shouldAddToBlacklist);
-  }
-
-  bool pruneToThreshold(double threshold,
-      boost::optional<om::common::SegID> segID, bool shouldPruneToThreshold,
-      bool shouldKeepSelectedSegment, bool shouldAddToBlacklist) {
     std::shared_ptr<OmSegmentSelector> selector =
       viewGroupState_->GetOrCreateSelector(
           viewGroupState_->Segmentation().GetSegmentationID(), "Grow Selector");
 
-    if (segID) {
-      selector->SetFocusSegment(*segID);
-    }
+    selector->SetFocusSegment(segmentDataWrapper->GetSegmentID());
+    grow(*selector, segmentDataWrapper->GetSegmentID(),
+        OmProject::Globals().Users().UserSettings().getGrowThreshold());
 
-    return pruneFocusToThreshold(*selector, threshold, shouldPruneToThreshold,
-        shouldKeepSelectedSegment, shouldAddToBlacklist);
-  }
-
-  bool pruneFocusToThreshold(OmSegmentSelector& selector, double threshold,
-      bool shouldPruneToThreshold, bool shouldKeepSelectedSegment,
-      bool shouldAddToBlacklist) {
-    const std::unordered_map<om::common::SegID,
-      std::vector <om::segment::Edge*>>& adjacencyMap = viewGroupState_
-        ->Segmentation().Segments()->GetAdjacencyMap();
-
-    om::common::SegID focusSegment = selector.GetFocusSegment();
-
-    om::common::SegIDList vecToAdd, vecToRemove;
-    std::tie(vecToAdd, vecToRemove) =
-      viewGroupState_->GetGrowing()->PruneBreadthFirstSearch(selector, threshold,
-        adjacencyMap);
-
-    selector.InsertSegments(vecToAdd);
-
-    if (shouldPruneToThreshold) {
-      selector.RemoveSegments(vecToRemove);
-    }
-
-    if (!shouldKeepSelectedSegment) {
-      selector.augmentSelectedSet(focusSegment, false);
-    }
-
-    if (shouldAddToBlacklist) {
-      if (shouldKeepSelectedSegment) {
-        auto iter = adjacencyMap.find(focusSegment);
-        if (iter != adjacencyMap.end()) {
-          for (auto edge : iter->second) {
-            selector.BlacklistSegment(edge.otherNodeID(focusSegment);
-          }
-        }
-      } else {
-        selector.BlacklistSegment(focusSegment);
-      }
-    }
-
-    // reset the focus element to the first element that was clicked on
-    selector.SetFocusSegment(focusSegment);
-    selector.UpdateSelectionNow();
+    selector->UpdateSelectionNow();
     return true;
   }
 
+  bool trimAdjacentCoordinates(int x, int y) {
+    log_infos << "Trim adjacent segments";
+    boost::optional<SegmentDataWrapper> segmentDataWrapper = 
+      findSegmentFunction_(x, y);
+
+    if (!segmentDataWrapper || !segmentDataWrapper->IsSegmentValid()) {
+      log_infos << "No segment selected";
+      return false;
+    }
+
+    std::shared_ptr<OmSegmentSelector> selector =
+      viewGroupState_->GetOrCreateSelector(
+          viewGroupState_->Segmentation().GetSegmentationID(), "Grow Selector");
+
+    trim(*selector, segmentDataWrapper->GetSegmentID());
+
+    selector->UpdateSelectionNow();
+    return true;
+  }
+
+  bool trimAndRemoveCoordinates(int x, int y) {
+    log_infos << "Trim and remove selected segment";
+    boost::optional<SegmentDataWrapper> segmentDataWrapper = 
+      findSegmentFunction_(x, y);
+
+    if (!segmentDataWrapper || !segmentDataWrapper->IsSegmentValid()) {
+      log_infos << "No segment selected";
+      return false;
+    }
+
+    std::shared_ptr<OmSegmentSelector> selector =
+      viewGroupState_->GetOrCreateSelector(
+          viewGroupState_->Segmentation().GetSegmentationID(), "Grow Selector");
+
+    trim(*selector, segmentDataWrapper->GetSegmentID());
+    selector->augmentSelectedSet(segmentDataWrapper->GetSegmentID(),
+        false);
+
+    selector->UpdateSelectionNow();
+    return true;
+  }
+
+  void blacklistAdjacent(OmSegmentSelector& selector,
+      om::common::SegID seedID) {
+    auto adjacencyMap = viewGroupState_->Segmentation().Segments()
+      ->GetAdjacencyMap();
+    auto iter = adjacencyMap.find(seedID);
+    if (iter != adjacencyMap.end()) {
+      for (auto edge : iter->second) {
+        selector.BlacklistSegment(edge->otherNodeID(seedID));
+      }
+    }
+  }
+
+  bool trimAndBlacklistAdjacentCoordinates(int x, int y) {
+    log_infos << "trim and blacklist adjacent segments";
+    boost::optional<SegmentDataWrapper> segmentDataWrapper = 
+      findSegmentFunction_(x, y);
+
+    if (!segmentDataWrapper || !segmentDataWrapper->IsSegmentValid()) {
+      log_infos << "No segment selected";
+      return false;
+    }
+
+    std::shared_ptr<OmSegmentSelector> selector =
+      viewGroupState_->GetOrCreateSelector(
+          viewGroupState_->Segmentation().GetSegmentationID(), "Grow Selector");
+
+    trim(*selector, segmentDataWrapper->GetSegmentID());
+    blacklistAdjacent(*selector, segmentDataWrapper->GetSegmentID());
+
+    selector->UpdateSelectionNow();
+    return true;
+  }
+
+  bool trimAndBlacklistCoordinates(int x, int y) {
+    log_infos << "trim and blacklist selected segment";
+    boost::optional<SegmentDataWrapper> segmentDataWrapper = 
+      findSegmentFunction_(x, y);
+
+    if (!segmentDataWrapper || !segmentDataWrapper->IsSegmentValid()) {
+      log_infos << "No segment selected";
+      return false;
+    }
+
+    std::shared_ptr<OmSegmentSelector> selector =
+      viewGroupState_->GetOrCreateSelector(
+          viewGroupState_->Segmentation().GetSegmentationID(), "Grow Selector");
+
+    trim(*selector, segmentDataWrapper->GetSegmentID());
+    selector->BlacklistSegment(segmentDataWrapper->GetSegmentID());
+    selector->augmentSelectedSet(segmentDataWrapper->GetSegmentID(), false);
+
+    selector->UpdateSelectionNow();
+    return true;
+  }
+
+  bool growIncremental(bool isGrowing) {
+    std::shared_ptr<OmSegmentSelector> selector =
+      viewGroupState_->GetOrCreateSelector(
+          viewGroupState_->Segmentation().GetSegmentationID(), "Grow Selector");
+    if (!selector->GetFocusSegment()) {
+      return false;
+    }
+
+    om::common::SegIDList trimSeedIDs = grow(*selector,
+        selector->GetFocusSegment(),
+        getUpdatedThreshold(isGrowing));
+    trim(*selector, trimSeedIDs);
+
+    selector->RemoveSegments(trimSeedIDs);
+
+    selector->UpdateSelectionNow();
+    return true;
+  }
+
+  std::shared_ptr<OmSegmentSelector> getSelector(int x, int y) {
+    std::shared_ptr<OmSegmentSelector> selector;
+
+    boost::optional<SegmentDataWrapper> segmentDataWrapper = 
+      findSegmentFunction_(x, y);
+
+    if (!segmentDataWrapper || !segmentDataWrapper->IsSegmentValid()) {
+      log_infos << "No segment selected";
+      return selector;
+    }
+
+
+    selector = viewGroupState_->GetOrCreateSelector(
+          viewGroupState_->Segmentation().GetSegmentationID(), "Grow Selector");
+    selector->SetFocusSegment(segmentDataWrapper->GetSegmentID());
+
+    return selector;
+  }
+
+
+  std::tuple<om::common::SegIDList, om::common::SegIDList>
+    FindNotSelected(OmSegmentSelector& selector, double threshold) {
+    return viewGroupState_->GetGrowing()->FindNotSelected(
+        selector.GetFocusSegment(), threshold,
+        viewGroupState_->Segmentation().Segments()->GetAdjacencyMap(),
+        selector);
+  }
+
+  om::common::SegIDList FindSelected(OmSegmentSelector& selector,
+      om::common::SegIDList seedIDs) {
+    return viewGroupState_->GetGrowing()
+      ->FindSelected(seedIDs, selector,
+        viewGroupState_->Segmentation().Segments()->GetAdjacencyMap());
+  }
+
+  om::common::SegIDList grow(OmSegmentSelector& selector,
+     om::common::SegID seedID, double threshold) {
+    om::common::SegID selectedID = seedID;
+    om::common::SegIDList growIDs, trimSeedIDs;
+    std::tie(growIDs, trimSeedIDs) = FindNotSelected(selector, threshold);
+
+    selector.InsertSegments(growIDs);
+    selector.SetFocusSegment(selectedID);
+    return trimSeedIDs;
+  }
+
+  void trim(OmSegmentSelector& selector, om::common::SegIDList seedIDs) {
+    om::common::SegIDList removeIDs = FindSelected(selector, seedIDs);
+    selector.RemoveSegments(removeIDs);
+  }
+
+  void trim(OmSegmentSelector& selector, om::common::SegID seedID) {
+    om::common::SegIDList seedIDs;
+    seedIDs.push_back(seedID);
+    trim(selector, seedIDs);
+  }
 
 };

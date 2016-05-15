@@ -63,6 +63,7 @@ void OmSegmentSelector::selectJustThisSegment(
 }
 
 void OmSegmentSelector::BlacklistSegment(const om::common::SegID segID) {
+  removeSegmentFromSelectionParameters(segID);
   blacklist_.insert(segID);
 }
 
@@ -197,14 +198,19 @@ void OmSegmentSelector::AutoCenter(const bool autoCenter) {
 }
 
 void OmSegmentSelector::addSegmentToSelectionParameters(om::common::SegID segID) {
+  if (blacklist_.find(segID) != blacklist_.end()) {
+    log_infos << "Selecting " << segID << " but is in the selection " <<
+      "blacklist" << std::endl;
+    return;
+  }
   params_->newSelectedIDs.insert(std::pair<om::common::SegID, uint32_t>(segID, nextOrder_++));
   SetFocusSegment(segID);
 }
 
 void OmSegmentSelector::removeSegmentFromSelectionParameters(om::common::SegID segID) {
   params_->newSelectedIDs.erase(segID);
-  // only update the selected segment if any was selected
-  if (params_->newSelectedIDs.begin() != params_->newSelectedIDs.end()) {
+  // only update the selected segment if deselecting focus element
+  if (segID == GetFocusSegment()) {
     SetFocusSegment(params_->newSelectedIDs.begin()->first);
   }
 }

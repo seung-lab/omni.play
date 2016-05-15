@@ -8,30 +8,32 @@ class Growing {
  public:
   const uint32_t BFS_STEP_LIMIT = 1000;
 
+  /*
+   * BFS grow and find all segments not yet selected that are above threshold
+   * returns: tuple of newly discovered segments (seed exclusive) and
+   *  seed segments of connected segments that are below the threshold
+   */
   std::tuple<om::common::SegIDList, om::common::SegIDList>
-    PruneBreadthFirstSearch(OmSegmentSelector& selector, double threshold,
-      const std::unordered_map<om::common::SegID,
-      std::vector <om::segment::Edge*>>& adjacencyMap) {
-    std::tuple<om::common::SegIDList, om::common::SegIDList> addRemoveTuple;
-    om::common::SegID startID = selector.GetFocusSegment();
-    if (!startID) {
-      return addRemoveTuple;
-    }
+    FindNotSelected(om::common::SegID seedID, double threshold,
+        const std::unordered_map<om::common::SegID,
+          std::vector <om::segment::Edge*>>& adjacencyMap,
+          OmSegmentSelector& selector) {
+    return findNotSelected(seedID, threshold, adjacencyMap, selector);
+  }
 
-    addRemoveTuple = pruneBreadthFirstSearch(startID, threshold, adjacencyMap, selector);
-    om::common::SegIDList vecToRemove =
-      removeBreadthFirstSearch(std::get<1>(addRemoveTuple), adjacencyMap, selector);
-
-    return std::make_tuple(std::move(std::get<0>(addRemoveTuple)), vecToRemove);
+  /*
+   * BFS grow and find all segments that are currently selected (seed exclusive)
+   * returns: list of all connected segments
+   */
+  om::common::SegIDList FindSelected(om::common::SegIDList seedIDs,
+        OmSegmentSelector& selector, const std::unordered_map<om::common::SegID,
+          std::vector <om::segment::Edge*>>& adjacencyMap) {
+    return findSelected(seedIDs, adjacencyMap, selector);
   }
 
  private:
-  /*
-   * BFS over startID as seed and returns a tuple with the segmentsIDs
-   * that are within the threshold and the seeds that are above the threshold
-   */
   std::tuple<om::common::SegIDList, om::common::SegIDList>
-    pruneBreadthFirstSearch(om::common::SegID startID,
+    findNotSelected(om::common::SegID seedID,
       double threshold, const std::unordered_map<om::common::SegID,
       std::vector <om::segment::Edge*>>& adjacencyMap,
       OmSegmentSelector& selector) {
@@ -39,15 +41,13 @@ class Growing {
     om::segment::Edge *currEdge;
     om::common::SegID currSegment, nextSegment;
 
-    log_infos << "Grow BFS : " << startID << " with threshold " << threshold;
+    log_infos << "Grow BFS : " << seedID << " with threshold " << threshold;
 
-    q.push(startID);
+    q.push(seedID);
 
-    om::common::SegIDList vecToAdd;
-    om::common::SegIDList vecToRemove;
-    om::common::SegIDSet setToAdd;
-    setToAdd.insert(startID);
-    vecToAdd.push_back(startID);
+    om::common::SegIDList newIDs, pruneSeedIDs;
+    om::common::SegIDSet visited;
+    visited.insert(seedID);
 
     int br=0;
     while (!q.empty()) {
@@ -68,9 +68,9 @@ class Growing {
 
       for ( int i = 0; i < mapIter->second.size(); i++ ) {
         currEdge = mapIter->second[i];
-        nextSegment = currEdge.otherNodeID(currSegment);
+        nextSegment = currEdge->otherNodeID(currSegment);
 
-        log_debugs << "BFS for (" << currSegment << ") looking at: " <<
+        log_debugs << "BFS FindNotSel (" << currSegment << ") looking at: " <<
           nextSegment << " (" << currEdge->threshold << ") <? (" <<
           threshold << ")";
 
@@ -79,7 +79,7 @@ class Growing {
           continue;
         }
 
-        if (setToAdd.find(nextSegment) != setToAdd.end()) {
+        if (visited.find(nextSegment) != visited.end()) {
           log_debugs << "segment already being added";
           continue;
         }
@@ -94,22 +94,22 @@ class Growing {
           log_debugs << "threshold is too small";
           // this asssumes that we already checked that it is valid ordering
           if (selector.IsSegmentSelected(nextSegment)) {
-            vecToRemove.push_back(nextSegment);
+            pruneSeedIDs.push_back(nextSegment);
           }
           continue;
         }
 
         q.push(nextSegment);
-        setToAdd.insert(nextSegment);
-        vecToAdd.push_back(nextSegment);
+        visited.insert(nextSegment);
+        newIDs.push_back(nextSegment);
       }
     }
-    return std::make_tuple(vecToAdd, vecToRemove);
+    return std::make_tuple(newIDs, pruneSeedIDs);
   }
 
-  om::common::SegIDList removeBreadthFirstSearch(om::common::SegIDList seedsToRemove,
+  om::common::SegIDList findSelected(om::common::SegIDList seedIDs,
       const std::unordered_map<om::common::SegID,
-      std::vector <om::segment::Edge*>>& adjacencyMap,
+        std::vector <om::segment::Edge*>>& adjacencyMap,
       OmSegmentSelector& selector) {
     std::queue <om::common::SegID> q;
     om::segment::Edge *currEdge;
@@ -117,16 +117,14 @@ class Growing {
 
     log_infos << "Remove BFS ";
 
-    for (auto removeID : seedsToRemove) {
+    for (auto removeID : seedIDs) {
       q.push(removeID);
     }
 
-    om::common::SegIDSet setToRemove;
-    om::common::SegIDList vecToRemove;
+    om::common::SegIDList reachedSelectedIDs;
+    om::common::SegIDSet visited;
 
-    setToRemove.insert(seedsToRemove.begin(), seedsToRemove.end());
-    vecToRemove.insert(vecToRemove.begin(), seedsToRemove.begin(),
-        seedsToRemove.end());
+    visited.insert(seedIDs.begin(), seedIDs.end());
 
     int br=0;
     while (!q.empty()) {
@@ -147,10 +145,10 @@ class Growing {
 
       for ( int i = 0; i < mapIter->second.size(); i++ ) {
         currEdge = mapIter->second[i];
-        nextSegment = currEdge.otherNodeID(currSegment);
+        nextSegment = currEdge->otherNodeID(currSegment);
         uint32_t nextOrderOfAdding = selector.GetOrderOfAdding(nextSegment);
 
-        log_debugs << "BFS Trim (" << currSegment << ") looking at: " <<
+        log_debugs << "BFS FindSelected (" << currSegment << ") looking at: " <<
           nextSegment << " CurrOrder (" << currOrderOfAdding<< ") <? (" <<
           nextOrderOfAdding << ")";
 
@@ -159,7 +157,7 @@ class Growing {
           continue;
         }
 
-        if (setToRemove.find(nextSegment) != setToRemove.end()) {
+        if (visited.find(nextSegment) != visited.end()) {
           log_debugs << "segment already being removed";
           continue;
         }
@@ -170,11 +168,11 @@ class Growing {
         }
 
         q.push(nextSegment);
-        setToRemove.insert(nextSegment);
-        vecToRemove.push_back(nextSegment);
+        visited.insert(nextSegment);
+        reachedSelectedIDs.push_back(nextSegment);
       }
     }
 
-    return vecToRemove;
+    return reachedSelectedIDs;
   }
 };
