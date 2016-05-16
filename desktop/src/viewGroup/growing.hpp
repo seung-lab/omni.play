@@ -15,11 +15,10 @@ class Growing {
    */
   std::tuple<om::common::SegIDList, om::common::SegIDList>
     FindNotSelected(om::common::SegID seedID, double threshold,
-        const std::unordered_map<om::common::SegID,
+        OmSegmentSelector& selector, const std::unordered_map<om::common::SegID,
           std::vector <om::segment::Edge*>>& adjacencyMap,
-          OmSegmentSelector& selector,
           const uint32_t maxDepth = BFS_STEP_LIMIT) {
-    return findNotSelected(seedID, threshold, adjacencyMap, selector, maxDepth);
+    return findNotSelected(seedID, threshold, selector, adjacencyMap, maxDepth);
   }
 
   /*
@@ -35,10 +34,10 @@ class Growing {
 
  private:
   std::tuple<om::common::SegIDList, om::common::SegIDList>
-    findNotSelected(om::common::SegID seedID,
-      double threshold, const std::unordered_map<om::common::SegID,
+    findNotSelected(om::common::SegID seedID, double threshold,
+        OmSegmentSelector& selector, const std::unordered_map<om::common::SegID,
       std::vector <om::segment::Edge*>>& adjacencyMap,
-      OmSegmentSelector& selector, const uint32_t maxDepth) {
+      const uint32_t maxDepth) {
     std::queue <om::common::SegID> q;
     om::segment::Edge *currEdge;
     om::common::SegID currSegment, nextSegment;
