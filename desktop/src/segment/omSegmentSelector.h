@@ -30,7 +30,8 @@ class OmSegmentSelector {
   void augmentSelectedSet(const om::common::SegID segID, const bool isSelected);
 
   // prevent this segment from being selected
-  void BlacklistSegment(const om::common::SegID);
+  void BlacklistAddSegment(const om::common::SegID);
+  void BlacklistRemoveSegment(const om::common::SegID);
   bool IsBlacklistSegment(const om::common::SegID);
 
   void InsertSegments(const om::common::SegIDSet& segIDs);

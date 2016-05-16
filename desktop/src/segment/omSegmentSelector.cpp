@@ -62,9 +62,13 @@ void OmSegmentSelector::selectJustThisSegment(
   }
 }
 
-void OmSegmentSelector::BlacklistSegment(const om::common::SegID segID) {
+void OmSegmentSelector::BlacklistAddSegment(const om::common::SegID segID) {
   removeSegmentFromSelectionParameters(segID);
   blacklist_.insert(segID);
+}
+
+void OmSegmentSelector::BlacklistRemoveSegment(const om::common::SegID segID) {
+  blacklist_.erase(segID);
 }
 
 bool OmSegmentSelector::IsBlacklistSegment(const om::common::SegID segID) {

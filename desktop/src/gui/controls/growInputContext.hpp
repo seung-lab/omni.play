@@ -65,6 +65,10 @@ class GrowInputContext
     Qt::KeyboardModifiers modifiers = mouseEvent->modifiers();
     Qt::MouseButton button = mouseEvent->button();
     switch ((int)button | (int)modifiers) {
+      case (int)Qt::LeftButton | (int)Qt::ShiftModifier:
+        // grow and clear blacklist
+        return growCoordinatesAndRemoveAdjacentBlacklist(mouseEvent->x(),
+            mouseEvent->y());
       case (int)Qt::RightButton | (int)Qt::ShiftModifier:
         // trim and remove segment completely and blacklist segment
         return trimAndBlacklistCoordinates(mouseEvent->x(), mouseEvent->y());
@@ -155,6 +159,32 @@ class GrowInputContext
     return true;
   }
 
+  bool growCoordinatesAndRemoveAdjacentBlacklist(int x, int y) {
+    std::cout << "Grow coordinates and remove adjacent blacklist "<<std::endl;
+
+    boost::optional<SegmentDataWrapper> segmentDataWrapper = 
+      findSegmentFunction_(x, y);
+
+    if (!segmentDataWrapper || !segmentDataWrapper->IsSegmentValid()) {
+      log_infos << "No segment selected";
+      return false;
+    }
+
+    std::shared_ptr<OmSegmentSelector> selector =
+      viewGroupState_->GetOrCreateSelector(
+          viewGroupState_->Segmentation().GetSegmentationID(), "Grow Selector");
+
+    selector->SetFocusSegment(segmentDataWrapper->GetSegmentID());
+    blacklistRemoveAdjacent(*selector, segmentDataWrapper->GetSegmentID());
+
+    grow(*selector, segmentDataWrapper->GetSegmentID(),
+        OmProject::Globals().Users().UserSettings().getGrowThreshold());
+
+
+    selector->UpdateSelectionNow();
+    return true;
+  }
+
   bool trimAdjacentCoordinates(int x, int y) {
     log_infos << "Trim adjacent segments";
     boost::optional<SegmentDataWrapper> segmentDataWrapper = 
@@ -197,14 +227,33 @@ class GrowInputContext
     return true;
   }
 
-  void blacklistAdjacent(OmSegmentSelector& selector,
+  void blacklistRemoveAdjacent(OmSegmentSelector& selector,
       om::common::SegID seedID) {
     auto adjacencyMap = viewGroupState_->Segmentation().Segments()
       ->GetAdjacencyMap();
     auto iter = adjacencyMap.find(seedID);
     if (iter != adjacencyMap.end()) {
       for (auto edge : iter->second) {
-        selector.BlacklistSegment(edge->otherNodeID(seedID));
+        selector.BlacklistRemoveSegment(edge->otherNodeID(seedID));
+      }
+    }
+  }
+
+  void blacklistAddAdjacent(OmSegmentSelector& selector,
+      om::common::SegID seedID) {
+    om::common::SegIDList growIDs, trimSeedIDs;
+    uint32_t currOrderOfAdding = selector.GetOrderOfAdding(seedID);
+
+    auto adjacencyMap = viewGroupState_->Segmentation().Segments()
+      ->GetAdjacencyMap();
+    auto iter = adjacencyMap.find(seedID);
+    if (iter != adjacencyMap.end()) {
+      for (auto edge : iter->second) {
+        uint32_t nextOrderOfAdding = selector.GetOrderOfAdding(
+            edge->otherNodeID(seedID));
+        if (!nextOrderOfAdding || nextOrderOfAdding > currOrderOfAdding) {
+          selector.BlacklistAddSegment(edge->otherNodeID(seedID));
+        }
       }
     }
   }
@@ -224,7 +273,7 @@ class GrowInputContext
           viewGroupState_->Segmentation().GetSegmentationID(), "Grow Selector");
 
     trim(*selector, segmentDataWrapper->GetSegmentID());
-    blacklistAdjacent(*selector, segmentDataWrapper->GetSegmentID());
+    blacklistAddAdjacent(*selector, segmentDataWrapper->GetSegmentID());
 
     selector->UpdateSelectionNow();
     return true;
@@ -245,7 +294,7 @@ class GrowInputContext
           viewGroupState_->Segmentation().GetSegmentationID(), "Grow Selector");
 
     trim(*selector, segmentDataWrapper->GetSegmentID());
-    selector->BlacklistSegment(segmentDataWrapper->GetSegmentID());
+    selector->BlacklistAddSegment(segmentDataWrapper->GetSegmentID());
     selector->augmentSelectedSet(segmentDataWrapper->GetSegmentID(), false);
 
     selector->UpdateSelectionNow();

@@ -6,7 +6,7 @@
 
 class Growing {
  public:
-  const uint32_t BFS_STEP_LIMIT = 1000;
+  static const uint32_t BFS_STEP_LIMIT = 1000;
 
   /*
    * BFS grow and find all segments not yet selected that are above threshold
@@ -17,8 +17,9 @@ class Growing {
     FindNotSelected(om::common::SegID seedID, double threshold,
         const std::unordered_map<om::common::SegID,
           std::vector <om::segment::Edge*>>& adjacencyMap,
-          OmSegmentSelector& selector) {
-    return findNotSelected(seedID, threshold, adjacencyMap, selector);
+          OmSegmentSelector& selector,
+          const uint32_t maxDepth = BFS_STEP_LIMIT) {
+    return findNotSelected(seedID, threshold, adjacencyMap, selector, maxDepth);
   }
 
   /*
@@ -27,8 +28,9 @@ class Growing {
    */
   om::common::SegIDList FindSelected(om::common::SegIDList seedIDs,
         OmSegmentSelector& selector, const std::unordered_map<om::common::SegID,
-          std::vector <om::segment::Edge*>>& adjacencyMap) {
-    return findSelected(seedIDs, adjacencyMap, selector);
+          std::vector <om::segment::Edge*>>& adjacencyMap,
+          const uint32_t maxDepth = BFS_STEP_LIMIT) {
+    return findSelected(seedIDs, adjacencyMap, selector, maxDepth);
   }
 
  private:
@@ -36,7 +38,7 @@ class Growing {
     findNotSelected(om::common::SegID seedID,
       double threshold, const std::unordered_map<om::common::SegID,
       std::vector <om::segment::Edge*>>& adjacencyMap,
-      OmSegmentSelector& selector) {
+      OmSegmentSelector& selector, const uint32_t maxDepth) {
     std::queue <om::common::SegID> q;
     om::segment::Edge *currEdge;
     om::common::SegID currSegment, nextSegment;
@@ -52,7 +54,7 @@ class Growing {
     int br=0;
     while (!q.empty()) {
       br++;
-      if (br >= BFS_STEP_LIMIT) {
+      if (br >= maxDepth) {
           break;
       }
 
@@ -110,7 +112,7 @@ class Growing {
   om::common::SegIDList findSelected(om::common::SegIDList seedIDs,
       const std::unordered_map<om::common::SegID,
         std::vector <om::segment::Edge*>>& adjacencyMap,
-      OmSegmentSelector& selector) {
+      OmSegmentSelector& selector, const uint32_t maxDepth) {
     std::queue <om::common::SegID> q;
     om::segment::Edge *currEdge;
     om::common::SegID currSegment, nextSegment;
@@ -129,7 +131,7 @@ class Growing {
     int br=0;
     while (!q.empty()) {
       br++;
-      if (br >= BFS_STEP_LIMIT) {
+      if (br >= maxDepth) {
           break;
       }
 
