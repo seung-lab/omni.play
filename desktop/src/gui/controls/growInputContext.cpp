@@ -22,7 +22,7 @@ const double GrowInputContext::MAX_THRESHOLD = 1;
 const double GrowInputContext::MIN_THRESHOLD = 0;
 
 /*
- ********************** PRIVATE METHODS **************************
+ ********************** PUBLIC METHODS **************************
  */
 GrowInputContext::GrowInputContext(OmViewGroupState* viewGroupState,
     om::tool::mode tool,
@@ -179,38 +179,6 @@ bool GrowInputContext::GrowIncremental(bool isGrowing) {
 /*
  ********************** PRIVATE METHODS **************************
  */
-
-void GrowInputContext::blacklistRemoveAdjacent(OmSegmentSelector& selector,
-    om::common::SegID seedID) {
-  auto adjacencyMap = viewGroupState_->Segmentation().Segments()
-    ->GetAdjacencyMap();
-  auto iter = adjacencyMap.find(seedID);
-  if (iter != adjacencyMap.end()) {
-    for (auto edge : iter->second) {
-      selector.BlacklistRemoveSegment(edge->otherNodeID(seedID));
-    }
-  }
-}
-
-void GrowInputContext::blacklistAddAdjacent(OmSegmentSelector& selector,
-    om::common::SegID seedID) {
-  om::common::SegIDList growIDs, trimSeedIDs;
-  uint32_t currOrderOfAdding = selector.GetOrderOfAdding(seedID);
-
-  auto adjacencyMap = viewGroupState_->Segmentation().Segments()
-    ->GetAdjacencyMap();
-  auto iter = adjacencyMap.find(seedID);
-  if (iter != adjacencyMap.end()) {
-    for (auto edge : iter->second) {
-      uint32_t nextOrderOfAdding = selector.GetOrderOfAdding(
-          edge->otherNodeID(seedID));
-      if (!nextOrderOfAdding || nextOrderOfAdding > currOrderOfAdding) {
-        selector.BlacklistAddSegment(edge->otherNodeID(seedID));
-      }
-    }
-  }
-}
-
 bool GrowInputContext::growHelper(int x, int y, std::function<
     void(OmSegmentSelector&, om::common::SegID)> preGrowFunction) {
   std::shared_ptr<OmSegmentSelector> selector;
@@ -304,18 +272,16 @@ om::common::SegIDList GrowInputContext::grow(om::common::SegID seedID,
   return trimSeedIDs;
 }
 
-void GrowInputContext::trim(OmSegmentSelector& selector, om::common::SegIDList seedIDs) {
-  om::common::SegIDList removeIDs = FindSelected(seedIDs, selector);
-  selector.RemoveSegments(removeIDs);
-}
-
 void GrowInputContext::trim(OmSegmentSelector& selector, om::common::SegID seedID) {
   om::common::SegIDList seedIDs;
   seedIDs.push_back(seedID);
   trim(selector, seedIDs);
 }
 
-
+void GrowInputContext::trim(OmSegmentSelector& selector, om::common::SegIDList seedIDs) {
+  om::common::SegIDList removeIDs = FindSelected(seedIDs, selector);
+  selector.RemoveSegments(removeIDs);
+}
 
 double GrowInputContext::getUpdatedThreshold(bool isGrowing) {
   double threshold = OmProject::Globals().Users().UserSettings()
@@ -339,6 +305,37 @@ double GrowInputContext::getUpdatedThreshold(bool isGrowing) {
   OmProject::Globals().Users().UserSettings().setGrowThreshold(threshold);
   om::event::UserSettingsUpdated();
   return threshold;
+}
+
+void GrowInputContext::blacklistRemoveAdjacent(OmSegmentSelector& selector,
+    om::common::SegID seedID) {
+  auto adjacencyMap = viewGroupState_->Segmentation().Segments()
+    ->GetAdjacencyMap();
+  auto iter = adjacencyMap.find(seedID);
+  if (iter != adjacencyMap.end()) {
+    for (auto edge : iter->second) {
+      selector.BlacklistRemoveSegment(edge->otherNodeID(seedID));
+    }
+  }
+}
+
+void GrowInputContext::blacklistAddAdjacent(OmSegmentSelector& selector,
+    om::common::SegID seedID) {
+  om::common::SegIDList growIDs, trimSeedIDs;
+  uint32_t currOrderOfAdding = selector.GetOrderOfAdding(seedID);
+
+  auto adjacencyMap = viewGroupState_->Segmentation().Segments()
+    ->GetAdjacencyMap();
+  auto iter = adjacencyMap.find(seedID);
+  if (iter != adjacencyMap.end()) {
+    for (auto edge : iter->second) {
+      uint32_t nextOrderOfAdding = selector.GetOrderOfAdding(
+          edge->otherNodeID(seedID));
+      if (!nextOrderOfAdding || nextOrderOfAdding > currOrderOfAdding) {
+        selector.BlacklistAddSegment(edge->otherNodeID(seedID));
+      }
+    }
+  }
 }
 
 

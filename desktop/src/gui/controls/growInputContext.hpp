@@ -79,12 +79,6 @@ class GrowInputContext
   std::tuple<std::shared_ptr<OmSegmentSelector>,
     boost::optional<SegmentDataWrapper>> getSelection(int x, int y);
 
-  void blacklistRemoveAdjacent(OmSegmentSelector& selector,
-      om::common::SegID seedID);
-  void blacklistAddAdjacent(OmSegmentSelector& selector,
-      om::common::SegID seedID);
-  std::shared_ptr<OmSegmentSelector> getSelector(int x, int y);
-
   // Helper to call the growing operator with viewgroup state properties
   std::tuple<om::common::SegIDList, om::common::SegIDList>
     FindNotSelected(om::common::SegID selectedID, double threshold,
@@ -94,13 +88,21 @@ class GrowInputContext
   om::common::SegIDList FindSelected(om::common::SegIDList seedIDs,
       OmSegmentSelector& selector);
 
+  // grow segments connected to seed up to given threshold
   om::common::SegIDList grow(om::common::SegID seedID, double threshold,
       OmSegmentSelector& selector);
 
-
+  // trim the segments connected to seed ids
+  void trim(OmSegmentSelector& selector, om::common::SegID seedID);
   void trim(OmSegmentSelector& selector, om::common::SegIDList seedIDs);
 
-  void trim(OmSegmentSelector& selector, om::common::SegID seedID);
+  // add and remove connected segments from the blacklist
+  void blacklistRemoveAdjacent(OmSegmentSelector& selector,
+      om::common::SegID seedID);
+  void blacklistAddAdjacent(OmSegmentSelector& selector,
+      om::common::SegID seedID);
+  std::shared_ptr<OmSegmentSelector> getSelector(int x, int y);
+
   double getUpdatedThreshold(bool isGrowing);
 
 };
