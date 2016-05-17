@@ -264,7 +264,6 @@ om::common::SegIDList GrowInputContext::FindSelected(om::common::SegIDList seedI
 om::common::SegIDList GrowInputContext::grow(om::common::SegID seedID,
     double threshold, OmSegmentSelector& selector) {
   om::common::SegIDList growIDs, trimSeedIDs;
-  std::cout << "Seed iD "<< seedID << std::endl;
   std::tie(growIDs, trimSeedIDs) = FindNotSelected(seedID, threshold, selector);
 
   selector.InsertSegments(growIDs);
