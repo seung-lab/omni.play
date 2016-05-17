@@ -103,6 +103,7 @@ class GrowInputContext
       om::common::SegID seedID);
   std::shared_ptr<OmSegmentSelector> getSelector(int x, int y);
 
+  // Updated the threshold in given direction and return the new threshold
   double getUpdatedThreshold(bool isGrowing);
 
 };
