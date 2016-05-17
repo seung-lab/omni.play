@@ -78,6 +78,10 @@ void OmView2d::mouseReleaseEvent(QMouseEvent* event) {
   }
 }
 
+void OmView2d::mouseDoubleClickEvent(QMouseEvent* event) {
+  viewControls_->mouseDoubleClickEvent(event);
+}
+
 void OmView2d::keyPressEvent(QKeyEvent* event) {
   if (!viewControls_->keyPressEvent(event)) {
     keyEvents_->Press(event);
