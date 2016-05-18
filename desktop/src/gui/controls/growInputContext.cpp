@@ -38,6 +38,8 @@ bool GrowInputContext::mousePressEvent(QMouseEvent* mouseEvent) {
   switch ((int)button | (int)modifiers) {
     case (int)Qt::LeftButton:
     case (int)Qt::LeftButton | (int)Qt::ShiftModifier:
+    case (int)Qt::LeftButton | (int)Qt::ShiftModifier
+      | (int)Qt::ControlModifier:
       return GrowCoordinates(mouseEvent->x(), mouseEvent->y());
     case (int)Qt::RightButton | (int)Qt::ShiftModifier:
       // trim at segment but keep segment and blacklist around it
@@ -58,8 +60,8 @@ bool GrowInputContext::mouseReleaseEvent(QMouseEvent* mouseEvent) {
   switch ((int)button | (int)modifiers) {
     case (int)Qt::LeftButton:
     case (int)Qt::LeftButton | (int)Qt::ControlModifier:
+      // Mouse release does not need to take over controls
       viewGroupState_->EndSelector();
-      return true;
     default:
       return false;
   }
@@ -230,15 +232,12 @@ bool GrowInputContext::trimHelper(int x, int y, std::function<
 std::tuple<std::shared_ptr<OmSegmentSelector>,
   boost::optional<SegmentDataWrapper>> GrowInputContext::getSelection(
       int x, int y) {
-  boost::optional<SegmentDataWrapper> segmentDataWrapper = 
-    findSegmentFunction_(x, y);
+  boost::optional<SegmentDataWrapper> segmentDataWrapper;
+  std::shared_ptr<OmSegmentSelector> selector;
 
-  if (!segmentDataWrapper || !segmentDataWrapper->IsSegmentValid()) {
-    log_infos << "didn't find segment inisde";
-  } else {
-    log_infos << " ID IS " <<  segmentDataWrapper->GetSegmentID();
-  }
-  std::shared_ptr<OmSegmentSelector> selector =
+  segmentDataWrapper = findSegmentFunction_(x, y);
+
+  selector =
     viewGroupState_->GetOrCreateSelector(viewGroupState_->Segmentation()
         .GetSegmentationID(), "Grow Selector");
 

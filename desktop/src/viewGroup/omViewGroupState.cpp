@@ -139,8 +139,13 @@ std::shared_ptr<OmSegmentSelector> OmViewGroupState::GetOrCreateSelector(
   return selector_;
 }
 
-void OmViewGroupState::EndSelector() {
-  selector_.reset();
+bool OmViewGroupState::EndSelector() {
+  if (IsSelecting()) {
+    selector_.reset();
+    return true;
+  }
+
+  return false;
 }
 
 void OmViewGroupState::SetHowNonSelectedSegmentsAreColoredInFilter(

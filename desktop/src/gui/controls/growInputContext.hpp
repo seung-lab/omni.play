@@ -11,18 +11,6 @@ class OmViewGroupState;
 class SegmentDataWrapper;
 class OmSegmentSelector;
 
-/*
- *#include "segment/omSegmentSelector.h"
- *#include "gui/controls/findGlobalCoordinates.hpp"
- *#include "viewGroup/omViewGroupState.h"
- *#include "viewGroup/growing.hpp"
- *#include "utility/dataWrappers.h"
- *#include "segment/actions/omJoinSplitRunner.hpp"
- *#include "segment/omSegments.h"
- *#include "events/events.h"
- *#include "users/omUsers.h"
- */
-
 class GrowInputContext
 : public InputContext,
   public ViewStateInputContext,

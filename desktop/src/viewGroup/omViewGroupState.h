@@ -56,8 +56,9 @@ class OmViewGroupState : public OmManageableObject {
 
   std::shared_ptr<OmSegmentSelector> GetOrCreateSelector(om::common::ID segmentationID,
       const std::string& comment);
-  inline bool IsSelecting() { return static_cast<bool>(selector_); }
-  void EndSelector();
+  bool IsSelecting() { return static_cast<bool>(selector_); }
+  // returns false if we were not selecting
+  bool EndSelector();
 
   void SetHowNonSelectedSegmentsAreColoredInFilter(const bool);
 
