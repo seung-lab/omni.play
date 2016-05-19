@@ -225,6 +225,8 @@ void View3d::wheelEvent(QWheelEvent* event) {
  *
  */
 bool View3d::pickPoint(const Vector2i& vec, std::vector<uint32_t>& rNamesVec) {
+  updateGL();
+
   // clear name vector
   rNamesVec.clear();
 

@@ -354,8 +354,6 @@ void Ui::crosshair(QMouseEvent* event) {
 }
 
 om::landmarks::sdwAndPt Ui::pickVoxelMouseCrosshair(QMouseEvent* event) {
-  view3d_.updateGL();
-
   om::landmarks::sdwAndPt sdwAndPt;
 
   boost::optional<SegmentDataWrapper> segmentDataWrapper =
