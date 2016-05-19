@@ -215,7 +215,9 @@ void OmSegmentSelector::removeSegmentFromSelectionParameters(om::common::SegID s
   params_->newSelectedIDs.erase(segID);
   // only update the selected segment if deselecting focus element
   if (segID == GetFocusSegment()) {
-    SetFocusSegment(params_->newSelectedIDs.begin()->first);
+    if (!params_->newSelectedIDs.empty()) {
+      SetFocusSegment(params_->newSelectedIDs.begin()->first);
+    }
   }
 }
 
