@@ -38,8 +38,6 @@ bool GrowInputContext::mousePressEvent(QMouseEvent* mouseEvent) {
   switch ((int)button | (int)modifiers) {
     case (int)Qt::LeftButton:
     case (int)Qt::LeftButton | (int)Qt::ShiftModifier:
-    case (int)Qt::LeftButton | (int)Qt::ShiftModifier
-      | (int)Qt::ControlModifier:
       return GrowCoordinates(mouseEvent->x(), mouseEvent->y());
     case (int)Qt::RightButton | (int)Qt::ShiftModifier:
       // trim at segment but keep segment and blacklist around it
