@@ -155,14 +155,24 @@ void OmMesh::makeDisplayList(QGLContext const* context) {
   data_.reset();
 }
 
-void OmMesh::Draw(QGLContext const* context) {
+bool OmMesh::ReadyForDrawing() const{
+  return displayList_;
+}
+
+bool OmMesh::PrepareDraw(QGLContext const* context) {
   if (!hasData_) {
-    return;
+    return false;
   }
 
   if (!displayList_) {
     makeDisplayList(context);
   }
+  return true;
+}
+
+void OmMesh::Draw(QGLContext const* context) {
+  if (!PrepareDraw(context))
+    return;
 
   glCallList(*displayList_);
 }

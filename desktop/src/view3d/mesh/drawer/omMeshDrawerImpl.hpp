@@ -48,11 +48,38 @@ class DrawerImpl {
     glMultMatrixf(system_.NormToGlobalMat().ml);
     glPushName(segmentationID_);
 
+    // Step 1: Find segment IDs with one or more chunks that are not completely loaded, yet. If found,
+    //         render the least detailed (highest MIP) version for this (covers all children, loaded or not).
+    //         This ensures a somewhat useful image while saving most of the time for loading missing segments.
+    om::common::SegIDSet unfinishedSegments;
+    for (auto& kv : meshPlan) {
+      auto mesh = meshes_.Get(kv.second.coord, kv.first.seg->value());
+      if (!mesh || !mesh->ReadyForDrawing()) {
+        if (unfinishedSegments.find(kv.first.seg->value()) == unfinishedSegments.end()) {
+          unfinishedSegments.emplace(kv.first.seg->value());
+          drawSegment(kv.first.seg->value(), system_.RootMipChunkCoordinate(), kv.second.color);
+        }
+      }
+    }
+
+    // Step 2: Now render the existing chunk segments (this is fast, since geometry is already on GPU)
+    //   TODO: If there are still too many segments to render all of them in time, the image will flicker (segments are sometimes
+    //         rendered, and sometimes not).
+    //         Solution 1: Keep track of render times and switch to less detailed meshes?
+    //         Solution 2: Render all segments regardless of frame rate.
     for (auto& kv : meshPlan) {
       if (elapsed.ms_elapsed() > allowedDrawTimeMS) {
         break;
       }
-      drawSegment(kv.first.seg->value(), kv.second.coord, kv.second.color);
+
+      if (unfinishedSegments.find(kv.first.seg->value()) != unfinishedSegments.end()) { // Don't render, but prepare :)
+        auto mesh = meshes_.Get(kv.second.coord, kv.first.seg->value());
+        if (mesh && !mesh->ReadyForDrawing()) {
+          mesh->PrepareDraw(context_);
+        }
+      } else {
+        drawSegment(kv.first.seg->value(), kv.second.coord, kv.second.color);
+      }
     }
 
     glPopName();
@@ -67,14 +94,14 @@ class DrawerImpl {
   const v3d::PercDone& getPercDone() const { return perc_done_; }
 
  private:
-  void drawSegment(const common::SegID segID, const om::coords::Chunk& coord,
+  bool drawSegment(const common::SegID segID, const om::coords::Chunk& coord,
                    const Vector3f& color) {
 
     auto mesh = meshes_.Get(coord, segID);
 
     if (!mesh) {
       perc_done_.missingMesh();
-      return;
+      return false;
     }
 
     // apply segment color
@@ -86,6 +113,7 @@ class DrawerImpl {
     glPopName();
 
     perc_done_.justDrew(mesh);
+    return true;
   }
 
  private:
