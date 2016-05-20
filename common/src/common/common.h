@@ -44,6 +44,7 @@ typedef std::unordered_set<ID> IDSet;
  */
 typedef std::deque<SegID> SegIDList;
 typedef std::set<SegID> SegIDSet;
+typedef std::unordered_set<SegID> SegIDUnorderedSet;
 typedef std::unordered_map<SegID, uint32_t> SegIDMap;
 typedef std::map<uint32_t, SegID> SegIDOrderMap;
 std::ostream& operator<<(std::ostream& out, const SegIDSet& in);
