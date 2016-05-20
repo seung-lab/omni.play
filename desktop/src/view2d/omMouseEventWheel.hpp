@@ -6,6 +6,7 @@
 #include "view2d/omView2dState.hpp"
 #include "view2d/omMouseEventUtils.hpp"
 #include "view2d/omView2dZoom.hpp"
+#include "gui/tools.hpp"
 
 class OmMouseEventWheel {
  private:
@@ -25,25 +26,17 @@ class OmMouseEventWheel {
     const bool shiftKey = event->modifiers() & Qt::ShiftModifier;
     const bool altKey = event->modifiers() & Qt::AltModifier;
 
-    const bool moveThroughStack = controlKey;
-    const bool moveThroughStackSlow = controlKey && altKey;
-    const bool changeAlpha = shiftKey;
+    const bool moveThroughStack = controlKey && !altKey;
+    const bool changeAlpha = altKey || (controlKey && altKey);
     const bool changeBrushSize = controlKey && shiftKey;
 
-    if (changeBrushSize) {
+    if (changeBrushSize && OmStateManager::GetToolMode() == om::tool::SELECT) {
       static const int BrushInc = 4;
 
       if (numSteps >= 0) {
         OmStateManager::BrushSize()->IncreaseSize(BrushInc);
       } else {
         OmStateManager::BrushSize()->DecreaseSize(BrushInc);
-      }
-
-    } else if (moveThroughStackSlow) {
-      if (numSteps >= 0) {
-        state_->MoveUpStackCloserToViewer();
-      } else {
-        state_->MoveDownStackFartherFromViewer();
       }
 
     } else if (moveThroughStack) {
@@ -57,7 +50,6 @@ class OmMouseEventWheel {
       om::event::ViewCenterChanged();
 
     } else if (changeAlpha) {
-
       if (numSteps >= 0) {
         FilterWidget::IncreaseAlpha();
       } else {

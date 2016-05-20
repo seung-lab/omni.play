@@ -36,15 +36,17 @@ bool GrowInputContext::mousePressEvent(QMouseEvent* mouseEvent) {
   Qt::KeyboardModifiers modifiers = mouseEvent->modifiers();
   Qt::MouseButton button = mouseEvent->button();
   switch ((int)button | (int)modifiers) {
-    case (int)Qt::LeftButton:
-    case (int)Qt::LeftButton | (int)Qt::ShiftModifier:
+    case (int)Qt::MiddleButton:
+    case (int)Qt::MiddleButton | (int)Qt::ShiftModifier
+      | (int)Qt::AltModifier:
+    case (int)Qt::MiddleButton | (int)Qt::ShiftModifier:
       return GrowCoordinates(mouseEvent->x(), mouseEvent->y());
     case (int)Qt::RightButton | (int)Qt::ShiftModifier:
       // trim at segment but keep segment and blacklist around it
       return TrimAndBlacklistAdjacentCoordinates(mouseEvent->x(),
           mouseEvent->y());
     case (int)Qt::RightButton | (int)Qt::ShiftModifier
-      | (int)Qt::ControlModifier:
+      | (int)Qt::AltModifier:
       // trim at segment but keep segment
       return TrimAdjacentCoordinates(mouseEvent->x(), mouseEvent->y());
     default:
@@ -56,8 +58,8 @@ bool GrowInputContext::mouseReleaseEvent(QMouseEvent* mouseEvent) {
   Qt::KeyboardModifiers modifiers = mouseEvent->modifiers();
   Qt::MouseButton button = mouseEvent->button();
   switch ((int)button | (int)modifiers) {
-    case (int)Qt::LeftButton:
-    case (int)Qt::LeftButton | (int)Qt::ControlModifier:
+    case (int)Qt::MiddleButton:
+    case (int)Qt::MiddleButton | (int)Qt::AltModifier:
       // Mouse release does not need to take over controls
       viewGroupState_->EndSelector();
     default:
@@ -69,7 +71,7 @@ bool GrowInputContext::mouseDoubleClickEvent(QMouseEvent* mouseEvent) {
   Qt::KeyboardModifiers modifiers = mouseEvent->modifiers();
   Qt::MouseButton button = mouseEvent->button();
   switch ((int)button | (int)modifiers) {
-    case (int)Qt::LeftButton | (int)Qt::ShiftModifier:
+    case (int)Qt::MiddleButton | (int)Qt::ShiftModifier:
       // grow and clear blacklist
       return GrowCoordinatesAndRemoveAdjacentBlacklist(mouseEvent->x(),
           mouseEvent->y());
@@ -77,7 +79,7 @@ bool GrowInputContext::mouseDoubleClickEvent(QMouseEvent* mouseEvent) {
       // trim and remove segment completely and blacklist segment
       return TrimAndBlacklistCoordinates(mouseEvent->x(), mouseEvent->y());
     case (int)Qt::RightButton | (int)Qt::ShiftModifier
-      | (int)Qt::ControlModifier:
+      | (int)Qt::AltModifier:
       // trim and remove segment completely
       return TrimAndRemoveCoordinates(mouseEvent->x(), mouseEvent->y());
     default:
@@ -90,7 +92,7 @@ bool GrowInputContext::wheelEvent(QWheelEvent *wheelEvent) {
   const int numDegrees = wheelEvent->delta() / 8;
   const int numSteps = numDegrees / 15;
   switch ((int)modifiers) {
-    case (int)Qt::ShiftModifier | (int)Qt::ControlModifier:
+    case (int)Qt::ShiftModifier | (int)Qt::AltModifier:
       return GrowIncremental(numSteps >= 0);
     default:
       return false;
@@ -102,7 +104,7 @@ bool GrowInputContext::keyReleaseEvent(QKeyEvent *keyEvent) {
   int key = keyEvent->key();
   switch (key | (int) modifiers) {
     case (int)Qt::Key_Shift:
-    case (int)Qt::Key_Shift | (int)Qt::ControlModifier:
+    case (int)Qt::Key_Shift | (int)Qt::AltModifier:
       viewGroupState_->EndSelector();
     default:
       return false;
