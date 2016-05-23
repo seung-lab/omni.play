@@ -155,7 +155,7 @@ void OmMesh::makeDisplayList(QGLContext const* context) {
   data_.reset();
 }
 
-bool OmMesh::ReadyForDrawing() const{
+bool OmMesh::ReadyForDrawing() const {
   return displayList_;
 }
 

@@ -95,14 +95,14 @@ class DrawerImpl {
   const v3d::PercDone& getPercDone() const { return perc_done_; }
 
  private:
-  bool drawSegment(const common::SegID segID, const om::coords::Chunk& coord,
+  void drawSegment(const common::SegID segID, const om::coords::Chunk& coord,
                    const Vector3f& color) {
 
     auto mesh = meshes_.Get(coord, segID);
 
     if (!mesh) {
       perc_done_.missingMesh();
-      return false;
+      return;
     }
 
     // apply segment color
@@ -114,7 +114,6 @@ class DrawerImpl {
     glPopName();
 
     perc_done_.justDrew(mesh);
-    return true;
   }
 
  private:
