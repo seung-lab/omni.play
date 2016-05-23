@@ -102,14 +102,12 @@ class FindChunksToDraw {
     }
 
     const auto normExtent = chunk.BoundingBox(system_).ToNormBbox();
-    const auto center = normExtent.getCenter();
     const auto camera = culler.GetPosition();
+    const float camera_to_chunk = normExtent.getNearestVertex(camera).distance(camera); // shortest distance from camera to AABB. Not
+                                                                                        // perfect, but better than camera to AABB center.
+    const float max_allowed_distance = (normExtent.getMax() - normExtent.getMin()).length();         // Only allow small chunks close to camera
 
-    const float camera_to_center = center.distance(camera);
-    const float distance = (normExtent.getMax() - center).length();
-
-    // if distance too large, just draw it - else keep breaking it down
-    return {camera_to_center > distance, distance};
+    return { max_allowed_distance < camera_to_chunk, max_allowed_distance };
   }
 };
 }

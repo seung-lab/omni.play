@@ -140,6 +140,7 @@ class bootstrap:
             libgtest-dev \
             doxygen \
             thrift-compiler \
+            libyaml-dev \
             '
 
         cmd = "sudo apt-get -y install " + args

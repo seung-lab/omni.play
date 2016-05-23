@@ -28,8 +28,10 @@ class OmMesh {
   void Load();
 
   bool HasData() const;
+  bool ReadyForDrawing() const;
   uint64_t NumBytes() const;
 
+  bool PrepareDraw(QGLContext const* context);
   void Draw(QGLContext const* context);
 
   OmDataForMeshLoad* Data() { return data_.get(); }
