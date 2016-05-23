@@ -39,7 +39,8 @@ before_script:
 #After executing the script, make sure to be in the repo root folder, otherwise the deploy script will fail
 script:
   - echo "#define BUILD $TRAVIS_BUILD_NUMBER" > build_number.h
-  - make desktop OPT=release CC=$CC CXX=$CXX
+# TEMP ORIGINAL optimized - make desktop OPT=release CC=$CC CXX=$CXX
+  - make desktop CC=$CC CXX=$CXX
  # more details for core dump https://github.com/springmeyer/travis-coredump
  # Run the program to prompt a crash
  # Note: we capture the return code of the program here and add
@@ -73,7 +74,8 @@ deploy:
 - provider: releases
   api_key: $GH_TOKEN
   file: 
-  - ./bin/release/omni.desktop
+  # TEMP FOR Debug
+  - ./bin/debug/omni.desktop
   skip_cleanup: true
   on:
       repo: seung-lab/omni.play
