@@ -5,7 +5,7 @@
 #include <functional>
 
 /*
- * Decorator to allow finding segmentDataWrapper for input x,y
+ * Decorator to allow finding Global Coordinates for input x,y
  */
 class FindGlobalCoordinates {
  public:
