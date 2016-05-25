@@ -145,7 +145,7 @@ private:
     log_infos << "data check ok!!";
   }
 };
-
+/*
 TEST(meshTest , CreateProject){
   OmProject::New(QString::fromStdString(fnp));
 
@@ -193,6 +193,6 @@ TEST(meshTest , MeshProject){
   OmProject::Save();
   OmProject::Close();
 }
-
+*/
 }
 }
