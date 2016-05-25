@@ -18,7 +18,7 @@ using namespace test::boostgraph;
 
 namespace test {
 namespace mincut {
-/*
+
 TEST(minCut, testEmpty) {
   // necessary setup for OmSegments
   OmProject::New(QString::fromStdString(fnp));
@@ -36,6 +36,8 @@ TEST(minCut, testEmpty) {
   om::segment::UserEdge returnEdge = minCut.FindEdge(om::common::SegIDSet(),
       om::common::SegIDSet());
   EXPECT_FALSE(returnEdge.valid);
+  
+  OmProject::Close();
 }
 
 TEST(minCut, testIntersect) {
@@ -88,6 +90,8 @@ TEST(minCut, testIntersect) {
 
   // verify
   EXPECT_FALSE(returnEdge.valid);
+  
+  OmProject::Close();
 }
 
 TEST(minCut, testNotSameRoot) {
@@ -139,6 +143,8 @@ TEST(minCut, testNotSameRoot) {
 
   // verify
   EXPECT_FALSE(returnEdge.valid);
+  
+  OmProject::Close();
 }
 
 TEST(minCut, testNoEdgeFound) {
@@ -190,6 +196,8 @@ TEST(minCut, testNoEdgeFound) {
 
   // verify
   EXPECT_FALSE(returnEdge.valid);
+  
+  OmProject::Close();
 }
 
 /*
@@ -375,7 +383,9 @@ TEST(minCut, testEdgesReturn) {
 
   userEdges = minCut.FindEdges(sources, sinks);
   EXPECT_EQ(0, userEdges.size());
+  
+  OmProject::Close();
 }
-*/
+
 } //namespace mincut
 } //namespace test
