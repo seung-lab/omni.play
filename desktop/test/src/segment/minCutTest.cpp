@@ -18,7 +18,7 @@ using namespace test::boostgraph;
 
 namespace test {
 namespace mincut {
-
+/*
 TEST(minCut, testEmpty) {
   // necessary setup for OmSegments
   OmProject::New(QString::fromStdString(fnp));
@@ -376,6 +376,6 @@ TEST(minCut, testEdgesReturn) {
   userEdges = minCut.FindEdges(sources, sinks);
   EXPECT_EQ(0, userEdges.size());
 }
-
+*/
 } //namespace mincut
 } //namespace test
