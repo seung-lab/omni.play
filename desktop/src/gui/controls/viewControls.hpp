@@ -25,4 +25,6 @@ class ViewControls {
   OmViewGroupState* viewGroupState_;
   std::function<boost::optional<SegmentDataWrapper>(int, int)>
     getSegmentFunction_;
+  std::function<boost::optional<SegmentDataWrapper>(int, int)>
+    getGlobalCoordsFunction_;
 };

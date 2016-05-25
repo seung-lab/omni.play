@@ -39,9 +39,9 @@ class View3d : public QGLWidget, public ViewInputConversion {
 
   // gl actions
   virtual boost::optional<SegmentDataWrapper>
-    GetSelectedSegment(int x, int y) override;
+    FindSegment(int x, int y) override;
   virtual boost::optional<om::coords::Global>
-    GetGlobalCoords(int x, int y) override;
+    FindGlobalCoords(int x, int y) override;
 
   void DoZoom(const int direction);
   void DrawChunkBoundaries();

@@ -21,7 +21,7 @@ class ViewInputConversion {
    *   a segmentDataWrapper if found
    */
   virtual boost::optional<SegmentDataWrapper>
-    GetSelectedSegment(int x, int y) = 0;
+    FindSegment(int x, int y) = 0;
 
   /*
    * Input: x, y coordinates of the screen
@@ -29,7 +29,7 @@ class ViewInputConversion {
    *   if found
    */
   virtual boost::optional<om::coords::Global>
-    GetGlobalCoords(int x, int y) = 0;
+    FindGlobalCoords(int x, int y) = 0;
 };
 
 

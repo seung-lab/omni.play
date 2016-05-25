@@ -267,7 +267,7 @@ bool View3d::pickPoint(const Vector2i& vec, std::vector<uint32_t>& rNamesVec) {
   return true;
 }
 
-boost::optional<SegmentDataWrapper> View3d::GetSelectedSegment(int x, int y) {
+boost::optional<SegmentDataWrapper> View3d::FindSegment(int x, int y) {
   const Vector2i vec(x, y);
 
   std::vector<uint32_t> result;
@@ -292,7 +292,7 @@ boost::optional<SegmentDataWrapper> View3d::GetSelectedSegment(int x, int y) {
  *  Returns if unproject is valid (not valid if no depth value at pixel).
  */
 
-boost::optional<om::coords::Global> View3d::GetGlobalCoords(int x, int y) {
+boost::optional<om::coords::Global> View3d::FindGlobalCoords(int x, int y) {
   const Vector2i vec(x, y);
 
   boost::optional<om::coords::Global> globalCoords;

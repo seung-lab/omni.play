@@ -90,7 +90,7 @@ bool Ui::shatterModeMouseReleased(QMouseEvent* event) {
 
 bool Ui::cutSegment(QMouseEvent* event) {
   boost::optional<SegmentDataWrapper> segmentDataWrapper =
-    view3d_.GetSelectedSegment(event->x(), event->y());
+    view3d_.FindSegment(event->x(), event->y());
 
   view3d_.updateGL();
 
@@ -363,7 +363,7 @@ om::landmarks::sdwAndPt Ui::pickVoxelMouseCrosshair(QMouseEvent* event) {
   }
 
   boost::optional<om::coords::Global> globalCoords;
-  globalCoords = view3d_.GetGlobalCoords(event->x(), event->y());
+  globalCoords = view3d_.FindGlobalCoords(event->x(), event->y());
   if (!globalCoords) {
     return sdwAndPt;
   }

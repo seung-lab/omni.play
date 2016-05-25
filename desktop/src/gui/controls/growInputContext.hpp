@@ -69,11 +69,11 @@ class GrowInputContext
 
   // Helper to call the growing operator with viewgroup state properties
   std::tuple<om::common::SegIDList, om::common::SegIDList>
-    FindNotSelected(om::common::SegID selectedID, double threshold,
+    findNotSelected(om::common::SegID selectedID, double threshold,
         OmSegmentSelector& selector);
 
   // Helper to call the growing operator with viewgroup state properties
-  om::common::SegIDList FindSelected(om::common::SegIDList seedIDs,
+  om::common::SegIDList findSelected(om::common::SegIDList seedIDs,
       OmSegmentSelector& selector);
 
   // grow segments connected to seed up to given threshold
@@ -89,7 +89,6 @@ class GrowInputContext
       om::common::SegID seedID);
   void blacklistAddAdjacent(OmSegmentSelector& selector,
       om::common::SegID seedID);
-  std::shared_ptr<OmSegmentSelector> getSelector(int x, int y);
 
   // Updated the threshold in given direction and return the new threshold
   double getUpdatedThreshold(bool isGrowing);

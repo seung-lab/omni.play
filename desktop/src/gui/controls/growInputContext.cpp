@@ -248,14 +248,14 @@ std::tuple<std::shared_ptr<OmSegmentSelector>,
 
 
 std::tuple<om::common::SegIDList, om::common::SegIDList>
-  GrowInputContext::FindNotSelected(om::common::SegID selectedID,
+  GrowInputContext::findNotSelected(om::common::SegID selectedID,
       double threshold, OmSegmentSelector& selector) {
   return viewGroupState_->GetGrowing()->FindNotSelected(
       selectedID, threshold, selector,
       viewGroupState_->Segmentation().Segments()->GetAdjacencyMap());
 }
 
-om::common::SegIDList GrowInputContext::FindSelected(om::common::SegIDList seedIDs,
+om::common::SegIDList GrowInputContext::findSelected(om::common::SegIDList seedIDs,
     OmSegmentSelector& selector) {
   return viewGroupState_->GetGrowing()
     ->FindSelected(seedIDs, selector,
@@ -265,7 +265,7 @@ om::common::SegIDList GrowInputContext::FindSelected(om::common::SegIDList seedI
 om::common::SegIDList GrowInputContext::grow(om::common::SegID seedID,
     double threshold, OmSegmentSelector& selector) {
   om::common::SegIDList growIDs, trimSeedIDs;
-  std::tie(growIDs, trimSeedIDs) = FindNotSelected(seedID, threshold, selector);
+  std::tie(growIDs, trimSeedIDs) = findNotSelected(seedID, threshold, selector);
 
   selector.InsertSegments(growIDs);
   selector.SetFocusSegment(seedID);
@@ -279,7 +279,7 @@ void GrowInputContext::trim(OmSegmentSelector& selector, om::common::SegID seedI
 }
 
 void GrowInputContext::trim(OmSegmentSelector& selector, om::common::SegIDList seedIDs) {
-  om::common::SegIDList removeIDs = FindSelected(seedIDs, selector);
+  om::common::SegIDList removeIDs = findSelected(seedIDs, selector);
   selector.RemoveSegments(removeIDs);
 }
 

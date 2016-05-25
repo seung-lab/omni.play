@@ -13,6 +13,8 @@ ViewControls::ViewControls(ViewInputConversion* viewInputConversion,
   : viewInputConversion_(viewInputConversion),
     viewGroupState_(viewGroupState),
     getSegmentFunction_(std::bind(&ViewInputConversion::GetSelectedSegment,
+      viewInputConversion_, std::placeholders::_1, std::placeholders::_2)),
+    getGlobalCoordsFunction_(std::bind(&ViewInputConversion::GetGlobalCoords,
       viewInputConversion_, std::placeholders::_1, std::placeholders::_2)) {}
 
 bool ViewControls::mouseMoveEvent(QMouseEvent* mouseEvent) {
