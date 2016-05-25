@@ -62,6 +62,7 @@ bool GrowInputContext::mouseReleaseEvent(QMouseEvent* mouseEvent) {
     case (int)Qt::MiddleButton | (int)Qt::AltModifier:
       // Mouse release does not need to take over controls
       viewGroupState_->EndSelector();
+      return false;
     default:
       return false;
   }
@@ -106,6 +107,7 @@ bool GrowInputContext::keyReleaseEvent(QKeyEvent *keyEvent) {
     case (int)Qt::Key_Shift:
     case (int)Qt::Key_Shift | (int)Qt::AltModifier:
       viewGroupState_->EndSelector();
+      return false;
     default:
       return false;
   }
