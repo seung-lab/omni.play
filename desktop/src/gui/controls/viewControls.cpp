@@ -12,9 +12,9 @@ ViewControls::ViewControls(ViewInputConversion* viewInputConversion,
     OmViewGroupState* viewGroupState)
   : viewInputConversion_(viewInputConversion),
     viewGroupState_(viewGroupState),
-    getSegmentFunction_(std::bind(&ViewInputConversion::GetSelectedSegment,
+    findSegmentFunction_(std::bind(&ViewInputConversion::FindSegment,
       viewInputConversion_, std::placeholders::_1, std::placeholders::_2)),
-    getGlobalCoordsFunction_(std::bind(&ViewInputConversion::GetGlobalCoords,
+    findGlobalCoordsFunction_(std::bind(&ViewInputConversion::FindGlobalCoords,
       viewInputConversion_, std::placeholders::_1, std::placeholders::_2)) {}
 
 bool ViewControls::mouseMoveEvent(QMouseEvent* mouseEvent) {
@@ -68,10 +68,10 @@ std::unique_ptr<InputContext> ViewControls::getToolInputContext() {
     case om::tool::SPLIT:
     case om::tool::MULTISPLIT:
       return std::make_unique<JoiningSplittingInputContext>(
-          viewGroupState_, tool, getSegmentFunction_);
+          viewGroupState_, tool, findSegmentFunction_);
     case om::tool::GROW:
       return std::make_unique<GrowInputContext>(
-          viewGroupState_, tool, getSegmentFunction_);
+          viewGroupState_, tool, findSegmentFunction_);
     default:
       return inputContext;
   }

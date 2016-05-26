@@ -24,7 +24,7 @@ class ViewControls {
   ViewInputConversion* viewInputConversion_;
   OmViewGroupState* viewGroupState_;
   std::function<boost::optional<SegmentDataWrapper>(int, int)>
-    getSegmentFunction_;
-  std::function<boost::optional<SegmentDataWrapper>(int, int)>
-    getGlobalCoordsFunction_;
+    findSegmentFunction_;
+  std::function<boost::optional<om::coords::Global>(int, int)>
+    findGlobalCoordsFunction_;
 };

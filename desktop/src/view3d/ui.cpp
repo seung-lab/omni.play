@@ -357,7 +357,7 @@ om::landmarks::sdwAndPt Ui::pickVoxelMouseCrosshair(QMouseEvent* event) {
   om::landmarks::sdwAndPt sdwAndPt;
 
   boost::optional<SegmentDataWrapper> segmentDataWrapper =
-    view3d_.GetSelectedSegment(event->x(), event->y());
+    view3d_.FindSegment(event->x(), event->y());
   if (!segmentDataWrapper || !segmentDataWrapper->IsSegmentValid()) {
     return sdwAndPt;
   }

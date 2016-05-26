@@ -40,9 +40,9 @@ class OmView2d : public OmView2dCore, public ViewInputConversion {
   void RedrawBlocking();
 
   virtual boost::optional<SegmentDataWrapper>
-    GetSelectedSegment(int x, int y) override;
+    FindSegment(int x, int y) override;
   virtual boost::optional<om::coords::Global>
-    GetGlobalCoords(int x, int y) override;
+    FindGlobalCoords(int x, int y) override;
 
  protected:
   void keyPressEvent(QKeyEvent *event);
