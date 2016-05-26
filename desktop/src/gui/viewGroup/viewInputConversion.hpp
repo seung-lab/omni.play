@@ -1,7 +1,7 @@
 #pragma once
 
 /*
- * Interface for views to provide methods to assist with
+ * Pure Interface for views to provide methods to assist with
  * input
  */
 class SegmentDataWrapper;
