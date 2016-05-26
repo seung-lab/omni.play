@@ -10,12 +10,7 @@
 
 ViewControls::ViewControls(ViewInputConversion* viewInputConversion,
     OmViewGroupState* viewGroupState)
-  : viewInputConversion_(viewInputConversion),
-    viewGroupState_(viewGroupState),
-    findSegmentFunction_(std::bind(&ViewInputConversion::FindSegment,
-      viewInputConversion_, std::placeholders::_1, std::placeholders::_2)),
-    findGlobalCoordsFunction_(std::bind(&ViewInputConversion::FindGlobalCoords,
-      viewInputConversion_, std::placeholders::_1, std::placeholders::_2)) {}
+  : ViewInputContext(viewInputConversion, viewGroupState) {}
 
 bool ViewControls::mouseMoveEvent(QMouseEvent* mouseEvent) {
   return runEventAction([&mouseEvent] (InputContext& inputContext) {
@@ -68,10 +63,10 @@ std::unique_ptr<InputContext> ViewControls::getToolInputContext() {
     case om::tool::SPLIT:
     case om::tool::MULTISPLIT:
       return std::make_unique<JoiningSplittingInputContext>(
-          viewGroupState_, tool, findSegmentFunction_);
+          viewInputConversion_, viewGroupState_, tool);
     case om::tool::GROW:
       return std::make_unique<GrowInputContext>(
-          viewGroupState_, tool, findSegmentFunction_);
+          viewInputConversion_, viewGroupState_, tool);
     default:
       return inputContext;
   }
@@ -79,7 +74,7 @@ std::unique_ptr<InputContext> ViewControls::getToolInputContext() {
 
 bool ViewControls::runEventAction(std::function<bool(InputContext&)> eventAction) {
   std::unique_ptr<InputContext> inputContext = getToolInputContext();
-  if (inputContext) {
+  if (inputContext && eventAction) {
     return eventAction(*inputContext);
   }
   return false;

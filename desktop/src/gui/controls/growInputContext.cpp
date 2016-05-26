@@ -1,9 +1,7 @@
 #include "precomp.h"
 #include "gui/controls/growInputContext.hpp"
 #include "gui/controls/inputContext.hpp"
-#include "gui/controls/viewStateInputContext.hpp"
-#include "gui/controls/findSegment.hpp"
-#include "gui/controls/findGlobalCoordinates.hpp"
+#include "gui/controls/viewInputContext.hpp"
 #include "viewGroup/omViewGroupState.h"
 #include "viewGroup/growing.hpp"
 #include "utility/dataWrappers.h"
@@ -24,12 +22,9 @@ const double GrowInputContext::MIN_THRESHOLD = 0;
 /*
  ********************** PUBLIC METHODS **************************
  */
-GrowInputContext::GrowInputContext(OmViewGroupState* viewGroupState,
-    om::tool::mode tool,
-    std::function<boost::optional<SegmentDataWrapper>(int, int)>
-      findSegmentFunction)
-  : ViewStateInputContext(viewGroupState), tool_(tool),
-    FindSegment(findSegmentFunction) {
+GrowInputContext::GrowInputContext(ViewInputConversion* viewInputConversion,
+      OmViewGroupState* viewGroupState, om::tool::mode tool)
+  : ViewInputContext(viewInputConversion, viewGroupState), tool_(tool) {
 }
 
 bool GrowInputContext::mousePressEvent(QMouseEvent* mouseEvent) {
@@ -237,7 +232,7 @@ std::tuple<std::shared_ptr<OmSegmentSelector>,
   boost::optional<SegmentDataWrapper> segmentDataWrapper;
   std::shared_ptr<OmSegmentSelector> selector;
 
-  segmentDataWrapper = findSegmentFunction_(x, y);
+  segmentDataWrapper = viewInputConversion_->FindSegment(x, y);
 
   selector =
     viewGroupState_->GetOrCreateSelector(viewGroupState_->Segmentation()

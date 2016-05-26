@@ -2,18 +2,18 @@
 #include "precomp.h"
 
 #include "gui/controls/inputContext.hpp"
-#include "gui/controls/viewStateInputContext.hpp"
-#include "gui/controls/findSegment.hpp"
+#include "gui/controls/viewInputContext.hpp"
 
+/*
+ * Implementation of input context that accepts controls for the tools
+ * join and split
+ */
 class JoiningSplittingInputContext
 : public InputContext,
-  public ViewStateInputContext,
-  public FindSegment {
+  public ViewInputContext {
  public:
-  JoiningSplittingInputContext(OmViewGroupState* viewGroupState,
-      om::tool::mode tool,
-      std::function<boost::optional<SegmentDataWrapper>(int, int)>
-        findSegmentFunction);
+  JoiningSplittingInputContext(ViewInputConversion* viewInputConversion,
+       OmViewGroupState* viewGroupState, om::tool::mode tool);
 
   virtual bool mousePressEvent(QMouseEvent* mouseEvent) override;
   virtual bool mouseMoveEvent(QMouseEvent* mouseEvent) override;

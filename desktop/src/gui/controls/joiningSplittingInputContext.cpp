@@ -1,21 +1,17 @@
 #pragma once
 #include "precomp.h"
 #include "gui/controls/inputContext.hpp"
-#include "gui/controls/viewStateInputContext.hpp"
-#include "gui/controls/findSegment.hpp"
-#include "gui/controls/findGlobalCoordinates.hpp"
+#include "gui/controls/viewInputContext.hpp"
+#include "gui/viewGroup/viewInputConversion.hpp"
 #include "gui/controls/joiningSplittingInputContext.hpp"
 #include "viewGroup/omViewGroupState.h"
 #include "utility/dataWrappers.h"
 #include "segment/actions/omJoinSplitRunner.hpp"
 
 JoiningSplittingInputContext::JoiningSplittingInputContext(
-    OmViewGroupState* viewGroupState,
-    om::tool::mode tool,
-    std::function<boost::optional<SegmentDataWrapper>(int, int)>
-      findSegmentFunction)
-  : ViewStateInputContext(viewGroupState), tool_(tool),
-    FindSegment(findSegmentFunction) {
+    ViewInputConversion* viewInputConversion,
+    OmViewGroupState* viewGroupState, om::tool::mode tool)
+  : ViewInputContext(viewInputConversion, viewGroupState), tool_(tool) {
   }
 
 bool JoiningSplittingInputContext::mousePressEvent(QMouseEvent* mouseEvent) {
@@ -25,8 +21,8 @@ bool JoiningSplittingInputContext::mousePressEvent(QMouseEvent* mouseEvent) {
     case Qt::LeftButton:
     case (int)Qt::LeftButton | (int)Qt::ShiftModifier:
       return om::JoinSplitRunner::SelectSegment(
-          *viewGroupState_, tool_,
-          findSegmentFunction_(mouseEvent->x(), mouseEvent->y()));
+          *viewGroupState_, tool_, viewInputConversion_->FindSegment(
+            mouseEvent->x(), mouseEvent->y()));
     default:
       return false;
   }
@@ -39,8 +35,8 @@ bool JoiningSplittingInputContext::mouseMoveEvent(QMouseEvent* mouseEvent) {
     case (int)Qt::LeftButton:
     case (int)Qt::LeftButton | (int)Qt::ShiftModifier:
       return om::JoinSplitRunner::SelectSegment(
-          *viewGroupState_, tool_,
-          findSegmentFunction_(mouseEvent->x(), mouseEvent->y()));
+          *viewGroupState_, tool_, viewInputConversion_->FindSegment(
+            mouseEvent->x(), mouseEvent->y()));
     default:
       return false;
   }

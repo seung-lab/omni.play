@@ -1,27 +1,30 @@
 #pragma once
 
 #include "viewGroup/omViewGroupState.h"
+#include "gui/controls/inputContext.hpp"
+#include "gui/controls/viewInputContext.hpp"
 #include "gui/viewGroup/viewInputConversion.hpp"
 #include "gui/controls/growInputContext.hpp"
 
 /*
- * Base class for controls that are used for views.
- * This class provides functions that convert x and y controls
- * to necessary components the actions can act on.
+ * Facade class that determines the correct input context and forwards
+ * the control event to that correct input context.
  */
-class ViewControls {
+class ViewControls :
+  public InputContext,
+  public ViewInputContext {
  public:
   ViewControls(ViewInputConversion* viewInputConversion,
       OmViewGroupState* viewGroupState);
   virtual ~ViewControls() = default;
 
-  bool mousePressEvent(QMouseEvent* mouseEvent);
-  bool mouseMoveEvent(QMouseEvent* mouseEvent);
-  bool mouseReleaseEvent(QMouseEvent* mouseEvent);
-  bool mouseDoubleClickEvent(QMouseEvent* mouseEvent);
-  bool wheelEvent(QWheelEvent* wheelEvent);
-  bool keyPressEvent(QKeyEvent* keyEvent);
-  bool keyReleaseEvent(QKeyEvent* keyEvent);
+  virtual bool mousePressEvent(QMouseEvent* mouseEvent) override;
+  virtual bool mouseMoveEvent(QMouseEvent* mouseEvent) override;
+  virtual bool mouseReleaseEvent(QMouseEvent* mouseEvent) override;
+  virtual bool mouseDoubleClickEvent(QMouseEvent* mouseEvent) override;
+  virtual bool wheelEvent(QWheelEvent* wheelEvent) override;
+  virtual bool keyPressEvent(QKeyEvent* keyEvent) override;
+  virtual bool keyReleaseEvent(QKeyEvent* keyEvent) override;
 
  private:
   /*
@@ -30,15 +33,8 @@ class ViewControls {
   std::unique_ptr<InputContext> getToolInputContext();
 
   /*
-   * A helper method to forward the event to the the InputContext controls
+   * Wrapper method to fetch the input context and only execute
+   * if it exists
    */
   bool runEventAction(std::function<bool(InputContext&)> eventAction);
-
-  OmViewGroupState* viewGroupState_;
-
-  std::function<boost::optional<SegmentDataWrapper>(int, int)>
-    findSegmentFunction_;
-
-  std::function<boost::optional<om::coords::Global>(int, int)>
-    findGlobalCoordsFunction_;
 };
