@@ -39,20 +39,8 @@ before_script:
 #After executing the script, make sure to be in the repo root folder, otherwise the deploy script will fail
 script:
   - echo "#define BUILD $TRAVIS_BUILD_NUMBER" > build_number.h
-# TEMP ORIGINAL optimized - make desktop OPT=release CC=$CC CXX=$CXX
-  - make desktop CC=$CC CXX=$CXX
- # more details for core dump https://github.com/springmeyer/travis-coredump
- # Run the program to prompt a crash
- # Note: we capture the return code of the program here and add
- # `|| true` to ensure that travis continues past the crash
-  - ./bin/release/omni.desktop.test || RESULT=$?
-  - if [[ ${RESULT} == 0 ]]; then echo "\\o/ our test worked without problems"; else echo "ruhroh test returned an errorcode of $RESULT"; fi;
- # If the program returned an error code, now we check for a
- # core file in the current working directory and dump the backtrace out
-  - for i in $(find ./ -maxdepth 1 -name 'core*' -print); do gdb $(pwd)/test core* -ex "thread apply all bt" -ex "set pagination 0" -batch; done;
- # now we should present travis with the original
- # error code so the run cleanly stops
-  - if [[ ${RESULT} != 0 ]]; then exit $RESULT ; fi;
+  - make desktop OPT=release CC=$CC CXX=$CXX
+  - ./bin/release/omni.desktop.test
 
 before_deploy:
   #
