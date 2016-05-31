@@ -62,8 +62,7 @@ deploy:
 - provider: releases
   api_key: $GH_TOKEN
   file: 
-  # TEMP FOR Debug
-  - ./bin/debug/omni.desktop
+  - ./bin/release/omni.desktop
   skip_cleanup: true
   on:
       repo: seung-lab/omni.play
