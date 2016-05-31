@@ -90,7 +90,7 @@ class GrowInputContext
   void blacklistAddAdjacent(OmSegmentSelector& selector,
       om::common::SegID seedID);
 
-  // Updated the threshold in given direction and return the new threshold
-  double getUpdatedThreshold(bool isGrowing);
+  // Update the threshold in given direction and return the new threshold
+  double updateThreshold(bool isGrowing);
 
 };

@@ -165,7 +165,7 @@ bool GrowInputContext::GrowIncremental(bool isGrowing) {
   }
 
   om::common::SegIDList trimSeedIDs = grow(selector->GetFocusSegment(),
-      getUpdatedThreshold(isGrowing), *selector);
+      updateThreshold(isGrowing), *selector);
   trim(*selector, trimSeedIDs);
 
   selector->RemoveSegments(trimSeedIDs);
@@ -278,7 +278,7 @@ void GrowInputContext::trim(OmSegmentSelector& selector, om::common::SegIDList s
   selector.RemoveSegments(removeIDs);
 }
 
-double GrowInputContext::getUpdatedThreshold(bool isGrowing) {
+double GrowInputContext::updateThreshold(bool isGrowing) {
   double threshold = OmProject::Globals().Users().UserSettings()
     .getGrowThreshold();
 
