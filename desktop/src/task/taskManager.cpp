@@ -28,10 +28,11 @@ TaskManager::TaskInfosRequest TaskManager::GetTasks(int datasetID, int cellID,
                                                     int maxWeight) {
   auto uri = system::Account::endpoint();
   uri.set_path("/1.0/task");
+  
+  uri.AddQueryParameter("dataset", std::to_string(datasetID));
+  
   if (cellID) {
     uri.AddQueryParameter("cell", std::to_string(cellID));
-  } else if (datasetID) {
-    uri.AddQueryParameter("dataset", std::to_string(datasetID));
   }
   if (maxWeight) {
     uri.AddQueryParameter("max_weight", std::to_string(maxWeight));
