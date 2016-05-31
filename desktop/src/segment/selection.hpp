@@ -180,7 +180,8 @@ class Selection {
   }
 
   inline void addSegmentNextOrder(const common::SegID segID) {
-    addSegmentWithOrder(segID, nextOrder_++);
+    addSegmentWithOrder(segID, nextOrder_);
+    nextOrder_++;
   }
 
   inline void addSegmentWithOrder(const common::SegID segID, uint32_t newOrder) {
