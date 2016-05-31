@@ -2,6 +2,7 @@
 #include "precomp.h"
 
 #include "events/details/event.h"
+#include "common/logging.h"
 
 namespace om {
 namespace event {
@@ -21,6 +22,10 @@ class View2dEvent : public Event {
   void Dispatch(Listener* base) {
     auto* list = dynamic_cast<View2dEventListener*>(base);
     assert(list);
+    if (!list) {
+      log_debugs << "No listeners found";
+      return;
+    }
 
     if (type_ == VIEW_BOX_CHANGE) return list->ViewBoxChangeEvent();
     if (type_ == VIEW_CENTER_CHANGE) return list->ViewCenterChangeEvent();

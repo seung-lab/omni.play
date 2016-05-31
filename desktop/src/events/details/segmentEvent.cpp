@@ -1,5 +1,6 @@
 #include "actions/omSelectSegmentParams.hpp"
 #include "events/details/segmentEvent.h"
+#include "common/logging.h"
 
 namespace om {
 namespace event {
@@ -30,6 +31,10 @@ SegmentEvent::SegmentEvent(QEvent::Type type,
 void SegmentEvent::Dispatch(Listener* base) {
   auto* list = dynamic_cast<SegmentEventListener*>(base);
   assert(list);
+  if (!list) {
+    log_debugs << "No listeners found";
+    return;
+  }
 
   if (type_ == MODIFIED) return list->SegmentModificationEvent(this);
   if (type_ == SEGMENT_GUI_LIST) return list->SegmentGUIlistEvent(this);
