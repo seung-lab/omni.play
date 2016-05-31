@@ -17,7 +17,7 @@ namespace JoinSplitRunner {
    * Tell joinningSplitting to finish selecting segments.
    */
   bool FinishSelectingSegments(OmViewGroupState& vgs,
-      const om::tool::mode tool);
+    const om::tool::mode tool);
   bool SelectSegment(OmViewGroupState& vgs, const om::tool::mode tool,
     boost::optional<SegmentDataWrapper> segmentDataWrapper);
 }
