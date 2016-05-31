@@ -288,10 +288,11 @@ boost::optional<SegmentDataWrapper> View3d::FindSegment(int x, int y) {
 }
 
 /*
- *  Unproject a 2d point to a 3d point using the depth buffer.
- *  Returns if unproject is valid (not valid if no depth value at pixel).
+ *  Convert screen coordinates into 3d global coordinates by
+ *  unprojecting the 2d point to a 3d point using the depth buffer.
+ *  Returns 3d global coords if unproject is valid (empty optional if 
+ *  not valid when no depth value at pixel).
  */
-
 boost::optional<om::coords::Global> View3d::FindGlobalCoords(int x, int y) {
   const Vector2i vec(x, y);
 
