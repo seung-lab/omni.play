@@ -14,6 +14,7 @@
 #include "viewGroup/omColorizers.hpp"
 #include "viewGroup/omViewGroupState.h"
 #include "viewGroup/omJoiningSplitting.hpp"
+#include "viewGroup/growing.hpp"
 #include "viewGroup/omViewGroupView2dState.hpp"
 #include "viewGroup/omZoomLevel.hpp"
 #include "view2d/omView2dState.hpp"
@@ -30,6 +31,7 @@ OmViewGroupState::OmViewGroupState(MainWindow* mainWindow)
       colorizers_(new OmColorizers(*this)),
       zoomLevel_(new OmZoomLevel()),
       joiningSplitting_(new OmJoiningSplitting()),
+      growing_(new Growing()),
       landmarks_(new OmLandmarks(mainWindow)),
       cdw_(new ChannelDataWrapper(1)),
       sdw_(new SegmentationDataWrapper(1))
@@ -118,7 +120,7 @@ ToolBarManager& OmViewGroupState::GetToolBarManager() {
 }
 
 void OmViewGroupState::SetShouldVolumeBeShownBroken(bool shouldVolumeBeShownBroken) { 
-  JoiningSplitting().SetShouldVolumeBeShownBroken(shouldVolumeBeShownBroken);
+  GetJoiningSplitting()->SetShouldVolumeBeShownBroken(shouldVolumeBeShownBroken);
 }
 
 void OmViewGroupState::SetShowValidMode(bool mode, bool inColor) {
@@ -137,8 +139,13 @@ std::shared_ptr<OmSegmentSelector> OmViewGroupState::GetOrCreateSelector(
   return selector_;
 }
 
-void OmViewGroupState::EndSelector() {
-  selector_.reset();
+bool OmViewGroupState::EndSelector() {
+  if (IsSelecting()) {
+    selector_.reset();
+    return true;
+  }
+
+  return false;
 }
 
 void OmViewGroupState::SetHowNonSelectedSegmentsAreColoredInFilter(
@@ -148,7 +155,7 @@ void OmViewGroupState::SetHowNonSelectedSegmentsAreColoredInFilter(
 }
 
 bool OmViewGroupState::shouldVolumeBeShownBroken() {
-  return JoiningSplitting().ShouldVolumeBeShownBroken();
+  return GetJoiningSplitting()->ShouldVolumeBeShownBroken();
 }
 
 SegmentationDataWrapper OmViewGroupState::Segmentation() const { return *sdw_; }

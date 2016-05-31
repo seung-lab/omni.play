@@ -34,15 +34,6 @@ void OmActions::ChangeSizethreshold(const SegmentationDataWrapper sdw,
       zi::bind(&OmActionsImpl::ChangeSizethreshold, impl(), sdw, threshold)));
 }
 
-void OmActions::ChangeASthreshold(const SegmentationDataWrapper sdw,
-                                   const double threshold)
-{
-    pool().push_back(
-        zi::run_fn(
-            zi::bind(&OmActionsImpl::ChangeASthreshold, impl(),
-                     sdw, threshold)));
-}
-
 // painting-related
 void OmActions::SetVoxels(const om::common::ID segmentationID,
                           const std::set<om::coords::Data>& voxels,

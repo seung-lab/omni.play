@@ -9,6 +9,8 @@
 #include "view2d/omMouseEventUtils.hpp"
 #include "view2d/omView2d.h"
 #include "view2d/omView2dState.hpp"
+#include "gui/controls/inputContext.hpp"
+#include "gui/controls/joiningSplittingInputContext.hpp"
 
 class OmMouseEventMove {
  private:
@@ -65,11 +67,6 @@ class OmMouseEventMove {
           }
           state_->SetLastDataPoint(dataClickPoint_);
           break;
-        case om::tool::JOIN:
-        case om::tool::SPLIT:
-        case om::tool::MULTISPLIT:
-          om::mouse::event::doJoinSplitSegment(*state_, dataClickPoint_,
-              tool_);
         default:
           break;
       }

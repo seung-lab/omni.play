@@ -13,10 +13,10 @@ class userSettings {
   const double defaultThreshold_;
   const double defaultSizeThreshold_;
   const bool defaultShowAnnotations_;
-  const double defaultASThreshold_;
+  const double defaultGrowThreshold_;
   double threshold_;
   double sizeThreshold_;
-  double automaticSpreadingThreshold_;
+  double growThreshold_;
   int sizeThreshold_direction_;
   bool showAnnotations_;
 
@@ -26,10 +26,10 @@ class userSettings {
         defaultThreshold_(0.999),
         defaultSizeThreshold_(250),
         defaultShowAnnotations_(false),
-        defaultASThreshold_(0.999),
+        defaultGrowThreshold_(0.999),
         threshold_(defaultThreshold_),
         sizeThreshold_(defaultSizeThreshold_),
-        automaticSpreadingThreshold_(defaultASThreshold_),
+        growThreshold_(defaultGrowThreshold_),
         sizeThreshold_direction_(0),
         showAnnotations_(defaultShowAnnotations_) {
     log_infos << "New User Settings";
@@ -41,25 +41,21 @@ class userSettings {
 
   inline std::string getFilename() { return filename_; }
 
-  inline float getThreshold() { return threshold_; }
+  inline double getThreshold() { return threshold_; }
 
-  inline void setThreshold(float val) { threshold_ = val; }
+  inline void setThreshold(double val) { threshold_ = val; }
 
-  inline float getSizeThreshold() { return sizeThreshold_; }
+  inline double getSizeThreshold() { return sizeThreshold_; }
 
-  inline int getSizeDirection() {
-      return sizeThreshold_direction_;
-  }
+  inline double setSizeThreshold(double val) { sizeThreshold_ = val; } 
 
-  inline void setSizeThreshold(float val) { sizeThreshold_ = val; } 
+  inline bool getAnnotationVisible() { return showAnnotations_; }
 
-  inline float getAnnotationVisible() { return showAnnotations_; }
+  inline void setAnnotationVisible(bool val) { showAnnotations_ = val; }
 
-  inline void setAnnotationVisible(float val) { showAnnotations_ = val; }
+  inline double getGrowThreshold() { return growThreshold_; }
 
-  inline float getASThreshold() { return automaticSpreadingThreshold_; }
-
-  inline void setASThreshold(float val) { automaticSpreadingThreshold_ = val; }
+  inline void setGrowThreshold(double val) { growThreshold_ = val; }
 };
 
 }  // namespace om

@@ -71,11 +71,8 @@ namespace event {
     boost::optional<SegmentDataWrapper> sdw =
      getSelectedSegment(state, dataClickPoint);
 
-    if (!sdw) {
-      return;
-    }
 
-    om::JoinSplitRunner::SelectSegment(state.getViewGroupState(), tool, *sdw);
+    om::JoinSplitRunner::SelectSegment(state.getViewGroupState(), tool, sdw);
   }
 } //namespace event
 } //namespace mouse

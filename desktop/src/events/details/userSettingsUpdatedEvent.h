@@ -7,21 +7,21 @@
 namespace om {
 namespace event {
 
-class MSTEvent : public Event {
+class UserSettingsUpdatedEvent : public Event {
  public:
-  static const QEvent::Type REFRESH_MST_THRESHOLD;
+  static const QEvent::Type USER_SETTINGS_UPDATED;
 
-  MSTEvent() : Event(Klass::mst, REFRESH_MST_THRESHOLD) {}
+  UserSettingsUpdatedEvent() : Event(Klass::userSettings, USER_SETTINGS_UPDATED) {}
 
   void Dispatch(Listener* base) {
-    auto* list = dynamic_cast<MSTEventListener*>(base);
+    auto* list = dynamic_cast<UserSettingsUpdatedEventListener*>(base);
     assert(list);
     if (!list) {
       log_debugs << "No listeners found";
       return;
     }
 
-    if (type_ == REFRESH_MST_THRESHOLD) return list->RefreshMSTEvent(this);
+    if (type_ == USER_SETTINGS_UPDATED) return list->UserSettingsUpdatedEvent(this);
     throw om::ArgException("unknown event type");
   }
 };

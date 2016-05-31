@@ -87,6 +87,8 @@ class OmSegmentsImpl {
   om::segment::Selection& Selection() const { return *selection_; }
   OmSegmentLists& SegmentLists() const { return *segmentLists_; }
 
+  virtual const std::unordered_map<om::common::SegID,
+            std::vector <om::segment::Edge*>>& GetAdjacencyMap() const;
   virtual OmSegment* FindRoot(const om::common::SegID segID) const;
   virtual OmSegment* FindRoot(const OmSegment* segment) const;
 
@@ -103,10 +105,6 @@ class OmSegmentsImpl {
   void SetNote(om::common::SegID segID, std::string note);
 
   void turnBatchModeOn(const bool batchMode);
-
-  void AddSegments_BreadthFirstSearch(OmSegmentSelector* sel, om::common::SegID SegmentID);
-  void Trim(OmSegmentSelector* sel, om::common::SegID SegmentID);
-  void AddSegments_BFS_DynamicThreshold(OmSegmentSelector* sel, om::common::SegID SegmentID);
 
  private:
   om::segment::EdgeVector& mst_;
@@ -136,6 +134,7 @@ class OmSegmentsImpl {
   void resetGlobalThreshold();
   void resetSizeThreshold();
   void SortAdjacencyMap();
+  void populateAdjacencyMap();
 
   friend class YAML::convert<OmSegmentsImpl>;
 };

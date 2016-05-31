@@ -5,6 +5,8 @@
 #include "view2d/omView2d.h"
 #include "view2d/omView2dState.hpp"
 #include "segment/actions/omJoinSplitRunner.hpp"
+#include "gui/controls/inputContext.hpp"
+#include "gui/controls/joiningSplittingInputContext.hpp"
 
 class OmMouseEventRelease {
  private:
@@ -35,11 +37,6 @@ class OmMouseEventRelease {
         }
         state_->OverrideToolModeForPan(false);
         break;
-      case om::tool::JOIN:
-      case om::tool::SPLIT:
-      case om::tool::MULTISPLIT:
-        om::JoinSplitRunner::GoToNextState(
-            state_->getViewGroupState(), tool);
       default:
         break;
     }

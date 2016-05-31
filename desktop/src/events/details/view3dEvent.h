@@ -2,6 +2,7 @@
 #include "precomp.h"
 
 #include "events/details/event.h"
+#include "common/logging.h"
 
 namespace om {
 namespace event {
@@ -16,6 +17,10 @@ class View3dEvent : public Event {
   void Dispatch(Listener* base) {
     auto* list = dynamic_cast<View3dEventListener*>(base);
     assert(list);
+    if (!list) {
+      log_debugs << "No listeners found";
+      return;
+    }
 
     if (type_ == REDRAW) return list->View3dRedrawEvent();
     if (type_ == RECENTER) return list->View3dRecenter();

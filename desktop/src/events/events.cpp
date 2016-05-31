@@ -2,6 +2,7 @@
 #include "events/details/event.h"
 #include "events/details/manager.h"
 #include "events/details/mstEvent.h"
+#include "events/details/userSettingsUpdatedEvent.h"
 #include "events/details/nonFatalEvent.h"
 #include "events/details/preferenceEvent.h"
 #include "events/details/segmentEvent.h"
@@ -80,6 +81,8 @@ void UpdateSegmentPropBox(QWidget* widget, const QString& title) {
 }
 
 void RefreshMSTthreshold() { Manager::Post(new MSTEvent()); }
+
+void UserSettingsUpdated() { Manager::Post(new UserSettingsUpdatedEvent()); }
 
 void NonFatalEventOccured(const QString err) {
   Manager::Post(new NonFatalEvent(err));

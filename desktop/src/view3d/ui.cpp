@@ -4,7 +4,6 @@
 #include "gui/tools.hpp"
 #include "landmarks/omLandmarks.hpp"
 #include "landmarks/omLandmarksTypes.h"
-#include "segment/actions/omJoinSplitRunner.hpp"
 #include "segment/omSegmentCenter.hpp"
 #include "segment/omSegmentSelected.hpp"
 #include "segment/omSegmentSelector.h"
@@ -61,19 +60,7 @@ void Ui::KeyPress(QKeyEvent* event) {
   }
 }
 
-bool Ui::joinSplitModeSelectSegment(om::tool::mode tool, QMouseEvent* event) {
-  auto pickPoint = pickVoxelMouseCrosshair(event);
-
-  if (!pickPoint.sdw.IsSegmentValid()) {
-    return false;
-  }
-
-  om::JoinSplitRunner::SelectSegment(vgs_, tool, pickPoint.sdw);
-  return true;
-}
-
-void Ui::joinSplitModeMouseReleased(om::tool::mode tool, QMouseEvent* event) {
-  om::JoinSplitRunner::GoToNextState(vgs_, tool);
+void Ui::KeyRelease(QKeyEvent* event) {
 }
 
 bool Ui::validateModeMouseReleased(om::common::SetValid setValid, QMouseEvent* event) {
@@ -101,36 +88,17 @@ bool Ui::shatterModeMouseReleased(QMouseEvent* event) {
   return true;
 }
 
-bool Ui::grow(bool isTrim, QMouseEvent* event) {
-  auto pickPoint = pickVoxelMouseCrosshair(event);
-
-  if (!pickPoint.sdw.IsSegmentValid()) {
-    return false;
-  }
-
-  SegmentationDataWrapper segmentationDataWrapper =
-    pickPoint.sdw.MakeSegmentationDataWrapper();
-
-  OmSegmentSelector selector(segmentationDataWrapper, this, "3d Grow" );
-
-  if (isTrim) {
-    segmentationDataWrapper.Segments()->Trim(&selector, pickPoint.sdw.GetSegmentID());
-  } else {
-    segmentationDataWrapper.Segments()->
-      AddSegments_BreadthFirstSearch(&selector, pickPoint.sdw.GetSegmentID());
-  }
-}
-
 bool Ui::cutSegment(QMouseEvent* event) {
-  const SegmentDataWrapper sdw = pickSegmentMouse(event, false);
+  boost::optional<SegmentDataWrapper> segmentDataWrapper =
+    view3d_.FindSegment(event->x(), event->y());
 
   view3d_.updateGL();
 
-  if (!sdw.IsSegmentValid()) {
+  if (!segmentDataWrapper || !segmentDataWrapper->IsSegmentValid()) {
     return false;
   }
 
-  OmActions::CutSegment(sdw);
+  OmActions::CutSegment(*segmentDataWrapper);
   return true;
 }
 
@@ -183,13 +151,6 @@ void Ui::navigationModeMousePressed(QMouseEvent* event) {
           vgs_.Landmarks().Add(pickPoint.sdw, pickPoint.coord);
           return;
         }
-      case om::tool::mode::SPLIT:
-      case om::tool::mode::JOIN:
-      case om::tool::MULTISPLIT:
-        if (joinSplitModeSelectSegment(toolMode, event)) {
-          return;
-        }
-        break;
       case om::tool::mode::VALIDATE:
         om::common::SetValid setValid;
         if (controlModifier) {
@@ -214,14 +175,6 @@ void Ui::navigationModeMousePressed(QMouseEvent* event) {
       case om::tool::mode::ANNOTATE:
         if (annotate(event)) {
           return;
-        }
-        break;
-      case om::tool::mode::GROW:
-        // only call grow if no modifiers or if shift is called
-        if (noModifiers || shiftModifier) {
-          if (grow(shiftModifier, event)) {
-            return;
-          }
         }
         break;
     }
@@ -273,13 +226,6 @@ void Ui::doSelectSegment(const SegmentDataWrapper& sdw,
 
 void Ui::navigationModeMouseRelease(QMouseEvent* event) {
   const auto toolMode = OmStateManager::GetToolMode();
-  switch (toolMode) {
-    case om::tool::JOIN:
-    case om::tool::SPLIT:
-    case om::tool::MULTISPLIT:
-      joinSplitModeMouseReleased(toolMode, event);
-      break;
-  }
   cameraMovementMouseEnd(event);
 }
 
@@ -291,14 +237,6 @@ void Ui::navigationModeMouseMove(QMouseEvent* event) {
   if (cameraIsMoving()) {
     cameraMovementMouseUpdate(event);
     return;
-  }
-
-  switch(tool) {
-    case om::tool::JOIN:
-    case om::tool::SPLIT:
-    case om::tool::MULTISPLIT:
-      joinSplitModeSelectSegment(tool, event);
-      break;
   }
 }
 
@@ -319,19 +257,19 @@ void Ui::cameraMovementMouseStart(QMouseEvent* event) {
   bool shift_modifier = event->modifiers() & Qt::ShiftModifier;
 
   // left w/o shift moves rotate
-  if (event->buttons() & Qt::LeftButton && !shift_modifier) {
+  if (event->buttons() & Qt::LeftButton) {
     view3d_.GetCamera().MovementStart(CameraMovementType::ORBIT_ROTATE, point);
-
-    // left + shift moves lookat
-  } else if (event->buttons() & Qt::LeftButton && shift_modifier) {
-    view3d_.GetCamera().MovementStart(CameraMovementType::LOOKAT_ROTATE, point);
 
     // mid button pans
   } else if (event->buttons() & Qt::MidButton) {
     view3d_.GetCamera().MovementStart(CameraMovementType::PAN, point);
 
+    // right + shift moves lookat
+  } else if (event->buttons() & Qt::RightButton && shift_modifier) {
+    view3d_.GetCamera().MovementStart(CameraMovementType::LOOKAT_ROTATE, point);
+
     // right button zooms
-  } else if (event->buttons() & Qt::RightButton) {
+  } else if (event->buttons() & Qt::RightButton && !shift_modifier) {
     view3d_.GetCamera().MovementStart(CameraMovementType::ZOOM, point);
   }
 }
@@ -368,28 +306,6 @@ void Ui::cameraMovementMouseWheel(QWheelEvent* event) {
   view3d_.GetCamera().MovementUpdate(point);
   view3d_.updateGL();
   view3d_.GetCamera().MovementEnd(point);
-}
-
-/////////////////////////////////
-///////          Segment Picking
-
-SegmentDataWrapper Ui::pickSegmentMouse(QMouseEvent* event, const bool drag) {
-  // extract event properties
-  Vector2i Vector2i(event->x(), event->y());
-
-  const SegmentDataWrapper sdw = view3d_.PickPoint(Vector2i);
-  if (!sdw.IsSegmentValid()) {
-    return SegmentDataWrapper();
-  }
-
-  // check if dragging
-  if (drag && sdw == prevSDW_) {
-    return SegmentDataWrapper();
-  } else {
-    prevSDW_ = sdw;
-  }
-
-  return sdw;
 }
 
 /////////////////////////////////
@@ -438,24 +354,23 @@ void Ui::crosshair(QMouseEvent* event) {
 }
 
 om::landmarks::sdwAndPt Ui::pickVoxelMouseCrosshair(QMouseEvent* event) {
-  // extract event properties
-  const Vector2i vec(event->x(), event->y());
+  om::landmarks::sdwAndPt sdwAndPt;
 
-  view3d_.updateGL();
-
-  const SegmentDataWrapper sdw = view3d_.PickPoint(vec);
-  if (!sdw.IsSegmentValid()) {
-    return om::landmarks::sdwAndPt();
+  boost::optional<SegmentDataWrapper> segmentDataWrapper =
+    view3d_.FindSegment(event->x(), event->y());
+  if (!segmentDataWrapper || !segmentDataWrapper->IsSegmentValid()) {
+    return sdwAndPt;
   }
 
-  Vector3f point3d;
-  if (!view3d_.UnprojectPoint(vec, point3d)) {
-    return om::landmarks::sdwAndPt();
+  boost::optional<om::coords::Global> globalCoords;
+  globalCoords = view3d_.FindGlobalCoords(event->x(), event->y());
+  if (!globalCoords) {
+    return sdwAndPt;
   }
 
-  om::landmarks::sdwAndPt ret = {sdw, point3d};
+  sdwAndPt = {*segmentDataWrapper, *globalCoords};
 
-  return ret;
+  return sdwAndPt;
 }
 
 void Ui::resetWindow() {

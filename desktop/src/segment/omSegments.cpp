@@ -92,6 +92,12 @@ std::string OmSegments::GetNote(common::SegID segID) {
   return impl_->GetNote(segID);
 }
 
+const std::unordered_map<om::common::SegID,
+  std::vector <om::segment::Edge*>>& OmSegments::GetAdjacencyMap() const {
+  zi::guard g(mutex_);
+  return impl_->GetAdjacencyMap();
+}
+
 OmSegment* OmSegments::FindRoot(OmSegment* segment) const {
   // FIXME: double check store locking
   zi::guard g(mutex_);
@@ -183,18 +189,6 @@ std::vector<om::segment::UserEdge> OmSegments::CutSegment(OmSegment* seg) {
 bool OmSegments::JoinEdges(const std::vector<om::segment::UserEdge>& edges) {
   zi::guard g(mutex_);
   return impl_->JoinEdges(edges);
-}
-
-void OmSegments::AddSegments_BreadthFirstSearch(OmSegmentSelector* sel, om::common::SegID segID) {
-    impl_->AddSegments_BreadthFirstSearch(sel, segID);
-}
-
-void OmSegments::AddSegments_BFS_DynamicThreshold(OmSegmentSelector* sel, om::common::SegID segID) {
-    impl_->AddSegments_BFS_DynamicThreshold(sel, segID);
-}
-
-void OmSegments::Trim(OmSegmentSelector* sel, om::common::SegID segID) {
-    impl_->Trim(sel, segID);
 }
 
 std::vector<om::segment::UserEdge> OmSegments::Shatter(OmSegment* seg) {

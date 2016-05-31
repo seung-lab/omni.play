@@ -11,6 +11,7 @@ enum Klass {
   nonFatalEvent,
   preference,
   mst,
+  userSettings,
   segment,
   tool,
   ui,

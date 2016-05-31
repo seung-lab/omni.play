@@ -10,6 +10,7 @@ class sdwAndPt;
 }
 }
 class OmViewGroupState;
+class ViewControls;
 
 namespace om {
 namespace v3d {
@@ -31,11 +32,13 @@ class Ui {
   void MouseDoubleClick(QMouseEvent* event);
   void MouseWheel(QWheelEvent* event);
   void KeyPress(QKeyEvent* event);
+  void KeyRelease(QKeyEvent* event);
 
  private:
   View3d& view3d_;
   OmViewGroupState& vgs_;
   std::unique_ptr<MacOSXGestures> macGestures_;
+  std::unique_ptr<ViewControls> viewControls_;
   OmSegmentContextMenu segmentContextMenu_;
   SegmentDataWrapper prevSDW_;
 

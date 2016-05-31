@@ -15,7 +15,6 @@ om::actions_::typeMap_t om::actions_::registerActionTypes() {
     ret["OmSegmentationThresholdChangeAction"] = OmSegmentationThresholdChangeAction;
   ret["OmProjectCloseAction"] = OmProjectCloseAction;
   ret["OmProjectSaveAction"] = OmProjectSaveAction;
-    ret["OmAutomaticSpreadingThresholdChangeAction"] = OmAutomaticSpreadingThresholdChangeAction;
 
   return ret;
 }

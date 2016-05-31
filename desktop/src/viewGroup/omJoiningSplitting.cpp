@@ -77,6 +77,10 @@ void OmJoiningSplitting::GoToNextState() {
   }
 }
 
+bool OmJoiningSplitting::RequiresElementSelection() {
+  return bufferPointer_->empty();
+}
+
 bool OmJoiningSplitting::IsFinished() {
   return currentState_ == State::FINISHED_STATE;
 }

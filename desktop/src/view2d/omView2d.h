@@ -4,21 +4,23 @@
 #include "view2d/omView2dState.hpp"
 #include "view2d/omView2dCore.h"
 #include "system/omStateManager.h"
+#include "coordinates/coordinates.h"
+#include "gui/viewGroup/viewInputConversion.hpp"
 
-class OmKeyEvents;
-class OmMouseEvents;
+class OmKeyEvents; class OmMouseEvents;
 class OmView2dEvents;
 class OmView2dZoom;
 class SegmentDataWrapper;
+class ViewControls;
+class InputContext;
 
-class OmView2d : public OmView2dCore {
+class OmView2d : public OmView2dCore, public ViewInputConversion {
   Q_OBJECT;
 
  public:
   OmView2d(const om::common::ViewType, QWidget *, OmViewGroupState &,
            OmMipVolume &, const std::string &name);
   ~OmView2d();
-
   void SetComplimentaryDockWidget(QDockWidget *dock) {
     complimentaryDock_ = dock;
   }
@@ -37,13 +39,20 @@ class OmView2d : public OmView2dCore {
   void Redraw();
   void RedrawBlocking();
 
+  virtual boost::optional<SegmentDataWrapper>
+    FindSegment(int x, int y) override;
+  virtual boost::optional<om::coords::Global>
+    FindGlobalCoords(int x, int y) override;
+
  protected:
   void keyPressEvent(QKeyEvent *event);
+  void keyReleaseEvent(QKeyEvent *event);
 
   // mouse events
   void mouseMoveEvent(QMouseEvent *event);
   void mousePressEvent(QMouseEvent *event);
   void mouseReleaseEvent(QMouseEvent *event);
+  void mouseDoubleClickEvent(QMouseEvent *event);
   void wheelEvent(QWheelEvent *event);
   void enterEvent(QEvent *);
 
@@ -60,6 +69,7 @@ class OmView2d : public OmView2dCore {
   std::unique_ptr<OmKeyEvents> keyEvents_;
   std::unique_ptr<OmView2dEvents> events_;
   std::unique_ptr<OmView2dZoom> zoom_;
+  std::unique_ptr<ViewControls> viewControls_;
 
   void unlinkComplimentaryDock();
 };

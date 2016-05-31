@@ -2,6 +2,7 @@
 #include "precomp.h"
 
 #include "events/details/event.h"
+#include "common/logging.h"
 
 namespace om {
 namespace event {
@@ -15,6 +16,10 @@ class AnnotationEvent : public Event {
   void Dispatch(Listener* base) {
     auto* list = dynamic_cast<AnnotationEventListener*>(base);
     assert(list);
+    if (!list) {
+      log_debugs << "No listeners found";
+      return;
+    }
 
     if (type_ == OBJECT_MODIFIED)
       return list->AnnotationModificationEvent(this);

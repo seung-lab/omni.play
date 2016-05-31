@@ -8,12 +8,12 @@
 #include "utility/dataWrappers.h"
 #include "volume/omSegmentation.h"
 
-class AutomaticSpreadingThresholdSpinBox
+class GrowThresholdSpinBox
     : public OmDoubleSpinBox,
-      public om::event::MSTEventListener {
+      public om::event::UserSettingsUpdatedEventListener {
 Q_OBJECT
 public:
-    AutomaticSpreadingThresholdSpinBox(GraphTools* d)
+    GrowThresholdSpinBox(GraphTools* d)
         : OmDoubleSpinBox(d, false)
         , mParent(d)
     {
@@ -26,8 +26,9 @@ public:
 private:
     GraphTools *const mParent;
 
-    virtual void RefreshMSTEvent(om::event::MSTEvent*) {
-        boost::optional<double> threshold = getCurVolThreshold();
+    virtual void UserSettingsUpdatedEvent(
+        om::event::UserSettingsUpdatedEvent*) override {
+        boost::optional<double> threshold = getGrowThreshold();
         if (threshold) {
             setGUIvalue(*threshold);
         }
@@ -36,7 +37,7 @@ private:
     void setInitialGUIThresholdValue() {
         double t = 0.95;
 
-        boost::optional<double> threshold = getCurVolThreshold();
+        boost::optional<double> threshold = getGrowThreshold();
         if (threshold) {
             t = *threshold;
         }
@@ -45,7 +46,7 @@ private:
     }
 
     void actUponValueChange(const double newThreshold) {
-        boost::optional<double> threshold = getCurVolThreshold();
+        boost::optional<double> threshold = getGrowThreshold();
         if (!threshold) {
             return;
         }
@@ -54,10 +55,10 @@ private:
             return;
         }
 
-        OmActions::ChangeASthreshold(mParent->GetSDW(), newThreshold);
+        mParent->GetSDW().GetSegmentation()->SetGrowThreshold(newThreshold);
     }
 
-    boost::optional<double> getCurVolThreshold() {
+    boost::optional<double> getGrowThreshold() {
        SegmentationDataWrapper sdw = mParent->GetSDW();
 
        if (!sdw.IsSegmentationValid()) {
@@ -65,6 +66,6 @@ private:
        }
 
        OmSegmentation* seg = sdw.GetSegmentation();
-       return boost::optional<double>(seg->GetASThreshold());
+       return boost::optional<double>(seg->GetGrowThreshold());
     }
 };

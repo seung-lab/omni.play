@@ -1,6 +1,7 @@
 #pragma once
 #include "precomp.h"
 
+#include "common/logging.h"
 #include "events/details/event.h"
 
 namespace om {
@@ -16,6 +17,10 @@ class ExecuteOnMainEvent : public Event {
   void Dispatch(Listener* base) {
     auto* list = dynamic_cast<ExecuteOnMainEventListener*>(base);
     assert(list);
+    if (!list) {
+      log_debugs << "No listeners found";
+      return;
+    }
 
     if (type_ == EXECUTE_ON_MAIN) return list->ExecuteOnMainEvent(this);
     throw om::ArgException("unknown event type");

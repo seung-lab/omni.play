@@ -12,9 +12,15 @@
 #include "system/omLocalPreferences.hpp"
 
 // mouse release
-void om::JoinSplitRunner::GoToNextState(OmViewGroupState& vgs,
-    om::tool::mode tool) {
-  OmJoiningSplitting& joiningSplitting = vgs.JoiningSplitting();
+bool om::JoinSplitRunner::FinishSelectingSegments(OmViewGroupState& vgs,
+    const om::tool::mode tool) {
+  OmJoiningSplitting& joiningSplitting = *vgs.GetJoiningSplitting();
+
+  // Finished state does not have any segments to select thus, an invalid cmd
+  if (joiningSplitting.IsFinished()
+      || joiningSplitting.RequiresElementSelection()) {
+    return false;
+  }
 
   joiningSplitting.GoToNextState();
 
@@ -49,14 +55,16 @@ void om::JoinSplitRunner::GoToNextState(OmViewGroupState& vgs,
       OmStateManager::SetOldToolModeAndSendEvent();
     }
   }
+  return true;
 }
 
 //mouse click
-void om::JoinSplitRunner::SelectSegment(OmViewGroupState& vgs,
+bool om::JoinSplitRunner::SelectSegment(OmViewGroupState& vgs,
     const om::tool::mode tool,
-    const SegmentDataWrapper segmentDataWrapper) {
-  if (!segmentDataWrapper.IsSegmentValid()) {
-    return;
+    boost::optional<SegmentDataWrapper> segmentDataWrapper) {
+  if (!segmentDataWrapper || !segmentDataWrapper->IsSegmentValid()) {
+    return false;
   }
-  vgs.JoiningSplitting().SelectSegment(tool, segmentDataWrapper);
+  vgs.GetJoiningSplitting()->SelectSegment(tool, *segmentDataWrapper);
+  return true;
 }

@@ -6,7 +6,7 @@
 #include "gui/widgets/toolButton.hpp"
 
 class MSTThresholdSpinBox;
-class AutomaticSpreadingThresholdSpinBox;
+class GrowThresholdSpinBox;
 class OmViewGroupState;
 class SegmentationDataWrapper;
 class JoinAllButton;
@@ -47,7 +47,7 @@ class GraphTools : public OmWidget {
   ShowBreakWidget* showBreakWidget;
 
   MSTThresholdSpinBox* threshold_;
-  AutomaticSpreadingThresholdSpinBox* asthreshold_;
+  GrowThresholdSpinBox* growThreshold_;
 
   QWidget* thresholdBox();
   std::vector<om::tool::mode> supportedTools_;

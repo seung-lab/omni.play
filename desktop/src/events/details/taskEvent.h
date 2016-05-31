@@ -2,6 +2,7 @@
 #include "precomp.h"
 
 #include "events/details/event.h"
+#include "common/logging.h"
 
 namespace om {
 namespace event {
@@ -17,6 +18,10 @@ class TaskEvent : public Event {
   void Dispatch(Listener* base) {
     auto* list = dynamic_cast<TaskEventListener*>(base);
     assert(list);
+    if (!list) {
+      log_debugs << "No listeners found";
+      return;
+    }
 
     if (type_ == TASK_CHANGE) return list->TaskChangeEvent();
     if (type_ == TASK_STARTED) return list->TaskStartedEvent();

@@ -21,6 +21,7 @@ OmSegmentSelector::OmSegmentSelector(const SegmentationDataWrapper& sdw,
 
   segments_ = sdw.Segments();
   selection_ = &sdw.Segments()->Selection();
+  nextOrder_ = selection_->GetNextOrder();
 
   params_->sdw = SegmentDataWrapper(sdw, 0);
   params_->sender = sender;
@@ -61,11 +62,28 @@ void OmSegmentSelector::selectJustThisSegment(
   }
 }
 
+void OmSegmentSelector::BlacklistAddSegment(const om::common::SegID segID) {
+  removeSegmentFromSelectionParameters(segID);
+  blacklist_.insert(segID);
+}
+
+void OmSegmentSelector::BlacklistRemoveSegment(const om::common::SegID segID) {
+  blacklist_.erase(segID);
+}
+
+bool OmSegmentSelector::IsBlacklistSegment(const om::common::SegID segID) {
+  return blacklist_.find(segID) != blacklist_.end();
+}
+
 // this indicates what segment we selected, also used to tell the segment
 // list box to scroll to the selected row for this segment
-void OmSegmentSelector::setSelectedSegment(const om::common::SegID segID) {
+void OmSegmentSelector::SetFocusSegment(const om::common::SegID segID) {
   params_->sdw.SetSegmentID(segID);
   OmSegmentSelected::Set(params_->sdw);
+}
+
+om::common::SegID OmSegmentSelector::GetFocusSegment() {
+  return params_->sdw.GetSegmentID();
 }
 
 void OmSegmentSelector::InsertSegments(const om::common::SegIDSet& segIDs) {
@@ -84,10 +102,16 @@ void OmSegmentSelector::InsertSegments(const om::common::SegIDList& segIDs) {
   }
 }
 
-/* this function actually removes the input segments*/
-void OmSegmentSelector::RemoveTheseSegments(const om::common::SegIDSet& segIDs) {
+void OmSegmentSelector::RemoveSegments(const om::common::SegIDList& segIDs) {
   om::common::SegID rootID;
+  for (auto id : segIDs) {
+    rootID = segments_->FindRootID(id);
+    removeSegmentFromSelectionParameters(rootID);
+  }
+}
 
+void OmSegmentSelector::RemoveSegments(const om::common::SegIDSet& segIDs) {
+  om::common::SegID rootID;
   for (auto id : segIDs) {
     rootID = segments_->FindRootID(id);
     removeSegmentFromSelectionParameters(rootID);
@@ -136,16 +160,15 @@ bool OmSegmentSelector::IsSegmentSelected(const om::common::SegID segID) {
 }
 
 bool OmSegmentSelector::UpdateSelectionNow() {
-  if (params_->oldSelectedIDs == params_->newSelectedIDs) {
-    // no change in selected set
-    return false;
-  }
-
   // add any newly selected ids to the master selection list
   bool selectionIsChanged = 
     selection_->UpdateSegmentSelection(params_->newSelectedIDs, params_->addToRecentList);
 
   if (selectionIsChanged) {
+    // note the orders may be modified after update selection
+    params_->newSelectedIDs = selection_->GetSelectedSegmentIDsWithOrder();
+    nextOrder_ = selection_->GetNextOrder();
+
     OmCacheManager::TouchFreshness();
     om::event::SegmentModified(params_);
   }
@@ -179,20 +202,32 @@ void OmSegmentSelector::AutoCenter(const bool autoCenter) {
 }
 
 void OmSegmentSelector::addSegmentToSelectionParameters(om::common::SegID segID) {
-  uint32_t newOrder =  params_->newSelectedIDs.size() + 1;
-  params_->newSelectedIDs.insert(std::pair<om::common::SegID, uint32_t>(segID, newOrder));
-  setSelectedSegment(segID);
+  if (blacklist_.find(segID) != blacklist_.end()) {
+    log_infos << "Selecting " << segID << " but is in the selection " <<
+      "blacklist" << std::endl;
+    return;
+  }
+  params_->newSelectedIDs.insert(std::pair<om::common::SegID, uint32_t>(segID, nextOrder_++));
+  SetFocusSegment(segID);
 }
 
 void OmSegmentSelector::removeSegmentFromSelectionParameters(om::common::SegID segID) {
   params_->newSelectedIDs.erase(segID);
-  // only update the selected segment if any was selected
-  if (params_->newSelectedIDs.begin() != params_->newSelectedIDs.end()) {
-    setSelectedSegment(params_->newSelectedIDs.begin()->first);
+  // only update the selected segment if deselecting focus element
+  if (segID == GetFocusSegment()) {
+    if (!params_->newSelectedIDs.empty()) {
+      SetFocusSegment(params_->newSelectedIDs.begin()->first);
+    }
   }
 }
 
 uint32_t OmSegmentSelector::GetOrderOfAdding(const om::common::SegID segID) {
-  return selection_->GetOrderOfAdding(segID);
+  auto iter = params_->newSelectedIDs.find(segID);
+
+  if (iter != params_->newSelectedIDs.end()) {
+    return iter->second;
+  } else {
+    return 0;
+  }
 }
 

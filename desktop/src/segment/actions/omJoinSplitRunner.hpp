@@ -13,8 +13,12 @@ namespace coords {
 }
 
 namespace JoinSplitRunner {
-  void GoToNextState(OmViewGroupState& vgs,om::tool::mode tool);
-  void SelectSegment(OmViewGroupState& vgs, const om::tool::mode tool,
-    const SegmentDataWrapper segmentDataWrapper);
+  /* 
+   * Tell joinningSplitting to finish selecting segments.
+   */
+  bool FinishSelectingSegments(OmViewGroupState& vgs,
+    const om::tool::mode tool);
+  bool SelectSegment(OmViewGroupState& vgs, const om::tool::mode tool,
+    boost::optional<SegmentDataWrapper> segmentDataWrapper);
 }
 }

@@ -31,9 +31,6 @@ class OmActionsImpl {
   void ChangeSizethreshold(const SegmentationDataWrapper sdw,
                           const double threshold);
 
-  void ChangeASthreshold(const SegmentationDataWrapper sdw,
-                          const double threshold);
-
   // painting-related
   void SetVoxels(const om::common::ID segmentationId,
                  const std::set<om::coords::Data> rVoxels,
