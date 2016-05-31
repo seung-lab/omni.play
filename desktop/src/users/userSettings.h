@@ -41,25 +41,21 @@ class userSettings {
 
   inline std::string getFilename() { return filename_; }
 
-  inline float getThreshold() { return threshold_; }
+  inline double getThreshold() { return threshold_; }
 
-  inline void setThreshold(float val) { threshold_ = val; }
+  inline void setThreshold(double val) { threshold_ = val; }
 
-  inline float getSizeThreshold() { return sizeThreshold_; }
+  inline double getSizeThreshold() { return sizeThreshold_; }
 
-  inline int getSizeDirection() {
-      return sizeThreshold_direction_;
-  }
+  inline double setSizeThreshold(double val) { sizeThreshold_ = val; } 
 
-  inline void setSizeThreshold(float val) { sizeThreshold_ = val; } 
+  inline bool getAnnotationVisible() { return showAnnotations_; }
 
-  inline float getAnnotationVisible() { return showAnnotations_; }
+  inline void setAnnotationVisible(bool val) { showAnnotations_ = val; }
 
-  inline void setAnnotationVisible(float val) { showAnnotations_ = val; }
+  inline double getGrowThreshold() { return growThreshold_; }
 
-  inline float getGrowThreshold() { return growThreshold_; }
-
-  inline void setGrowThreshold(float val) { growThreshold_ = val; }
+  inline void setGrowThreshold(double val) { growThreshold_ = val; }
 };
 
 }  // namespace om
