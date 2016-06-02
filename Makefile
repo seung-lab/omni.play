@@ -65,7 +65,7 @@ COMMON_CXXFLAGS    =    -g -fPIC $(CXXWARN) $(THRIFT_CXXFLAGS) -std=c++11 -MMD -
 
 DBG_CFLAGS         =    $(COMMON_CFLAGS) -DDEBUG_MODE=1 -c -Wall -O0 --coverage -ggdb -g3 -pg -p
 DBG_CXXFLAGS       =    $(COMMON_CXXFLAGS) -DDEBUG_MODE=1 -Og -gstabs+ --coverage -ggdb -g3 -pg -p
-OPTIMIZATION_FLAGS =    -O2
+OPTIMIZATION_FLAGS =    -O3
 OPT_CFLAGS         =    $(COMMON_CFLAGS) -DNDEBUG \
 						$(OPTIMIZATION_FLAGS) -fno-omit-frame-pointer
 OPT_CXXFLAGS       =    $(COMMON_CXXFLAGS) -DNDEBUG \
