@@ -103,6 +103,9 @@ class Drawer {
                               om::coords::Norm(camera_.GetPosition(), system_),
                               om::coords::Norm(camera_.GetFocus(), system_));
 
+    // Draw box here!
+    drawBoundary();
+    
     // Draw meshes!
     for (auto& info : drawInfos_) {
       auto& vol = info->Vol();
@@ -122,6 +125,16 @@ class Drawer {
 
       drawStatus_.Add(drawer.getPercDone());
     }
+  }
+
+  void drawBoundary() {
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    /* check order between translate and scale*/
+    glTranslatef(system_.DataDimensions()/2); // where to center
+    glScalef(system_.Resolution());
+    gl::omglWireCube(1);
+    glPopMatrix();
   }
 
   // draw chunk bounding box--broken? (purcaro)
