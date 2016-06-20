@@ -20,8 +20,8 @@ class Dataset {
   PROP_CONST_REF(time::time, deleted);
   PROP_CONST_REF(time::time, completed);
   PROP_CONST_REF(time::time, lastmodified);
-  PROP(int, overlap);
-  PROP(int, min_overlap_volume);
+  PROP(u_int64_t, overlap);
+  PROP(u_int64_t, min_overlap_volume);
   friend struct YAML::convert<om::task::Dataset>;
 };
 }
@@ -55,8 +55,8 @@ struct convert<om::task::Dataset> {
       // c.deleted_ = node["deleted"].as<om::time::time>();
       // c.completed_ = node["completed"].as<om::time::time>();
       // c.lastmodified_ = node["lastmodified"].as<om::time::time>();
-      c.overlap_ = node["overlap"].as<int>();
-      c.min_overlap_volume_ = node["min_overlap_volume"].as<int>();
+      c.overlap_ = node["overlap"].as<u_int64_t>();
+      c.min_overlap_volume_ = node["min_overlap_volume"].as<u_int64_t>();
       return true;
     }
     catch (YAML::Exception e) {
