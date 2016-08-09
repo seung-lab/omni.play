@@ -65,6 +65,34 @@ TEST(GetConnectedGroupsTest, Simple) {
   EXPECT_EQ(2, four.segments.size());
 }
 
+// There are some segments at the edge of the volume here.
+TEST(GetConnectedGroupsTest, TestOutOfBounds) {
+  file::Paths p("/usr/people/ww12/seungmount/Omni/piriform-2x2x2/piriform_17000-19047_13000-15047_484-739.omni");
+  volume::Segmentation vol(p, 1);
+
+  std::unordered_map<int, common::SegIDSet> groups;
+  groups[200107].insert({
+      11471, 11808, 16411, 17423, 18532, 20632, 21035, 22743, 24055,
+      25116, 25856, 27906, 28885, 29649, 31933, 33867, 35891, 37380,
+      37383, 38705, 39772, 40178, 42212, 43926, 45461, 45788, 47188,
+      47196, 47523, 49793, 51257, 51557, 52491, 60371, 61768, 62502,
+      63925, 65399, 68084, 68794, 74398, 75654, 76555, 76964, 77697,
+      79777, 80718, 83477, 84295
+      });
+
+  groups[209907].insert({
+      11471, 11808, 16411, 17423, 18532, 20632, 21035, 22743, 24055,
+      25116, 25856, 27906, 28885, 29649, 31933, 33867, 35891, 37380,
+      37383, 38705, 39013, 39772, 40178, 42212, 43926, 45461, 45788,
+      47188, 47196, 47523, 49793, 51257, 51557, 52491, 60371, 61768,
+      62502, 63925, 65399, 68084, 68794, 76555, 78079, 80484, 82343, 83087, 84306
+      });
+
+  EXPECT_EQ(7, _return.size());
+  auto all = get(_return, om::server::groupType::ALL);
+  EXPECT_EQ(55, all.segments.size());
+}
+
 // Taken from task 302962
 TEST(GetConnectedGroupsTest, Full) {
   file::Paths p("/omniData/e2198/e2198_cp_s8_116_91_e16_131_98.omni");
