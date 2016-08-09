@@ -67,7 +67,7 @@ TEST(GetConnectedGroupsTest, Simple) {
 
 // There are some segments at the edge of the volume here.
 TEST(GetConnectedGroupsTest, TestOutOfBounds) {
-  file::Paths p("/usr/people/ww12/seungmount/Omni/piriform-2x2x2/piriform_17000-19047_13000-15047_484-739.omni");
+  file::Paths p("/omniData/piriform-2x2x2/piriform_17000-19047_13000-15047_484-739.omni");
   volume::Segmentation vol(p, 1);
 
   std::unordered_map<int, common::SegIDSet> groups;
