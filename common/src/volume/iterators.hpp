@@ -23,7 +23,7 @@ class CoordValue {
 
     if (ret.coord_.ToChunk() != coord_.ToChunk()) {
       ret.updateChunk();
-      if (!chunk_) {
+      if (!ret.chunk_) {
         return boost::optional<CoordValue<T>>();
       }
     }
@@ -48,6 +48,12 @@ class CoordValue {
   PROP_REF(T, value);
 
   void updateChunk(const coords::Chunk& cc) {
+    // If trying to set the chunk that isn't actually within the volume
+    if (!coord_.volume().ContainsMipChunk(cc)) {
+      chunk_ = nullptr;
+      return;
+    }
+
     chunkSharedPtr_ = chunkDs_.get().Get(cc);
     auto typedChunk = boost::get<chunk::Chunk<T>>(chunkSharedPtr_.get());
     chunk_ = typedChunk ? typedChunk->data().get() : nullptr;
