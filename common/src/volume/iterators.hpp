@@ -48,7 +48,7 @@ class CoordValue {
   PROP_REF(T, value);
 
   void updateChunk(const coords::Chunk& cc) {
-    // If trying to set the chunk that isn't actually within the segmentation
+    // If trying to set the chunk that isn't actually within the volume
     if (!coord_.volume().ContainsMipChunk(cc)) {
       chunk_ = nullptr;
       return;
