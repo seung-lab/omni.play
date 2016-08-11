@@ -88,6 +88,9 @@ TEST(GetConnectedGroupsTest, TestOutOfBounds) {
       62502, 63925, 65399, 68084, 68794, 76555, 78079, 80484, 82343, 83087, 84306
       });
 
+  std::vector<server::group> _return;
+  handler::get_connected_groups(_return, vol, groups);
+
   EXPECT_EQ(7, _return.size());
   auto all = get(_return, om::server::groupType::ALL);
   EXPECT_EQ(55, all.segments.size());
