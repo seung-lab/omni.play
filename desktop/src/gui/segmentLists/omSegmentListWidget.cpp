@@ -51,7 +51,7 @@ bool OmSegmentListWidget::populate(const bool doScrollToSelectedSegment,
 
   QTreeWidgetItem* rowToJumpTo = nullptr;
 
-  assert(OmLocalPreferences::GetNumSegmentsPerPage() <=
+  assert(OmLocalPreferences::GetNumSegmentsPerPage() >=
     segIDs->segs.size() && "too many segments returned");
 
   for(auto& iter : segIDs->segs) {
