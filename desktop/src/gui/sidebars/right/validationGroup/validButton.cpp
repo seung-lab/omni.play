@@ -22,7 +22,7 @@ void ValidButton::onLeftClick() {
     return;
   }
 
-  OmActions::ValidateSelectedSegments(sdw, om::common::SetValid::SET_VALID);
+  OmActions::ValidateSelectedSegments(sdw, setValid_);
 
   om::event::SegmentModified();
 }
