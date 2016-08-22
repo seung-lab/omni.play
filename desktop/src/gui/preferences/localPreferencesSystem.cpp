@@ -10,6 +10,7 @@ LocalPreferencesSystem::LocalPreferencesSystem(QWidget* parent)
     : QWidget(parent) {
   QVBoxLayout* overallContainer = new QVBoxLayout(this);
   overallContainer->addWidget(makeActionPropBox());
+  overallContainer->addWidget(makeUIPropBox());
   overallContainer->addWidget(makeCachePropBox());
   overallContainer->insertStretch(4, 1);
   init_cache_prop_values();
@@ -48,13 +49,19 @@ QGroupBox* LocalPreferencesSystem::makeActionPropBox() {
   shouldReturnOldToolCheckBox->setChecked(shouldReturnOldTool);
   actionLayout->addWidget(shouldReturnOldToolCheckBox, 1, 0, 1, 1);
 
-  actionLayout->addWidget(
-      new OmLabelHBox(actionGroupBox, new SpinBoxNumSegmentsPerPage(actionGroupBox),
-                      om::Side::LEFT_SIDE, "Number Segments Per Page"), 2, 0, 1, 1);
-
-
   return actionGroupBox;
 }
+
+QGroupBox* LocalPreferencesSystem::makeUIPropBox() {
+  QGroupBox* uiGroupBox = new QGroupBox("UI Properties");
+  QGridLayout* uiLayout = new QGridLayout;
+  uiGroupBox->setLayout(uiLayout);
+  uiLayout->addWidget(
+      new OmLabelHBox(uiGroupBox, new SpinBoxNumSegmentsPerPage(uiGroupBox),
+                      om::Side::LEFT_SIDE, "Number Segments Per Page"), 2, 0, 1, 1);
+  return uiGroupBox;
+}
+
 QGroupBox* LocalPreferencesSystem::makeCachePropBox() {
   QGroupBox* groupBox = new QGroupBox("Cache Properties");
   QGridLayout* gridLayout = new QGridLayout;
