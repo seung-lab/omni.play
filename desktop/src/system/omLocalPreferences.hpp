@@ -135,6 +135,14 @@ class OmLocalPreferences : private om::SingletonBase<OmLocalPreferences> {
     LocalPrefFiles::writeSettingNumber("dataset", dataset);
   }
 
+  static int GetNumSegmentsPerPage() {
+    return LocalPrefFiles::readSettingNumber("numSegmentsPerPage", 20);
+  }
+
+  static void SetNumSegmentsPerPage(int numSegmentsPerPage) {
+    return LocalPrefFiles::writeSettingNumber("numSegmentsPerPage", numSegmentsPerPage);
+  }
+
  private:
   OmLocalPreferences() {}
   ~OmLocalPreferences() {}

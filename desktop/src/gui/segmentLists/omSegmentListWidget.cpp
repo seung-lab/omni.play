@@ -12,6 +12,7 @@
 #include "utility/dataWrappers.h"
 #include "utility/omStringHelpers.h"
 #include "viewGroup/omViewGroupState.h"
+#include "system/omLocalPreferences.hpp"
 #include "zi/omUtility.h"
 
 Q_DECLARE_METATYPE(SegmentDataWrapper);
@@ -50,7 +51,8 @@ bool OmSegmentListWidget::populate(const bool doScrollToSelectedSegment,
 
   QTreeWidgetItem* rowToJumpTo = nullptr;
 
-  assert(100 >= segIDs->segs.size() && "too many segments returned");
+  assert(OmLocalPreferences::GetNumSegmentsPerPage() >=
+    segIDs->segs.size() && "too many segments returned");
 
   for(auto& iter : segIDs->segs) {
     OmSegment* seg = iter.seg;

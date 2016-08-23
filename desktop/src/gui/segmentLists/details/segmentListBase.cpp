@@ -15,6 +15,8 @@
 #include "utility/segmentDataWrapper.hpp"
 #include "utility/segmentationDataWrapper.hpp"
 #include "volume/omSegmentation.h"
+#include "system/omLocalPreferences.hpp"
+#include "math.h"
 
 SegmentListBase::SegmentListBase(QWidget* parent, OmViewGroupState& vgs)
     : QWidget(parent), haveValidSDW(false), currentPageNum_(0), vgs_(vgs) {
@@ -26,7 +28,9 @@ SegmentListBase::SegmentListBase(QWidget* parent, OmViewGroupState& vgs)
   setupPageButtons();
 }
 
-int SegmentListBase::getNumSegmentsPerPage() { return 100; }
+int SegmentListBase::getNumSegmentsPerPage() {
+   return OmLocalPreferences::GetNumSegmentsPerPage();
+}
 
 quint32 SegmentListBase::getTotalNumberOfSegments() {
   assert(haveValidSDW);
@@ -161,7 +165,7 @@ void SegmentListBase::goToPrevPage() {
 }
 
 void SegmentListBase::goToEndPage() {
-  currentPageNum_ = (getTotalNumberOfSegments() / getNumSegmentsPerPage());
+  currentPageNum_ = totalPages_ - 1;
   populateByPage();
 }
 
@@ -249,15 +253,17 @@ void SegmentListBase::userJustClickedInThisSegmentList() {
 }
 
 void SegmentListBase::updatePageStats() {
-  totalPages_ = getTotalNumberOfSegments() / getNumSegmentsPerPage();
 
+  // friendly reminder that totalPages_ is the number of pages, not the max index!
+  totalPages_ = ceil(1.0 * getTotalNumberOfSegments() / getNumSegmentsPerPage());
   if (currentPageNum_ < 0) {
     currentPageNum_ = 0;
-  } else if (currentPageNum_ > totalPages_) {
-    currentPageNum_ = totalPages_;
+  } else if (currentPageNum_ > totalPages_ - 1) {
+    currentPageNum_ = totalPages_ - 1;
   }
 
   // +1 because display is 1 indexed for readability
   currentPageEdit->setText(QString::number(currentPageNum_ + 1));
-  maxPageDisplay->setText(QString::number(totalPages_ + 1));
+  // total pages is essentially 1 indexed already
+  maxPageDisplay->setText(QString::number(totalPages_));
 }
