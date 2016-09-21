@@ -1,6 +1,7 @@
 #pragma once
 #include "precomp.h"
 
+#include "vmmlib/vmmlib.h"
 #include "mesh/omVolumeCuller.h"
 #include "segment/omSegmentSelected.hpp"
 #include "segment/omSegmentUtils.hpp"
@@ -74,6 +75,14 @@ class Drawer {
     teardownGL();
   }
 
+  void DrawSegmentationBoundaries(std::vector<OmSegmentation*> segmentations) {
+    for (auto segmentation : segmentations) {
+       auto bounds = segmentation->Coords().Bounds();
+       auto globalBbox = bounds.ToGlobalBbox();
+       drawClippedExtent(globalBbox);
+    }
+  }
+
  private:
   void setupGL() {
     // clear buffer
@@ -124,8 +133,7 @@ class Drawer {
     }
   }
 
-  // draw chunk bounding box--broken? (purcaro)
-  void drawClippedExtent(const coords::NormBbox& clippedNormExtent) {
+  void drawClippedExtent(const vmml::AxisAlignedBoundingBox<float>& extent) {
     glPushAttrib(GL_ALL_ATTRIB_BITS);
     glPushMatrix();
 
@@ -133,9 +141,9 @@ class Drawer {
     glDisable(GL_LIGHTING);
 
     // translate and scale to chunk norm extent
-    const Vector3f translate = clippedNormExtent.getMin();
+    const Vector3f translate = extent.getMin();
     const Vector3f scale =
-        clippedNormExtent.getMax() - clippedNormExtent.getMin();
+        extent.getMax() - extent.getMin();
 
     // transform model view
     gl::glTranslatefv(translate.array);

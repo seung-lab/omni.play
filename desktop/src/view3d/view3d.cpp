@@ -324,6 +324,11 @@ void View3d::updateEnabledWidgets() { widgets_->UpdateEnabledWidgets(); }
  */
 void View3d::DrawChunkBoundaries() { drawer_->DrawChunkBoundaries(); }
 
+/*
+ *  Draw segmentation boundaries
+ */
+void View3d::DrawSegmentationBoundaries() { drawer_->DrawSegmentationBoundaries(segmentations_); }
+
 /////////////////////////////////
 ///////          Draw Settings
 

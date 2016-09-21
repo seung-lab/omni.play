@@ -10,6 +10,7 @@ class Om3dPreferences : private om::SingletonBase<Om3dPreferences> {
   int mCrosshairValue_;
   bool m2DViewFrameIn3D_;
   bool mDrawCrosshairsIn3D_;
+  bool mDrawSegmentationBoundingBox_;
   bool mDoDiscoBall;
   bool m2DViewPaneIn3D_;
   double scrollRate_;
@@ -41,6 +42,14 @@ class Om3dPreferences : private om::SingletonBase<Om3dPreferences> {
     LocalPrefFiles::writeSettingBool("DrawCrosshairsIn3D", value);
   }
 
+  static bool getDrawSegmentationBoundingBox() {
+    return instance().mDrawSegmentationBoundingBox_;
+  }
+  static void setDrawSegmentationBoundingBox(const bool value) {
+    instance().mDrawSegmentationBoundingBox_ = value;
+    LocalPrefFiles::writeSettingBool("DrawSegmentationBoundingBox", value);
+  }
+
   static bool getDoDiscoBall() { return instance().mDoDiscoBall; }
   static void setDoDiscoBall(const bool value) {
     instance().mDoDiscoBall = value;
@@ -59,6 +68,7 @@ class Om3dPreferences : private om::SingletonBase<Om3dPreferences> {
     setDefault2DViewFrameIn3D();
     setDefaultDrawCrosshairsIn3D();
     setDefault2DViewPaneIn3D();
+    setDefaultDrawSegmentationBoundingBox();
     setDefaultScrollRate();
   }
   ~Om3dPreferences() {}
@@ -79,6 +89,12 @@ class Om3dPreferences : private om::SingletonBase<Om3dPreferences> {
     const bool defaultRet = false;
     mDrawCrosshairsIn3D_ =
         LocalPrefFiles::readSettingBool("DrawCrosshairsIn3D", defaultRet);
+  }
+
+  void setDefaultDrawSegmentationBoundingBox() {
+    const bool defaultRet = false;
+    mDrawSegmentationBoundingBox_ =
+        LocalPrefFiles::readSettingBool("DrawSegmentationBoundingBox", defaultRet);
   }
 
   void setDefault2DViewPaneIn3D() {

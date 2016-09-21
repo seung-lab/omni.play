@@ -1,5 +1,6 @@
 #include "common/common.h"
 #include "view3d/gl.h"
+#include "view3d/view3d.h"
 #include "viewBoxWidget.h"
 #include "system/omLocalPreferences.hpp"
 #include "system/omStateManager.h"
@@ -38,8 +39,11 @@ void ViewBoxWidget::Draw() {
   if (Om3dPreferences::getDrawCrosshairsIn3D()) {
     drawLines(view2dState.GetScaledSliceDepth());
   }
-
   glPopAttrib();
+
+  if (Om3dPreferences::getDrawSegmentationBoundingBox()) {
+    view3d_.DrawSegmentationBoundaries();
+  }
 }
 
 void ViewBoxWidget::draw2dBoxWrapper(OmViewGroupView2dState& view2dState,

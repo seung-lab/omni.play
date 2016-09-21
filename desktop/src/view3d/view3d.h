@@ -45,6 +45,7 @@ class View3d : public QGLWidget, public ViewInputConversion {
 
   void DoZoom(const int direction);
   void DrawChunkBoundaries();
+  void DrawSegmentationBoundaries();
 
   void UpdatePreferences();
 
