@@ -13,6 +13,7 @@ Q_SLOTS:
   void on_viewSquareCheckBox_stateChanged();
   void on_viewPaneCheckBox_stateChanged();
   void on_crosshairCheckBox_stateChanged();
+  void on_boundingBoxCheckBox_stateChanged();
   void on_discoCheckBox_stateChanged();
 
  private:
@@ -23,5 +24,6 @@ Q_SLOTS:
   QCheckBox* viewSquareCheckBox;
   QCheckBox* viewPaneCheckBox;
   QCheckBox* crosshairCheckBox;
+  QCheckBox* boundingBoxCheckBox;
   QCheckBox* discoCheckBox;
 };

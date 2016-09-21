@@ -23,6 +23,8 @@ LocalPreferences3d::LocalPreferences3d(QWidget* parent) : QWidget(parent) {
               SLOT(on_viewPaneCheckBox_stateChanged()));
   om::connect(crosshairCheckBox, SIGNAL(stateChanged(int)), this,
               SLOT(on_crosshairCheckBox_stateChanged()));
+  om::connect(boundingBoxCheckBox, SIGNAL(stateChanged(int)), this,
+              SLOT(on_boundingBoxCheckBox_stateChanged()));
 }
 
 QGroupBox* LocalPreferences3d::makeGeneralPropBox() {
@@ -81,6 +83,13 @@ QGroupBox* LocalPreferences3d::makeGeneralPropBox() {
   discoCheckBox->setChecked(discoBall);
   gridLayout->addWidget(discoCheckBox, 6, 0, 1, 1);
 
+  // Draw Segmentation boundaries in 3d
+  boundingBoxCheckBox = new QCheckBox(groupBox);
+  boundingBoxCheckBox->setText("Segmentation Bounding Box");
+  bool boundingBox = Om3dPreferences::getDrawSegmentationBoundingBox();
+  boundingBoxCheckBox->setChecked(boundingBox);
+  gridLayout->addWidget(boundingBoxCheckBox, 7, 0, 1, 1);
+
   return groupBox;
 }
 
@@ -116,5 +125,11 @@ void LocalPreferences3d::on_crosshairCheckBox_stateChanged() {
   crosshairSlider->setEnabled(val);
   crosshairValue->setEnabled(val);
   crosshairLabel->setEnabled(val);
+  om::event::Redraw3d();
+}
+
+void LocalPreferences3d::on_boundingBoxCheckBox_stateChanged() {
+  const bool val = GuiUtils::getBoolState(boundingBoxCheckBox->checkState());
+  Om3dPreferences::setDrawSegmentationBoundingBox(val);
   om::event::Redraw3d();
 }
